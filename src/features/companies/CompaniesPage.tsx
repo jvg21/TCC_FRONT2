@@ -12,9 +12,9 @@ import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 
 const Columns = (onEdit: (c: Company) => void, onDelete: (id: string) => void): ColumnDef<Company>[] => [
-  { key: "name", header: "Nome" },
-  { key: "cnpj", header: "CNPJ" },
-  { key: "email", header: "E-mail" },
+  { key: "Name", header: "Nome" },
+  { key: "TaxId", header: "CNPJ" },
+  { key: "Email", header: "E-mail" },
   {
     key: "actions",
     header: "Ações",
@@ -22,16 +22,35 @@ const Columns = (onEdit: (c: Company) => void, onDelete: (id: string) => void): 
     render: (row) => (
       <div style={{ display: "flex", gap: 8 }}>
         <button title="Editar" onClick={() => onEdit(row)}><FiEdit /></button>
-        <button title="Excluir" onClick={() => onDelete(row.id)}><FiTrash2 /></button>
+        <button title="Excluir" onClick={() => onDelete(row.CompanyId)}><FiTrash2 /></button>
       </div>
     )
   }
 ];
 
 const CompaniesPage: React.FC = () => {
-  const { activeCompanies, query, setQuery, create, update, softDelete } = useCompanies();
+  const { activeCompanies, create, update, softDelete } = useCompanies();
   const modal = useModal();
   const [editing, setEditing] = useState<Company | null>(null);
+  const [query, setQuery] = useState("");
+
+  // Filtrar dados baseado na busca global
+  const filteredCompanies = React.useMemo(() => {
+    if (!query) return activeCompanies;
+    
+    const searchQuery = query.toLowerCase();
+    return activeCompanies.filter(company => {
+      const searchableText = [
+        company.Name,
+        company.TaxId,
+        company.Email,
+        company.Phone,
+        company.Adress
+      ].filter(Boolean).join(" ").toLowerCase();
+      
+      return searchableText.includes(searchQuery);
+    });
+  }, [activeCompanies, query]);
 
   const handleAdd = () => {
     setEditing(null);
@@ -45,7 +64,7 @@ const CompaniesPage: React.FC = () => {
 
   const handleSave = (payload: any) => {
     if (editing) {
-      update(editing.id, payload);
+      update(editing.CompanyId, payload);
     } else {
       create(payload);
     }
@@ -60,8 +79,13 @@ const CompaniesPage: React.FC = () => {
 
   return (
     <PageLayout title="Empresas" actions={<Button onClick={handleAdd}><FiPlus />&nbsp;Adicionar</Button>}>
-      <FilterBar value={query} onChange={setQuery} />
-      <DataTable columns={columns} data={activeCompanies} />
+      <FilterBar 
+        columns={columns} 
+        value={query} 
+        onChange={setQuery}
+        placeholder="Buscar empresas..."
+      />
+      <DataTable columns={columns} data={filteredCompanies} />
       <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? "Editar Empresa" : "Adicionar Empresa"}>
         <CompanyForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
       </Modal>
