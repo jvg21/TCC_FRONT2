@@ -15,6 +15,7 @@ const getSavedLanguage = (): string => {
   }
 };
 
+
 const resources = {
   en: {
     translation: enTranslations
@@ -84,5 +85,6 @@ export const ensureI18nReady = async (): Promise<typeof i18n> => {
   await initI18n();
   return i18n;
 };
+
 
 export default i18n;
