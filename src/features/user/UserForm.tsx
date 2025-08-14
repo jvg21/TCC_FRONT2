@@ -4,10 +4,12 @@ import { Button } from "../../components/common/Button";
 import styled from "styled-components";
 import type { User } from "./types";
 import { Select } from "../../components/common/Select";
+import { useTranslation } from "react-i18next";
 
 
 const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
 const Col = styled.div` flex:1; `;
+
 
 type Props = {
   initial?: Partial<User>;
@@ -21,6 +23,7 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
   const [Email, setEmail] = useState(initial.Email ?? "");
   const [Profile, setProfile] = useState(initial.Profile ?? "");
   const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
+  const { t } = useTranslation();
 
   useEffect(() => {
     setName(initial.Name ?? "");
@@ -40,21 +43,21 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
   return (
     <form onSubmit={handleSubmit}>
       <Row>
-        <Col><Input label="Nome" value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+        <Col><Input label={t("users.name")} value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Input label="Profile" value={Profile} onChange={(e) => setProfile(e.target.value)} /></Col>
-        <Col><Input label="E-mail" value={Email} onChange={(e) => setEmail(e.target.value)} /></Col>
+        <Col><Input label={t("users.profile")} value={Profile} onChange={(e) => setProfile(e.target.value)} /></Col>
+        <Col><Input label={t("users.email")} value={Email} onChange={(e) => setEmail(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Select label="Ativo" options={[
-          { value: "false", label: "Desativado" },
-          { value: "true", label: "Ativado" },
+        <Col><Select label={t("users.is_active")} options={[
+          { value: "false", label: t("status.disabled") },
+          { value: "true", label: t("status.enabled") },
         ]} /></Col>
       </Row>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-        <Button variant="ghost" type="button" onClick={onCancel}>Cancelar</Button>
-        <Button type="submit" disabled={!canSave}>Salvar</Button>
+        <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
+        <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
       </div>
     </form>
   );

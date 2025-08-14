@@ -4,6 +4,7 @@ import { Button } from "../../components/common/Button";
 import styled from "styled-components";
 import type { Company } from "./types";
 import { Select } from "../../components/common/Select";
+import { useTranslation } from "react-i18next";
 
 const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
 const Col = styled.div` flex:1; `;
@@ -22,6 +23,8 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   const [Phone, setPhone] = useState(initial.Phone ?? "");
   const [Adress, setAdress] = useState(initial.Adress ?? "");
   const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
+
+  const { t } = useTranslation();
 
 
   useEffect(() => {
@@ -44,25 +47,25 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   return (
     <form onSubmit={handleSubmit}>
       <Row>
-        <Col><Input label="Nome" value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+        <Col><Input label={t("companies.name")} value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Input label="CNPJ" value={TaxId} onChange={(e) => setCnpj(e.target.value)} /></Col>
-        <Col><Input label="E-mail" value={Email} onChange={(e) => setEmail(e.target.value)} /></Col>
+        <Col><Input label={t("companies.tax_id")} value={TaxId} onChange={(e) => setCnpj(e.target.value)} /></Col>
+        <Col><Input label={t("companies.email")} value={Email} onChange={(e) => setEmail(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Input label="Telefone" value={Phone} onChange={(e) => setPhone(e.target.value)} /></Col>
-        <Col><Input label="Endereço" value={Adress} onChange={(e) => setAdress(e.target.value)} /></Col>
+        <Col><Input label={t("companies.phone")} value={Phone} onChange={(e) => setPhone(e.target.value)} /></Col>
+        <Col><Input label={t("companies.address")} value={Adress} onChange={(e) => setAdress(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Select label="Ativo" options={[
-          { value: "false", label: "Desativado"  },
-          { value: "true", label: "Ativado" },
+        <Col><Select label={t("companies.is_active")} options={[
+          { value: "false", label: t("status.disabled") },
+          { value: "true", label: t("status.enabled") },
         ]} /></Col>
       </Row>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-        <Button variant="ghost" type="button" onClick={onCancel}>Cancelar</Button>
-        <Button type="submit" disabled={!canSave}>Salvar</Button>
+        <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
+        <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
       </div>
     </form>
   );

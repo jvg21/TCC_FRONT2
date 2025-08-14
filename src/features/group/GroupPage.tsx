@@ -10,6 +10,7 @@ import PageLayout from "../../components/common/PageLayout";
 import type { Group } from "./types";
 import { GroupForm } from "./GroupForm";
 import { useGroup } from "./useGroup";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -35,8 +36,25 @@ const GroupPage: React.FC = () => {
   const modal = useModal();
   const [editing, setEditing] = useState<Group | null>(null);
   const [query, setQuery] = useState("");
+  const { t } = useTranslation();
 
-  // Filtrar dados baseado na busca global
+  const Columns = (onEdit: (c: Group) => void, onDelete: (id: string) => void): ColumnDef<Group>[] => [
+  { key: "Name", header: t("groups.name") },
+    { key: "Description", header: t("groups.description") },
+    { key: "IsActive", header: t("groups.is_active") },
+    {
+      key: "actions",
+      header: t("actions.actions", "Ações"),
+      width: "160px",
+      render: (row) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
+          <button title={t("actions.delete")} onClick={() => onDelete(row.GroupId)}><FiTrash2 /></button>
+        </div>
+      )
+    }
+  ];
+  
   const filteredGroup = React.useMemo(() => {
     if (!query) return activeGroup;
     
@@ -78,15 +96,15 @@ const GroupPage: React.FC = () => {
   const columns = Columns(handleEdit, handleDelete);
 
   return (
-    <PageLayout title="Grupos" actions={<Button onClick={handleAdd}><FiPlus />&nbsp;Adicionar</Button>}>
+    <PageLayout title={t("groups.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("groups.add_group")}</Button>}>
       <FilterBar 
         columns={columns} 
         value={query} 
         onChange={setQuery}
-        placeholder="Buscar grupos..."
+        placeholder={t("groups.search_groups")}
       />
       <DataTable columns={columns} data={filteredGroup} />
-      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? "Editar Grupo" : "Adicionar Grupo"}>
+      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("groups.edit_group") : t("groups.add_group")}>
         <GroupForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
       </Modal>
     </PageLayout>
