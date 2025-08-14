@@ -7,5 +7,5 @@ export interface Company {
   Adress?: string;
   CreatedAt: string;
   UpdatedAt?: string;
-  IsActive?:boolean;
+  IsActive?:string;
 }

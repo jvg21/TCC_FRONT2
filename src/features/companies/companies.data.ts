@@ -20,5 +20,15 @@ export const mockCompanies: Company[] = [
     Adress: "Av. B, 456",
     IsActive: true,
     CreatedAt: new Date().toISOString()
+  },
+  {
+    CompanyId: "c2",
+    Name: "Exemplo LTDA",
+    TaxId: "98.765.432/0001-55",
+    Email: "hello@example.com",
+    Phone: "+55 21 99999-2222",
+    Adress: "Av. B, 456",
+    IsActive: true,
+    CreatedAt: new Date().toISOString()
   }
 ];

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCompanies } from "./useCompanies";
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
@@ -15,6 +15,7 @@ const Columns = (onEdit: (c: Company) => void, onDelete: (id: string) => void): 
   { key: "Name", header: "Nome" },
   { key: "TaxId", header: "CNPJ" },
   { key: "Email", header: "E-mail" },
+  { key: "IsActive", header: "IsActive" },
   {
     key: "actions",
     header: "Ações",
@@ -27,6 +28,7 @@ const Columns = (onEdit: (c: Company) => void, onDelete: (id: string) => void): 
     )
   }
 ];
+
 
 const CompaniesPage: React.FC = () => {
   const { activeCompanies, create, update, softDelete } = useCompanies();
@@ -45,7 +47,8 @@ const CompaniesPage: React.FC = () => {
         company.TaxId,
         company.Email,
         company.Phone,
-        company.Adress
+        company.Adress,
+        company.IsActive,
       ].filter(Boolean).join(" ").toLowerCase();
       
       return searchableText.includes(searchQuery);

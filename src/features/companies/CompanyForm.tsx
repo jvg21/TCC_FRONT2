@@ -3,6 +3,7 @@ import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
 import styled from "styled-components";
 import type { Company } from "./types";
+import { Select } from "../../components/common/Select";
 
 const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
 const Col = styled.div` flex:1; `;
@@ -20,6 +21,8 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   const [Email, setEmail] = useState(initial.Email ?? "");
   const [Phone, setPhone] = useState(initial.Phone ?? "");
   const [Adress, setAdress] = useState(initial.Adress ?? "");
+  const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
+
 
   useEffect(() => {
     setName(initial.Name ?? "");
@@ -27,6 +30,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     setEmail(initial.Email ?? "");
     setPhone(initial.Phone ?? "");
     setAdress(initial.Adress ?? "");
+    setIsActive(initial.IsActive ?? "");
   }, [initial]);
 
   const canSave = Name.trim().length > 0;
@@ -34,7 +38,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
-    onSave({ Name, TaxId, Email, Phone, Adress });
+    onSave({ Name, TaxId, Email, Phone, Adress, IsActive });
   };
 
   return (
@@ -49,6 +53,12 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
       <Row>
         <Col><Input label="Telefone" value={Phone} onChange={(e) => setPhone(e.target.value)} /></Col>
         <Col><Input label="Endereço" value={Adress} onChange={(e) => setAdress(e.target.value)} /></Col>
+      </Row>
+      <Row>
+        <Col><Select label="Ativo" options={[
+          { value: "false", label: "Desativado"  },
+          { value: "true", label: "Ativado" },
+        ]} /></Col>
       </Row>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>Cancelar</Button>
