@@ -4,6 +4,7 @@ import { Button } from "../../components/common/Button";
 import styled from "styled-components";
 import type { Task } from "./types";
 import { Select } from "../../components/common/Select";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -27,6 +28,7 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     const [AssigneeId, setAssigneeId] = useState(initial.AssigneeId ?? "");
     const [UserId, setUserId] = useState(initial.UserId ?? "");
     const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
+    const { t } = useTranslation();
 
 
     useEffect(() => {
@@ -51,31 +53,31 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     return (
         <form onSubmit={handleSubmit}>
             <Row>
-                <Col><Input label="Titulo" value={Title} onChange={(e) => setTitle(e.target.value)} /></Col>
+                <Col><Input label={t("tasks.title_field")} value={Title} onChange={(e) => setTitle(e.target.value)} /></Col>
             </Row>
             <Row>
-                <Col><Input label="Description" value={Description} onChange={(e) => setDescription(e.target.value)} /></Col>
+                <Col><Input label={t("tasks.description")} value={Description} onChange={(e) => setDescription(e.target.value)} /></Col>
             </Row>
             <Row>
-                    <Col><Select label="Usuário" options={[
-                      { value: "false", label: "Desativado" },
-                      { value: "true", label: "Ativado" },
-                    ]} /></Col>
-                    <Col><Select label="Responsável" options={[
-                      { value: "false", label: "Desativado" },
-                      { value: "true", label: "Ativado" },
-                    ]} /></Col>
-                  </Row>
+                <Col><Select label={t("tasks.user")} options={[
+                  { value: "false", label: t("status.disabled") },
+                  { value: "true", label: t("status.enabled") },
+                ]} /></Col>
+                <Col><Select label={t("tasks.assignee")} options={[
+                  { value: "false", label: t("status.disabled") },
+                  { value: "true", label: t("status.enabled") },
+                ]} /></Col>
+            </Row>
             
             <Row>
-                <Col><Select label="Ativo" options={[
-                    { value: "false", label: "Desativado" },
-                    { value: "true", label: "Ativado" },
+                <Col><Select label={t("tasks.is_active")} options={[
+                    { value: "false", label: t("status.disabled") },
+                    { value: "true", label: t("status.enabled") },
                 ]} /></Col>
             </Row>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                <Button variant="ghost" type="button" onClick={onCancel}>Cancelar</Button>
-                <Button type="submit" disabled={!canSave}>Salvar</Button>
+                <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
+                <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
             </div>
         </form>
     );

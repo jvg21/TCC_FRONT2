@@ -10,24 +10,7 @@ import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 import type { Company } from "./types";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
-
-const Columns = (onEdit: (c: Company) => void, onDelete: (id: string) => void): ColumnDef<Company>[] => [
-  { key: "Name", header: "Nome" },
-  { key: "TaxId", header: "CNPJ" },
-  { key: "Email", header: "E-mail" },
-  { key: "IsActive", header: "IsActive" },
-  {
-    key: "actions",
-    header: "Ações",
-    width: "160px",
-    render: (row) => (
-      <div style={{ display: "flex", gap: 8 }}>
-        <button title="Editar" onClick={() => onEdit(row)}><FiEdit /></button>
-        <button title="Excluir" onClick={() => onDelete(row.CompanyId)}><FiTrash2 /></button>
-      </div>
-    )
-  }
-];
+import { useTranslation } from "react-i18next";
 
 
 const CompaniesPage: React.FC = () => {
@@ -36,10 +19,31 @@ const CompaniesPage: React.FC = () => {
   const [editing, setEditing] = useState<Company | null>(null);
   const [query, setQuery] = useState("");
 
+  const { t } = useTranslation();
+
+  const Columns = (onEdit: (c: Company) => void, onDelete: (id: string) => void): ColumnDef<Company>[] => [
+    { key: "Name", header: t("companies.name") },
+    { key: "TaxId", header: t("companies.tax_id") },
+    { key: "Email", header: t("companies.email") },
+    { key: "IsActive", header: t("companies.is_active") },
+    {
+      key: "actions",
+      header: t("actions.actions"),
+      width: "160px",
+      render: (row) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
+          <button title={t("actions.delete")} onClick={() => onDelete(row.CompanyId)}><FiTrash2 /></button>
+        </div>
+      )
+    }
+  ];
+
+
   // Filtrar dados baseado na busca global
   const filteredCompanies = React.useMemo(() => {
     if (!query) return activeCompanies;
-    
+
     const searchQuery = query.toLowerCase();
     return activeCompanies.filter(company => {
       const searchableText = [
@@ -50,7 +54,7 @@ const CompaniesPage: React.FC = () => {
         company.Adress,
         company.IsActive,
       ].filter(Boolean).join(" ").toLowerCase();
-      
+
       return searchableText.includes(searchQuery);
     });
   }, [activeCompanies, query]);
@@ -81,15 +85,15 @@ const CompaniesPage: React.FC = () => {
   const columns = Columns(handleEdit, handleDelete);
 
   return (
-    <PageLayout title="Empresas" actions={<Button onClick={handleAdd}><FiPlus />&nbsp;Adicionar</Button>}>
-      <FilterBar 
-        columns={columns} 
-        value={query} 
+    <PageLayout title={t("companies.title")}  actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("companies.add_company")}</Button>}>
+      <FilterBar
+        columns={columns}
+        value={query}
         onChange={setQuery}
-        placeholder="Buscar empresas..."
+        placeholder={t("companies.search_companies")}
       />
       <DataTable columns={columns} data={filteredCompanies} />
-      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? "Editar Empresa" : "Adicionar Empresa"}>
+      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("companies.edit_company") : t("companies.add_company")}>
         <CompanyForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
       </Modal>
     </PageLayout>
