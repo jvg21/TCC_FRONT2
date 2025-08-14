@@ -31,7 +31,7 @@ export const DocumentForm: React.FC<Props> = ({ initial = {}, isEditing = false,
         setUserId(initial.UserId ?? "");
         setFolderId(initial.FolderId ?? "");
         setIsActive(initial.IsActive ?? "");
-    }, [initial]);
+    }, [initial.Title, initial.Content, initial.UserId, initial.FolderId, initial.IsActive]);
 
     const canSave = Title.trim().length > 0;
 

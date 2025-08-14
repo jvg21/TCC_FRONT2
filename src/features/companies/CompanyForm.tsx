@@ -5,6 +5,7 @@ import styled from "styled-components";
 import type { Company } from "./types";
 import { Select } from "../../components/common/Select";
 import { useTypedTranslation } from "../../context/LanguageContext";
+import { regexPatterns } from "../../utils/regexUtils";
 
 const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
 const Col = styled.div` flex:1; `;
@@ -18,7 +19,7 @@ type Props = {
 
 export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
-  const [TaxId, setCnpj] = useState(initial.TaxId ?? "");
+  const [TaxId, setTaxId] = useState(initial.TaxId ?? "");
   const [Email, setEmail] = useState(initial.Email ?? "");
   const [Phone, setPhone] = useState(initial.Phone ?? "");
   const [Adress, setAdress] = useState(initial.Adress ?? "");
@@ -29,17 +30,17 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   // Não reinicializa durante digitação
   useEffect(() => {
     setName(initial.Name ?? "");
-    setCnpj(initial.TaxId ?? "");
+    setTaxId(initial.TaxId ?? "");
     setEmail(initial.Email ?? "");
     setPhone(initial.Phone ?? "");
     setAdress(initial.Adress ?? "");
     setIsActive(initial.IsActive ?? "");
   }, [
-    initial.Name, 
-    initial.TaxId, 
-    initial.Email, 
-    initial.Phone, 
-    initial.Adress, 
+    initial.Name,
+    initial.TaxId,
+    initial.Email,
+    initial.Phone,
+    initial.Adress,
     initial.IsActive
   ]);
 
@@ -57,23 +58,35 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
         <Col><Input label={t("companies.name")} value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Input label={t("companies.tax_id")} value={TaxId} onChange={(e) => setCnpj(e.target.value)} /></Col>
-        <Col><Input label={t("companies.email")} value={Email} onChange={(e) => setEmail(e.target.value)} /></Col>
+        <Col><Input
+          label={t("companies.tax_id")}
+          value={TaxId}
+          onChange={(e) => setTaxId(e.target.value)}
+          regex={regexPatterns.cnpj}
+          maskFormat="99.999.999/9999-99"
+        /></Col>
+
+        <Col><Input label={t("companies.email")} value={Email} onChange={(e) => setEmail(e.target.value)}
+        regex={regexPatterns.email}
+        /></Col>
       </Row>
       <Row>
-        <Col><Input label={t("companies.phone")} value={Phone} onChange={(e) => setPhone(e.target.value)} /></Col>
+        <Col><Input label={t("companies.phone")} value={Phone} onChange={(e) => setPhone(e.target.value)}
+        regex={regexPatterns.phone}
+        maskFormat="(99)99999-9999"
+        /></Col>
         <Col><Input label={t("companies.address")} value={Adress} onChange={(e) => setAdress(e.target.value)} /></Col>
       </Row>
       <Row>
         <Col>
-          <Select 
-            label={t("companies.is_active")} 
+          <Select
+            label={t("companies.is_active")}
             value={IsActive}
             onChange={(e) => setIsActive(e.target.value)}
             options={[
               { value: "false", label: t("status.disabled") },
               { value: "true", label: t("status.enabled") },
-            ]} 
+            ]}
           />
         </Col>
       </Row>

@@ -40,7 +40,7 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         setAssigneeId(initial.AssigneeId ?? "");
         setUserId(initial.UserId ?? "");
         setIsActive(initial.IsActive ?? "");
-    }, [initial]);
+    }, [initial.Title, initial.Description, initial.DueDate, initial.Priority, initial.Status, initial.AssigneeId, initial.UserId, initial.IsActive]);
 
     const canSave = Title.trim().length > 0;
 

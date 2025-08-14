@@ -30,7 +30,7 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, isEditing = false, o
     setFolderId(initial.FolderId ?? "");
     setUserId(initial.UserId ?? "");
     setIsActive(initial.IsActive ?? "");
-  }, [initial]);
+  }, [initial.Name, initial.FolderId, initial.UserId, initial.IsActive]);
 
   const canSave = Name.trim().length > 0;
 

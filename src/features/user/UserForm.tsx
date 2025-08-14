@@ -5,6 +5,7 @@ import styled from "styled-components";
 import type { User } from "./types";
 import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
+import { regexPatterns } from "../../utils/regexUtils";
 
 
 const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
@@ -30,7 +31,7 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     setEmail(initial.Email ?? "");
     setProfile(initial.Profile ?? "");
     setIsActive(initial.IsActive ?? "");
-  }, [initial]);
+  }, [initial.Name, initial.Email, initial.Profile, initial.IsActive]);
 
   const canSave = Name.trim().length > 0;
 
@@ -47,7 +48,9 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
       </Row>
       <Row>
         <Col><Input label={t("users.profile")} value={Profile} onChange={(e) => setProfile(e.target.value)} /></Col>
-        <Col><Input label={t("users.email")} value={Email} onChange={(e) => setEmail(e.target.value)} /></Col>
+        <Col><Input label={t("users.email")} value={Email} onChange={(e) => setEmail(e.target.value)}
+        regex={regexPatterns.email}
+        /></Col>
       </Row>
       <Row>
         <Col><Select label={t("users.is_active")} options={[

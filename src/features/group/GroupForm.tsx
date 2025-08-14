@@ -29,7 +29,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
     setName(initial.Name ?? "");
     setDescription(initial.Description ?? "");
     setIsActive(initial.IsActive ?? "");
-  }, [initial]);
+  }, [initial.Name, initial.Description, initial.IsActive]);
 
   const canSave = Name.trim().length > 0;
 
