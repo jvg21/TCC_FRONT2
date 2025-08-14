@@ -10,37 +10,38 @@ import type { Folder } from "./types";
 import { FolderForm } from "./FolderForm";
 import React, { useState } from "react";
 import { useFolder } from "./useFolder";
+import { useTranslation } from "react-i18next";
 
-
-const Columns = (onEdit: (c: Folder) => void, onDelete: (id: string) => void): ColumnDef<Folder>[] => [
-  { key: "Name", header: "Nome" },
-  { key: "FolderId", header: "FolderId" },
-  { key: "UserId", header: "UserId" },
-  { key: "IsActive", header: "IsActive" },
- 
-  {
-    key: "actions",
-    header: "Ações",
-    width: "160px",
-    render: (row) => (
-      <div style={{ display: "flex", gap: 8 }}>
-        <button title="Editar" onClick={() => onEdit(row)}><FiEdit /></button>
-        <button title="Excluir" onClick={() => onDelete(row.FolderId)}><FiTrash2 /></button>
-      </div>
-    )
-  }
-];
 
 const FolderPage: React.FC = () => {
   const { activeFolder, create, update, softDelete } = useFolder();
   const modal = useModal();
-  const [editing, setEditing] = useState<Folder| null>(null);
+  const [editing, setEditing] = useState<Folder | null>(null);
   const [query, setQuery] = useState("");
+  const { t } = useTranslation();
 
-  // Filtrar dados baseado na busca global
+
+  const Columns = (onEdit: (c: Folder) => void, onDelete: (id: string) => void): ColumnDef<Folder>[] => [
+    { key: "Name", header: t("folders.name") },
+    { key: "FolderId", header: t("folders.parent_folder") },
+    { key: "UserId", header: t("folders.user") },
+    { key: "IsActive", header: t("folders.is_active") },
+    {
+      key: "actions",
+      header: t("actions.actions", "Ações"),
+      width: "160px",
+      render: (row) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
+          <button title={t("actions.delete")} onClick={() => onDelete(row.FolderId)}><FiTrash2 /></button>
+        </div>
+      )
+    }
+  ];
+
   const filteredFolder = React.useMemo(() => {
     if (!query) return activeFolder;
-    
+
     const searchQuery = query.toLowerCase();
     return activeFolder.filter(folder => {
       const searchableText = [
@@ -49,9 +50,9 @@ const FolderPage: React.FC = () => {
         folder.UserId,
         folder.IsActive,
 
-        
+
       ].filter(Boolean).join(" ").toLowerCase();
-      
+
       return searchableText.includes(searchQuery);
     });
   }, [activeFolder, query]);
@@ -82,15 +83,15 @@ const FolderPage: React.FC = () => {
   const columns = Columns(handleEdit, handleDelete);
 
   return (
-    <PageLayout title="Pastas" actions={<Button onClick={handleAdd}><FiPlus />&nbsp;Adicionar</Button>}>
-      <FilterBar 
-        columns={columns} 
-        value={query} 
+    <PageLayout title={t("folders.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("folders.add_folder")}</Button>}>
+      <FilterBar
+        columns={columns}
+        value={query}
         onChange={setQuery}
-        placeholder="Buscar pastas..."
+        placeholder={t("folders.search_folders")}
       />
       <DataTable columns={columns} data={filteredFolder} />
-      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? "Editar Pasta" : "Adicionar Pasta"}>
+      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("folders.edit_folder") : t("folders.add_folder")}>
         <FolderForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
       </Modal>
     </PageLayout>

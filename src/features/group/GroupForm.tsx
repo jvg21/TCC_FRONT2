@@ -4,6 +4,7 @@ import { Button } from "../../components/common/Button";
 import styled from "styled-components";
 import type { Group } from "./types";
 import { Select } from "../../components/common/Select";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -21,6 +22,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
   const [Name, setName] = useState(initial.Name ?? "");
   const [Description, setDescription] = useState(initial.Description ?? "");
   const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
+  const { t } = useTranslation();
 
 
   useEffect(() => {
@@ -40,26 +42,25 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
   return (
     <form onSubmit={handleSubmit}>
       <Row>
-        <Col><Input label="Nome" value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+        <Col><Input label={t("groups.name")} value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Input label="Description" value={Description} onChange={(e) => setDescription(e.target.value)} /></Col>
+        <Col><Input label={t("groups.description")} value={Description} onChange={(e) => setDescription(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Select label="Ativo" options={[
-          { value: "false", label: "Desativado" },
-          { value: "true", label: "Ativado" },
+        <Col><Select label={t("groups.is_active")} options={[
+          { value: "false", label: t("status.disabled") },
+          { value: "true", label: t("status.enabled") },
         ]} /></Col>
 
-
-        <Col><Select label="Usuario" options={[
-          { value: "false", label: "Desativado" },
-          { value: "true", label: "Ativado" },
+        <Col><Select label={t("groups.user")} options={[
+          { value: "false", label: t("status.disabled") },
+          { value: "true", label: t("status.enabled") },
         ]} /></Col>
       </Row>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-        <Button variant="ghost" type="button" onClick={onCancel}>Cancelar</Button>
-        <Button type="submit" disabled={!canSave}>Salvar</Button>
+        <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
+        <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
       </div>
     </form>
   );

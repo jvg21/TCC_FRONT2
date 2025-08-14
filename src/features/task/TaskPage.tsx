@@ -10,6 +10,7 @@ import PageLayout from "../../components/common/PageLayout";
 import type { Task } from "./types";
 import { TaskForm } from "./TaskForm";
 import { useTask } from "./useTask";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -36,15 +37,38 @@ const Columns = (onEdit: (c: Task) => void, onDelete: (id: string) => void): Col
 ];
 
 const TaskPage: React.FC = () => {
-  const {activeTask, create, update, softDelete } = useTask();
+  const { activeTask, create, update, softDelete } = useTask();
   const modal = useModal();
   const [editing, setEditing] = useState<Task | null>(null);
   const [query, setQuery] = useState("");
 
-  // Filtrar dados baseado na busca global
+  const { t } = useTranslation();
+  const Columns = (onEdit: (c: Task) => void, onDelete: (id: string) => void): ColumnDef<Task>[] => [
+    { key: "Title", header: t("tasks.title_field") },
+    { key: "Description", header: t("tasks.description") },
+    { key: "DueDate", header: t("tasks.due_date") },
+    { key: "Priority", header: t("tasks.priority") },
+    { key: "Status", header: t("tasks.status") },
+    { key: "AssigneeId", header: t("tasks.assignee") },
+    { key: "UserId", header: t("tasks.user") },
+    { key: "IsActive", header: t("tasks.is_active") },
+    {
+      key: "actions",
+      header: t("actions.actions", "Ações"),
+      width: "160px",
+      render: (row) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
+          <button title={t("actions.delete")} onClick={() => onDelete(row.TaskId)}><FiTrash2 /></button>
+        </div>
+      )
+    }
+  ];
+
+
   const filteredTask = React.useMemo(() => {
     if (!query) return activeTask;
-    
+
     const searchQuery = query.toLowerCase();
     return activeTask.filter(task => {
       const searchableText = [
@@ -56,7 +80,7 @@ const TaskPage: React.FC = () => {
         task.AssigneeId,
         task.UserId,
       ].filter(Boolean).join(" ").toLowerCase();
-      
+
       return searchableText.includes(searchQuery);
     });
   }, [activeTask, query]);
@@ -87,15 +111,15 @@ const TaskPage: React.FC = () => {
   const columns = Columns(handleEdit, handleDelete);
 
   return (
-    <PageLayout title="Tarefas" actions={<Button onClick={handleAdd}><FiPlus />&nbsp;Adicionar</Button>}>
-      <FilterBar 
-        columns={columns} 
-        value={query} 
+    <PageLayout title={t("tasks.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("tasks.add_task")}</Button>}>
+      <FilterBar
+        columns={columns}
+        value={query}
         onChange={setQuery}
-        placeholder="Buscar tarefa..."
+        placeholder={t("tasks.search_tasks")}
       />
       <DataTable columns={columns} data={filteredTask} />
-      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? "Editar Tarefa" : "Adicionar Tarefa"}>
+      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("tasks.edit_task") : t("tasks.add_task")}>
         <TaskForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
       </Modal>
     </PageLayout>
