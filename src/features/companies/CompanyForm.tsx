@@ -23,7 +23,8 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   const [Email, setEmail] = useState(initial.Email ?? "");
   const [Phone, setPhone] = useState(initial.Phone ?? "");
   const [Adress, setAdress] = useState(initial.Adress ?? "");
-  const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
+  const [ZipCode, setZipCode] = useState(initial.ZipCode ?? "");
+  const [IsActive, setIsActive] = useState(initial.IsActive ? 'true' : 'false');
   const { t } = useTypedTranslation();
 
   // Apenas inicializa os valores quando o objeto 'initial' muda
@@ -34,13 +35,15 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     setEmail(initial.Email ?? "");
     setPhone(initial.Phone ?? "");
     setAdress(initial.Adress ?? "");
-    setIsActive(initial.IsActive ?? "");
+    setZipCode(initial.ZipCode ?? "");
+    setIsActive(initial.IsActive ? 'true' : 'false');
   }, [
     initial.Name,
     initial.TaxId,
     initial.Email,
     initial.Phone,
     initial.Adress,
+    initial.ZipCode,
     initial.IsActive
   ]);
 
@@ -49,7 +52,10 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
-    onSave({ Name, TaxId, Email, Phone, Adress, IsActive });
+
+    const formattedIsActive = IsActive === "true";
+
+    onSave({ Name, TaxId, Email, Phone, Adress, ZipCode, IsActive: formattedIsActive });
   };
 
   return (
@@ -67,25 +73,31 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
         /></Col>
 
         <Col><Input label={t("companies.email")} value={Email} onChange={(e) => setEmail(e.target.value)}
-        regex={regexPatterns.email}
+          regex={regexPatterns.email}
         /></Col>
       </Row>
       <Row>
         <Col><Input label={t("companies.phone")} value={Phone} onChange={(e) => setPhone(e.target.value)}
-        regex={regexPatterns.phone}
-        maskFormat="(99)99999-9999"
+          regex={regexPatterns.phone}
+          maskFormat="+99 (99) 99999-9999"
         /></Col>
         <Col><Input label={t("companies.address")} value={Adress} onChange={(e) => setAdress(e.target.value)} /></Col>
       </Row>
       <Row>
+
+        <Col><Input label={t("companies.zipcode")} value={ZipCode} onChange={(e) => setZipCode(e.target.value)}
+          regex={regexPatterns.cep}
+          maskFormat="99999-999"
+        /></Col>
+
         <Col>
           <Select
             label={t("companies.is_active")}
             value={IsActive}
             onChange={(e) => setIsActive(e.target.value)}
             options={[
-              { value: "false", label: t("status.disabled") },
               { value: "true", label: t("status.enabled") },
+              { value: "false", label: t("status.disabled") },
             ]}
           />
         </Col>

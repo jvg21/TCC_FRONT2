@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useCompanies } from "./useCompanies";
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
@@ -12,16 +12,14 @@ import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { useTranslation } from "react-i18next";
 
-
 const CompaniesPage: React.FC = () => {
-  const { activeCompanies, create, update, softDelete } = useCompanies();
+  const { activeCompanies, query, setQuery, create, update, softDelete } = useCompanies();
   const modal = useModal();
   const [editing, setEditing] = useState<Company | null>(null);
-  const [query, setQuery] = useState("");
 
   const { t } = useTranslation();
 
-  const Columns = (onEdit: (c: Company) => void, onDelete: (id: string) => void): ColumnDef<Company>[] => [
+  const Columns = (onEdit: (c: Company) => void, onToggleStatus: (id: number) => void): ColumnDef<Company>[] => [
     { key: "Name", header: t("companies.name") },
     { key: "TaxId", header: t("companies.tax_id") },
     { key: "Email", header: t("companies.email") },
@@ -32,13 +30,19 @@ const CompaniesPage: React.FC = () => {
       width: "160px",
       render: (row) => (
         <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
-          <button title={t("actions.delete")} onClick={() => onDelete(row.CompanyId)}><FiTrash2 /></button>
+          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
+            <FiEdit />
+          </button>
+          <button 
+            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")} 
+            onClick={() => onToggleStatus(row.CompanyId)}
+          >
+            <FiTrash2 />
+          </button>
         </div>
       )
     }
   ];
-
 
   // Filtrar dados baseado na busca global
   const filteredCompanies = React.useMemo(() => {
@@ -69,23 +73,40 @@ const CompaniesPage: React.FC = () => {
     modal.open();
   };
 
-  const handleSave = (payload: any) => {
-    if (editing) {
-      update(editing.CompanyId, payload);
-    } else {
-      create(payload);
+  const handleSave = async (payload: any) => {
+    try {
+      if (editing) {
+        await update(editing.CompanyId, payload);
+      } else {
+        await create(payload);
+      }
+      modal.close();
+    } catch (error) {
+      // Error já é tratado no hook useCompanies
+      console.error("Erro ao salvar empresa:", error);
     }
-    modal.close();
   };
 
-  const handleDelete = (id: string) => {
-    softDelete(id);
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await softDelete(id);
+    } catch (error) {
+      // Error já é tratado no hook useCompanies
+      console.error("Erro ao alterar status da empresa:", error);
+    }
   };
 
-  const columns = Columns(handleEdit, handleDelete);
+  const columns = Columns(handleEdit, handleToggleStatus);
 
   return (
-    <PageLayout title={t("companies.title")}  actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("companies.add_company")}</Button>}>
+    <PageLayout 
+      title={t("companies.title")} 
+      actions={
+        <Button onClick={handleAdd}>
+          <FiPlus />&nbsp;{t("companies.add_company")}
+        </Button>
+      }
+    >
       <FilterBar
         columns={columns}
         value={query}
@@ -93,8 +114,16 @@ const CompaniesPage: React.FC = () => {
         placeholder={t("companies.search_companies")}
       />
       <DataTable columns={columns} data={filteredCompanies} />
-      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("companies.edit_company") : t("companies.add_company")}>
-        <CompanyForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
+      <Modal 
+        isOpen={modal.isOpen} 
+        onClose={modal.close} 
+        title={editing ? t("companies.edit_company") : t("companies.add_company")}
+      >
+        <CompanyForm 
+          initial={editing ?? undefined} 
+          onCancel={modal.close} 
+          onSave={handleSave} 
+        />
       </Modal>
     </PageLayout>
   );

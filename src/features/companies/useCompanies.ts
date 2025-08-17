@@ -1,67 +1,206 @@
-import { useState, useMemo } from "react";
-import { mockCompanies } from "./companies.data";
+import { useState, useMemo, useEffect } from "react";
 import type { Company } from "./types";
+import { getCookie } from "../../utils/Cookies";
+import type { ApiResponse } from "../../types";
+import { notificationActions } from "../notifications/useNotification";
 
 export const useCompanies = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [query, setQuery] = useState("");
-  const API_URL = "https://localhost:7198";
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJndWlsaGVybWUiLCJyb2xlIjoiMSIsIkNvbXBhbnlJZCI6IjEiLCJHcm91cHNJZHMiOiIiLCJGb2xkZXJzSWRzIjoiIiwibmJmIjoxNzU1MTI0MTAwLCJleHAiOjE3NTUxNTI5MDAsImlhdCI6MTc1NTEyNDEwMH0.S6_eh51hHNgzUmWYtJLo83L1IRSjeyBKEh1CoaB8ud0"
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const token = getCookie('authToken') || "";
 
   const activeCompanies = useMemo(() => {
-    return companies.filter((c) => !c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
+    return companies.filter((c) => c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
   }, [companies, query]);
 
+  const transformApiDataToPascalCase = (apiData: any[]): Company[] => {
+    return apiData.map(item => ({
+      CompanyId: item.companyId,
+      Name: item.name,
+      TaxId: item.taxId,
+      Phone: item.phone,
+      Email: item.email,
+      Adress: item.adress,
+      ZipCode: item.zipCode,
+      IsActive: item.isActive,
+      CreatedAt: item.createdAt,
+      UpdatedAt: item.updatedAt
+    }));
+  };
 
-  const get = async () => { 
+  const get = async () => {
     try {
-      const response = await fetch(`${API_URL}/Company/GetListCompanies`, {
+      const response = await fetch(`${apiUrl}/Company/GetListCompanies`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
       });
-  
-      if (!response.erro) {
-        throw new Error(`Erro HTTP: ${response.status}`);
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
       }
-  
-      const data: Company[] = await response.objeto.json();
-      setCompanies(data); 
-      return data; 
+
+      const transformedCompanies = transformApiDataToPascalCase(data.objeto);
+      setCompanies(transformedCompanies);
+      return data;
     } catch (err) {
       console.error("Erro ao buscar empresas:", err);
-      throw err; 
+      throw err;
     }
-  }
-
-    
-  
-
-
-  const create = (payload: Omit<Company, "CompanyId" | "CreatedAt" | "UpdatedAt" | "IsActive">) => {
-    const newCompany: Company = {
-      ...payload,
-      CompanyId: '1',
-      CreatedAt: new Date().toISOString(),
-      IsActive: false
-    };
-    setCompanies((s) => [newCompany, ...s]);
-    return newCompany;
   };
 
-  const update = (id: string, updates: Partial<Company>) => {
-    setCompanies((s) => s.map((c) => c.CompanyId === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c));
+  const transformSingleApiData = (item: any): Company => ({
+    CompanyId: item.companyId,
+    Name: item.name,
+    TaxId: item.taxId,
+    Phone: item.phone,
+    Email: item.email,
+    Adress: item.adress,
+    ZipCode: item.zipCode,
+    IsActive: item.isActive,
+    CreatedAt: item.createdAt,
+    UpdatedAt: item.updatedAt
+  });
+
+  const getById = async (companyId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/Company/GetCompaniesById/${companyId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      return { ...data, objeto: transformSingleApiData(data.objeto) };
+    } catch (err) {
+      console.error("Erro ao buscar empresa:", err);
+      throw err;
+    }
   };
 
-  const softDelete = (id: string) => {
-    setCompanies((s) => s.map((c) => c.CompanyId === id ? { ...c, isDeleted: true } : c));
+  const transformPayloadToCamelCase = (payload: any) => ({
+    name: payload.Name,
+    taxId: payload.TaxId,
+    phone: payload.Phone,
+    email: payload.Email,
+    adress: payload.Adress,
+    zipCode: payload.ZipCode,
+    isActive: payload.IsActive || true
+  });
+
+  const create = async (payload: Omit<Company, "CompanyId" | "CreatedAt" | "UpdatedAt" | "IsActive">) => {
+    try {
+      const camelCasePayload = transformPayloadToCamelCase(payload);
+
+      camelCasePayload.email = camelCasePayload.email.toLowerCase();
+      camelCasePayload.phone = camelCasePayload.phone.replace(/\D/g, "");
+
+      console.log(camelCasePayload)
+
+      const response = await fetch(`${apiUrl}/Company/AddCompany`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(camelCasePayload)
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      const newCompany: Company = transformSingleApiData(data.objeto);
+      setCompanies((s) => [newCompany, ...s]);
+      notificationActions.showNotification("Status da empresa alterado com sucesso!", 'success');
+      return data;
+    } catch (err) {
+      console.error("Erro ao criar empresa:", err);
+      throw err;
+    }
   };
 
-  const restore = (id: string) => {
-    setCompanies((s) => s.map((c) => c.CompanyId === id ? { ...c, isDeleted: false } : c));
+  const update = async (id: number, updates: Partial<Company>) => {
+    try {
+      const camelCasePayload = {
+        companyId: id,
+        ...transformPayloadToCamelCase(updates)
+      };
+
+      const response = await fetch(`${apiUrl}/Company/UpdateCompany`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(camelCasePayload)
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      const updatedCompany: Company = transformSingleApiData(data.objeto);
+      setCompanies((s) => s.map((c) => c.CompanyId === id ? updatedCompany : c));
+      notificationActions.showNotification("Status da empresa alterado com sucesso!", 'success');
+      return data;
+    } catch (err) {
+      console.error("Erro ao atualizar empresa:", err);
+      throw err;
+    }
   };
+
+  const softDelete = async (companyId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/Company/ToggleStatusCompany/${companyId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      const updatedCompany: Company = transformSingleApiData(data.objeto);
+      setCompanies((s) => s.map((c) => c.CompanyId === companyId ? updatedCompany : c));
+      notificationActions.showNotification("Status da empresa alterado com sucesso!", 'success');
+      return data;
+    } catch (err) {
+      console.error("Erro ao alterar status da empresa:", err);
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    if (token) get();
+  }, [token]);
 
   return {
     companies,
@@ -71,7 +210,7 @@ export const useCompanies = () => {
     create,
     update,
     get,
-    softDelete,
-    restore
+    getById,
+    softDelete
   } as const;
 };

@@ -7,7 +7,7 @@ export const regexPatterns = {
   cpf: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
 
   // Telefone: (00) 00000-0000 ou (00) 0000-0000
-  phone: /^\(\d{2}\)\s\d{4,5}-\d{4}$/,
+  phone: /^\+\d{2}\s\(\d{2}\)\s\d{4,5}-\d{4}$/,
 
   // CEP: 00000-000
   cep: /^\d{5}-\d{3}$/,

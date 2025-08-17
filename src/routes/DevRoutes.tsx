@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
-import { AuthRoutes } from "./AuthRoutes";
+import { ProtectedRoutes } from "./ProtectedRoutes";
 
 export const DevRoutes: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuthContext();
@@ -9,5 +9,5 @@ export const DevRoutes: React.FC<{ children: React.ReactNode }> = ({ children })
     return <Navigate to="/dashboard" replace />;
   }
 
-  return <AuthRoutes>{children}</AuthRoutes>;
+  return <ProtectedRoutes>{children}</ProtectedRoutes>;
 };

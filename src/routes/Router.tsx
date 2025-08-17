@@ -4,7 +4,6 @@ import DocumentPage from "../features/document/DocumentPage"
 import TaskPage from "../features/task/TaskPage"
 import FolderPage from "../features/folder/FolderPage"
 import GroupPage from "../features/group/GroupPage"
-import UserPage from "../features/user/UserPage"
 import CompaniesPage from "../features/companies/CompaniesPage"
 import DashboardPage from "../features/dashboard/DashboardPage"
 import ResetTokenPage from "../features/login/ResetTokenPage"
@@ -48,11 +47,11 @@ export const AppRoutes = () => {
                 </DevRoutes>
             } />
 
-            <Route path="/user" element={
+            {/* <Route path="/user" element={
                 <AdmRoutes>
                     <UserPage />
                 </AdmRoutes>
-            } />
+            } /> */}
 
             <Route path="/group" element={
                 <AdmRoutes>

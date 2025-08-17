@@ -1,5 +1,5 @@
 export interface Company {
-  CompanyId: string;
+  CompanyId: number;
   Name: string;
   TaxId?: string;
   Email?: string;
@@ -7,5 +7,6 @@ export interface Company {
   Adress?: string;
   CreatedAt: string;
   UpdatedAt?: string;
-  IsActive?:string;
+  ZipCode?: string;
+  IsActive?:boolean;
 }
