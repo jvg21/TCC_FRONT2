@@ -136,7 +136,6 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       await login(email, password);
-      console.log("✅ Login deu certo, navegando...");
       navigate("/");
     } catch (error) {
       console.error("Login failed:", error);

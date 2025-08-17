@@ -1,7 +1,6 @@
-import { t } from "i18next";
 import type { ApiResponse } from "../../types";
-import { getNotificationStore } from "../notifications/useNotification";
-import { eraseCookie, getCookie, setCookie } from "../../utils/Cookies";
+import { notificationActions } from "../notifications/useNotification";
+import { eraseCookie,  setCookie } from "../../utils/Cookies";
 import { useAuthContext } from "../../context/AuthContext";
 
 export const useLogin = () => {
@@ -21,33 +20,29 @@ export const useLogin = () => {
             const data: ApiResponse = await response.json();
 
             if (data.erro || !data.objeto?.token || !data.objeto) {
-                getNotificationStore().showError(t(data.mensagem) || t('login.error'));
-                throw new Error(t(data.mensagem) || t('login.error'));
+                notificationActions.showError(data.mensagem || 'Erro no login');
+                throw new Error(data.mensagem || 'Erro no login');
             }
-            // Adicionar após setCookie('authToken', data.objeto.token);
 
-            console.log('Token salvo no cookie');
-            console.log('Verificando cookie imediatamente:', getCookie('authToken') ? 'OK' : 'FALHOU');
-
-
+            // console.log('Token salvo no cookie');
+            // console.log('Verificando cookie imediatamente:', getCookie('authToken') ? 'OK' : 'FALHOU');
             setCookie('authToken', data.objeto.token);
-            getNotificationStore().showNotification(t(data.mensagem) || 'Login realizado com sucesso', 'success');
+            notificationActions.showNotification(data.mensagem || 'Login realizado com sucesso!', 'success');
             setIsAuthenticated(true);
             return data.objeto;
 
         } catch (error) {
             console.error('Login error:', error);
             if (error instanceof Error) {
-                getNotificationStore().showError(t(error.message));
+                notificationActions.showError(error.message);
             }
-
             throw error;
         }
     }
 
     function logout() {
         eraseCookie('authToken');
-        getNotificationStore().showNotification(t('logout_message'), "info");
+        notificationActions.showNotification('Logout realizado com sucesso', "info");
         setIsAuthenticated(false);
     }
 
@@ -64,23 +59,20 @@ export const useLogin = () => {
             const data: ApiResponse = await response.json();
 
             if (data.erro) {
-                getNotificationStore().showError(t(data.mensagem) || t('login.resetError'));
-                throw new Error(t(data.mensagem) || t('login.resetError'));
+                notificationActions.showError(data.mensagem || 'Erro ao solicitar recuperação');
+                throw new Error(data.mensagem || 'Erro ao solicitar recuperação');
             }
 
-            getNotificationStore().showNotification(t(data.mensagem) || 'Login realizado com sucesso', 'success');
+            notificationActions.showNotification(data.mensagem || 'E-mail de recuperação enviado!', 'success');
             return data.objeto;
 
-
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('Reset password error:', error);
             if (error instanceof Error) {
-                getNotificationStore().showError(t(error.message));
+                notificationActions.showError(error.message);
             }
-
             throw error;
         }
-
     }
 
     return {

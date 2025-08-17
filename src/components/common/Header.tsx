@@ -6,6 +6,7 @@ import { LanguageSelector } from "../../context/LanguageContext";
 import { useLogin } from "../../features/login/useLogin";
 import { useNavigate } from "react-router-dom";
 
+
 const Wrap = styled.header`
   padding: ${({ theme }) => theme.spacing.md};
   display: flex; 
@@ -26,21 +27,21 @@ const Header: React.FC = () => {
   const { logout } = useLogin();
   const navigate = useNavigate();
 
-  const handleLogout = ()=>{
+  const handleLogout = () => {
     logout()
     navigate('/login', { replace: true });
   }
-  
+
   return (
     <Wrap>
       <ControlsGroup>
         {/* Seletor de Idioma */}
-        <LanguageSelector 
-          variant="minimal" 
-          showFlag={true} 
+        <LanguageSelector
+          variant="minimal"
+          showFlag={true}
           showLabel={false}
         />
-        
+
         {/* Toggle de Tema */}
         <Button variant="ghost" onClick={toggleTheme}>
           {themeName === "light" ? "Dark" : "Light"} Mode

@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
+
 
 const Wrap = styled.aside`
   background: ${({ theme }) => theme.colors.surface};
@@ -10,14 +12,29 @@ const Wrap = styled.aside`
 `;
 
 const Sidebar: React.FC = () => {
+  const { user } = useAuthContext();
+
   return (
     <Wrap>
       <nav style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         <Link to="/">Home</Link>
-        <Link to="/companies">Empresas</Link>
-        <Link to="/user">Usuários</Link>
-        <Link to="/group">Grupos</Link>
-        <Link to="/folder">Pastas</Link>
+
+        {
+          user && user.Profile === 1 && (
+            <Link to="/companies">Empresas</Link>
+
+          )
+        }
+        {
+          user && user.Profile <= 2 && (
+            <>
+              <Link to="/user">Usuários</Link>
+              <Link to="/group">Grupos</Link>
+              <Link to="/folder">Pastas</Link>
+            </>
+
+          )
+        }
         <Link to="/task">Tarefas</Link>
         <Link to="/document">Documentos</Link>
 
