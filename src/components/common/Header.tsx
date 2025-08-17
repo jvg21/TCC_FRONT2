@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useThemeContext } from "../../contexts/ThemeContext";
+import { useThemeContext } from "../../context/ThemeContext";
 import { Button } from "../common/Button";
 import { LanguageSelector } from "../../context/LanguageContext";
 

@@ -1,10 +1,10 @@
 export interface User {
-    UserId: string;
+    UserId: number;
     Name: string;
     Email: string;
-    Profile: string;
+    Profile: number;
     Phone?: string;
-    CompanyId?: string;
+    CompanyId?: number;
     CreatedAt?: string;
     UpdatedAt?: string;
     IsActive?: string;
