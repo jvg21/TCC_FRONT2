@@ -134,26 +134,24 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    try{
-      await login(email,password)
-      navigate('/');
-
-    }catch (error) {
-      console.error('Login failed:', error);
-    }finally{
+    try {
+      await login(email, password);
+      console.log("✅ Login deu certo, navegando...");
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+    } finally {
       setIsLoading(false);
-      // setEmail("");
-      // setPassword("");
     }
- 
   };
+
 
   const canSubmit = email.trim().length > 0 && password.length > 0;
 
   return (
     <Container>
-      <ThemeSelector/>
-      
+      <ThemeSelector />
+
       <LoginCard>
         <Logo>
           <LogoText>Documentin</LogoText>

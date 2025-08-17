@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import CompaniesPage from "./features/companies/CompaniesPage";
-import PageLayout from "./components/common/PageLayout";
 import UserPage from "./features/user/UserPage";
 import GroupPage from "./features/group/GroupPage";
 import LoginPage from "./features/login/LoginPage";
@@ -12,6 +11,7 @@ import RecoverPasswordPage from "./features/login/ResetPassword";
 import ResetTokenPage from "./features/login/ResetTokenPage";
 import { AuthProvider, useAuthContext } from "./context/AuthContext";
 import { Notification } from "./components/lib/Notification";
+import DashboardPage from "./features/dashboard/DashboardPage";
 
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -24,18 +24,42 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
+const AuthRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useAuthContext();
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Routes>
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/resetpassword" element={<RecoverPasswordPage />} />
-        <Route path="/resettokenpage" element={<ResetTokenPage />} />
+        <Route path="/login" element={
+          <AuthRoute>
+            <LoginPage />
+          </AuthRoute>}
+        />
+        <Route path="/resetpassword" element={
+          <AuthRoute>
+            <RecoverPasswordPage />
+          </AuthRoute>
+        } />
+        <Route path="/resettokenpage" element={
+          <AuthRoute>
+            <ResetTokenPage />
+          </AuthRoute>
+        } />
 
+        // PROTECTED ROUTES
+        
         <Route path="/" element={
           <ProtectedRoute>
-            <PageLayout title="Dashboard"><div>Home</div></PageLayout>
+            <DashboardPage/>
           </ProtectedRoute>
         }
         />
@@ -69,14 +93,14 @@ const App: React.FC = () => {
           <ProtectedRoute>
             <TaskPage />
           </ProtectedRoute>
-          } />
-        
+        } />
+
         <Route path="/document" element={
           <ProtectedRoute>
             <DocumentPage />
           </ProtectedRoute>
-          } />
-        
+        } />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Notification />
