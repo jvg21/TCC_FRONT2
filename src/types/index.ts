@@ -4,3 +4,9 @@ export interface ColumnDef<T> {
   render?: (row: T) => React.ReactNode;
   width?: string;
 }
+
+export interface ApiResponse {
+  mensagem: string;
+  objeto: any;
+  erro: boolean;
+}

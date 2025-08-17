@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
-import { useThemeContext } from "../../contexts/ThemeContext";
-import { FiMail, FiSun, FiMoon } from "react-icons/fi";
+import { ThemeSelector } from "../../components/common/ThemeSelector";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -78,9 +77,6 @@ const StyledInput = styled(Input)`
   }
 `;
 
-
-
-
 const SendButton = styled(Button)`
   height: 48px;
   font-size: 16px;
@@ -91,28 +87,6 @@ const SendButton = styled(Button)`
   &:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 8px 20px ${({ theme }) => theme.colors.primary}40;
-  }
-`;
-
-const ThemeToggle = styled.button`
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: ${({ theme }) => theme.colors.text};
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -133,8 +107,7 @@ const Footer = styled.div`
   }
 `;
 
-  export const RecoverPasswordPage: React.FC = () => {
-  const { toggleTheme, themeName } = useThemeContext();
+export const RecoverPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -152,9 +125,7 @@ const Footer = styled.div`
 
   return (
     <Container>
-      <ThemeToggle onClick={toggleTheme} type="button">
-        {themeName === "light" ? <FiMoon size={20} /> : <FiSun size={20} />}
-      </ThemeToggle>
+      <ThemeSelector />
 
       <Card>
         <Logo>

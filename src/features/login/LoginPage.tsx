@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
-import { useThemeContext } from "../../contexts/ThemeContext";
-import { FiEye, FiEyeOff, FiUser, FiLock, FiSun, FiMoon } from "react-icons/fi";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { ThemeSelector } from "../../components/common/ThemeSelector";
+import { useLogin } from "./useLogin";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -96,21 +98,6 @@ const RememberForgot = styled.div`
   margin: -8px 0 8px 0;
 `;
 
-const CheckboxGroup = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.text};
-  cursor: pointer;
-`;
-
-const Checkbox = styled.input`
-  width: 16px;
-  height: 16px;
-  accent-color: ${({ theme }) => theme.colors.primary};
-`;
-
 const ForgotLink = styled.a`
   font-size: 14px;
   color: ${({ theme }) => theme.colors.primary};
@@ -135,88 +122,36 @@ const LoginButton = styled(Button)`
   }
 `;
 
-const ThemeToggle = styled.button`
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: ${({ theme }) => theme.colors.text};
-  transition: all 0.2s ease;
-  
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const Divider = styled.div`
-  margin: 24px 0;
-  text-align: center;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: rgba(0, 0, 0, 0.08);
-  }
-  
-  span {
-    background: ${({ theme }) => theme.colors.surface};
-    padding: 0 16px;
-    color: ${({ theme }) => theme.colors.muted};
-    font-size: 14px;
-  }
-`;
-
-const Footer = styled.div`
-  text-align: center;
-  margin-top: 24px;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.muted};
-`;
-
-const LoginPage: React.FC = () => {
-  const { toggleTheme, themeName } = useThemeContext();
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { login } = useLogin();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
-    
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await login(email, password);
+      console.log("✅ Login deu certo, navegando...");
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+    } finally {
       setIsLoading(false);
-      console.log("Login attempt:", { email, password, rememberMe });
-      // Here you would handle the actual login logic
-    }, 1500);
+    }
   };
+
 
   const canSubmit = email.trim().length > 0 && password.length > 0;
 
   return (
     <Container>
-      <ThemeToggle onClick={toggleTheme} type="button">
-        {themeName === "light" ? <FiMoon size={20} /> : <FiSun size={20} />}
-      </ThemeToggle>
-      
+      <ThemeSelector />
+
       <LoginCard>
         <Logo>
           <LogoText>Documentin</LogoText>
@@ -251,15 +186,7 @@ const LoginPage: React.FC = () => {
           </InputGroup>
 
           <RememberForgot>
-            <CheckboxGroup>
-              <Checkbox
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              Lembrar de mim
-            </CheckboxGroup>
-            <ForgotLink>Esqueceu a senha?</ForgotLink>
+            <ForgotLink href="/resetpassword" >Esqueceu a senha?</ForgotLink>
           </RememberForgot>
 
           <LoginButton

@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
-import { useThemeContext } from "../../contexts/ThemeContext";
-import { FiMail, FiSun, FiMoon } from "react-icons/fi";
+import { ThemeSelector } from "../../components/common/ThemeSelector";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -134,7 +133,6 @@ const Footer = styled.div`
 `;
 
   export const ResetTokenPage: React.FC = () => {
-  const { toggleTheme, themeName } = useThemeContext();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -152,9 +150,7 @@ const Footer = styled.div`
 
   return (
     <Container>
-      <ThemeToggle onClick={toggleTheme} type="button">
-        {themeName === "light" ? <FiMoon size={20} /> : <FiSun size={20} />}
-      </ThemeToggle>
+        <ThemeSelector/>
 
       <Card>
         <Logo>

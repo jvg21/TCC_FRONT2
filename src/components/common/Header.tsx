@@ -1,8 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { useThemeContext } from "../../contexts/ThemeContext";
+import { useThemeContext } from "../../context/ThemeContext";
 import { Button } from "../common/Button";
 import { LanguageSelector } from "../../context/LanguageContext";
+import { useLogin } from "../../features/login/useLogin";
+import { useNavigate } from "react-router-dom";
 
 const Wrap = styled.header`
   padding: ${({ theme }) => theme.spacing.md};
@@ -21,6 +23,13 @@ const ControlsGroup = styled.div`
 
 const Header: React.FC = () => {
   const { toggleTheme, themeName } = useThemeContext();
+  const { logout } = useLogin();
+  const navigate = useNavigate();
+
+  const handleLogout = ()=>{
+    logout()
+    navigate('/login', { replace: true });
+  }
   
   return (
     <Wrap>
@@ -35,6 +44,9 @@ const Header: React.FC = () => {
         {/* Toggle de Tema */}
         <Button variant="ghost" onClick={toggleTheme}>
           {themeName === "light" ? "Dark" : "Light"} Mode
+        </Button>
+        <Button variant="ghost" onClick={handleLogout}>
+          Logout
         </Button>
       </ControlsGroup>
     </Wrap>
