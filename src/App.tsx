@@ -1,6 +1,6 @@
 import React from "react";
 
-import { AuthProvider, useAuthContext } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import { Notification } from "./components/lib/Notification";
 import { AppRoutes } from "./routes/Router";
 
