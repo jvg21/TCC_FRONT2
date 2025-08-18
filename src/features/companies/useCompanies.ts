@@ -12,11 +12,11 @@ export const useCompanies = () => {
   const token = getCookie('authToken') || "";
 
   const activeCompanies = useMemo(() => {
-    return companies.filter((c) => c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
-  }, [companies, query]);
+    return companies.filter((c) => c.IsActive);
+  }, [companies]);
 
   const deactiveCompanies = useMemo(() => {
-    return companies.filter((c) => !c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
+    return companies.filter((c) => !c.IsActive);
   }, [companies, query]);
 
   const transformApiDataToPascalCase = (apiData: any[]): Company[] => {

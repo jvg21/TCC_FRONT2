@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
           )
         }
         {
-          user && user.Profile <= 2 && (
+          user && user.Profile <= 2 &&  user.Profile > 0 &&(
             <>
               <Link to="/user">Usuários</Link>
               <Link to="/group">Grupos</Link>

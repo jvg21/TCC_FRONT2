@@ -36,6 +36,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     setPhone(initial.Phone ?? "");
     setAdress(initial.Adress ?? "");
     setZipCode(initial.ZipCode ?? "");
+    /// modificado para tratar IsActive como string -------------------------------------------
     setIsActive(initial.IsActive ? 'true' : 'false');
   }, [
     initial.Name,
@@ -47,6 +48,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     initial.IsActive
   ]);
 
+  // nova função para validar os campos -------------------------------------------
   const validateFields = () => {
     const isNameValid = Name.trim().length > 0;
     const isTaxIdValid = !!TaxId && regexPatterns.cnpj.test(TaxId);
@@ -63,6 +65,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     return isNameValid && isTaxIdValid && isEmailValid && isPhoneValid && isZipCodeValid;
   };
 
+  // aplica a nova função de validação no botão de salvar -------------------------------------------
   const canSave = validateFields();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -75,9 +78,10 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   };
 
   return (
+    //adicionar maxLength, minLength e required nos campos -------------------------------------------
     <form onSubmit={handleSubmit}>
       <Row>
-        <Col><Input label={t("companies.name")} maxLength={25} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+        <Col><Input label={t("companies.name")} maxLength={25} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
         <Col><Input

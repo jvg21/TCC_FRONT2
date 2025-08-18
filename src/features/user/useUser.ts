@@ -1,49 +1,44 @@
-// import { useState, useMemo } from "react";
-// import type { User } from "./types";
+import { useState, useMemo } from "react";
+import type { User } from "./types";
 
+export const useUser = () => {
+  const [user, setUser] = useState<User[]>(() => []);
+  const [query, setQuery] = useState("");
 
+  const activeUser = useMemo(() => {
+    return user.filter((c) => !c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
+  }, [user, query]);
 
+  const create = (payload: Omit<User, "CreatedAt" | "UpdatedAt" | "IsActive"| "PreferredLanguage" | "PreferredTheme" | "Password" | "LastLoginAt" | "CompanyId"> ) => {
+    const newUser: User = {
+      ...payload,
+      UserId: 1,
+      CreatedAt: new Date().toISOString(),
+    };
+    setUser((s) => [newUser, ...s]);
+    return newUser;
+  };
 
+  const update = (id: number, updates: Partial<User>) => {
+    setUser((s) => s.map((c) => c.UserId === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c));
+  };
 
-// export const useUser = () => {
-//   const [user, setUser] = useState<User[]>(() => [...mockUser]);
-//   const [query, setQuery] = useState("");
+  const softDelete = (id: number) => {
+    setUser((s) => s.map((c) => c.UserId === id ? { ...c, isDeleted: true } : c));
+  };
 
-//   const activeUser = useMemo(() => {
-//     return user.filter((c) => !c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
-//   }, [user, query]);
+  const restore = (id: number) => {
+    setUser((s) => s.map((c) => c.UserId === id ? { ...c, isDeleted: false } : c));
+  };
 
-//   const create = (payload: Omit<User, "CreatedAt" | "UpdatedAt" | "IsActive"| "PreferredLanguage" | "PreferredTheme" | "Password" | "LastLoginAt" | "CompanyId"> ) => {
-//     const newUser: User = {
-//       ...payload,
-//       UserId: '1',
-//       CreatedAt: new Date().toISOString(),
-//       IsActive: false
-//     };
-//     setUser((s) => [newUser, ...s]);
-//     return newUser;
-//   };
-
-//   const update = (id: number, updates: Partial<User>) => {
-//     setUser((s) => s.map((c) => c.UserId === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c));
-//   };
-
-//   const softDelete = (id: number) => {
-//     setUser((s) => s.map((c) => c.UserId === id ? { ...c, isDeleted: true } : c));
-//   };
-
-//   const restore = (id: number) => {
-//     setUser((s) => s.map((c) => c.UserId === id ? { ...c, isDeleted: false } : c));
-//   };
-
-//   return {
-//     user,
-//     activeUser,
-//     query,
-//     setQuery,
-//     create,
-//     update,
-//     softDelete,
-//     restore
-//   } as const;
-// };
+  return {
+    user,
+    activeUser,
+    query,
+    setQuery,
+    create,
+    update,
+    softDelete,
+    restore
+  } as const;
+};
