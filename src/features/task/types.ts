@@ -10,5 +10,5 @@ export interface Task {
     AssigneeId?: string;
     UserId?: string;
     ParentTaskId?: string;
-    IsActive?: string;
+    IsActive?: boolean;
   }

@@ -23,22 +23,41 @@ const UserPage: React.FC = () => {
 
   const { t } = useTranslation();
   const Columns = (onEdit: (c: User) => void, onDelete: (id: number) => void): ColumnDef<User>[] => [
-    { key: "Name", header: t("users.name") },
-    { key: "Profile", header: t("users.profile") },
-    { key: "Email", header: t("users.email") },
-    { key: "IsActive", header: t("users.is_active") },
+    { key: "Name", header: t("users.name"), render: (row) => row.Name || "-" },
+    { key: "Profile", header: t("users.profile"), render: (row) => row.Profile || "-" },
+    { key: "Email", header: t("users.email"), render: (row) => row.Email || "-" },
+    {
+      key: "IsActive",
+      header: t("companies.is_active"),
+      // Renderiza o status com cores -------------------------------------------
+      render: (row) => (
+        <span style={{
+          color: row.IsActive ? '#28a745' : '#dc3545',
+          fontWeight: 'bold'
+        }}>
+          {row.IsActive ? t("status.enabled") : t("status.disabled")}
+        </span>
+      )
+    },
 
     {
-      key: "actions",
-      header: t("actions.actions", "Ações"),
-      width: "160px",
-      render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
-          <button title={t("actions.delete")} onClick={() => onDelete(row.UserId)}><FiTrash2 /></button>
-        </div>
-      )
-    }
+          key: "actions",
+          header: t("actions.actions"),
+          width: "160px",
+          render: (row) => (
+            <div style={{ display: "flex", gap: 8 }}>
+              <button title={t("actions.edit")} onClick={() => onEdit(row)}>
+                <FiEdit />
+              </button>
+              <button
+                title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
+                //onClick={() => onToggleStatus(row.UserId)}
+              >
+                <FiTrash2 />
+              </button>
+            </div>
+          )
+        }
   ];
 
   // Filtrar dados baseado na busca global
@@ -48,11 +67,10 @@ const UserPage: React.FC = () => {
     const searchQuery = query.toLowerCase();
     return activeUser.filter(user => {
       const searchableText = [
-        user.Name,
-        user.Profile,
-        user.Email,
-        user.IsActive,
-      ].filter(Boolean).join(" ").toLowerCase();
+        user.Name || "",
+        user.Profile || "",
+        user.Email || "",
+      ].join(" ").toLowerCase();
 
       return searchableText.includes(searchQuery);
     });

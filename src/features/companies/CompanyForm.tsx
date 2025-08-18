@@ -81,7 +81,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     //adicionar maxLength, minLength e required nos campos -------------------------------------------
     <form onSubmit={handleSubmit}>
       <Row>
-        <Col><Input label={t("companies.name")} maxLength={25} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+        <Col><Input label={t("companies.name")} maxLength={50} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
         <Col><Input
@@ -115,6 +115,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
           <Select
             label={t("companies.is_active")}
             value={IsActive}
+            required
             onChange={(e) => setIsActive(e.target.value)}
             options={[
               { value: "true", label: t("status.enabled") },

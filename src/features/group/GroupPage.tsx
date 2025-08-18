@@ -13,24 +13,6 @@ import { useGroup } from "./useGroup";
 import { useTranslation } from "react-i18next";
 
 
-
-const Columns = (onEdit: (c: Group) => void, onDelete: (id: string) => void): ColumnDef<Group>[] => [
-  { key: "Name", header: "Nome" },
-  { key: "Description", header: "Description" },
-  { key: "IsActive", header: "IsActive" },
-  {
-    key: "actions",
-    header: "Ações",
-    width: "160px",
-    render: (row) => (
-      <div style={{ display: "flex", gap: 8 }}>
-        <button title="Editar" onClick={() => onEdit(row)}><FiEdit /></button>
-        <button title="Excluir" onClick={() => onDelete(row.GroupId)}><FiTrash2 /></button>
-      </div>
-    )
-  }
-];
-
 const GroupPage: React.FC = () => {
   const { activeGroup, create, update, softDelete } = useGroup();
   const modal = useModal();
@@ -39,32 +21,49 @@ const GroupPage: React.FC = () => {
   const { t } = useTranslation();
 
   const Columns = (onEdit: (c: Group) => void, onDelete: (id: string) => void): ColumnDef<Group>[] => [
-  { key: "Name", header: t("groups.name") },
-    { key: "Description", header: t("groups.description") },
-    { key: "IsActive", header: t("groups.is_active") },
+  { key: "Name", header: t("groups.name"), render: (row) => row.Name || "-" },
+    { key: "Description", header: t("groups.description"), render: (row) => row.Description || "-" },
     {
-      key: "actions",
-      header: t("actions.actions", "Ações"),
-      width: "160px",
+      key: "IsActive",
+      header: t("group.is_active"),
+      // Renderiza o status com cores -------------------------------------------
       render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
-          <button title={t("actions.delete")} onClick={() => onDelete(row.GroupId)}><FiTrash2 /></button>
-        </div>
+        <span style={{
+          color: row.IsActive ? '#28a745' : '#dc3545',
+          fontWeight: 'bold'
+        }}>
+          {row.IsActive ? t("status.enabled") : t("status.disabled")}
+        </span>
       )
-    }
-  ];
-  
+    },
+    {
+          key: "actions",
+          header: t("actions.actions"),
+          width: "160px",
+          render: (row) => (
+            <div style={{ display: "flex", gap: 8 }}>
+              <button title={t("actions.edit")} onClick={() => onEdit(row)}>
+                <FiEdit />
+              </button>
+              <button
+                title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
+                //onClick={() => onToggleStatus(row.CompanyId)}
+              >
+                <FiTrash2 />
+              </button>
+            </div>
+          )
+        }
+    ];
   const filteredGroup = React.useMemo(() => {
     if (!query) return activeGroup;
     
     const searchQuery = query.toLowerCase();
     return activeGroup.filter(group => {
       const searchableText = [
-        group.Name,
-        group.Description,
-        group.IsActive,
-      ].filter(Boolean).join(" ").toLowerCase();
+        group.Name || "",
+        group.Description || "",
+      ].join(" ").toLowerCase();
       
       return searchableText.includes(searchQuery);
     });

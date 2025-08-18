@@ -20,22 +20,41 @@ const DocumentPage: React.FC = () => {
   const { t } = useTranslation();
   
   const Columns = (onEdit: (c: Document) => void, onDelete: (id: string) => void): ColumnDef<Document>[] => [
-    { key: "Title", header: t("documents.title_field") },
-    { key: "Content", header: t("documents.content") },
-    { key: "FolderId", header: t("documents.folder") },
-    { key: "UserId", header: t("documents.user") },
-    { key: "IsActive", header: t("documents.is_active") },
+    { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" }, 
+    { key: "Content", header: t("documents.content"), render: (row) => row.Content || "-" },
+    { key: "FolderId", header: t("documents.folder"), render: (row) => row.FolderId || "-" },
+    { key: "UserId", header: t("documents.user"), render: (row) => row.UserId || "-" },
     {
-      key: "actions",
-      header: t("actions.actions", "Ações"),
-      width: "160px",
+      key: "IsActive",
+      header: t("document.is_active"),
+      // Renderiza o status com cores -------------------------------------------
       render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
-          <button title={t("actions.delete")} onClick={() => onDelete(row.DocumentId)}><FiTrash2 /></button>
-        </div>
+        <span style={{
+          color: row.IsActive ? '#28a745' : '#dc3545',
+          fontWeight: 'bold'
+        }}>
+          {row.IsActive ? t("status.enabled") : t("status.disabled")}
+        </span>
       )
-    }
+    },
+     {
+          key: "actions",
+          header: t("actions.actions"),
+          width: "160px",
+          render: (row) => (
+            <div style={{ display: "flex", gap: 8 }}>
+              <button title={t("actions.edit")} onClick={() => onEdit(row)}>
+                <FiEdit />
+              </button>
+              <button
+                title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
+                //onClick={() => onToggleStatus(row.DocumentId)}
+              >
+                <FiTrash2 />
+              </button>
+            </div>
+          )
+        }
   ];
 
 
@@ -44,14 +63,14 @@ const filteredDocument = React.useMemo(() => {
   if (!query) return activeDocument;
 
   const searchQuery = query.toLowerCase();
+  
   return activeDocument.filter(document => {
     const searchableText = [
-      document.Title,
-      document.Content,
-      document.FolderId,
-      document.UserId,
-      document.IsActive,
-    ].filter(Boolean).join(" ").toLowerCase();
+      document.Title || "",
+      document.Content || "",
+      document.FolderId || "",
+      document.UserId || "",
+    ].join(" ").toLowerCase();
 
     return searchableText.includes(searchQuery);
   });

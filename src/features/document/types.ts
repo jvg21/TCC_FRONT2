@@ -5,6 +5,6 @@ export interface Document {
     UserId?: string;
     FolderId?: string;
     CreatedAt?: string;
-    IsActive?: string;
+    IsActive?: boolean;
     UpdatedAt?: string;
   }

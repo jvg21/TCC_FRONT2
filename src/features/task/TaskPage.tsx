@@ -13,29 +13,6 @@ import { useTask } from "./useTask";
 import { useTranslation } from "react-i18next";
 
 
-
-const Columns = (onEdit: (c: Task) => void, onDelete: (id: string) => void): ColumnDef<Task>[] => [
-  { key: "Title", header: "Titulo" },
-  { key: "Description", header: "Description" },
-  { key: "DueDate", header: "DueDate" },
-  { key: "Priority", header: "Priority" },
-  { key: "Status", header: "Status" },
-  { key: "AssigneeId", header: "AssigneeId" },
-  { key: "UserId", header: "UserId" },
-  { key: "IsActive", header: "IsActive" },
-  {
-    key: "actions",
-    header: "Ações",
-    width: "160px",
-    render: (row) => (
-      <div style={{ display: "flex", gap: 8 }}>
-        <button title="Editar" onClick={() => onEdit(row)}><FiEdit /></button>
-        <button title="Excluir" onClick={() => onDelete(row.TaskId)}><FiTrash2 /></button>
-      </div>
-    )
-  }
-];
-
 const TaskPage: React.FC = () => {
   const { activeTask, create, update, softDelete } = useTask();
   const modal = useModal();
@@ -44,25 +21,44 @@ const TaskPage: React.FC = () => {
 
   const { t } = useTranslation();
   const Columns = (onEdit: (c: Task) => void, onDelete: (id: string) => void): ColumnDef<Task>[] => [
-    { key: "Title", header: t("tasks.title_field") },
-    { key: "Description", header: t("tasks.description") },
-    { key: "DueDate", header: t("tasks.due_date") },
-    { key: "Priority", header: t("tasks.priority") },
-    { key: "Status", header: t("tasks.status") },
-    { key: "AssigneeId", header: t("tasks.assignee") },
-    { key: "UserId", header: t("tasks.user") },
-    { key: "IsActive", header: t("tasks.is_active") },
+    { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },
+    { key: "Description", header: t("tasks.description"), render: (row) => row.Description || "-" },
+    { key: "DueDate", header: t("tasks.due_date"), render: (row) => row.DueDate || "-" },
+    { key: "Priority", header: t("tasks.priority"), render: (row) => row.Priority || "-" },
+    { key: "Status", header: t("tasks.status"), render: (row) => row.Status || "-" },
+    { key: "AssigneeId", header: t("tasks.assignee"), render: (row) => row.AssigneeId || "-" },
+    { key: "UserId", header: t("tasks.user"), render: (row) => row.UserId || "-" },
     {
-      key: "actions",
-      header: t("actions.actions", "Ações"),
-      width: "160px",
+      key: "IsActive",
+      header: t("companies.is_active"),
+      // Renderiza o status com cores -------------------------------------------
       render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
-          <button title={t("actions.delete")} onClick={() => onDelete(row.TaskId)}><FiTrash2 /></button>
-        </div>
+        <span style={{
+          color: row.IsActive ? '#28a745' : '#dc3545',
+          fontWeight: 'bold'
+        }}>
+          {row.IsActive ? t("status.enabled") : t("status.disabled")}
+        </span>
       )
-    }
+    },
+    {
+          key: "actions",
+          header: t("actions.actions"),
+          width: "160px",
+          render: (row) => (
+            <div style={{ display: "flex", gap: 8 }}>
+              <button title={t("actions.edit")} onClick={() => onEdit(row)}>
+                <FiEdit />
+              </button>
+              <button
+                title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
+                //onClick={() => onToggleStatus(row.TaskId)}
+              >
+                <FiTrash2 />
+              </button>
+            </div>
+          )
+        }
   ];
 
 
@@ -72,14 +68,14 @@ const TaskPage: React.FC = () => {
     const searchQuery = query.toLowerCase();
     return activeTask.filter(task => {
       const searchableText = [
-        task.Title,
-        task.Description,
-        task.DueDate,
-        task.Priority,
-        task.Status,
-        task.AssigneeId,
-        task.UserId,
-      ].filter(Boolean).join(" ").toLowerCase();
+        task.Title || "",
+        task.Description || "",
+        task.DueDate || "",
+        task.Priority || "",
+        task.Status || "",
+        task.AssigneeId || "",
+        task.UserId || "",
+      ].join(" ").toLowerCase();
 
       return searchableText.includes(searchQuery);
     });

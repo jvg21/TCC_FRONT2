@@ -30,30 +30,46 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     setName(initial.Name ?? "");
     setEmail(initial.Email ?? "");
     setProfile(initial.Profile ?? 0);
-    setIsActive(initial.IsActive ?? "");
+    setIsActive(initial.IsActive ? 'true' : 'false');
   }, [initial.Name, initial.Email, initial.Profile, initial.IsActive]);
 
-  const canSave = Name.trim().length > 0;
+  const validateFields = () => {
+      const isNameValid = Name.trim().length > 0;
+      const isEmailValid = !!Email && regexPatterns.email.test(Email);
+   
+      console.log("Validation results:", {
+        isNameValid,
+        isEmailValid
+        
+        
+      });
+      return isNameValid && isEmailValid;
+    };
+
+  const canSave = validateFields();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
-    onSave({ Name, Email, Profile, IsActive });
+
+    const formattedIsActive = IsActive === "true";
+
+    onSave({ Name, Email, Profile, IsActive: formattedIsActive });
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <Row>
-        <Col><Input label={t("users.name")} value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+        <Col><Input label={t("users.name")} maxLength={20} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Input label={t("users.profile")} value={Profile} onChange={(e) => setProfile(Number(e.target.value))} /></Col>
-        <Col><Input label={t("users.email")} value={Email} onChange={(e) => setEmail(e.target.value)}
+        <Col><Input label={t("users.profile")} required value={Profile} onChange={(e) => setProfile(Number(e.target.value))} /></Col>
+        <Col><Input label={t("users.email")} value={Email} maxLength={30} required onChange={(e) => setEmail(e.target.value)}
         regex={regexPatterns.email}
         /></Col>
       </Row>
       <Row>
-        <Col><Select label={t("users.is_active")} options={[
+        <Col><Select label={t("users.is_active")} required options={[
           { value: "false", label: t("status.disabled") },
           { value: "true", label: t("status.enabled") },
         ]} /></Col>

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import type { Document } from "./types";
 import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
+import { regexPatterns } from "../../utils/regexUtils";
 
 
 const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
@@ -22,7 +23,7 @@ export const DocumentForm: React.FC<Props> = ({ initial = {}, isEditing = false,
     const [Content, setContent] = useState(initial.Content ?? "");
     const [UserId, setUserId] = useState(initial.UserId ?? "");
     const [FolderId, setFolderId] = useState(initial.FolderId ?? "");
-    const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
+    const [IsActive, setIsActive] = useState(initial.IsActive ? 'true' : 'false');
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -30,38 +31,50 @@ export const DocumentForm: React.FC<Props> = ({ initial = {}, isEditing = false,
         setContent(initial.Content ?? "");
         setUserId(initial.UserId ?? "");
         setFolderId(initial.FolderId ?? "");
-        setIsActive(initial.IsActive ?? "");
+        setIsActive(initial.IsActive ? 'true' : 'false');
     }, [initial.Title, initial.Content, initial.UserId, initial.FolderId, initial.IsActive]);
 
-    const canSave = Title.trim().length > 0;
+    const validateFields = () => {
+        const isTitleValid = Title.trim().length > 0;
+        console.log("Validation results:", {
+            isTitleValid,
+
+        });
+        return isTitleValid;
+    };
+
+    const canSave = validateFields();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!canSave) return;
-        onSave({ Title, Content, UserId, FolderId, IsActive });
+
+        const formattedIsActive = IsActive === "true";
+        
+        onSave({ Title, Content, UserId, FolderId, IsActive: formattedIsActive });
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <Row>
-                <Col><Input label={t("documents.title_field")} value={Title} onChange={(e) => setTitle(e.target.value)} /></Col>
+                <Col><Input label={t("documents.title_field")} maxLength={50} minLength={3} required value={Title} onChange={(e) => setTitle(e.target.value)} /></Col>
             </Row>
             <Row>
-                <Col><Input label={t("documents.content")} value={Content} onChange={(e) => setContent(e.target.value)} /></Col>
+                <Col><Input label={t("documents.content")} required value={Content} onChange={(e) => setContent(e.target.value)} /></Col>
             </Row>
             <Row>
-                <Col><Select label={t("documents.user")} value={UserId} options={[
+                <Col><Select label={t("documents.user")} required value={UserId} options={[
                     { value: "false", label: t("status.disabled") },
                     { value: "true", label: t("status.enabled") },
                 ]} /></Col>
-                <Col><Select label={t("documents.folder")} value={FolderId} options={[
+                <Col><Select label={t("documents.folder")} required value={FolderId} options={[
                     { value: "false", label: t("status.disabled") },
                     { value: "true", label: t("status.enabled") },
                 ]} /></Col>
             </Row>
 
             <Row>
-                <Col><Select label={t("documents.is_active")} value={IsActive} options={[
+                <Col><Select label={t("documents.is_active")} required value={IsActive} options={[
                     { value: "false", label: t("status.disabled") },
                     { value: "true", label: t("status.enabled") },
                 ]} /></Col>
