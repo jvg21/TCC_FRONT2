@@ -39,38 +39,50 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         setStatus(initial.Status ?? "");
         setAssigneeId(initial.AssigneeId ?? "");
         setUserId(initial.UserId ?? "");
-        setIsActive(initial.IsActive ?? "");
+        setIsActive(initial.IsActive ? 'true' : 'false');
     }, [initial.Title, initial.Description, initial.DueDate, initial.Priority, initial.Status, initial.AssigneeId, initial.UserId, initial.IsActive]);
 
-    const canSave = Title.trim().length > 0;
+    const validateFields = () => {
+        const isTitleValid = Title.trim().length > 0;
+        console.log("Validation results:", {
+          isTitleValid,
+          
+        });
+        return isTitleValid;
+      };
+
+    const canSave = validateFields();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!canSave) return;
-        onSave({ Title, Description, DueDate, Priority, Status, AssigneeId, UserId, IsActive });
+
+        const formattedIsActive = IsActive === "true";
+
+        onSave({ Title, Description, DueDate, Priority, Status, AssigneeId, UserId, IsActive: formattedIsActive });
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <Row>
-                <Col><Input label={t("tasks.title_field")} value={Title} onChange={(e) => setTitle(e.target.value)} /></Col>
+                <Col><Input label={t("tasks.title_field")} maxLength={30} minLength={3} required value={Title} onChange={(e) => setTitle(e.target.value)} /></Col>
             </Row>
             <Row>
-                <Col><Input label={t("tasks.description")} value={Description} onChange={(e) => setDescription(e.target.value)} /></Col>
+                <Col><Input label={t("tasks.description")} required value={Description} onChange={(e) => setDescription(e.target.value)} /></Col>
             </Row>
             <Row>
-                <Col><Select label={t("tasks.user")} options={[
+                <Col><Select label={t("tasks.user")} required options={[
                   { value: "false", label: t("status.disabled") },
                   { value: "true", label: t("status.enabled") },
                 ]} /></Col>
-                <Col><Select label={t("tasks.assignee")} options={[
+                <Col><Select label={t("tasks.assignee")} required options={[
                   { value: "false", label: t("status.disabled") },
                   { value: "true", label: t("status.enabled") },
                 ]} /></Col>
             </Row>
             
             <Row>
-                <Col><Select label={t("tasks.is_active")} options={[
+                <Col><Select label={t("tasks.is_active")} required options={[
                     { value: "false", label: t("status.disabled") },
                     { value: "true", label: t("status.enabled") },
                 ]} /></Col>

@@ -7,7 +7,7 @@ export interface User {
     CompanyId?: number;
     CreatedAt?: string;
     UpdatedAt?: string;
-    IsActive?: string;
+    IsActive?: boolean;
   }
   
  

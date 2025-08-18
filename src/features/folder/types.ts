@@ -5,6 +5,6 @@ export interface Folder {
     UserId?: string;
     CreatedAt?: string;
     UpdatedAt?: string;
-    IsActive?: string;
+    IsActive?: boolean;
   }
   

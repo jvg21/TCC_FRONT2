@@ -4,6 +4,6 @@ export interface Group {
     Description: string;
     UserId?: string;
     CreatedAt?: string;
-    IsActive?: string;
+    IsActive?: boolean;
     UpdatedAt?: string;
   }

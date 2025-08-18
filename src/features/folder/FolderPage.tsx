@@ -22,21 +22,40 @@ const FolderPage: React.FC = () => {
 
 
   const Columns = (onEdit: (c: Folder) => void, onDelete: (id: string) => void): ColumnDef<Folder>[] => [
-    { key: "Name", header: t("folders.name") },
-    { key: "FolderId", header: t("folders.parent_folder") },
-    { key: "UserId", header: t("folders.user") },
-    { key: "IsActive", header: t("folders.is_active") },
+    { key: "Name", header: t("folders.name"), render: (row) => row.Name || "-" },
+    { key: "FolderId", header: t("folders.parent_folder"), render: (row) => row.FolderId || "-" },
+    { key: "UserId", header: t("folders.user"), render: (row) => row.UserId || "-" },
     {
-      key: "actions",
-      header: t("actions.actions", "Ações"),
-      width: "160px",
+      key: "IsActive",
+      header: t("folder.is_active"),
+      // Renderiza o status com cores -------------------------------------------
       render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}><FiEdit /></button>
-          <button title={t("actions.delete")} onClick={() => onDelete(row.FolderId)}><FiTrash2 /></button>
-        </div>
+        <span style={{
+          color: row.IsActive ? '#28a745' : '#dc3545',
+          fontWeight: 'bold'
+        }}>
+          {row.IsActive ? t("status.enabled") : t("status.disabled")}
+        </span>
       )
-    }
+    },
+    {
+              key: "actions",
+              header: t("actions.actions"),
+              width: "160px",
+              render: (row) => (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button title={t("actions.edit")} onClick={() => onEdit(row)}>
+                    <FiEdit />
+                  </button>
+                  <button
+                    title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
+                    //onClick={() => onToggleStatus(row.FolderId)}
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              )
+            }
   ];
 
   const filteredFolder = React.useMemo(() => {
@@ -45,13 +64,12 @@ const FolderPage: React.FC = () => {
     const searchQuery = query.toLowerCase();
     return activeFolder.filter(folder => {
       const searchableText = [
-        folder.Name,
-        folder.FolderId,
-        folder.UserId,
-        folder.IsActive,
+        folder.Name || "",
+        folder.FolderId || "",
+        folder.UserId || "",
 
 
-      ].filter(Boolean).join(" ").toLowerCase();
+      ].join(" ").toLowerCase();
 
       return searchableText.includes(searchQuery);
     });

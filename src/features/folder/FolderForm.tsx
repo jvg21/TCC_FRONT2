@@ -29,35 +29,46 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, isEditing = false, o
     setName(initial.Name ?? "");
     setFolderId(initial.FolderId ?? "");
     setUserId(initial.UserId ?? "");
-    setIsActive(initial.IsActive ?? "");
+     setIsActive(initial.IsActive ? 'true' : 'false');
   }, [initial.Name, initial.FolderId, initial.UserId, initial.IsActive]);
 
-  const canSave = Name.trim().length > 0;
+  const validateFields = () => {
+      const isNameValid = Name.trim().length > 0;
+      console.log("Validation results:", {
+        isNameValid,
+      });
+      return isNameValid;
+    };
+
+  const canSave = validateFields();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
-    onSave({ Name, FolderId, UserId, IsActive });
+
+    const formattedIsActive = IsActive === "true";
+
+    onSave({ Name, FolderId, UserId, IsActive: formattedIsActive });
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <Row>
-        <Col><Input label={t("folders.name")} value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+        <Col><Input label={t("folders.name")} maxLength={20} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Select label={t("folders.user")} options={[
+        <Col><Select label={t("folders.user")} required options={[
           { value: "false", label: t("status.disabled") },
           { value: "true", label: t("status.enabled") },
         ]} /></Col>
-        <Col><Select label={t("folders.parent_folder")} options={[
+        <Col><Select label={t("folders.parent_folder")} required options={[
           { value: "false", label: t("status.disabled") },
           { value: "true", label: t("status.enabled") },
         ]} /></Col>
       </Row>
 
       <Row>
-        <Col><Select label={t("folders.is_active")} options={[
+        <Col><Select label={t("folders.is_active")} required options={[
           { value: "false", label: t("status.disabled") },
           { value: "true", label: t("status.enabled") },
         ]} /></Col>
