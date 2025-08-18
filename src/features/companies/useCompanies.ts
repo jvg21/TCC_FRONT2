@@ -15,6 +15,10 @@ export const useCompanies = () => {
     return companies.filter((c) => c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
   }, [companies, query]);
 
+  const deactiveCompanies = useMemo(() => {
+    return companies.filter((c) => !c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
+  }, [companies, query]);
+
   const transformApiDataToPascalCase = (apiData: any[]): Company[] => {
     return apiData.map(item => ({
       CompanyId: item.companyId,
@@ -205,6 +209,7 @@ export const useCompanies = () => {
   return {
     companies,
     activeCompanies,
+    deactiveCompanies,
     query,
     setQuery,
     create,

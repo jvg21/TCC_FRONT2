@@ -47,7 +47,23 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     initial.IsActive
   ]);
 
-  const canSave = Name.trim().length > 0;
+  const validateFields = () => {
+    const isNameValid = Name.trim().length > 0;
+    const isTaxIdValid = !!TaxId && regexPatterns.cnpj.test(TaxId);
+    const isEmailValid = !!Email && regexPatterns.email.test(Email);
+    const isPhoneValid = !!Phone && regexPatterns.phone.test(Phone);
+    const isZipCodeValid = !!ZipCode && regexPatterns.cep.test(ZipCode);
+    console.log("Validation results:", {
+      isNameValid,
+      isTaxIdValid,
+      isEmailValid,
+      isPhoneValid,
+      isZipCodeValid
+    });
+    return isNameValid && isTaxIdValid && isEmailValid && isPhoneValid && isZipCodeValid;
+  };
+
+  const canSave = validateFields();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,27 +77,28 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   return (
     <form onSubmit={handleSubmit}>
       <Row>
-        <Col><Input label={t("companies.name")} value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+        <Col><Input label={t("companies.name")} maxLength={25} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
         <Col><Input
           label={t("companies.tax_id")}
           value={TaxId}
+          required
           onChange={(e) => setTaxId(e.target.value)}
           regex={regexPatterns.cnpj}
           maskFormat="99.999.999/9999-99"
         /></Col>
 
-        <Col><Input label={t("companies.email")} value={Email} onChange={(e) => setEmail(e.target.value)}
+        <Col><Input label={t("companies.email")} maxLength={30} required value={Email} onChange={(e) => setEmail(e.target.value)}
           regex={regexPatterns.email}
         /></Col>
       </Row>
       <Row>
-        <Col><Input label={t("companies.phone")} value={Phone} onChange={(e) => setPhone(e.target.value)}
+        <Col><Input label={t("companies.phone")} required value={Phone} onChange={(e) => setPhone(e.target.value)}
           regex={regexPatterns.phone}
           maskFormat="+99 (99) 99999-9999"
         /></Col>
-        <Col><Input label={t("companies.address")} value={Adress} onChange={(e) => setAdress(e.target.value)} /></Col>
+        <Col><Input label={t("companies.address")} maxLength={100} required value={Adress} onChange={(e) => setAdress(e.target.value)} /></Col>
       </Row>
       <Row>
 
@@ -104,7 +121,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
       </Row>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
-        <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
+        <Button type="submit" disabled={canSave}>{t("actions.save")}</Button>
       </div>
     </form>
   );

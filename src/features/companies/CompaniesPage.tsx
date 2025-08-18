@@ -11,6 +11,7 @@ import type { Company } from "./types";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { useTranslation } from "react-i18next";
+import { regexPatterns } from "../../utils/regexUtils";
 
 const CompaniesPage: React.FC = () => {
   const { activeCompanies, query, setQuery, create, update, softDelete } = useCompanies();
@@ -21,9 +22,43 @@ const CompaniesPage: React.FC = () => {
 
   const Columns = (onEdit: (c: Company) => void, onToggleStatus: (id: number) => void): ColumnDef<Company>[] => [
     { key: "Name", header: t("companies.name") },
-    { key: "TaxId", header: t("companies.tax_id") },
-    { key: "Email", header: t("companies.email") },
-    { key: "IsActive", header: t("companies.is_active") },
+    {
+      key: "TaxId",
+      header: t("companies.tax_id"),
+      render: (row) => regexPatterns.applyMask(row.TaxId || "", "99.999.999/9999-99") || "-"
+    },
+    {
+      key: "Email",
+      header: t("companies.email"),
+      render: (row) => row.Email || "-"
+    },
+    {
+      key: "Phone",
+      header: t("companies.phone"),
+      render: (row) => regexPatterns.applyMask(row.Phone || "", "+99 (99) 99999-9999") || "-"
+    },
+    {
+      key: "Adress",
+      header: t("companies.address"),
+      render: (row) => row.Adress || "-"
+    },
+    {
+      key: "ZipCode",
+      header: t("companies.zipcode"),
+      render: (row) => regexPatterns.applyMask(row.ZipCode || "", "99999-999") || "-"
+    },
+    {
+      key: "IsActive",
+      header: t("companies.is_active"),
+      render: (row) => (
+        <span style={{
+          color: row.IsActive ? '#28a745' : '#dc3545',
+          fontWeight: 'bold'
+        }}>
+          {row.IsActive ? t("status.enabled") : t("status.disabled")}
+        </span>
+      )
+    },
     {
       key: "actions",
       header: t("actions.actions"),
@@ -33,8 +68,8 @@ const CompaniesPage: React.FC = () => {
           <button title={t("actions.edit")} onClick={() => onEdit(row)}>
             <FiEdit />
           </button>
-          <button 
-            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")} 
+          <button
+            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
             onClick={() => onToggleStatus(row.CompanyId)}
           >
             <FiTrash2 />
@@ -43,7 +78,6 @@ const CompaniesPage: React.FC = () => {
       )
     }
   ];
-
   // Filtrar dados baseado na busca global
   const filteredCompanies = React.useMemo(() => {
     if (!query) return activeCompanies;
@@ -51,13 +85,12 @@ const CompaniesPage: React.FC = () => {
     const searchQuery = query.toLowerCase();
     return activeCompanies.filter(company => {
       const searchableText = [
-        company.Name,
-        company.TaxId,
-        company.Email,
-        company.Phone,
-        company.Adress,
-        company.IsActive,
-      ].filter(Boolean).join(" ").toLowerCase();
+        company.Name || "",
+        company.TaxId || "",
+        company.Email || "",
+        company.Phone || "",
+        company.Adress || "",
+      ].join(" ").toLowerCase();
 
       return searchableText.includes(searchQuery);
     });
@@ -99,8 +132,8 @@ const CompaniesPage: React.FC = () => {
   const columns = Columns(handleEdit, handleToggleStatus);
 
   return (
-    <PageLayout 
-      title={t("companies.title")} 
+    <PageLayout
+      title={t("companies.title")}
       actions={
         <Button onClick={handleAdd}>
           <FiPlus />&nbsp;{t("companies.add_company")}
@@ -114,15 +147,15 @@ const CompaniesPage: React.FC = () => {
         placeholder={t("companies.search_companies")}
       />
       <DataTable columns={columns} data={filteredCompanies} />
-      <Modal 
-        isOpen={modal.isOpen} 
-        onClose={modal.close} 
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={modal.close}
         title={editing ? t("companies.edit_company") : t("companies.add_company")}
       >
-        <CompanyForm 
-          initial={editing ?? undefined} 
-          onCancel={modal.close} 
-          onSave={handleSave} 
+        <CompanyForm
+          initial={editing ?? undefined}
+          onCancel={modal.close}
+          onSave={handleSave}
         />
       </Modal>
     </PageLayout>

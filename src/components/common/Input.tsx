@@ -6,7 +6,7 @@ const StyledInput = styled.input<{ hasError?: boolean }>`
   border-radius: ${({ theme }) => theme.borderRadius};
   border: 1px solid
     ${({ hasError, theme }) =>
-      hasError ? theme.colors.danger : "rgba(0,0,0,0.08)"};
+    hasError ? theme.colors.danger : "rgba(0,0,0,0.08)"};
   width: 100%;
   font-size: 14px;
   transition: border-color 0.2s ease;
@@ -14,7 +14,7 @@ const StyledInput = styled.input<{ hasError?: boolean }>`
   &:focus {
     outline: none;
     border-color: ${({ hasError, theme }) =>
-      hasError ? theme.colors.danger : theme.colors.primary};
+    hasError ? theme.colors.danger : theme.colors.primary};
   }
 `;
 
@@ -52,8 +52,8 @@ export const Input: React.FC<Props> = ({
   const [showError, setShowError] = useState(false);
 
   // Aplica máscara baseada no formato informado
-  const applyMask = (val: string) => {
-    if (!maskFormat) return val;
+  const applyMask = (val: string): string => {
+    if (!maskFormat || !val) return val || "";
 
     let onlyNumbers = val.replace(/\D/g, "");
     let masked = "";
@@ -72,18 +72,29 @@ export const Input: React.FC<Props> = ({
     return masked;
   };
 
+  // Aplica máscara ao valor inicial quando o componente é montado ou valor muda
+  const maskedValue = React.useMemo(() => {
+    if (maskFormat && value && typeof value === "string") {
+      return applyMask(value);
+    }
+    return value ?? "";
+  }, [value, maskFormat]);
+
   useEffect(() => {
     if (regex && value && typeof value === "string") {
-      const isValid = regex.test(value);
+      // Se tem máscara, valida o valor mascarado, senão valida o valor original
+      const valueToValidate = maskFormat && typeof maskedValue === "string" ? maskedValue : value;
+      const isValid = regex.test(valueToValidate);
       setHasError(!isValid);
-      setShowError(!isValid && value.length > 0);
+      // Só mostra erro se o usuário já interagiu com o campo ou se está digitando
+      setShowError(false); // Inicialmente nunca mostra erro
       onValidationChange?.(isValid);
     } else {
       setHasError(false);
       setShowError(false);
       onValidationChange?.(true);
     }
-  }, [value, regex, onValidationChange]);
+  }, [value, regex, onValidationChange, maskFormat, maskedValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue = e.target.value;
@@ -99,17 +110,21 @@ export const Input: React.FC<Props> = ({
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (regex && e.target.value) {
-      setShowError(!regex.test(e.target.value));
+      const isValid = regex.test(e.target.value);
+      setShowError(!isValid);
+      setHasError(!isValid);
     }
     rest.onBlur?.(e);
   };
+
+
 
   return (
     <Container>
       {label && <label style={{ fontSize: 13 }}>{label}</label>}
       <StyledInput
         hasError={hasError && showError}
-        value={value}
+        value={maskedValue}
         onChange={handleChange}
         onBlur={handleBlur}
         {...rest}
