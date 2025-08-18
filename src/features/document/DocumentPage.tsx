@@ -49,6 +49,7 @@ const DocumentPage: React.FC = () => {
               <button
                 title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
                 //onClick={() => onToggleStatus(row.DocumentId)}
+                onClick={() => {}}
               >
                 <FiTrash2 />
               </button>

@@ -48,6 +48,7 @@ const GroupPage: React.FC = () => {
               <button
                 title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
                 //onClick={() => onToggleStatus(row.CompanyId)}
+                onClick={() => {}}
               >
                 <FiTrash2 />
               </button>

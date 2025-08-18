@@ -53,6 +53,7 @@ const TaskPage: React.FC = () => {
               <button
                 title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
                 //onClick={() => onToggleStatus(row.TaskId)}
+                onClick={() => {}}
               >
                 <FiTrash2 />
               </button>

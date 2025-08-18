@@ -50,6 +50,7 @@ const FolderPage: React.FC = () => {
                   <button
                     title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
                     //onClick={() => onToggleStatus(row.FolderId)}
+                    onClick={() => {}}
                   >
                     <FiTrash2 />
                   </button>

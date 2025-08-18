@@ -52,6 +52,7 @@ const UserPage: React.FC = () => {
               <button
                 title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
                 //onClick={() => onToggleStatus(row.UserId)}
+                onClick={() => {}}
               >
                 <FiTrash2 />
               </button>
