@@ -12,6 +12,7 @@ import LoginPage from "../features/login/LoginPage"
 import RecoverPasswordPage from "../features/login/ResetPassword"
 import { DevRoutes } from "./DevRoutes"
 import { AdmRoutes } from "./AdmRoutes"
+import UserPage from "../features/user/UserPage"
 
 export const AppRoutes = () => {
     return (
@@ -47,11 +48,11 @@ export const AppRoutes = () => {
                 </DevRoutes>
             } />
 
-            {/* <Route path="/user" element={
+            <Route path="/user" element={
                 <AdmRoutes>
                     <UserPage />
                 </AdmRoutes>
-            } /> */}
+            } />
 
             <Route path="/group" element={
                 <AdmRoutes>

@@ -20,11 +20,14 @@ const CompaniesPage: React.FC = () => {
 
   const { t } = useTranslation();
 
+
+  // adicionado o metodo render para as colunas -------------------------------------------
   const Columns = (onEdit: (c: Company) => void, onToggleStatus: (id: number) => void): ColumnDef<Company>[] => [
     { key: "Name", header: t("companies.name") },
     {
       key: "TaxId",
       header: t("companies.tax_id"),
+      //aplica a marsks no CNPJ -------------------------------------------
       render: (row) => regexPatterns.applyMask(row.TaxId || "", "99.999.999/9999-99") || "-"
     },
     {
@@ -50,6 +53,7 @@ const CompaniesPage: React.FC = () => {
     {
       key: "IsActive",
       header: t("companies.is_active"),
+      // Renderiza o status com cores -------------------------------------------
       render: (row) => (
         <span style={{
           color: row.IsActive ? '#28a745' : '#dc3545',
@@ -79,16 +83,20 @@ const CompaniesPage: React.FC = () => {
     }
   ];
   // Filtrar dados baseado na busca global
+
   const filteredCompanies = React.useMemo(() => {
     if (!query) return activeCompanies;
 
     const searchQuery = query.toLowerCase();
+
+    // adicionado o || "" e remover o IsActive
     return activeCompanies.filter(company => {
       const searchableText = [
         company.Name || "",
         company.TaxId || "",
         company.Email || "",
         company.Phone || "",
+        company.ZipCode || "",
         company.Adress || "",
       ].join(" ").toLowerCase();
 
