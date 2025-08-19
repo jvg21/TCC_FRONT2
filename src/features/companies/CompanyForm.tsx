@@ -126,7 +126,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
       </Row>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
-        <Button type="submit" disabled={canSave}>{t("actions.save")}</Button>
+        <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
       </div>
     </form>
   );

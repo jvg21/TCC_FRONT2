@@ -27,7 +27,7 @@ const FolderPage: React.FC = () => {
     { key: "UserId", header: t("folders.user"), render: (row) => row.UserId || "-" },
     {
       key: "IsActive",
-      header: t("folder.is_active"),
+      header: t("folders.is_active"),
       // Renderiza o status com cores -------------------------------------------
       render: (row) => (
         <span style={{

@@ -51,6 +51,7 @@ export const esTranslations = {
     name: "Nombre",
     tax_id: "RUT/CUIT",
     email: "Correo",
+    zipcode:"Código Postal",
     phone: "Teléfono",
     address: "Dirección",
     created_at: "Creado en",

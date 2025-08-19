@@ -26,7 +26,7 @@ const DocumentPage: React.FC = () => {
     { key: "UserId", header: t("documents.user"), render: (row) => row.UserId || "-" },
     {
       key: "IsActive",
-      header: t("document.is_active"),
+      header: t("documents.is_active"),
       // Renderiza o status com cores -------------------------------------------
       render: (row) => (
         <span style={{
