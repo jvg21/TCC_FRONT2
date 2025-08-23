@@ -4,6 +4,7 @@ export interface User {
     Email: string;
     Profile: number;
     Phone?: string;
+    Password?:string;
     CompanyId?: number;
     CreatedAt?: string;
     UpdatedAt?: string;

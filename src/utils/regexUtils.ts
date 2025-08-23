@@ -12,7 +12,9 @@ export const regexPatterns = {
   // Telefone internacional: +00 (00) 00000-0000
   internationalPhone: /^\+\d{1,3}\s\(\d{1,3}\)\s\d{4,5}-\d{4}$/,
 
-
+  //senha com pelo menos 6 caracteres, 1 letra maiúscula, 1 letra minúscula, 1 número
+  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/,
+  
   // CEP: 00000-000
   cep: /^\d{5}-\d{3}$/,
 

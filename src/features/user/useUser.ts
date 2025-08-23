@@ -4,6 +4,7 @@ import { t } from "i18next";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
+import { profile } from "console";
 
 export const useUser = () => {
   const [user, setUser] = useState<User[]>(() => []);
@@ -21,15 +22,29 @@ export const useUser = () => {
     return user.filter((c) => !c.IsActive);
   }, [user, query]);
 
+
+  export interface User {
+    UserId: number;
+    Name: string;
+    Email: string;
+    Profile: number;
+    Phone?: string;
+    Password?:string;
+    CompanyId?: number;
+    CreatedAt?: string;
+    UpdatedAt?: string;
+    IsActive?: boolean;
+  }
+  
+ 
   const transformPayloadToCamelCase = (payload: any) => {
     return {
       name: payload.Name,
       email: payload.Email,
       phone: payload.Phone,
-      adress: payload.Adress,
-      zipCode: payload.ZipCode,
-      taxId: payload.TaxId,
-      isActive: payload.IsActive,
+      profile: payload.Profile,
+      password: payload.Password,
+      companyId: payload.CompanyId
     };
   };
 
@@ -41,8 +56,6 @@ export const useUser = () => {
       Phone: item.phone,
       Adress: item.adress,
       Profile: item.profile,
-      ZipCode: item.zipCode,
-      TaxId: item.taxId,
       IsActive: item.isActive,
       CreatedAt: item.createdAt,
       UpdatedAt: item.updatedAt,
@@ -94,7 +107,7 @@ export const useUser = () => {
     }
   }
 
-  const create = async (payload: Omit<User, "CreatedAt" | "UpdatedAt" | "IsActive" | "PreferredLanguage" | "PreferredTheme" | "Password" | "LastLoginAt" | "CompanyId">) => {
+  const create = async (payload: Omit<User, "CreatedAt" | "UpdatedAt" | "IsActive" | "PreferredLanguage" | "PreferredTheme" | "LastLoginAt" | "CompanyId">) => {
     try {
       const camelCasePayload = transformPayloadToCamelCase(payload)
       const response = await fetch(`${apiUrl}/User/AddUser`, {
