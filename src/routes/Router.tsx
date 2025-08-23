@@ -13,11 +13,11 @@ import RecoverPasswordPage from "../features/login/ResetPassword"
 import { DevRoutes } from "./DevRoutes"
 import { AdmRoutes } from "./AdmRoutes"
 import UserPage from "../features/user/UserPage"
+import SettingsPage from "../features/settings/SettingPage"
 
 export const AppRoutes = () => {
     return (
         <Routes>
-
             <Route path="/login" element={
                 <AuthRoutes>
                     <LoginPage />
@@ -34,14 +34,21 @@ export const AppRoutes = () => {
                 </AuthRoutes>
             } />
 
-        // PROTECTED ROUTES
+            {/* PROTECTED ROUTES */}
 
             <Route path="/" element={
                 <ProtectedRoutes>
                     <DashboardPage />
                 </ProtectedRoutes>
-            }
-            />
+            } />
+
+            
+            <Route path="/settings" element={
+                <ProtectedRoutes>
+                    <SettingsPage />
+                </ProtectedRoutes>
+            } />
+
             <Route path="/companies" element={
                 <DevRoutes>
                     <CompaniesPage />
@@ -80,5 +87,5 @@ export const AppRoutes = () => {
 
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        )
+    )
 }
