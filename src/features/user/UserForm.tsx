@@ -6,6 +6,7 @@ import type { User } from "./types";
 import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
 import { regexPatterns } from "../../utils/regexUtils";
+import { useAuthContext } from "../../context/AuthContext";
 
 
 const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
@@ -23,28 +24,21 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
   const [Name, setName] = useState(initial.Name ?? "");
   const [Email, setEmail] = useState(initial.Email ?? "");
   const [Profile, setProfile] = useState(initial.Profile ?? 0);
-  const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
   const { t } = useTranslation();
+  const { user } = useAuthContext();
 
   useEffect(() => {
     setName(initial.Name ?? "");
     setEmail(initial.Email ?? "");
     setProfile(initial.Profile ?? 0);
-    setIsActive(initial.IsActive ? 'true' : 'false');
-  }, [initial.Name, initial.Email, initial.Profile, initial.IsActive]);
+  }, [initial.Name, initial.Email, initial.Profile]);
 
   const validateFields = () => {
-      const isNameValid = Name.trim().length > 0;
-      const isEmailValid = !!Email && regexPatterns.email.test(Email);
-   
-      console.log("Validation results:", {
-        isNameValid,
-        isEmailValid
-        
-        
-      });
-      return isNameValid && isEmailValid;
-    };
+    const isNameValid = Name.trim().length > 0;
+    const isEmailValid = !!Email && regexPatterns.email.test(Email);
+
+    return isNameValid && isEmailValid;
+  };
 
   const canSave = validateFields();
 
@@ -52,9 +46,8 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     e.preventDefault();
     if (!canSave) return;
 
-    const formattedIsActive = IsActive === "true";
 
-    onSave({ Name, Email, Profile, IsActive: formattedIsActive });
+    onSave({ Name, Email, Profile });
   };
 
   return (
@@ -68,15 +61,15 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
           { value: "true", label: t("status.enabled") },
         ]} /></Col>
         <Col><Input label={t("users.email")} value={Email} maxLength={30} required onChange={(e) => setEmail(e.target.value)}
-        regex={regexPatterns.email}
+          regex={regexPatterns.email}
         /></Col>
       </Row>
-      <Row>
+      {/* <Row>
         <Col><Select label={t("users.is_active")} required options={[
           { value: "false", label: t("status.disabled") },
           { value: "true", label: t("status.enabled") },
         ]} /></Col>
-      </Row>
+      </Row> */}
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
         <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>

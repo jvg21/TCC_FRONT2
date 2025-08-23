@@ -3,6 +3,7 @@ import type { Company } from "./types";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
+import { t } from "i18next";
 
 export const useCompanies = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -134,7 +135,7 @@ export const useCompanies = () => {
 
       const newCompany: Company = transformSingleApiData(data.objeto);
       setCompanies((s) => [newCompany, ...s]);
-      notificationActions.showNotification("Status da empresa alterado com sucesso!", 'success');
+      notificationActions.showNotification(t('companies.createSucess'), 'success');
       return data;
     } catch (err) {
       console.error("Erro ao criar empresa:", err);
@@ -170,7 +171,7 @@ export const useCompanies = () => {
 
       const updatedCompany: Company = transformSingleApiData(data.objeto);
       setCompanies((s) => s.map((c) => c.CompanyId === id ? updatedCompany : c));
-      notificationActions.showNotification("Status da empresa alterado com sucesso!", 'success');
+      notificationActions.showNotification(t('companies.updateSucess'), 'success');
       return data;
     } catch (err) {
       console.error("Erro ao atualizar empresa:", err);
@@ -178,9 +179,9 @@ export const useCompanies = () => {
     }
   };
 
-  const softDelete = async (companyId: number) => {
+  const softDelete = async (id: number) => {
     try {
-      const response = await fetch(`${apiUrl}/Company/ToggleStatusCompany/${companyId}`, {
+      const response = await fetch(`${apiUrl}/Company/ToggleStatusCompany/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -196,8 +197,8 @@ export const useCompanies = () => {
       }
 
       const updatedCompany: Company = transformSingleApiData(data.objeto);
-      setCompanies((s) => s.map((c) => c.CompanyId === companyId ? updatedCompany : c));
-      notificationActions.showNotification("Status da empresa alterado com sucesso!", 'success');
+      setCompanies((s) => s.map((c) => c.CompanyId === id ? updatedCompany : c));
+      notificationActions.showNotification(t('companies.updateStatusSucess'), 'success');
       return data;
     } catch (err) {
       console.error("Erro ao alterar status da empresa:", err);

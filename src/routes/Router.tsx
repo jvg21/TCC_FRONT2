@@ -14,6 +14,7 @@ import { DevRoutes } from "./DevRoutes"
 import { AdmRoutes } from "./AdmRoutes"
 import UserPage from "../features/user/UserPage"
 import SettingsPage from "../features/settings/SettingPage"
+import { Sidebar } from "lucide-react"
 
 export const AppRoutes = () => {
     return (
@@ -38,50 +39,67 @@ export const AppRoutes = () => {
 
             <Route path="/" element={
                 <ProtectedRoutes>
-                    <DashboardPage />
+                    <Sidebar>
+                        <DashboardPage />
+                    </Sidebar>
+
                 </ProtectedRoutes>
             } />
 
-            
+
             <Route path="/settings" element={
                 <ProtectedRoutes>
-                    <SettingsPage />
+                    <Sidebar>
+                        <SettingsPage />
+                    </Sidebar>
                 </ProtectedRoutes>
             } />
 
             <Route path="/companies" element={
                 <DevRoutes>
-                    <CompaniesPage />
+                    <Sidebar>
+                        <CompaniesPage />
+                    </Sidebar>
                 </DevRoutes>
             } />
 
             <Route path="/user" element={
                 <AdmRoutes>
-                    <UserPage />
+                    <Sidebar>
+                        <UserPage />
+                    </Sidebar>
                 </AdmRoutes>
             } />
 
             <Route path="/group" element={
                 <AdmRoutes>
-                    <GroupPage />
+                    <Sidebar>
+                        <GroupPage />
+                    </Sidebar>
                 </AdmRoutes>
             } />
 
             <Route path="/folder" element={
                 <AdmRoutes>
-                    <FolderPage />
+                    <Sidebar>
+                        <FolderPage />
+                    </Sidebar>
                 </AdmRoutes>
             } />
 
             <Route path="/task" element={
                 <AdmRoutes>
-                    <TaskPage />
+                    <Sidebar>
+                        <TaskPage />
+                    </Sidebar>
                 </AdmRoutes>
             } />
 
             <Route path="/document" element={
                 <AdmRoutes>
-                    <DocumentPage />
+                    <Sidebar>
+                        <DocumentPage />
+                    </Sidebar>
                 </AdmRoutes>
             } />
 
