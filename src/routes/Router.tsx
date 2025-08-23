@@ -14,6 +14,7 @@ import { DevRoutes } from "./DevRoutes"
 import { AdmRoutes } from "./AdmRoutes"
 import UserPage from "../features/user/UserPage"
 import SettingsPage from "../features/settings/SettingPage"
+import IntegrationsPage from "../features/integrations/IntegrationsPage" // Nova importação
 
 export const AppRoutes = () => {
     return (
@@ -46,6 +47,13 @@ export const AppRoutes = () => {
             <Route path="/settings" element={
                 <ProtectedRoutes>
                     <SettingsPage />
+                </ProtectedRoutes>
+            } />
+
+            {/* Nova rota de integrações - acessível para todos os usuários logados */}
+            <Route path="/integrations/openai" element={
+                <ProtectedRoutes>
+                    <IntegrationsPage />
                 </ProtectedRoutes>
             } />
 
