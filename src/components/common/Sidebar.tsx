@@ -13,7 +13,6 @@ import {
   FiX,
   FiSettings,
   FiLink2,
-  FiChevronDown,
   FiChevronRight
 } from "react-icons/fi";
 
@@ -112,8 +111,8 @@ const ToggleButton = styled.button`
     color: ${({ theme }) => theme.colors.text};
   }
 
-  @media (min-width: 769px) {
-    display: flex;
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -242,7 +241,6 @@ const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
   }
 `;
 
-// Componentes específicos para dropdown
 const DropdownContainer = styled.div`
   position: relative;
 `;
@@ -342,7 +340,7 @@ const DropdownItem = styled(Link)<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 20px 10px 52px; // Extra indent para submenu
+  padding: 10px 20px 10px 52px;
   color: ${({ $isActive, theme }) => 
     $isActive ? theme.colors.primary : theme.colors.text};
   text-decoration: none;
@@ -404,7 +402,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [profile, setProfile] = useState<number>(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
 
   const { user } = useAuthContext();
@@ -419,7 +417,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       
-      if (mobile && !isCollapsed) {
+      // Só colapsar automaticamente na primeira vez (mobile)
+      if (mobile && !document.body.hasAttribute('data-sidebar-initialized')) {
         setIsCollapsed(true);
         document.body.setAttribute('data-sidebar-initialized', 'true');
       }
@@ -428,7 +427,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
-  }, [isCollapsed]);
+  }, []); // Removido isCollapsed da dependência
 
   // Verificar se estamos numa rota de integrações
   const isIntegrationsActive = location.pathname.startsWith('/integrations');
@@ -443,10 +442,10 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     { path: "/folder", label: "Pastas", icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
     { path: "/task", label: "Tarefas", icon: FiCheckSquare, show: true },
     { path: "/document", label: "Documentos", icon: FiFile, show: true },
-    { path: "/settings", label: "Configurações", icon: FiSettings, show: true },
   ];
 
   const toggleSidebar = () => {
+    console.log('Toggle clicado:', { isCollapsed, isMobile }); // DEBUG - remover após teste
     setIsCollapsed(!isCollapsed);
   };
 
@@ -495,11 +494,10 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
           )}
           {isCollapsed && <LogoIcon>D</LogoIcon>}
           
-          {!isMobile && (
-            <ToggleButton onClick={toggleSidebar}>
-              {isCollapsed ? <FiMenu size={20} /> : <FiX size={20} />}
-            </ToggleButton>
-          )}
+          {/* Removida a condição !isMobile - deixar o CSS controlar */}
+          <ToggleButton onClick={toggleSidebar}>
+            {isCollapsed ? <FiMenu size={20} /> : <FiX size={20} />}
+          </ToggleButton>
         </Header>
 
         <Navigation>
