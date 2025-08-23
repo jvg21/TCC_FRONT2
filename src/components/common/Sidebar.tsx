@@ -1,6 +1,4 @@
-
 import React, { useEffect, useState } from "react";
-
 import styled from "styled-components";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
@@ -37,7 +35,8 @@ const Wrap = styled.aside<WrapProps>`
   width: ${({ $isCollapsed }) => ($isCollapsed ? '60px' : '260px')};
 
   @media (max-width: 768px) {
-    width: ${({ $isCollapsed }) => ($isCollapsed ? '0px' : '280px')};
+    width: 280px;
+    transform: translateX(${({ $isCollapsed }) => ($isCollapsed ? '-100%' : '0')});
     box-shadow: ${({ $isCollapsed }) => 
       $isCollapsed ? 'none' : '0 0 20px rgba(0, 0, 0, 0.3)'};
   }
@@ -271,7 +270,6 @@ const ContentShifter = styled.div<{ $isCollapsed: boolean }>`
   }
 `;
 
-
 interface SidebarProps {
   children?: React.ReactNode;
 }
@@ -293,9 +291,10 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       
-      // Em mobile, sidebar começa fechada
-      if (mobile && !isCollapsed) {
+      // Em mobile, sidebar começa fechada apenas na primeira vez
+      if (mobile && isCollapsed === false && !document.querySelector('[data-sidebar-initialized]')) {
         setIsCollapsed(true);
+        document.body.setAttribute('data-sidebar-initialized', 'true');
       }
     };
     
@@ -304,18 +303,16 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, [isCollapsed]);
 
-  
-
-const navigationItems = [
-  { path: "/", label: "Home", icon: FiHome, show: true },
-  { path: "/companies", label: "Empresas", icon: FiUsers, show: profile === 1 },
-  { path: "/user", label: "Usuários", icon: FiUsers, show: profile <= 2 && profile > 0 },
-  { path: "/group", label: "Grupos", icon: FiGroup, show: profile <= 2 && profile > 0 },
-  { path: "/folder", label: "Pastas", icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
-  { path: "/task", label: "Tarefas", icon: FiCheckSquare, show: true },
-  { path: "/document", label: "Documentos", icon: FiFile, show: true },
-  { path: "/settings", label: "Configurações", icon: FiSettings, show: true },
-];
+  const navigationItems = [
+    { path: "/", label: "Home", icon: FiHome, show: true },
+    { path: "/companies", label: "Empresas", icon: FiUsers, show: profile === 1 },
+    { path: "/user", label: "Usuários", icon: FiUsers, show: profile <= 2 && profile > 0 },
+    { path: "/group", label: "Grupos", icon: FiGroup, show: profile <= 2 && profile > 0 },
+    { path: "/folder", label: "Pastas", icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
+    { path: "/task", label: "Tarefas", icon: FiCheckSquare, show: true },
+    { path: "/document", label: "Documentos", icon: FiFile, show: true },
+    { path: "/settings", label: "Configurações", icon: FiSettings, show: true },
+  ];
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
@@ -335,7 +332,6 @@ const navigationItems = [
   };
 
   return (
-
     <>
       {isMobile && (
         <MobileToggle onClick={toggleSidebar}>
@@ -386,7 +382,6 @@ const navigationItems = [
         {children}
       </ContentShifter>
     </>
-
   );
 };
 
