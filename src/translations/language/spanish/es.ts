@@ -152,7 +152,8 @@ export const esTranslations = {
     login_button: "Iniciar Sesión",
     logging_in: "Iniciando sesión...",
     light_mode: "Modo Claro",
-    dark_mode: "Modo Oscuro"
+    dark_mode: "Modo Oscuro",
+    logout: "Cerrar Sesión"
   },
 
   // Recuperación de contraseña
@@ -244,6 +245,28 @@ export const esTranslations = {
   loading: {
     please_wait: "Por favor, espera...",
     loading: "Cargando...",
-    processing: "Procesando..."
+    processing: "Procesando..."},
+
+    settings: {
+    title: "Configuración",
+    account: "Cuenta",
+    account_description: "Información de tu cuenta",
+    appearance: "Apariencia",
+    appearance_description: "Personaliza la apariencia del sistema",
+    theme: "Tema",
+    theme_description: "Elige entre modo claro u oscuro",
+    language: "Idioma", 
+    language_description: "Selecciona tu idioma preferido",
+    session: "Sesión",
+    session_description: "Administra tu sesión del sistema",
+    logout: "Cerrar Sesión",
+    logout_description: "Finaliza tu sesión actual y regresa a la pantalla de inicio"
+  },
+
+  // Perfiles de usuario
+  profiles: {
+    administrator: "Administrador",
+    manager: "Gerente",
+    employee: "Empleado"
+  },
   }
-};

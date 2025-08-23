@@ -27,7 +27,9 @@ export const ptTranslations = {
     close: "Fechar",
     view: "Visualizar",
     export: "Exportar",
-    import: "Importar"
+    import: "Importar",
+    activate: "Ativar",
+    deactivate: "Desativar"
   },
 
   // Estados
@@ -51,12 +53,15 @@ export const ptTranslations = {
     name: "Nome",
     tax_id: "CNPJ",
     email: "E-mail",
-    zipcode:"Cep",
+    zipcode: "CEP",
     phone: "Telefone",
     address: "Endereço",
     created_at: "Criado em",
     updated_at: "Atualizado em",
-    is_active: "Status"
+    is_active: "Status",
+    createSucess: "Empresa criada com sucesso!",
+    updateSucess: "Empresa atualizada com sucesso!",
+    updateStatusSucess: "Status da empresa alterado com sucesso!"
   },
 
   // Usuários
@@ -73,7 +78,12 @@ export const ptTranslations = {
     created_at: "Criado em",
     updated_at: "Atualizado em",
     is_active: "Status",
-    last_login: "Último Login"
+    last_login: "Último Login",
+    password: "Senha",
+    passwordRequirements: "A senha deve ter pelo menos 6 caracteres, incluindo maiúscula, minúscula e número",
+    createSucess: "Usuário criado com sucesso!",
+    updateSucess: "Usuário atualizado com sucesso!",
+    createError: "Erro ao criar usuário"
   },
 
   // Grupos
@@ -139,7 +149,6 @@ export const ptTranslations = {
     created_at: "Criado em",
     updated_at: "Atualizado em",
     is_active: "Status"
-
   },
 
   // Login
@@ -154,8 +163,8 @@ export const ptTranslations = {
     logging_in: "Entrando...",
     light_mode: "Modo Claro",
     dark_mode: "Modo Escuro",
-    is_active: "Status"
-
+    is_active: "Status",
+    logout: "Sair"
   },
 
   // Recuperação de senha
@@ -188,6 +197,35 @@ export const ptTranslations = {
     recent_activities: "Atividades Recentes",
     statistics: "Estatísticas"
   },
+
+  // Configurações
+  settings: {
+    title: "Configurações",
+    account: "Conta",
+    account_description: "Informações da sua conta",
+    appearance: "Aparência",
+    appearance_description: "Personalize a aparência do sistema",
+    theme: "Tema",
+    theme_description: "Escolha entre modo claro ou escuro",
+    language: "Idioma",
+    language_description: "Selecione seu idioma preferido",
+    session: "Sessão",
+    session_description: "Gerencie sua sessão no sistema",
+    logout: "Sair do Sistema",
+    logout_description: "Encerra sua sessão atual e retorna à tela de login"
+  },
+
+  // Perfis de usuário
+  profiles: {
+    administrator: "Administrador",
+    manager: "Gerente",
+    employee: "Funcionário"
+  },
+
+  // Perfis (usado no enum)
+  administrator: "Administrador",
+  manager: "Gerente",
+  employee: "Funcionário",
 
   // Formulários
   forms: {

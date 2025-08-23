@@ -225,10 +225,10 @@ const SettingsPage: React.FC = () => {
 
   const getProfileName = (profile: number) => {
     switch (profile) {
-      case 1: return t('administrator') || 'Administrador';
-      case 2: return t('manager') || 'Gerente';
-      case 3: return t('employee') || 'Funcionário';
-      default: return 'Usuário';
+      case 1: return t('profiles.administrator') || 'Administrador';
+      case 2: return t('profiles.manager') || 'Gerente';
+      case 3: return t('profiles.employee') || 'Funcionário';
+      default: return t('profiles.employee') || 'Usuário';
     }
   };
 
@@ -252,10 +252,10 @@ const SettingsPage: React.FC = () => {
 
   return (
     <PageLayout
-      title={t("settings.title") || "Configurações"}
+      title={t("settings.title")}
       actions={
         <Button variant="ghost" onClick={() => navigate(-1)}>
-          {t("actions.back") || "Voltar"}
+          {t("actions.back")}
         </Button>
       }
     >
@@ -268,9 +268,9 @@ const SettingsPage: React.FC = () => {
                 <FiUser size={20} />
               </SectionIcon>
               <div>
-                <SectionTitle>{t("settings.account") || "Conta"}</SectionTitle>
+                <SectionTitle>{t("settings.account")}</SectionTitle>
                 <SectionDescription>
-                  {t("settings.account_description") || "Informações da sua conta"}
+                  {t("settings.account_description")}
                 </SectionDescription>
               </div>
             </SectionHeader>
@@ -280,7 +280,7 @@ const SettingsPage: React.FC = () => {
                 {user?.Name ? getUserInitials(user.Name) : 'U'}
               </UserAvatar>
               <UserInfo>
-                <UserName>{user?.Name || 'Usuário'}</UserName>
+                <UserName>{user?.Name || t("profiles.employee")}</UserName>
                 <UserRole>{getProfileName(user?.Profile || 0)}</UserRole>
               </UserInfo>
             </UserInfoCard>
@@ -295,9 +295,9 @@ const SettingsPage: React.FC = () => {
                 <FiSettings size={20} />
               </SectionIcon>
               <div>
-                <SectionTitle>{t("settings.appearance") || "Aparência"}</SectionTitle>
+                <SectionTitle>{t("settings.appearance")}</SectionTitle>
                 <SectionDescription>
-                  {t("settings.appearance_description") || "Personalize a aparência do sistema"}
+                  {t("settings.appearance_description")}
                 </SectionDescription>
               </div>
             </SectionHeader>
@@ -305,9 +305,9 @@ const SettingsPage: React.FC = () => {
             {/* Configuração de Tema */}
             <SettingItem>
               <SettingInfo>
-                <SettingLabel>{t("settings.theme") || "Tema"}</SettingLabel>
+                <SettingLabel>{t("settings.theme")}</SettingLabel>
                 <SettingSubtext>
-                  {t("settings.theme_description") || "Escolha entre modo claro ou escuro"}
+                  {t("settings.theme_description")}
                 </SettingSubtext>
               </SettingInfo>
               <SettingControl>
@@ -317,14 +317,14 @@ const SettingsPage: React.FC = () => {
                     onClick={() => themeName === "dark" && toggleTheme()}
                   >
                     <FiSun size={16} />
-                    {t("theme.light") || "Claro"}
+                    {t("theme.light")}
                   </ThemeOption>
                   <ThemeOption 
                     $isActive={themeName === "dark"}
                     onClick={() => themeName === "light" && toggleTheme()}
                   >
                     <FiMoon size={16} />
-                    {t("theme.dark") || "Escuro"}
+                    {t("theme.dark")}
                   </ThemeOption>
                 </ThemeOptionGroup>
               </SettingControl>
@@ -333,7 +333,7 @@ const SettingsPage: React.FC = () => {
             {/* Configuração de Idioma */}
             <SettingItem>
               <SettingInfo>
-                <SettingLabel>{t("settings.language") || "Idioma"}</SettingLabel>
+                <SettingLabel>{t("settings.language")}</SettingLabel>
                 <SettingSubtext>
                   {getCurrentLanguageLabel()}
                 </SettingSubtext>
@@ -359,24 +359,24 @@ const SettingsPage: React.FC = () => {
                 <FiLogOut size={20} />
               </SectionIcon>
               <div>
-                <SectionTitle>{t("settings.session") || "Sessão"}</SectionTitle>
+                <SectionTitle>{t("settings.session")}</SectionTitle>
                 <SectionDescription>
-                  {t("settings.session_description") || "Gerencie sua sessão no sistema"}
+                  {t("settings.session_description")}
                 </SectionDescription>
               </div>
             </SectionHeader>
 
             <SettingItem>
               <SettingInfo>
-                <SettingLabel>{t("settings.logout") || "Sair do Sistema"}</SettingLabel>
+                <SettingLabel>{t("settings.logout")}</SettingLabel>
                 <SettingSubtext>
-                  {t("settings.logout_description") || "Encerra sua sessão atual e retorna à tela de login"}
+                  {t("settings.logout_description")}
                 </SettingSubtext>
               </SettingInfo>
               <SettingControl>
                 <LogoutButton variant="danger" onClick={handleLogout}>
                   <FiLogOut size={16} />
-                  &nbsp;{t("login.logout") || "Sair"}
+                  &nbsp;{t("login.logout")}
                 </LogoutButton>
               </SettingControl>
             </SettingItem>
