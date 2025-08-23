@@ -51,6 +51,7 @@ export const enTranslations = {
     name: "Name",
     tax_id: "Tax ID",
     email: "Email",
+    zipcode:"Zip Code",
     phone: "Phone",
     address: "Address",
     created_at: "Created at",
@@ -72,7 +73,8 @@ export const enTranslations = {
     created_at: "Created at",
     updated_at: "Updated at",
     is_active: "Status",
-    last_login: "Last Login"
+    last_login: "Last Login",
+    
   },
 
   // Groups

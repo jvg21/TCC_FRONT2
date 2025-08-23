@@ -53,7 +53,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     const isNameValid = Name.trim().length > 0;
     const isTaxIdValid = !!TaxId && regexPatterns.cnpj.test(TaxId);
     const isEmailValid = !!Email && regexPatterns.email.test(Email);
-    const isPhoneValid = !!Phone && regexPatterns.phone.test(Phone);
+    const isPhoneValid = !!Phone && regexPatterns.internationalPhone.test(Phone);
     const isZipCodeValid = !!ZipCode && regexPatterns.cep.test(ZipCode);
     console.log("Validation results:", {
       isNameValid,
@@ -126,7 +126,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
       </Row>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
-        <Button type="submit" disabled={canSave}>{t("actions.save")}</Button>
+        <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
       </div>
     </form>
   );

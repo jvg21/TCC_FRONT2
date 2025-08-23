@@ -1,4 +1,6 @@
+
 import React, { useEffect, useState } from "react";
+
 import styled from "styled-components";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
@@ -269,6 +271,7 @@ const ContentShifter = styled.div<{ $isCollapsed: boolean }>`
   }
 `;
 
+
 interface SidebarProps {
   children?: React.ReactNode;
 }
@@ -277,6 +280,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [profile, setProfile] = useState<number>(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
   const { user } = useAuthContext();
   const location = useLocation();
 
@@ -330,7 +334,12 @@ const navigationItems = [
     }
   };
 
+  useEffect(() => {
+    setProfile(user?.Profile || 0)
+  }, [user])
+
   return (
+
     <>
       {isMobile && (
         <MobileToggle onClick={toggleSidebar}>
@@ -381,6 +390,7 @@ const navigationItems = [
         {children}
       </ContentShifter>
     </>
+
   );
 };
 

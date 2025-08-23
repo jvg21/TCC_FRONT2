@@ -149,6 +149,9 @@ export const useCompanies = () => {
         ...transformPayloadToCamelCase(updates)
       };
 
+      camelCasePayload.email = camelCasePayload.email.toLowerCase();
+      camelCasePayload.phone = camelCasePayload.phone.replace(/\D/g, "");
+
       const response = await fetch(`${apiUrl}/Company/UpdateCompany`, {
         method: "PUT",
         headers: {

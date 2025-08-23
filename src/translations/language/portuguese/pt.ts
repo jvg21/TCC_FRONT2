@@ -51,6 +51,7 @@ export const ptTranslations = {
     name: "Nome",
     tax_id: "CNPJ",
     email: "E-mail",
+    zipcode:"Cep",
     phone: "Telefone",
     address: "Endereço",
     created_at: "Criado em",
@@ -138,6 +139,7 @@ export const ptTranslations = {
     created_at: "Criado em",
     updated_at: "Atualizado em",
     is_active: "Status"
+
   },
 
   // Login
@@ -151,7 +153,9 @@ export const ptTranslations = {
     login_button: "Entrar",
     logging_in: "Entrando...",
     light_mode: "Modo Claro",
-    dark_mode: "Modo Escuro"
+    dark_mode: "Modo Escuro",
+    is_active: "Status"
+
   },
 
   // Recuperação de senha

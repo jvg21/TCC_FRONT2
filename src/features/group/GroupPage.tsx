@@ -25,7 +25,7 @@ const GroupPage: React.FC = () => {
     { key: "Description", header: t("groups.description"), render: (row) => row.Description || "-" },
     {
       key: "IsActive",
-      header: t("group.is_active"),
+      header: t("groups.is_active"),
       // Renderiza o status com cores -------------------------------------------
       render: (row) => (
         <span style={{
