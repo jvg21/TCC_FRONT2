@@ -1,37 +1,81 @@
 import React from "react";
 import styled from "styled-components";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
 
-const Root = styled.div`
-  display: grid;
-  grid-template-columns: 240px 1fr;
+const PageContainer = styled.div`
+  padding: 24px;
   min-height: 100vh;
-`;
-
-const Content = styled.main`
-  padding: ${({ theme }) => theme.spacing.lg};
   background: ${({ theme }) => theme.colors.background};
+  
+  @media (max-width: 768px) {
+    padding: 80px 16px 16px 16px; // Top padding para não conflitar com o toggle mobile
+  }
 `;
 
-const TitleBar = styled.div`
-  display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;
+const PageHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
-const Title = styled.h2` margin:0; `;
+const PageTitle = styled.h1`
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  line-height: 1.2;
+  
+  @media (max-width: 768px) {
+    font-size: 24px;
+    text-align: center;
+  }
+`;
 
-const PageLayout: React.FC<{ title?: string; children: React.ReactNode; actions?: React.ReactNode }> = ({ title, children, actions }) => {
+const PageActions = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+`;
+
+const PageContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+interface PageLayoutProps {
+  title: string;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+}
+
+const PageLayout: React.FC<PageLayoutProps> = ({ 
+  title, 
+  actions, 
+  children 
+}) => {
   return (
-    <Root>
-      <Sidebar />
-      <div>
-        <Header />
-        <Content>
-          {title && <TitleBar><Title>{title}</Title><div>{actions}</div></TitleBar>}
-          {children}
-        </Content>
-      </div>
-    </Root>
+    <PageContainer>
+      <PageHeader>
+        <PageTitle>{title}</PageTitle>
+        {actions && <PageActions>{actions}</PageActions>}
+      </PageHeader>
+      <PageContent>
+        {children}
+      </PageContent>
+    </PageContainer>
   );
 };
 
