@@ -9,8 +9,8 @@ import PageLayout from "../../components/common/PageLayout";
 import type { Folder } from "./types";
 import { FolderForm } from "./FolderForm";
 import React, { useState } from "react";
-import { useFolder } from "./useFolder";
 import { useTranslation } from "react-i18next";
+import { useFolder } from "./useFolder";
 
 
 const FolderPage: React.FC = () => {
@@ -21,7 +21,7 @@ const FolderPage: React.FC = () => {
   const { t } = useTranslation();
 
 
-  const Columns = (onEdit: (c: Folder) => void, onDelete: (id: string) => void): ColumnDef<Folder>[] => [
+  const Columns = (onEdit: (c: Folder) => void, onDelete: (id: number) => void): ColumnDef<Folder>[] => [
     { key: "Name", header: t("folders.name"), render: (row) => row.Name || "-" },
     { key: "FolderId", header: t("folders.parent_folder"), render: (row) => row.FolderId || "-" },
     { key: "UserId", header: t("folders.user"), render: (row) => row.UserId || "-" },
@@ -39,24 +39,23 @@ const FolderPage: React.FC = () => {
       )
     },
     {
-              key: "actions",
-              header: t("actions.actions"),
-              width: "160px",
-              render: (row) => (
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button title={t("actions.edit")} onClick={() => onEdit(row)}>
-                    <FiEdit />
-                  </button>
-                  <button
-                    title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
-                    //onClick={() => onToggleStatus(row.FolderId)}
-                    onClick={() => {}}
-                  >
-                    <FiTrash2 />
-                  </button>
-                </div>
-              )
-            }
+      key: "actions",
+      header: t("actions.actions"),
+      width: "160px",
+      render: (row) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
+            <FiEdit />
+          </button>
+          <button
+            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
+            onClick={() => softDelete(row.FolderId)}
+          >
+            <FiTrash2 />
+          </button>
+        </div>
+      )
+    }
   ];
 
   const filteredFolder = React.useMemo(() => {
@@ -95,7 +94,7 @@ const FolderPage: React.FC = () => {
     modal.close();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     softDelete(id);
   };
 

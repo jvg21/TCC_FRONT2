@@ -1,45 +1,217 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import type { Folder } from "./types";
-import { mockFolder } from "./folder.data";
-
+import { getCookie } from "../../utils/Cookies";
+import type { ApiResponse } from "../../types";
+import { notificationActions } from "../notifications/useNotification";
+import { t } from "i18next";
 
 export const useFolder = () => {
-  const [folder, setFolder] = useState<Folder[]>(() => [...mockFolder]);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const [query, setQuery] = useState("");
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const token = getCookie('authToken') || "";
+
   const activeFolder = useMemo(() => {
-    return folder.filter((c) => !c.IsActive && c.Name.toLowerCase().includes(query.toLowerCase()));
-  }, [folder, query]);
+    return folders.filter((f) => f.IsActive);
+  }, [folders]);
 
-  const create = (payload: Omit<Folder, "CreatedAt" | "UpdatedAt" | "IsActive"| "ParentFolderId" > ) => {
-    const newFolder: Folder = {
-      ...payload,
-      FolderId: '1',
-      CreatedAt: new Date().toISOString(),
-      IsActive: false
-    };
-    setFolder((s) => [newFolder, ...s]);
-    return newFolder;
+  const deactiveFolder = useMemo(() => {
+    return folders.filter((f) => !f.IsActive);
+  }, [folders]);
+
+  const transformApiDataToPascalCase = (apiData: any[]): Folder[] => {
+    return apiData.map(item => ({
+      FolderId: item.folderId,
+      Name: item.name,
+      ParentFolderId: item.parentFolderId,
+      UserId: item.userId,
+      ValidatorId: item.validatorId,
+      IsActive: item.isActive,
+      CreatedAt: item.createdAt,
+      UpdatedAt: item.updatedAt,
+      Documents: item.documents || []
+    }));
   };
 
-  const update = (id: string, updates: Partial<Folder>) => {
-    setFolder((s) => s.map((c) => c.FolderId === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c));
+  const get = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/Folder/GetListFolder`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+      const transformedFolders = transformApiDataToPascalCase(data.objeto);
+      setFolders(transformedFolders);
+      return data;
+    } catch (err) {
+      console.error("Erro ao buscar pastas:", err);
+      throw err;
+    }
   };
 
-  const softDelete = (id: string) => {
-    setFolder((s) => s.map((c) => c.FolderId === id ? { ...c, isDeleted: true } : c));
+  const transformSingleApiData = (item: any): Folder => ({
+    FolderId: item.folderId,
+    Name: item.name,
+    ParentFolderId: item.parentFolderId,
+    UserId: item.userId,
+    ValidatorId: item.validatorId,
+    IsActive: item.isActive,
+    CreatedAt: item.createdAt,
+    UpdatedAt: item.updatedAt,
+    Documents: item.documents || []
+  });
+
+  const transformPayloadToCamelCase = (payload: any) => ({
+    folderId: payload.FolderId || null,
+    name: payload.Name,
+    parentFolderId: payload.ParentFolderId || null,
+    validatorId: payload.ValidatorId
+  });
+
+  const create = async (payload: Omit<Folder, "FolderId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId" | "Documents">) => {
+    try {
+      const camelCasePayload = transformPayloadToCamelCase(payload);
+
+      console.log("Dados enviados para criar pasta:", camelCasePayload);
+
+      const response = await fetch(`${apiUrl}/Folder/AddFolder`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(camelCasePayload),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      const newFolder: Folder = transformSingleApiData(data.objeto);
+      setFolders((f) => [newFolder, ...f]);
+      notificationActions.showNotification(t("folders.createSuccess"), 'success');
+      return data;
+    } catch (err) {
+      console.error("Erro ao criar pasta:", err);
+      throw err;
+    }
   };
 
-  
+  const update = async (id: number, payload: Folder) => {
+    try {
+      const camelCasePayload = transformPayloadToCamelCase(payload);
+
+      const response = await fetch(`${apiUrl}/Folder/UpdateFolder`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(camelCasePayload),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      const updatedFolder: Folder = transformSingleApiData(data.objeto);
+      setFolders((f) => f.map((f) => f.FolderId === id ? updatedFolder : f));
+      notificationActions.showNotification(t("folders.updateSuccess"), 'success');
+      return data
+    } catch (err) {
+      console.error("Erro ao atualizar pasta:", err);
+      throw err;
+    }
+  };
+
+  const softDelete = async (folderId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/Folder/ToogleStatusFolder/${folderId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      notificationActions.showNotification(t("folders.statusToggleSuccess"), 'success');
+      await get();
+      return { ...data, objeto: transformSingleApiData(data.objeto) };
+    } catch (err) {
+      console.error("Erro ao alterar status da pasta:", err);
+      throw err;
+    }
+  };
+
+  const moveFolder = async (folderId: number, newParentFolderId: number | null) => {
+    try {
+      const payload = {
+        folderId: folderId,
+        parentFolderId: newParentFolderId
+      };
+
+      const response = await fetch(`${apiUrl}/Folder/MoveFolder`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      notificationActions.showNotification(t("folders.moveSuccess"), 'success');
+      await get();
+      return { ...data, objeto: transformSingleApiData(data.objeto) };
+    } catch (err) {
+      console.error("Erro ao mover pasta:", err);
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    if (token) get();
+  }, [token]);
 
   return {
-    folder,
+    folders,
     activeFolder,
+    deactiveFolder,
     query,
     setQuery,
+    get,
     create,
     update,
     softDelete,
-    restore
-  } as const;
+    moveFolder
+  };
 };

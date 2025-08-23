@@ -22,15 +22,13 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, isEditing = false, o
   const [Name, setName] = useState(initial.Name ?? "");
   const [FolderId, setFolderId] = useState(initial.FolderId ?? "");
   const [UserId, setUserId] = useState(initial.UserId ?? "");
-  const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
   const { t } = useTranslation();
 
   useEffect(() => {
     setName(initial.Name ?? "");
     setFolderId(initial.FolderId ?? "");
     setUserId(initial.UserId ?? "");
-     setIsActive(initial.IsActive ? 'true' : 'false');
-  }, [initial.Name, initial.FolderId, initial.UserId, initial.IsActive]);
+  }, [initial.Name, initial.FolderId, initial.UserId]);
 
   const validateFields = () => {
       const isNameValid = Name.trim().length > 0;
@@ -46,9 +44,7 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, isEditing = false, o
     e.preventDefault();
     if (!canSave) return;
 
-    const formattedIsActive = IsActive === "true";
-
-    onSave({ Name, FolderId, UserId, IsActive: formattedIsActive });
+    onSave({ Name, FolderId, UserId});
   };
 
   return (
@@ -67,12 +63,12 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, isEditing = false, o
         ]} /></Col>
       </Row>
 
-      <Row>
+      {/* <Row>
         <Col><Select label={t("folders.is_active")} required options={[
           { value: "false", label: t("status.disabled") },
           { value: "true", label: t("status.enabled") },
         ]} /></Col>
-      </Row>
+      </Row> */}
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
         <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>

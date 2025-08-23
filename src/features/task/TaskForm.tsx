@@ -27,7 +27,6 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     const [Status, setStatus] = useState(initial.Status ?? "");
     const [AssigneeId, setAssigneeId] = useState(initial.AssigneeId ?? "");
     const [UserId, setUserId] = useState(initial.UserId ?? "");
-    const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
     const { t } = useTranslation();
 
 
@@ -39,8 +38,7 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         setStatus(initial.Status ?? "");
         setAssigneeId(initial.AssigneeId ?? "");
         setUserId(initial.UserId ?? "");
-        setIsActive(initial.IsActive ? 'true' : 'false');
-    }, [initial.Title, initial.Description, initial.DueDate, initial.Priority, initial.Status, initial.AssigneeId, initial.UserId, initial.IsActive]);
+    }, [initial.Title, initial.Description, initial.DueDate, initial.Priority, initial.Status, initial.AssigneeId, initial.UserId]);
 
     const validateFields = () => {
         const isTitleValid = Title.trim().length > 0;
@@ -57,9 +55,7 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         e.preventDefault();
         if (!canSave) return;
 
-        const formattedIsActive = IsActive === "true";
-
-        onSave({ Title, Description, DueDate, Priority, Status, AssigneeId, UserId, IsActive: formattedIsActive });
+        onSave({ Title, Description, DueDate, Priority, Status, AssigneeId, UserId });
     };
 
     return (
@@ -81,12 +77,6 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
                 ]} /></Col>
             </Row>
             
-            <Row>
-                <Col><Select label={t("tasks.is_active")} required options={[
-                    { value: "false", label: t("status.disabled") },
-                    { value: "true", label: t("status.enabled") },
-                ]} /></Col>
-            </Row>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                 <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
                 <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>

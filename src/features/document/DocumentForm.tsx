@@ -23,7 +23,6 @@ export const DocumentForm: React.FC<Props> = ({ initial = {}, isEditing = false,
     const [Content, setContent] = useState(initial.Content ?? "");
     const [UserId, setUserId] = useState(initial.UserId ?? "");
     const [FolderId, setFolderId] = useState(initial.FolderId ?? "");
-    const [IsActive, setIsActive] = useState(initial.IsActive ? 'true' : 'false');
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -31,8 +30,7 @@ export const DocumentForm: React.FC<Props> = ({ initial = {}, isEditing = false,
         setContent(initial.Content ?? "");
         setUserId(initial.UserId ?? "");
         setFolderId(initial.FolderId ?? "");
-        setIsActive(initial.IsActive ? 'true' : 'false');
-    }, [initial.Title, initial.Content, initial.UserId, initial.FolderId, initial.IsActive]);
+    }, [initial.Title, initial.Content, initial.UserId, initial.FolderId]);
 
     const validateFields = () => {
         const isTitleValid = Title.trim().length > 0;
@@ -49,9 +47,8 @@ export const DocumentForm: React.FC<Props> = ({ initial = {}, isEditing = false,
         e.preventDefault();
         if (!canSave) return;
 
-        const formattedIsActive = IsActive === "true";
         
-        onSave({ Title, Content, UserId, FolderId, IsActive: formattedIsActive });
+        onSave({ Title, Content, UserId, FolderId });
     };
 
     return (
@@ -73,12 +70,6 @@ export const DocumentForm: React.FC<Props> = ({ initial = {}, isEditing = false,
                 ]} /></Col>
             </Row>
 
-            <Row>
-                <Col><Select label={t("documents.is_active")} required value={IsActive} options={[
-                    { value: "false", label: t("status.disabled") },
-                    { value: "true", label: t("status.enabled") },
-                ]} /></Col>
-            </Row>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                 <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
                 <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
