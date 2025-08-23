@@ -9,6 +9,10 @@ export const regexPatterns = {
   // Telefone: (00) 00000-0000 ou (00) 0000-0000
   phone: /^\+\d{2}\s\(\d{2}\)\s\d{4,5}-\d{4}$/,
 
+  // Telefone internacional: +00 (00) 00000-0000
+  internationalPhone: /^\+\d{1,3}\s\(\d{1,3}\)\s\d{4,5}-\d{4}$/,
+
+
   // CEP: 00000-000
   cep: /^\d{5}-\d{3}$/,
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
@@ -12,7 +12,12 @@ const Wrap = styled.aside`
 `;
 
 const Sidebar: React.FC = () => {
+  const [profile, setProfile] = React.useState<number>(0);
   const { user } = useAuthContext();
+
+  useEffect(() => {
+    setProfile(user?.Profile || 0)
+  }, [user])
 
   return (
     <Wrap>
@@ -20,19 +25,17 @@ const Sidebar: React.FC = () => {
         <Link to="/">Home</Link>
 
         {
-          user && user.Profile === 1 && (
+          profile === 1 && (
             <Link to="/companies">Empresas</Link>
-
           )
         }
         {
-          user && user.Profile <= 2 &&  user.Profile > 0 &&(
+          profile <= 2 && profile > 0 && (
             <>
               <Link to="/user">Usuários</Link>
               <Link to="/group">Grupos</Link>
               <Link to="/folder">Pastas</Link>
             </>
-
           )
         }
         <Link to="/task">Tarefas</Link>
