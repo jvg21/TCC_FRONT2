@@ -18,12 +18,13 @@ type Props = {
   initial?: Partial<User>;
   isEditing?: boolean;
   onCancel: () => void;
-  onSave: (data: Omit<User, "UserId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "PreferredLanguage" | "PreferredTheme" | "Password" | "LastLoginAt" | "CompanyId"> & Partial<User>) => void;
+  onSave: (data: Omit<User, "UserId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "PreferredLanguage" | "PreferredTheme" | "LastLoginAt" | "CompanyId"> & Partial<User>) => void;
 };
 
 export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
   const [Email, setEmail] = useState(initial.Email ?? "");
+  const [Password, setPassword] = useState(initial.Password ?? "");
   const [Profile, setProfile] = useState(initial.Profile ?? 0);
   const { t } = useTranslation();
   const { user } = useAuthContext();
@@ -31,14 +32,16 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
   useEffect(() => {
     setName(initial.Name ?? "");
     setEmail(initial.Email ?? "");
+    setPassword(initial.Password ?? "");
     setProfile(initial.Profile ?? 0);
   }, [initial.Name, initial.Email, initial.Profile]);
 
   const validateFields = () => {
     const isNameValid = Name.trim().length > 0;
     const isEmailValid = !!Email && regexPatterns.email.test(Email);
+    const isPasswordValid = Password.trim().length >= 6 && regexPatterns.password.test(Password);
 
-    return isNameValid && isEmailValid;
+    return isNameValid && isEmailValid && isPasswordValid;
   };
 
   const canSave = validateFields();
@@ -48,7 +51,7 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     if (!canSave) return;
     onSave({ Name, Email, Profile });
   };
-  
+
   const userProfile = user?.Profile || 0;
   const profileOptions = profiles.filter(p => {
     if (userProfile === 1) return true; // Admin vê todos
@@ -60,6 +63,11 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     <form onSubmit={handleSubmit}>
       <Row>
         <Col><Input label={t("users.name")} maxLength={20} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
+
+        <Col ><Input hidden={!isEditing} label={t("users.password")} type="password" value={Password} minLength={6} required onChange={(e) => setPassword(e.target.value)}
+          regex={regexPatterns.password}
+          title={t("users.passwordRequirements")}
+        /></Col>
       </Row>
       <Row>
         <Col><Select label={t("users.profile")} required options={profileOptions} /></Col>
