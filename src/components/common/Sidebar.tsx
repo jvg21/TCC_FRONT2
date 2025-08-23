@@ -38,7 +38,8 @@ const Wrap = styled.aside<WrapProps>`
   width: ${({ $isCollapsed }) => ($isCollapsed ? '60px' : '260px')};
 
   @media (max-width: 768px) {
-    width: ${({ $isCollapsed }) => ($isCollapsed ? '0px' : '280px')};
+    width: 280px;
+    transform: translateX(${({ $isCollapsed }) => ($isCollapsed ? '-100%' : '0')});
     box-shadow: ${({ $isCollapsed }) => 
       $isCollapsed ? 'none' : '0 0 20px rgba(0, 0, 0, 0.3)'};
   }
@@ -420,6 +421,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
       
       if (mobile && !isCollapsed) {
         setIsCollapsed(true);
+        document.body.setAttribute('data-sidebar-initialized', 'true');
       }
     };
     
@@ -441,6 +443,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     { path: "/folder", label: "Pastas", icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
     { path: "/task", label: "Tarefas", icon: FiCheckSquare, show: true },
     { path: "/document", label: "Documentos", icon: FiFile, show: true },
+    { path: "/settings", label: "Configurações", icon: FiSettings, show: true },
   ];
 
   const toggleSidebar = () => {

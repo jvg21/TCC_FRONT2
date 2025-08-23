@@ -8,6 +8,10 @@ const Table = styled.table`
   border-radius: ${({ theme }) => theme.borderRadius};
   overflow: hidden;
 `;
+const TableContainer = styled.div`
+  overflow-x: auto;
+  width: 100%;
+`;
 
 const Th = styled.th`
   text-align:left; padding: 12px; font-size: 13px; border-bottom: 1px solid rgba(0,0,0,0.06);
@@ -22,23 +26,25 @@ type Props<T> = {
 
 export function DataTable<T extends Record<string, any>>({ columns, data }: Props<T>) {
   return (
-    <Table>
-      <thead>
-        <tr>
-          {columns.map((c) => <Th key={String(c.key)} style={{ width: c.width }}>{c.header}</Th>)}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((row, idx) => (
-          <tr key={idx}>
-            {columns.map((c) => (
-              <Td key={String(c.key)}>
-                {c.render ? c.render(row) : (row as any)[c.key as string]}
-              </Td>
-            ))}
+    <TableContainer>
+      <Table>
+        <thead>
+          <tr>
+            {columns.map((c) => <Th key={String(c.key)} style={{ width: c.width }}>{c.header}</Th>)}
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {data.map((row, idx) => (
+            <tr key={idx}>
+              {columns.map((c) => (
+                <Td key={String(c.key)}>
+                  {c.render ? c.render(row) : (row as any)[c.key as string]}
+                </Td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </TableContainer>
   );
 }

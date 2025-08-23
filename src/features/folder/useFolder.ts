@@ -3,10 +3,6 @@ import type { Folder } from "./types";
 import { mockFolder } from "./folder.data";
 
 
-
-
-
-
 export const useFolder = () => {
   const [folder, setFolder] = useState<Folder[]>(() => [...mockFolder]);
   const [query, setQuery] = useState("");
@@ -34,9 +30,7 @@ export const useFolder = () => {
     setFolder((s) => s.map((c) => c.FolderId === id ? { ...c, isDeleted: true } : c));
   };
 
-  const restore = (id: string) => {
-    setFolder((s) => s.map((c) => c.FolderId === id ? { ...c, isDeleted: false } : c));
-  };
+  
 
   return {
     folder,
