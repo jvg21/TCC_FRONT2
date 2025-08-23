@@ -7,6 +7,7 @@ import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
 import { regexPatterns } from "../../utils/regexUtils";
 import { useAuthContext } from "../../context/AuthContext";
+import { profiles } from "../../enum/profile";
 
 
 const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
@@ -45,10 +46,15 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
-
-
     onSave({ Name, Email, Profile });
   };
+  
+  const userProfile = user?.Profile || 0;
+  const profileOptions = profiles.filter(p => {
+    if (userProfile === 1) return true; // Admin vê todos
+    if (userProfile === 2) return p.value !== '1'; // Manager não vê admin
+    return p.value === '3'; // Employee só vê ele mesmo
+  });
 
   return (
     <form onSubmit={handleSubmit}>
@@ -56,10 +62,7 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         <Col><Input label={t("users.name")} maxLength={20} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Select label={t("users.profile")} required options={[
-          { value: "false", label: t("status.disabled") },
-          { value: "true", label: t("status.enabled") },
-        ]} /></Col>
+        <Col><Select label={t("users.profile")} required options={profileOptions} /></Col>
         <Col><Input label={t("users.email")} value={Email} maxLength={30} required onChange={(e) => setEmail(e.target.value)}
           regex={regexPatterns.email}
         /></Col>
