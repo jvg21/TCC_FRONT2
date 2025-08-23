@@ -63,7 +63,10 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         <Col><Input label={t("users.name")} maxLength={20} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Input label={t("users.profile")} required value={Profile} onChange={(e) => setProfile(Number(e.target.value))} /></Col>
+        <Col><Select label={t("users.profile")} required options={[
+          { value: "false", label: t("status.disabled") },
+          { value: "true", label: t("status.enabled") },
+        ]} /></Col>
         <Col><Input label={t("users.email")} value={Email} maxLength={30} required onChange={(e) => setEmail(e.target.value)}
         regex={regexPatterns.email}
         /></Col>
