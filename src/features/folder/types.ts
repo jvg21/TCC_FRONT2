@@ -1,10 +1,11 @@
 export interface Folder {
-    FolderId: string;
-    Name: string;
-    ParentFolderId?: string;
-    UserId?: string;
-    CreatedAt?: string;
-    UpdatedAt?: string;
-    IsActive?: boolean;
-  }
-  
+  FolderId: number;
+  Name: string;
+  ParentFolderId?: number | null;
+  UserId?: number;
+  ValidatorId: number;
+  IsActive?: boolean;
+  CreatedAt?: string;
+  UpdatedAt?: string;
+  Documents?: Document[];
+}
