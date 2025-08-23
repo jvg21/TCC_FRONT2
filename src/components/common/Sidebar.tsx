@@ -10,7 +10,8 @@ import {
   FiCheckSquare, 
   FiFile, 
   FiMenu,
-  FiX
+  FiX,
+  FiSettings
 } from "react-icons/fi";
 
 interface WrapProps {
@@ -299,15 +300,18 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, [isCollapsed]);
 
-  const navigationItems = [
-    { path: "/", label: "Home", icon: FiHome, show: true },
-    { path: "/companies", label: "Empresas", icon: FiUsers, show: profile === 1 },
-    { path: "/user", label: "Usuários", icon: FiUsers, show: profile <= 2 && profile > 0 },
-    { path: "/group", label: "Grupos", icon: FiGroup, show: profile <= 2 && profile > 0 },
-    { path: "/folder", label: "Pastas", icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
-    { path: "/task", label: "Tarefas", icon: FiCheckSquare, show: true },
-    { path: "/document", label: "Documentos", icon: FiFile, show: true },
-  ];
+  
+
+const navigationItems = [
+  { path: "/", label: "Home", icon: FiHome, show: true },
+  { path: "/companies", label: "Empresas", icon: FiUsers, show: profile === 1 },
+  { path: "/user", label: "Usuários", icon: FiUsers, show: profile <= 2 && profile > 0 },
+  { path: "/group", label: "Grupos", icon: FiGroup, show: profile <= 2 && profile > 0 },
+  { path: "/folder", label: "Pastas", icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
+  { path: "/task", label: "Tarefas", icon: FiCheckSquare, show: true },
+  { path: "/document", label: "Documentos", icon: FiFile, show: true },
+  { path: "/settings", label: "Configurações", icon: FiSettings, show: true },
+];
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
