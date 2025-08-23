@@ -334,10 +334,6 @@ const navigationItems = [
     }
   };
 
-  useEffect(() => {
-    setProfile(user?.Profile || 0)
-  }, [user])
-
   return (
 
     <>

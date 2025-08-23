@@ -8,6 +8,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   setIsAuthenticated: (value: boolean) => void;
   user: User | null;
+  setUser: (user: User|null) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, setIsAuthenticated }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, setIsAuthenticated, setUser }}>
       {children}
     </AuthContext.Provider>
   );

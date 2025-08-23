@@ -4,10 +4,12 @@ import { t } from "i18next";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
+import { useAuthContext } from "../../context/AuthContext";
 
 export const useUser = () => {
   const [user, setUser] = useState<User[]>([]);
   const [query, setQuery] = useState("");
+  const {user: compan} = useAuthContext();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
@@ -25,9 +27,13 @@ export const useUser = () => {
       name: payload.Name,
       email: payload.Email?.toLowerCase(),
       phone: payload.Phone?.replace(/\D/g, ""),
+      preferredLanguage: payload.PreferredLanguage ||1,
+      preferredTheme: payload.PreferredTheme||2,
       profile: payload.Profile,
       password: payload.Password,
-      companyId: payload.CompanyId,
+      companyId: payload.CompanyId || compan?.CompanyId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       isActive: payload.IsActive ?? true
     };
   };
@@ -40,6 +46,7 @@ export const useUser = () => {
       Phone: item.phone,
       Profile: item.profile,
       Password: item.password,
+
       CompanyId: item.companyId,
       IsActive: item.isActive,
       CreatedAt: item.createdAt,

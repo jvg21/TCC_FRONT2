@@ -5,7 +5,7 @@ import { useAuthContext } from "../../context/AuthContext";
 
 export const useLogin = () => {
     const apiUrl = import.meta.env.VITE_API_URL;
-    const { setIsAuthenticated } = useAuthContext();
+    const { setIsAuthenticated, setUser} = useAuthContext();
 
     async function login(email: string, password: string) {
         try {
@@ -29,6 +29,7 @@ export const useLogin = () => {
             setCookie('authToken', data.objeto.token);
             notificationActions.showNotification(data.mensagem || 'Login realizado com sucesso!', 'success');
             setIsAuthenticated(true);
+            setUser(data.objeto.user);
             return data.objeto;
 
         } catch (error) {
@@ -44,6 +45,7 @@ export const useLogin = () => {
         eraseCookie('authToken');
         notificationActions.showNotification('Logout realizado com sucesso', "info");
         setIsAuthenticated(false);
+        setUser(null);
     }
 
     async function resetPassword(email: string) {

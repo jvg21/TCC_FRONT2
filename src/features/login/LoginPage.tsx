@@ -137,6 +137,8 @@ const LoginPage = () => {
     try {
       await login(email, password);
       navigate("/");
+      window.location.reload(); // ← ADICIONAR ESTA LINHA
+
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
