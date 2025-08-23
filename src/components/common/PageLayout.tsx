@@ -5,6 +5,10 @@ const PageContainer = styled.div`
   padding: 24px;
   min-height: 100vh;
   background: ${({ theme }) => theme.colors.background};
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
   
   @media (max-width: 768px) {
     padding: 80px 16px 16px 16px; // Top padding para não conflitar com o toggle mobile

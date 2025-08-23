@@ -26,7 +26,8 @@ const Wrap = styled.aside<WrapProps>`
   border-right: 1px solid rgba(0, 0, 0, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   box-shadow: ${({ $isCollapsed }) => 
     $isCollapsed ? 'none' : '2px 0 10px rgba(0, 0, 0, 0.1)'};
 
@@ -47,6 +48,7 @@ const Header = styled.div<{ $isCollapsed: boolean }>`
   justify-content: ${({ $isCollapsed }) => 
     $isCollapsed ? 'center' : 'space-between'};
   min-height: 80px;
+  flex-shrink: 0; // Impede que o header encolha
 `;
 
 const Logo = styled.div<{ $isCollapsed: boolean }>`
@@ -127,8 +129,10 @@ const MobileToggle = styled(ToggleButton)`
 
 const Navigation = styled.nav`
   padding: 20px 0;
-  flex: 1;
-  overflow-y: hidden;
+  flex: 1; // Ocupa todo o espaço restante
+  overflow-y: auto; // Permite scroll quando necessário
+  overflow-x: hidden; // Evita scroll horizontal
+  min-height: 0; // Permite que flex funcione corretamente
   
   &::-webkit-scrollbar {
     width: 4px;
@@ -142,6 +146,15 @@ const Navigation = styled.nav`
     background: ${({ theme }) => theme.colors.muted}30;
     border-radius: 4px;
   }
+
+  // Ajustes para telas pequenas
+  @media (max-height: 600px) {
+    padding: 10px 0;
+  }
+
+  @media (max-height: 500px) {
+    padding: 5px 0;
+  }
 `;
 
 const NavGroup = styled.div`
@@ -149,6 +162,15 @@ const NavGroup = styled.div`
   
   &:last-child {
     margin-bottom: 0;
+  }
+
+  // Reduz espaçamento em telas pequenas
+  @media (max-height: 600px) {
+    margin-bottom: 20px;
+  }
+
+  @media (max-height: 500px) {
+    margin-bottom: 10px;
   }
 `;
 
@@ -163,6 +185,7 @@ const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
   transition: all 0.2s ease;
   position: relative;
   font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
+  min-height: 44px; // Garante altura mínima para toque
   
   &:hover {
     background: ${({ theme }) => theme.colors.primary}08;
@@ -185,6 +208,8 @@ const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
   svg {
     flex-shrink: 0;
     font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
   
   span {
@@ -192,6 +217,8 @@ const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
     transform: translateX(${({ $isCollapsed }) => ($isCollapsed ? '-10px' : '0')});
     transition: all 0.3s ease;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   @media (max-width: 768px) {
@@ -199,6 +226,17 @@ const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
       opacity: 1;
       transform: translateX(0);
     }
+  }
+
+  // Reduz padding em telas pequenas
+  @media (max-height: 600px) {
+    padding: 10px 20px;
+    min-height: 40px;
+  }
+
+  @media (max-height: 500px) {
+    padding: 8px 20px;
+    min-height: 36px;
   }
 `;
 
@@ -247,8 +285,11 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
   useEffect(() => {
     const checkIsMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-      if (window.innerWidth <= 768) {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      
+      // Em mobile, sidebar começa fechada
+      if (mobile && !isCollapsed) {
         setIsCollapsed(true);
       }
     };
@@ -256,7 +297,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
+  }, [isCollapsed]);
 
   const navigationItems = [
     { path: "/", label: "Home", icon: FiHome, show: true },
@@ -273,6 +314,13 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   };
 
   const handleOverlayClick = () => {
+    if (isMobile) {
+      setIsCollapsed(true);
+    }
+  };
+
+  const handleNavItemClick = () => {
+    // Fecha a sidebar automaticamente em mobile após navegar
     if (isMobile) {
       setIsCollapsed(true);
     }
@@ -315,7 +363,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                   to={path}
                   $isActive={location.pathname === path}
                   $isCollapsed={isCollapsed}
-                  onClick={() => isMobile && setIsCollapsed(true)}
+                  onClick={handleNavItemClick}
                 >
                   <Icon />
                   <span>{label}</span>
