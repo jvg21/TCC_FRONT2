@@ -153,7 +153,8 @@ export const enTranslations = {
     login_button: "Sign In",
     logging_in: "Signing in...",
     light_mode: "Light Mode",
-    dark_mode: "Dark Mode"
+    dark_mode: "Dark Mode",
+    logout: "Sign Out"
   },
 
   // Password recovery
@@ -245,6 +246,30 @@ export const enTranslations = {
   loading: {
     please_wait: "Please wait...",
     loading: "Loading...",
-    processing: "Processing..."
+    processing: "Processing..."},
+
+  // Settings
+  settings: {
+    title: "Settings",
+    account: "Account",
+    account_description: "Your account information",
+    appearance: "Appearance", 
+    appearance_description: "Customize the system appearance",
+    theme: "Theme",
+    theme_description: "Choose between light or dark mode",
+    language: "Language",
+    language_description: "Select your preferred language",
+    session: "Session",
+    session_description: "Manage your system session",
+    logout: "Sign Out",
+    logout_description: "End your current session and return to login screen"
+  },
+
+  // User profiles
+  profiles: {
+    administrator: "Administrator",
+    manager: "Manager",
+    employee: "Employee"
+  },
+
   }
-};
