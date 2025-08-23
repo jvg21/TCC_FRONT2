@@ -49,7 +49,7 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
-    onSave({ Name, Email, Profile });
+    onSave({ Name, Email, Profile , Password});
   };
 
   const userProfile = user?.Profile || 0;
@@ -64,13 +64,13 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
       <Row>
         <Col><Input label={t("users.name")} maxLength={20} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
 
-        <Col ><Input hidden={!isEditing} label={t("users.password")} type="password" value={Password} minLength={6} required onChange={(e) => setPassword(e.target.value)}
+        <Col ><Input label={t("users.password")} type="password" value={Password} minLength={6} required onChange={(e) => setPassword(e.target.value)}
           regex={regexPatterns.password}
           title={t("users.passwordRequirements")}
         /></Col>
       </Row>
       <Row>
-        <Col><Select label={t("users.profile")} required options={profileOptions} /></Col>
+        <Col><Select label={t("users.profile")} required options={profileOptions}  onChange={(e)=>setProfile(Number(e.target.value))}/></Col>
         <Col><Input label={t("users.email")} value={Email} maxLength={30} required onChange={(e) => setEmail(e.target.value)}
           regex={regexPatterns.email}
         /></Col>
