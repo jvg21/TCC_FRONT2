@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "../../components/common/PageLayout";
 import { useTypedTranslation } from "../../context/LanguageContext";
 import { useAuthContext } from "../../context/AuthContext";
@@ -130,10 +131,15 @@ const StatCard = styled.div`
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 
   &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   }
 
   &::before {
@@ -359,6 +365,7 @@ const SimpleChart = styled.div`
 const DashboardPage: React.FC = () => {
   const { t } = useTypedTranslation();
   const { user } = useAuthContext();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalCompanies: 0,
@@ -385,6 +392,13 @@ const DashboardPage: React.FC = () => {
     loadStats();
   }, []);
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Bom dia";
+    if (hour < 18) return "Boa tarde";
+    return "Boa noite";
+  };
+
   const getProfileName = (profile: number) => {
     switch (profile) {
       case 1: return "Administrador";
@@ -392,6 +406,10 @@ const DashboardPage: React.FC = () => {
       case 3: return "Funcionário";
       default: return "Usuário";
     }
+  };
+
+  const handleCardClick = (route: string) => {
+    navigate(route);
   };
 
   const statCards = [
@@ -402,7 +420,8 @@ const DashboardPage: React.FC = () => {
       positive: true,
       icon: FiUsers,
       color: "#3b82f6",
-      bgColor: "#3b82f615"
+      bgColor: "#3b82f615",
+      route: "/user"
     },
     {
       title: "Documentos",
@@ -411,7 +430,8 @@ const DashboardPage: React.FC = () => {
       positive: true,
       icon: FiFile,
       color: "#f59e0b",
-      bgColor: "#f59e0b15"
+      bgColor: "#f59e0b15",
+      route: "/document"
     },
     {
       title: "Tarefas Concluídas",
@@ -420,7 +440,8 @@ const DashboardPage: React.FC = () => {
       positive: true,
       icon: FiCheckSquare,
       color: "#22c55e",
-      bgColor: "#22c55e15"
+      bgColor: "#22c55e15",
+      route: "/task"
     }
   ];
 
@@ -431,7 +452,7 @@ const DashboardPage: React.FC = () => {
         <WelcomeSection>
           <WelcomeContent>
             <WelcomeTitle>
-              Olá, {user?.Name || "Usuário"}!
+              {getGreeting()}, {user?.Name || "Usuário"}!
             </WelcomeTitle>
             <WelcomeSubtitle>
               {getProfileName(user?.Profile || 0)} • Bem-vindo ao seu painel de controle
@@ -444,7 +465,7 @@ const DashboardPage: React.FC = () => {
           {statCards.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <StatCard key={index}>
+              <StatCard key={index} onClick={() => handleCardClick(stat.route)}>
                 <StatCardIcon bgColor={stat.bgColor} color={stat.color}>
                   <Icon size={24} />
                 </StatCardIcon>
