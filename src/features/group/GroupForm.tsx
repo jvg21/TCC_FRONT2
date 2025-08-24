@@ -3,7 +3,6 @@ import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
 import styled from "styled-components";
 import type { Group } from "./types";
-import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
 
 
@@ -32,13 +31,13 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
   }, [initial.Name, initial.Description, initial.IsActive]);
 
   const validateFields = () => {
-      const isNameValid = Name.trim().length > 0;
-      console.log("Validation results:", {
-        isNameValid,
-        
-      });
-      return isNameValid;
-    };
+    const isNameValid = Name.trim().length > 0;
+    console.log("Validation results:", {
+      isNameValid,
+
+    });
+    return isNameValid;
+  };
 
   const canSave = validateFields();
 
@@ -59,17 +58,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
       <Row>
         <Col><Input label={t("groups.description")} required value={Description} onChange={(e) => setDescription(e.target.value)} /></Col>
       </Row>
-      <Row>
-        <Col><Select label={t("groups.is_active")} required options={[
-          { value: "false", label: t("status.disabled") },
-          { value: "true", label: t("status.enabled") },
-        ]} /></Col>
-
-        <Col><Select label={t("groups.user")} required options={[
-          { value: "false", label: t("status.disabled") },
-          { value: "true", label: t("status.enabled") },
-        ]} /></Col>
-      </Row>
+      
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
         <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>

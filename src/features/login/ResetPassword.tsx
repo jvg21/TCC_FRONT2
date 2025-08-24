@@ -1,160 +1,116 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { Input } from "../../components/common/Input";
-import { Button } from "../../components/common/Button";
-import { ThemeSelector } from "../../components/common/ThemeSelector";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { usePasswordRecovery } from './usePasswordRecovery';
 
-const Container = styled.div`
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.primary}15,
-    ${({ theme }) => theme.colors.background}
-  );
-  padding: ${({ theme }) => theme.spacing.lg};
-`;
+const ResetPassword: React.FC = () => {
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [searchParams] = useSearchParams();
+    const email = searchParams.get('email') || '';
+    const token = searchParams.get('token') || '';
+    const { updatePassword } = usePasswordRecovery();
+    const navigate = useNavigate();
 
-const Card = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: 16px;
-  padding: 48px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 420px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-`;
+    useEffect(() => {
+        if (!email || !token) {
+            navigate('/request-password-recovery');
+        }
+    }, [email, token, navigate]);
 
-const Logo = styled.div`
-  text-align: center;
-  margin-bottom: 32px;
-`;
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!newPassword.trim() || !confirmPassword.trim()) {
+            return;
+        }
 
-const LogoText = styled.h1`
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.primary},
-    ${({ theme }) => theme.colors.primary}80
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-`;
+        if (newPassword !== confirmPassword) {
+            // notificationActions.showError seria chamado aqui, mas vou deixar o hook cuidar disso
+            return;
+        }
 
-const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.muted};
-  margin: 8px 0 0 0;
-  font-size: 14px;
-`;
+        setLoading(true);
+        try {
+            await updatePassword(email, token, newPassword);
+            navigate('/login');
+        } catch (error) {
+            console.error('Password reset error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8">
+                <div>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                        Nova Senha
+                    </h2>
+                    <p className="mt-2 text-center text-sm text-gray-600">
+                        Digite sua nova senha para <strong>{email}</strong>
+                    </p>
+                </div>
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <div className="space-y-4">
+                        <div>
+                            <label htmlFor="newPassword" className="sr-only">
+                                Nova Senha
+                            </label>
+                            <input
+                                id="newPassword"
+                                name="newPassword"
+                                type="password"
+                                required
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                placeholder="Nova senha"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="confirmPassword" className="sr-only">
+                                Confirmar Senha
+                            </label>
+                            <input
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type="password"
+                                required
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                placeholder="Confirmar nova senha"
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
 
-const InputGroup = styled.div`
-  position: relative;
-`;
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={loading || newPassword !== confirmPassword}
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        >
+                            {loading ? 'Atualizando...' : 'Atualizar Senha'}
+                        </button>
+                    </div>
 
-const StyledInput = styled(Input)`
-  input {
-    padding-left: 40px;
-    height: 48px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
-
-    &:focus {
-      border-color: ${({ theme }) => theme.colors.primary};
-      box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary}20;
-      outline: none;
-    }
-  }
-`;
-
-const SendButton = styled(Button)`
-  height: 48px;
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 8px;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px ${({ theme }) => theme.colors.primary}40;
-  }
-`;
-
-const Footer = styled.div`
-  text-align: center;
-  margin-top: 24px;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.muted};
-
-  a {
-    color: ${({ theme }) => theme.colors.primary};
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
-
-export const RecoverPasswordPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      console.log("Recuperar senha para:", email);
-      // Aqui iria a lógica real de envio do e-mail
-    }, 1500);
-  };
-
-  return (
-    <Container>
-      <ThemeSelector />
-
-      <Card>
-        <Logo>
-          <LogoText>Documentin</LogoText>
-          <Subtitle>Recupere o acesso à sua conta</Subtitle>
-        </Logo>
-
-        <Form onSubmit={handleSubmit}>
-          <InputGroup>
-            <StyledInput
-              type="email"
-              placeholder="Digite seu e-mail"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </InputGroup>
-
-          <SendButton type="submit" disabled={!email.trim() || isLoading}>
-            {isLoading ? "Enviando..." : "Enviar link de recuperação"}
-          </SendButton>
-        </Form>
-
-        <Footer>
-          Lembrou sua senha? <a href="/login">Fazer login</a>
-        </Footer>
-      </Card>
-    </Container>
-  );
+                    <div className="text-center">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/login')}
+                            className="text-indigo-600 hover:text-indigo-500"
+                        >
+                            Voltar ao Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 };
 
-export default RecoverPasswordPage;
+export default ResetPassword;

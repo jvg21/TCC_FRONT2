@@ -1,8 +1,8 @@
 export interface Group {
-    GroupId: string;
+    GroupId: number;
     Name: string;
     Description: string;
-    UserId?: string;
+    UserId?: number;
     CreatedAt?: string;
     IsActive?: boolean;
     UpdatedAt?: string;

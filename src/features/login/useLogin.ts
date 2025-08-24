@@ -48,38 +48,8 @@ export const useLogin = () => {
         setUser(null);
     }
 
-    async function resetPassword(email: string) {
-        try {
-            const response = await fetch(`${apiUrl}/User/RequestPasswordRecovery`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email })
-            });
-
-            const data: ApiResponse = await response.json();
-
-            if (data.erro) {
-                notificationActions.showError(data.mensagem || 'Erro ao solicitar recuperação');
-                throw new Error(data.mensagem || 'Erro ao solicitar recuperação');
-            }
-
-            notificationActions.showNotification(data.mensagem || 'E-mail de recuperação enviado!', 'success');
-            return data.objeto;
-
-        } catch (error) {
-            console.error('Reset password error:', error);
-            if (error instanceof Error) {
-                notificationActions.showError(error.message);
-            }
-            throw error;
-        }
-    }
-
     return {
         login,
         logout,
-        resetPassword
     }
 }
