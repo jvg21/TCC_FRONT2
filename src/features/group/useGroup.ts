@@ -24,7 +24,7 @@ export const useGroup = () => {
     return {
       name: payload.Name,
       description: payload.Description,
-      userId:payload.UserId,
+      userId: payload.UserId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isActive: payload.IsActive ?? true
@@ -198,9 +198,87 @@ export const useGroup = () => {
     }
   };
 
-  const addUserToGroup = async(userId:number)=>{
-    
-  }
+  // Adicionar após a função softDelete (linha ~165):
+
+  const getUsersByGroup = async (groupId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/Group/GetListUserByGroup/${groupId}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      return transformApiDataToPascalCase(data.objeto);
+    } catch (err) {
+      console.error("Erro ao buscar usuários do grupo:", err);
+      throw err;
+    }
+  };
+
+  const addUserToGroup = async (userId: number, groupId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/User/AddUserXGroup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId: userId,
+          groupId: groupId
+        })
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      notificationActions.showNotification(t('groups.addUserSuccess'), 'success');
+      return data;
+    } catch (err) {
+      console.error("Erro ao adicionar usuário ao grupo:", err);
+      throw err;
+    }
+  };
+
+  const removeUserFromGroup = async (userId: number, groupId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/User/DeleteUserXGroup`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId: userId,
+          groupId: groupId
+        })
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      notificationActions.showNotification(t('groups.removeUserSuccess'), 'success');
+      return data;
+    } catch (err) {
+      console.error("Erro ao remover usuário do grupo:", err);
+      throw err;
+    }
+  };
 
   useEffect(() => {
     if (token) get();
@@ -217,5 +295,8 @@ export const useGroup = () => {
     create,
     update,
     softDelete,
+    addUserToGroup,
+    removeUserFromGroup,
+    getUsersByGroup
   } as const;
 };

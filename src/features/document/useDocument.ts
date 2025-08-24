@@ -1,38 +1,48 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import type { Document } from "./types";
-import { mockDocument } from "./document.data";
+import { getCookie } from "../../utils/Cookies";
 
 
 export const useDocument = () => {
-  const [document, setDocument] = useState<Document[]>(() => [...mockDocument]);
+  const [document, setDocument] = useState<Document[]>([]);
   const [query, setQuery] = useState("");
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const token = getCookie('authToken') || "";
+
+
   const activeDocument = useMemo(() => {
-    return document.filter((c) => !c.IsActive && c.Title.toLowerCase().includes(query.toLowerCase()));
+    return document.filter((c) => c.IsActive);
+  }, [document]);
+
+  const deactiveDocument = useMemo(() => {
+    return document.filter((c) => !c.IsActive);
   }, [document, query]);
 
-  const create = (payload: Omit<Document, "CreatedAt" | "UpdatedAt" | "IsActive"| "UserId"> ) => {
-    const newDocument: Document = {
-      ...payload,
-      DocumentId: '1',
-      CreatedAt: new Date().toISOString(),
-      IsActive: false
-    };
-    setDocument((s) => [newDocument, ...s]);
-    return newDocument;
+  const transformPayloadToCamelCase = (payload: any) => ({})
+
+  const transformApiDataToPascalCase = (apiData: any[]): Document[] => { })
+
+  const transformSingleApiData = (item: any): Document => ({})
+
+
+
+  const get = async () => {};
+
+
+  const create = (payload: Omit<Document, "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId">) => {
+
   };
 
-  const update = (id: string, updates: Partial<Document>) => {
-    setDocument((s) => s.map((c) => c.DocumentId === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c));
+  const update = (id: number, updates: Partial<Document>) => {
   };
 
-  const softDelete = (id: string) => {
-    setDocument((s) => s.map((c) => c.DocumentId === id ? { ...c, isDeleted: true } : c));
+  const softDelete = (id: number) => {
   };
 
-  const restore = (id: string) => {
-    setDocument((s) => s.map((c) => c.DocumentId === id ? { ...c, isDeleted: false } : c));
-  };
+  useEffect(() => {
+    if (token) get();
+  }, [token]);
 
   return {
     document,
@@ -42,6 +52,5 @@ export const useDocument = () => {
     create,
     update,
     softDelete,
-    restore
   } as const;
 };

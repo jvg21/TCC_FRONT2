@@ -12,6 +12,7 @@ import type { User } from "./types";
 import { UserForm } from "./UserForm";
 import { useUser } from "./useUser";
 import { useTranslation } from "react-i18next";
+import { profiles } from "../../enum/profile";
 
 
 
@@ -24,7 +25,12 @@ const UserPage: React.FC = () => {
   const { t } = useTranslation();
   const Columns = (onEdit: (c: User) => void, onDelete: (id: number) => void): ColumnDef<User>[] => [
     { key: "Name", header: t("users.name"), render: (row) => row.Name || "-" },
-    { key: "Profile", header: t("users.profile"), render: (row) => row.Profile || "-" },
+
+    { key: "Profile", header: t("users.profile"), render: (row) => {
+      const profileObj = profiles.find(p => p.value === row.Profile.toString());
+      return profileObj ? profileObj.label : "-";
+    }},
+    
     { key: "Email", header: t("users.email"), render: (row) => row.Email || "-" },
     {
       key: "IsActive",

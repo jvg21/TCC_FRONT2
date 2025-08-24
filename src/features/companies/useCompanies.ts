@@ -20,6 +20,16 @@ export const useCompanies = () => {
     return companies.filter((c) => !c.IsActive);
   }, [companies, query]);
 
+  const transformPayloadToCamelCase = (payload: any) => ({
+    name: payload.Name,
+    taxId: payload.TaxId,
+    phone: payload.Phone,
+    email: payload.Email,
+    adress: payload.Adress,
+    zipCode: payload.ZipCode,
+    isActive: payload.IsActive || true
+  });
+  
   const transformApiDataToPascalCase = (apiData: any[]): Company[] => {
     return apiData.map(item => ({
       CompanyId: item.companyId,
@@ -34,6 +44,18 @@ export const useCompanies = () => {
       UpdatedAt: item.updatedAt
     }));
   };
+  const transformSingleApiData = (item: any): Company => ({
+    CompanyId: item.companyId,
+    Name: item.name,
+    TaxId: item.taxId,
+    Phone: item.phone,
+    Email: item.email,
+    Adress: item.adress,
+    ZipCode: item.zipCode,
+    IsActive: item.isActive,
+    CreatedAt: item.createdAt,
+    UpdatedAt: item.updatedAt
+  });
 
   const get = async () => {
     try {
@@ -61,19 +83,6 @@ export const useCompanies = () => {
     }
   };
 
-  const transformSingleApiData = (item: any): Company => ({
-    CompanyId: item.companyId,
-    Name: item.name,
-    TaxId: item.taxId,
-    Phone: item.phone,
-    Email: item.email,
-    Adress: item.adress,
-    ZipCode: item.zipCode,
-    IsActive: item.isActive,
-    CreatedAt: item.createdAt,
-    UpdatedAt: item.updatedAt
-  });
-
   const getById = async (companyId: number) => {
     try {
       const response = await fetch(`${apiUrl}/Company/GetCompaniesById/${companyId}`, {
@@ -98,15 +107,7 @@ export const useCompanies = () => {
     }
   };
 
-  const transformPayloadToCamelCase = (payload: any) => ({
-    name: payload.Name,
-    taxId: payload.TaxId,
-    phone: payload.Phone,
-    email: payload.Email,
-    adress: payload.Adress,
-    zipCode: payload.ZipCode,
-    isActive: payload.IsActive || true
-  });
+
 
   const create = async (payload: Omit<Company, "CompanyId" | "CreatedAt" | "UpdatedAt" | "IsActive">) => {
     try {
