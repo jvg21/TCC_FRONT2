@@ -1,18 +1,20 @@
 import { useState, useMemo, useEffect } from "react";
 import type { Document } from "./types";
-import { t } from "i18next";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
+import { t } from "i18next";
 import { useAuthContext } from "../../context/AuthContext";
 
-export const useDocuments = () => {
+
+export const useDocument = () => {
   const [document, setDocument] = useState<Document[]>([]);
   const [query, setQuery] = useState("");
-  const { user: company } = useAuthContext();
+  const { user } = useAuthContext();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
+
 
   const activeDocument = useMemo(() => {
     return document.filter((c) => c.IsActive);
@@ -20,18 +22,17 @@ export const useDocuments = () => {
 
   const deactiveDocument = useMemo(() => {
     return document.filter((c) => !c.IsActive);
-  }, [document]);
+  }, [document, query]);
 
   const transformPayloadToCamelCase = (payload: any) => {
     return {
-      documentId: payload.DocumentId,
       title: payload.Title,
       content: payload.Content,
       folderId: payload.FolderId,
-      userId: payload.UserId || company?.UserId,
+      userId: user?.UserId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      isActive: payload.IsActive ?? true
+      isActive: true
     };
   };
 
@@ -61,6 +62,7 @@ export const useDocuments = () => {
     };
   };
 
+
   const get = async () => {
     try {
       const response = await fetch(`${apiUrl}/Document/GetListDocument`, {
@@ -85,8 +87,8 @@ export const useDocuments = () => {
       console.error("Erro ao buscar documentos:", err);
       throw err;
     }
-  };
 
+  };
   const getById = async (documentId: number) => {
     try {
       const response = await fetch(`${apiUrl}/Document/GetDocumentById/${documentId}`, {
@@ -104,18 +106,18 @@ export const useDocuments = () => {
         throw new Error(data.mensagem);
       }
 
-      return { ...data, objeto: transformSingleApiData(data.objeto) };
+      return data;
+
     } catch (err) {
       console.error("Erro ao buscar documento:", err);
       throw err;
     }
   };
 
-  const create = async (payload: Omit<Document, "DocumentId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId">) => {
+  const create = async (payload: Omit<Document, "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId">) => {
     try {
       const camelCasePayload = transformPayloadToCamelCase(payload);
-
-      console.log('Payload enviado:', camelCasePayload);
+      // console.log('Payload enviado:', camelCasePayload);
 
       const response = await fetch(`${apiUrl}/Document/AddDocument`, {
         method: 'POST',
@@ -135,7 +137,7 @@ export const useDocuments = () => {
 
       const newDocument: Document = transformSingleApiData(data.objeto);
       setDocument((s) => [newDocument, ...s]);
-      notificationActions.showNotification(t('documents.createSuccess') || 'Documento criado com sucesso!', 'success');
+      notificationActions.showNotification(t('documents.createSuccess'), 'success');
 
       return data;
     } catch (err) {
@@ -168,14 +170,17 @@ export const useDocuments = () => {
       }
 
       const updatedDocument: Document = transformSingleApiData(data.objeto);
+
       setDocument((s) => s.map((c) => c.DocumentId === id ? updatedDocument : c));
-      notificationActions.showNotification(t('documents.updateSuccess') || 'Documento atualizado com sucesso!', 'success');
+      notificationActions.showNotification(t('documents.updateSuccess'), 'success');
       return data;
+
     } catch (err) {
       console.error("Erro ao atualizar documento:", err);
       throw err;
     }
   };
+
 
   const softDelete = async (id: number) => {
     try {
@@ -196,7 +201,9 @@ export const useDocuments = () => {
 
       const updatedDocument: Document = transformSingleApiData(data.objeto);
       setDocument((s) => s.map((c) => c.DocumentId === id ? updatedDocument : c));
-      notificationActions.showNotification(t('documents.updateStatusSuccess') || 'Status do documento alterado com sucesso!', 'success');
+
+      notificationActions.showNotification(t('documents.updateStatusSuccess'), 'success');
+
       return data;
     } catch (err) {
       console.error("Erro ao alterar status do documento:", err);
@@ -214,10 +221,9 @@ export const useDocuments = () => {
     deactiveDocument,
     query,
     setQuery,
-    get,
-    getById,
     create,
     update,
     softDelete,
+    getById,
   } as const;
 };

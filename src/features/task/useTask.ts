@@ -9,7 +9,7 @@ import { useAuthContext } from "../../context/AuthContext";
 export const useTask = () => {
   const [task, setTask] = useState<Task[]>([]);
   const [query, setQuery] = useState("");
-  const { user: company } = useAuthContext();
+  const { user } = useAuthContext();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
@@ -24,14 +24,13 @@ export const useTask = () => {
 
   const transformPayloadToCamelCase = (payload: any) => {
     return {
-      taskId: payload.TaskId,
       title: payload.Title,
       description: payload.Description,
       dueDate: payload.DueDate,
       priority: payload.Priority || 1,
       status: payload.Status || 1,
       assigneeId: payload.AssigneeId,
-      userId: payload.UserId || company?.UserId,
+      userId: payload.UserId || user?.UserId,
       parentTaskId: payload.ParentTaskId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -116,7 +115,8 @@ export const useTask = () => {
         throw new Error(data.mensagem);
       }
 
-      return { ...data, objeto: transformSingleApiData(data.objeto) };
+      return data;
+
     } catch (err) {
       console.error("Erro ao buscar tarefa:", err);
       throw err;
@@ -150,6 +150,7 @@ export const useTask = () => {
       notificationActions.showNotification(t('tasks.createSuccess'), 'success');
 
       return data;
+
     } catch (err) {
       console.error("Erro ao criar tarefa:", err);
       throw err;
@@ -208,8 +209,10 @@ export const useTask = () => {
 
       const updatedTask: Task = transformSingleApiData(data.objeto);
       setTask((s) => s.map((c) => c.TaskId === id ? updatedTask : c));
-      notificationActions.showNotification(t('tasks.updateStatusSuccess') || 'Status da tarefa alterado com sucesso!', 'success');
+      notificationActions.showNotification(t('tasks.updateStatusSuccess'), 'success');
+      
       return data;
+
     } catch (err) {
       console.error("Erro ao alterar status da tarefa:", err);
       throw err;
