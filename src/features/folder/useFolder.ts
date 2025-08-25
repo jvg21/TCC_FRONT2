@@ -71,7 +71,7 @@ export const useFolder = () => {
     Documents: item.documents || []
   });
 
-  const transformPayloadToCamelCase = (payload: any) => ({
+  const transformPayloadToCamelCase = (payload: Partial<Folder>) => ({
     name: payload.Name,
     parentFolderId: payload.ParentFolderId || null,
     validatorId: payload.ValidatorId,
@@ -111,10 +111,12 @@ export const useFolder = () => {
       throw err;
     }
   };
-
-  const update = async (id: number, payload: Folder) => {
+  const update = async (id: number, payload: Partial<Folder>) => {
     try {
-      const camelCasePayload = transformPayloadToCamelCase(payload);
+      const camelCasePayload = {
+        folderId: id,
+        ...transformPayloadToCamelCase(payload)
+      };
 
       const response = await fetch(`${apiUrl}/Folder/UpdateFolder`, {
         method: "PUT",
@@ -141,7 +143,6 @@ export const useFolder = () => {
       throw err;
     }
   };
-
   const softDelete = async (folderId: number) => {
     try {
       const response = await fetch(`${apiUrl}/Folder/ToogleStatusFolder/${folderId}`, {

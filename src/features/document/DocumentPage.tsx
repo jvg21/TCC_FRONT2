@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import {  FiPlus } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -15,6 +15,8 @@ import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
 import { ActionButtons } from "../../components/lib/ActionButtons";
+import { useFolder } from "../folder/useFolder";
+import { useUser } from "../user/useUser";
 
 const DocumentPage: React.FC = () => {
   const { activeDocument, deactiveDocument, create, update, softDelete } = useDocument();
@@ -25,13 +27,29 @@ const DocumentPage: React.FC = () => {
   const [query, setQuery] = useState("");
   const { t } = useTranslation();
   const { userProfile } = useAuthContext()
-
+  const { activeFolder, deactiveFolder } = useFolder();
+  const { activeUser } = useUser();
+  const allFolders = [...activeFolder, ...deactiveFolder];
 
   const Columns = (onEdit: (c: Document) => void, onToggleStatus: (id: number) => void): ColumnDef<Document>[] => {
     const baseCols: ColumnDef<Document>[] = [
       { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" },
-      { key: "FolderId", header: t("documents.folder"), render: (row) => row.FolderId || "-" },
-      { key: "UserId", header: t("documents.creator"), render: (row) => row.UserId || "-" },
+      {
+        key: "FolderId",
+        header: t("documents.folder"),
+        render: (row) => {
+          const folder = allFolders.find(f => f.FolderId === row.FolderId);
+          return folder ? folder.Name : "-";
+        }
+      },
+      {
+        key: "UserId",
+        header: t("documents.creator"),
+        render: (row) => {
+          const user = activeUser.find(u => u.UserId === row.UserId);
+          return user ? user.Name : "-";
+        }
+      },
       {
         key: "IsActive",
         header: t("documents.is_active"),
@@ -43,7 +61,7 @@ const DocumentPage: React.FC = () => {
         key: "actions",
         header: t("actions.actions"),
         render: (row) => (
-            <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
+          <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
         )
       });
     }
@@ -102,7 +120,7 @@ const DocumentPage: React.FC = () => {
     <PageLayout
       title={t("documents.title")}
       actions={
-        <Button  disabled={!userProfile} onClick={handleAdd}>
+        <Button disabled={!userProfile} onClick={handleAdd}>
           <FiPlus />&nbsp;{t("documents.add_document")}
         </Button>
       }
