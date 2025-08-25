@@ -11,6 +11,7 @@ import { FolderForm } from "./FolderForm";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFolder } from "./useFolder";
+import { useUser } from "../user/useUser";
 
 
 const FolderPage: React.FC = () => {
@@ -19,19 +20,31 @@ const FolderPage: React.FC = () => {
   const [editing, setEditing] = useState<Folder | null>(null);
   const [query, setQuery] = useState("");
   const { t } = useTranslation();
+  const { activeUser } = useUser();
+
   const Columns = (onEdit: (c: Folder) => void, onDelete: (id: number) => void): ColumnDef<Folder>[] => [
     { key: "Name", header: t("folders.name"), render: (row) => row.Name || "-" },
     {
       key: "ParentFolderId",
       header: t("folders.parent_folder"),
       render: (row) => {
-        if (!row.ParentFolderId) return t("folders.no_parent_folder") || "Nenhuma";
+        if (!row.ParentFolderId) return t("folders.no_parent_folder");
         const parentFolder = activeFolder.find(f => f.FolderId === row.ParentFolderId);
         return parentFolder ? parentFolder.Name : row.ParentFolderId.toString();
       }
     },
-    { key: "UserId", header: t("folders.user"), render: (row) => row.UserId || "-" },
-    { key: "ValidatorId", header: t("folders.validator"), render: (row) => row.ValidatorId || "-" },
+    {
+      key: "UserId", header: t("folders.user"), render: (row) => {
+        const userObj = activeUser.find(f => f.UserId === row.UserId);
+        return userObj ? userObj.Name : "-";
+      }
+    },
+    {
+      key: "ValidatorId", header: t("folders.validator"), render: (row) => {
+        const userObj = activeUser.find(f => f.UserId === row.ValidatorId);
+        return userObj ? userObj.Name : "-";
+      }
+    },
     {
       key: "IsActive",
       header: t("folders.is_active"),

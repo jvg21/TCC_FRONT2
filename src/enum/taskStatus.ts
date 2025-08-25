@@ -5,5 +5,5 @@ export const taskStatus = [
     { value: '2', label: t('task.priority.inprogress') },
     { value: '3', label: t('task.priority.inreview') },
     { value: '4', label: t('task.priority.done') },
-    { value: '5', label: t('task.priority.canceled') },
+    { value: '5', label: t('task.priority.canceled') }
 ];

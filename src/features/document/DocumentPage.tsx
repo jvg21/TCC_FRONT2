@@ -21,9 +21,8 @@ const DocumentPage: React.FC = () => {
   
   const Columns = (onEdit: (c: Document) => void, onToggleStatus: (id: number) => void): ColumnDef<Document>[] => [
     { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" }, 
-    { key: "Content", header: t("documents.content"), render: (row) => row.Content || "-" },
     { key: "FolderId", header: t("documents.folder"), render: (row) => row.FolderId || "-" },
-    { key: "UserId", header: t("documents.user"), render: (row) => row.UserId || "-" },
+    { key: "UserId", header: t("documents.creator"), render: (row) => row.UserId || "-" },
     {
       key: "IsActive",
       header: t("documents.is_active"),
@@ -65,8 +64,6 @@ const DocumentPage: React.FC = () => {
       const searchableText = [
         document.Title || "",
         document.Content || "",
-        document.FolderId || "",
-        document.UserId || "",
       ].join(" ").toLowerCase();
 
       return searchableText.includes(searchQuery);

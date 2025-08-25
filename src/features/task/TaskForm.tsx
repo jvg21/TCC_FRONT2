@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
 import { taskStatus } from "../../enum/taskStatus";
+import { taskPriority } from "../../enum/taskPriority";
 import { useUser } from "../user/useUser";
 
 type Props = {
@@ -39,7 +40,6 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         const isTitleValid = Title.trim().length > 0;
         console.log("Validation results:", {
             isTitleValid,
-
         });
         return isTitleValid;
     };
@@ -59,7 +59,7 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         label: status.label
     }));
 
-    const taskPriorityOptions = taskStatus.map(priority => ({
+    const taskPriorityOptions = taskPriority.map(priority => ({
         value: priority.value,
         label: priority.label
     }));

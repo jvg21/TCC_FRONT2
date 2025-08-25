@@ -38,8 +38,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     const validateFields = () => {
         const isTitleValid = Title.trim().length > 0;
         const isContentValid = Content.trim().length > 0;
-        const isFolderIdValid = FolderId.trim().length > 0;
-        return isTitleValid && isContentValid  && isFolderIdValid;
+        return isTitleValid && isContentValid  ;
     };
 
     const canSave = validateFields();
@@ -87,7 +86,6 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
                 <Col>
                     <Select 
                         label={t("documents.folder")} 
-                        required 
                         value={FolderId} 
                         onChange={(e) => setFolderId(e.target.value)}
                         options={[

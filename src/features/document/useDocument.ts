@@ -28,7 +28,7 @@ export const useDocument = () => {
     return {
       title: payload.Title,
       content: payload.Content,
-      folderId: payload.FolderId,
+      folderId: payload.FolderId || null,
       userId: user?.UserId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
