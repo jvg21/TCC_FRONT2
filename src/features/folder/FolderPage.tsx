@@ -15,6 +15,7 @@ import { useUser } from "../user/useUser";
 import { useAuthContext } from "../../context/AuthContext";
 import { SelectSelector } from "../../components/lib/StatusSelector";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
+import { ActionButtons } from "../../components/lib/ActionButtons";
 
 
 const FolderPage: React.FC = () => {
@@ -31,57 +32,48 @@ const FolderPage: React.FC = () => {
   const { activeUser } = useUser();
 
 
-  const Columns = (onEdit: (c: Folder) => void, onDelete: (id: number) => void): ColumnDef<Folder>[] => [
-    { key: "Name", header: t("folders.name"), render: (row) => row.Name || "-" },
-    {
-      key: "ParentFolderId",
-      header: t("folders.parent_folder"),
-      render: (row) => {
-        if (!row.ParentFolderId) return t("folders.no_parent_folder");
-        const parentFolder = Folder.find(f => f.FolderId === row.ParentFolderId);
-        return parentFolder ? parentFolder.Name : row.ParentFolderId.toString();
-      }
-    },
-    {
-      key: "UserId", header: t("folders.user"), render: (row) => {
-        const userObj = activeUser.find(f => f.UserId === row.UserId);
-        return userObj ? userObj.Name : "-";
-      }
-    },
-    {
-      key: "ValidatorId", header: t("folders.validator"), render: (row) => {
-        const userObj = activeUser.find(f => f.UserId === row.ValidatorId);
-        return userObj ? userObj.Name : "-";
-      }
-    },
-    {
-      key: "IsActive",
-      header: t("folders.is_active"),
-      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
-    },
-    {
-      key: "actions",
-      header: t("actions.actions"),
-      width: "160px",
-      render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
-            <FiEdit />
-          </button>
-          <button
-            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
-            onClick={() => softDelete(row.FolderId)}
-          >
-            {
-              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
-            }
-          </button>
-        </div>
-      )
+  const Columns = (onEdit: (c: Folder) => void, onToggleStatus: (id: number) => void): ColumnDef<Folder>[] => {
+    const baseCols: ColumnDef<Folder>[] = [
+      { key: "Name", header: t("folders.name"), render: (row) => row.Name || "-" },
+      {
+        key: "ParentFolderId",
+        header: t("folders.parent_folder"),
+        render: (row) => {
+          if (!row.ParentFolderId) return t("folders.no_parent_folder");
+          const parentFolder = Folder.find(f => f.FolderId === row.ParentFolderId);
+          return parentFolder ? parentFolder.Name : row.ParentFolderId.toString();
+        }
+      },
+      {
+        key: "UserId", header: t("folders.user"), render: (row) => {
+          const userObj = activeUser.find(f => f.UserId === row.UserId);
+          return userObj ? userObj.Name : "-";
+        }
+      },
+      {
+        key: "ValidatorId", header: t("folders.validator"), render: (row) => {
+          const userObj = activeUser.find(f => f.UserId === row.ValidatorId);
+          return userObj ? userObj.Name : "-";
+        }
+      },
+      {
+        key: "IsActive",
+        header: t("folders.is_active"),
+        render: (row) => <ActiveLabel IsActive={row.IsActive} />
+      },
+    ]
+    if (userProfile) {
+      baseCols.push({
+        key: "actions",
+        header: t("actions.actions"),
+        render: (row) => (
+          <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.FolderId} />
+        )
+      });
     }
-  ];
+    return baseCols
+  }
 
-  // Correção na função de filtro
   const filteredFolder = React.useMemo(() => {
     if (!query) return Folder;
 
@@ -121,11 +113,15 @@ const FolderPage: React.FC = () => {
     modal.close();
   };
 
-  const handleDelete = (id: number) => {
-    softDelete(id);
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await softDelete(id);
+    } catch (error) {
+      console.error("Erro ao alterar status da folder:", error);
+    }
   };
 
-  const columns = Columns(handleEdit, handleDelete);
+  const columns = Columns(handleEdit, handleToggleStatus);
 
   return (
     <PageLayout title={t("folders.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("folders.add_folder")}</Button>}>

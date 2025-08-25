@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthContext } from "../../context/AuthContext";
 import { SelectSelector } from "../../components/lib/StatusSelector";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
+import { ActionButtons } from "../../components/lib/ActionButtons";
 
 
 const GroupPage: React.FC = () => {
@@ -27,95 +28,90 @@ const GroupPage: React.FC = () => {
   const { userProfile } = useAuthContext()
 
 
-  const Columns = (onEdit: (c: Group) => void, onDelete: (id: number) => void): ColumnDef<Group>[] => [
-    { key: "Name", header: t("groups.name"), render: (row) => row.Name || "-" },
-    { key: "Description", header: t("groups.description"), render: (row) => row.Description || "-" },
-    {
-      key: "IsActive",
-      header: t("groups.is_active"),
-      // Renderiza o status com cores -------------------------------------------
-      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
-    },
-    {
-      key: "actions",
-      header: t("actions.actions"),
-      width: "160px",
-      render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
-            <FiEdit />
-          </button>
-          <button
-            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
-            //onClick={() => onToggleStatus(row.CompanyId)}
-            onClick={() => { }}
-          >
-            {
-              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
-
-            }
-          </button>
-        </div>
-      )
-    }
-  ];
-  const filteredGroup = React.useMemo(() => {
-    if (!query) return Group;
-
-    const searchQuery = query.toLowerCase();
-    return Group.filter(group => {
-      const searchableText = [
-        group.Name || "",
-        group.Description || "",
-      ].join(" ").toLowerCase();
-
-      return searchableText.includes(searchQuery);
-    });
-  }, [Group, query]);
-
-  const handleAdd = () => {
-    setEditing(null);
-    modal.open();
-  };
-
-  const handleEdit = (c: Group) => {
-    setEditing(c);
-    modal.open();
-  };
-
-  const handleSave = (payload: any) => {
-    if (editing) {
-      update(editing.GroupId, payload);
-    } else {
-      create(payload);
-    }
-    modal.close();
-  };
-
-  const handleDelete = (id: number) => {
-    softDelete(id);
-  };
-
-  const columns = Columns(handleEdit, handleDelete);
-
-  return (
-    <PageLayout title={t("groups.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("groups.add_group")}</Button>}>
-      <FilterBar
-        columns={columns}
-        value={query}
-        onChange={setQuery}
-        placeholder={t("groups.search_groups")}
-      />
+  const Columns = (onEdit: (c: Group) => void, onToggleStatus: (id: number) => void): ColumnDef<Group>[] => {
+    const baseCols: ColumnDef<Group>[] = [
+      { key: "Name", header: t("groups.name"), render: (row) => row.Name || "-" },
+      { key: "Description", header: t("groups.description"), render: (row) => row.Description || "-" },
       {
-        userProfile &&
-        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
-      }
-      <DataTable columns={columns} data={filteredGroup} />
-      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("groups.edit_group") : t("groups.add_group")}>
-        <GroupForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
-      </Modal>
-    </PageLayout>
-  );
+        key: "IsActive",
+        header: t("groups.is_active"),
+        render: (row) => <ActiveLabel IsActive={row.IsActive} />
+      },
+    ];
+    if (userProfile) {
+      baseCols.push({
+        key: "actions",
+        header: t("actions.actions"),
+        render: (row) => (
+          <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.GroupId} />
+        )
+      });
+    }
+    return baseCols;
+  };
+
+
+const filteredGroup = React.useMemo(() => {
+  if (!query) return Group;
+
+  const searchQuery = query.toLowerCase();
+  return Group.filter(group => {
+    const searchableText = [
+      group.Name || "",
+      group.Description || "",
+    ].join(" ").toLowerCase();
+
+    return searchableText.includes(searchQuery);
+  });
+}, [Group, query]);
+
+const handleAdd = () => {
+  setEditing(null);
+  modal.open();
+};
+
+const handleEdit = (c: Group) => {
+  setEditing(c);
+  modal.open();
+};
+
+const handleSave = (payload: any) => {
+  if (editing) {
+    update(editing.GroupId, payload);
+  } else {
+    create(payload);
+  }
+  modal.close();
+};
+
+const handleToggleStatus = async (id: number) => {
+  try {
+    await softDelete(id);
+  } catch (error) {
+    console.error("Erro ao alterar status da folder:", error);
+  }
+};
+
+const columns = Columns(handleEdit, handleToggleStatus);
+
+return (
+  <PageLayout title={t("groups.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("groups.add_group")}</Button>}>
+    <FilterBar
+      columns={columns}
+      value={query}
+      onChange={setQuery}
+      placeholder={t("groups.search_groups")}
+    />
+    {
+      userProfile &&
+      <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+    }
+    <DataTable columns={columns} data={filteredGroup} />
+    <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("groups.edit_group") : t("groups.add_group")}>
+      <GroupForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
+    </Modal>
+  </PageLayout>
+);
 };
 
 export default GroupPage;

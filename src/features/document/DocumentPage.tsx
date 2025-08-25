@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import {  FiPlus } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
+import { ActionButtons } from "../../components/lib/ActionButtons";
 
 const DocumentPage: React.FC = () => {
   const { activeDocument, deactiveDocument, create, update, softDelete } = useDocument();
@@ -26,36 +27,28 @@ const DocumentPage: React.FC = () => {
   const { userProfile } = useAuthContext()
 
 
-  const Columns = (onEdit: (c: Document) => void, onToggleStatus: (id: number) => void): ColumnDef<Document>[] => [
-    { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" },
-    { key: "FolderId", header: t("documents.folder"), render: (row) => row.FolderId || "-" },
-    { key: "UserId", header: t("documents.creator"), render: (row) => row.UserId || "-" },
-    {
-      key: "IsActive",
-      header: t("documents.is_active"),
-      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
-    },
-    {
-      key: "actions",
-      header: t("actions.actions"),
-      width: "160px",
-      render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
-            <FiEdit />
-          </button>
-          <button
-            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
-            onClick={() => onToggleStatus(row.DocumentId)}
-          >
-            {
-              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
-            }
-          </button>
-        </div>
-      )
+  const Columns = (onEdit: (c: Document) => void, onToggleStatus: (id: number) => void): ColumnDef<Document>[] => {
+    const baseCols: ColumnDef<Document>[] = [
+      { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" },
+      { key: "FolderId", header: t("documents.folder"), render: (row) => row.FolderId || "-" },
+      { key: "UserId", header: t("documents.creator"), render: (row) => row.UserId || "-" },
+      {
+        key: "IsActive",
+        header: t("documents.is_active"),
+        render: (row) => <ActiveLabel IsActive={row.IsActive} />
+      }
+    ]
+    if (userProfile) {
+      baseCols.push({
+        key: "actions",
+        header: t("actions.actions"),
+        render: (row) => (
+            <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
+        )
+      });
     }
-  ];
+    return baseCols
+  }
 
   const filteredDocument = React.useMemo(() => {
     if (!query) return Documents;

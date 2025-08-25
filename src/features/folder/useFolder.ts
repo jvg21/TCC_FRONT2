@@ -75,7 +75,6 @@ export const useFolder = () => {
     name: payload.Name,
     parentFolderId: payload.ParentFolderId || null,
     validatorId: payload.ValidatorId,
-    
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     isActive: payload.IsActive || true

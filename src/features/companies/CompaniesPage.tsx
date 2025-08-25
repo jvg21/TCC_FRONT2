@@ -6,7 +6,7 @@ import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
 import { CompanyForm } from "./CompanyForm";
-import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import { FiPlus} from "react-icons/fi";
 import type { Company } from "./types";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
@@ -15,6 +15,7 @@ import { regexPatterns } from "../../utils/regexUtils";
 import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
+import { ActionButtons } from "../../components/lib/ActionButtons";
 
 const CompaniesPage: React.FC = () => {
   const { activeCompanies, deactiveCompanies, query, setQuery, create, update, softDelete } = useCompanies();
@@ -26,61 +27,61 @@ const CompaniesPage: React.FC = () => {
   const { t } = useTranslation();
   const { userProfile } = useAuthContext()
 
-
   // adicionado o metodo render para as colunas -------------------------------------------
-  const Columns = (onEdit: (c: Company) => void, onToggleStatus: (id: number) => void): ColumnDef<Company>[] => [
-    { key: "Name", header: t("companies.name") },
-    {
-      key: "TaxId",
-      header: t("companies.tax_id"),
-      //aplica a marsks no CNPJ -------------------------------------------
-      render: (row) => regexPatterns.applyMask(row.TaxId || "", "99.999.999/9999-99") || "-"
-    },
-    {
-      key: "Email",
-      header: t("companies.email"),
-      render: (row) => row.Email || "-"
-    },
-    {
-      key: "Phone",
-      header: t("companies.phone"),
-      render: (row) => regexPatterns.applyMask(row.Phone || "", "+99 (99) 99999-9999") || "-"
-    },
-    {
-      key: "Adress",
-      header: t("companies.address"),
-      render: (row) => row.Adress || "-"
-    },
-    {
-      key: "ZipCode",
-      header: t("companies.zipcode"),
-      render: (row) => regexPatterns.applyMask(row.ZipCode || "", "99999-999") || "-"
-    },
-    {
-      key: "IsActive",
-      header: t("companies.is_active"),
-      render: (row) => ( <ActiveLabel IsActive={row.IsActive}/>)
-    },
-    { 
-      key: "actions",
-      header: t("actions.actions"),
-      render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
-            <FiEdit />
-          </button>
-          <button
-            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
-            onClick={() => onToggleStatus(row.CompanyId)}
-          >
-            {
-              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
-            }
-          </button>
-        </div>
-      )
+  const Columns = (
+    onEdit: (c: Company) => void,
+    onToggleStatus: (id: number) => void
+  ): ColumnDef<Company>[] => {
+    const baseCols: ColumnDef<Company>[] = [
+      { key: "Name", header: t("companies.name") },
+      {
+        key: "TaxId",
+        header: t("companies.tax_id"),
+        render: (row: Company) =>
+          regexPatterns.applyMask(row.TaxId || "", "99.999.999/9999-99") || "-"
+      },
+      {
+        key: "Email",
+        header: t("companies.email"),
+        render: (row: Company) => row.Email || "-"
+      },
+      {
+        key: "Phone",
+        header: t("companies.phone"),
+        render: (row: Company) =>
+          regexPatterns.applyMask(row.Phone || "", "+99 (99) 99999-9999") || "-"
+      },
+      {
+        key: "Adress",
+        header: t("companies.address"),
+        render: (row: Company) => row.Adress || "-"
+      },
+      {
+        key: "ZipCode",
+        header: t("companies.zipcode"),
+        render: (row: Company) =>
+          regexPatterns.applyMask(row.ZipCode || "", "99999-999") || "-"
+      },
+      {
+        key: "IsActive",
+        header: t("companies.is_active"),
+        render: (row: Company) => <ActiveLabel IsActive={row.IsActive} />
+      }
+    ];
+
+    if (userProfile) {
+      baseCols.push({
+        key: "actions",
+        header: t("actions.actions"),
+        render: (row) => (
+          <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.CompanyId}/>
+        )
+      });
     }
-  ];
+    return baseCols;
+  };
+
+
 
   const filteredCompanies = React.useMemo(() => {
     if (!query) return Companies;

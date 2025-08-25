@@ -5,7 +5,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { User } from "./types";
@@ -16,6 +16,7 @@ import { profiles } from "../../enum/userProfile";
 import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
+import { ActionButtons } from "../../components/lib/ActionButtons";
 
 const UserPage: React.FC = () => {
   const { activeUser, deactiveUser, create, update, softDelete } = useUser();
@@ -28,48 +29,34 @@ const UserPage: React.FC = () => {
   const { t } = useTranslation();
   const { userProfile } = useAuthContext()
 
-  const Columns = (onEdit: (c: User) => void, onDelete: (id: number) => void): ColumnDef<User>[] => [
-    { key: "Name", header: t("users.name"), render: (row) => row.Name || "-" },
-
-    {
-      key: "Profile", header: t("users.profile"), render: (row) => {
-        const profileObj = profiles.find(p => p.value === row.Profile.toString());
-        return profileObj ? profileObj.label : "-";
-      }
-    },
-
-    { key: "Email", header: t("users.email"), render: (row) => row.Email || "-" },
-    {
-      key: "IsActive",
-      header: t("companies.is_active"),
-      // Renderiza o status com cores -------------------------------------------
-      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
-    },
-
-    {
-      key: "actions",
-      header: t("actions.actions"),
-      width: "160px",
-      render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
-            <FiEdit />
-          </button>
-          <button
-            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
-            //onClick={() => onToggleStatus(row.UserId)}
-            onClick={() => { }}
-          >
-            {
-              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
-            }
-          </button>
-        </div>
-      )
+  const Columns = (onEdit: (c: User) => void, onToggleStatus: (id: number) => void): ColumnDef<User>[] => {
+    const baseCols: ColumnDef<User>[] = [
+      { key: "Name", header: t("users.name"), render: (row) => row.Name || "-" },
+      {
+        key: "Profile", header: t("users.profile"), render: (row) => {
+          const profileObj = profiles.find(p => p.value === row.Profile.toString());
+          return profileObj ? profileObj.label : "-";
+        }
+      },
+      { key: "Email", header: t("users.email"), render: (row) => row.Email || "-" },
+      {
+        key: "IsActive",
+        header: t("companies.is_active"),
+        render: (row) => <ActiveLabel IsActive={row.IsActive} />
+      },
+    ];
+    if (userProfile) {
+      baseCols.push({
+        key: "actions",
+        header: t("actions.actions"),
+        render: (row) => (
+          <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.UserId} />
+        )
+      });
     }
-  ];
+    return baseCols;
+  };
 
-  // Filtrar dados baseado na busca global
   const filteredUser = React.useMemo(() => {
     if (!query) return User;
 

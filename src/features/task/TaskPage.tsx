@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import {  FiPlus } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { Task } from "./types";
@@ -15,11 +15,11 @@ import { taskStatus } from "../../enum/taskStatus";
 import { useUser } from "../user/useUser";
 import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
-import { ActiveLabel } from "../../components/lib/ActiveLabel";
+import { ActionButtons } from "../../components/lib/ActionButtons";
 
 
 const TaskPage: React.FC = () => {
-  const { activeTask, deactiveTask,create, update, softDelete } = useTask();
+  const { activeTask, deactiveTask, create, update, softDelete } = useTask();
   const [searchStatus, setSearchStatus] = useState<number>(1)
   const Task = searchStatus === 1 ? activeTask : searchStatus === 2 ? deactiveTask : [...activeTask, ...deactiveTask]
   const [editing, setEditing] = useState<Task | null>(null);
@@ -30,62 +30,48 @@ const TaskPage: React.FC = () => {
   const { activeUser } = useUser()
   const { userProfile } = useAuthContext()
 
-  const Columns = (onEdit: (c: Task) => void, onDelete: (id: number) => void): ColumnDef<Task>[] => [
-    { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },
-    { key: "Description", header: t("tasks.description"), render: (row) => row.Description || "-" },
-    { key: "DueDate", header: t("tasks.due_date"), render: (row) => row.DueDate || "-" },
-    {
-      key: "Priority", header: t("tasks.priority"), render: (row) => {
-        const priorityObj = taskStatus.find(p => p.value === row.Priority?.toString())
-        return priorityObj ? priorityObj.label : "-";
-      }
-    },
-    {
-      key: "Status", header: t("tasks.status"), render: (row) => {
-        const statusObj = taskStatus.find(p => p.value === row.Status?.toString())
-        return statusObj ? statusObj.label : "-";
-      }
-    },
-    {
-      key: "AssigneeId", header: t("tasks.assignee"), render: (row) => {
-        const assignee = activeUser.filter((a) => a.UserId === row.AssigneeId)[0]
-        return assignee ? assignee.Name : "-";
-      }
-    },
-    {
-      key: "UserId", header: t("tasks.creator"), render: (row) => {
-        const creator = activeUser.filter((a) => a.UserId === row.UserId)[0]
-        return creator ? creator.Name : "-";
-      }
-    },
-    {
-      key: "IsActive",
-      header: t("companies.is_active"),
-      // Renderiza o status com cores -------------------------------------------
-      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
-    },
-    {
-      key: "actions",
-      header: t("actions.actions"),
-      width: "160px",
-      render: (row) => (
-        <div style={{ display: "flex", gap: 8 }}>
-          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
-            <FiEdit />
-          </button>
-          <button
-            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
-            //onClick={() => onToggleStatus(row.TaskId)}
-            onClick={() => { }}
-          >
-            {
-              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
-            }
-          </button>
-        </div>
-      )
+  const Columns = (onEdit: (c: Task) => void, onToggleStatus: (id: number) => void): ColumnDef<Task>[] => {
+    const baseCols: ColumnDef<Task>[] = [
+      { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },
+      { key: "Description", header: t("tasks.description"), render: (row) => row.Description || "-" },
+      { key: "DueDate", header: t("tasks.due_date"), render: (row) => row.DueDate || "-" },
+      {
+        key: "Priority", header: t("tasks.priority"), render: (row) => {
+          const priorityObj = taskStatus.find(p => p.value === row.Priority?.toString())
+          return priorityObj ? priorityObj.label : "-";
+        }
+      },
+      {
+        key: "Status", header: t("tasks.status"), render: (row) => {
+          const statusObj = taskStatus.find(p => p.value === row.Status?.toString())
+          return statusObj ? statusObj.label : "-";
+        }
+      },
+      {
+        key: "AssigneeId", header: t("tasks.assignee"), render: (row) => {
+          const assignee = activeUser.filter((a) => a.UserId === row.AssigneeId)[0]
+          return assignee ? assignee.Name : "-";
+        }
+      },
+      {
+        key: "UserId", header: t("tasks.creator"), render: (row) => {
+          const creator = activeUser.filter((a) => a.UserId === row.UserId)[0]
+          return creator ? creator.Name : "-";
+        }
+      },
+    ];
+
+    if (userProfile) {
+      baseCols.push({
+        key: "actions",
+        header: t("actions.actions"),
+        render: (row) => (
+          <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.TaskId} />
+        )
+      });
     }
-  ];
+    return baseCols;
+  };
 
   const filteredTask = React.useMemo(() => {
     if (!query) return Task;
