@@ -28,15 +28,12 @@ const TaskPage: React.FC = () => {
     { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },
     { key: "Description", header: t("tasks.description"), render: (row) => row.Description || "-" },
     { key: "DueDate", header: t("tasks.due_date"), render: (row) => row.DueDate || "-" },
-
     {
       key: "Priority", header: t("tasks.priority"), render: (row) => {
         const priorityObj = taskStatus.find(p => p.value === row.Priority?.toString())
         return priorityObj ? priorityObj.label : "-";
       }
     },
-
-
     {
       key: "Status", header: t("tasks.status"), render: (row) => {
         const statusObj = taskStatus.find(p => p.value === row.Status?.toString())
@@ -88,7 +85,6 @@ const TaskPage: React.FC = () => {
       )
     }
   ];
-
 
   const filteredTask = React.useMemo(() => {
     if (!query) return activeTask;
