@@ -116,7 +116,8 @@ export const enTranslations = {
     created_at: "Created at",
     updated_at: "Updated at",
     is_active: "Status",
-    validator: "Validator"
+    validator: "Validator",
+    no_parent_folder:"No Parent Folder"
   },
 
   // Tasks

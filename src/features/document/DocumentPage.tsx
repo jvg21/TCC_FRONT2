@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus, FiEye } from "react-icons/fi";
+import { FiPlus, FiEye, FiEdit } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -16,28 +16,43 @@ import { useAuthContext } from "../../context/AuthContext";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
 import { ActionButtons } from "../../components/lib/ActionButtons";
 import { DocumentViewer } from "./DocumentViewer";
+import { MarkdownEditorPage } from "../markdown-editor/MarkdownEditorPage";
 
 const DocumentPage: React.FC = () => {
   const { activeDocument, deactiveDocument, create, update, softDelete } = useDocument();
   const [searchStatus, setSearchStatus] = useState<number>(1);
   const Documents = searchStatus === 1 ? activeDocument : searchStatus === 2 ? deactiveDocument : [...activeDocument, ...deactiveDocument];
   const modal = useModal();
-  // ✅ NOVO MODAL PARA VISUALIZAÇÃO
   const viewModal = useModal();
+  const editorModal = useModal(); 
   const [editing, setEditing] = useState<Document | null>(null);
-  // ✅ NOVO STATE PARA DOCUMENTO SENDO VISUALIZADO
   const [viewing, setViewing] = useState<Document | null>(null);
+  const [editingContent, setEditingContent] = useState<string>(""); 
+  const [contentSaveCallback, setContentSaveCallback] = useState<((content: string) => void) | null>(null);
   const [query, setQuery] = useState("");
   const { t } = useTranslation();
   const { userProfile } = useAuthContext();
 
-  // ✅ NOVA FUNÇÃO PARA VISUALIZAR DOCUMENTO
   const handleView = (document: Document) => {
     setViewing(document);
     viewModal.open();
   };
 
-  // ✅ FUNÇÃO PARA EDITAR A PARTIR DO VISUALIZADOR
+  const handleEditContent = (document: Document) => {
+    setEditingContent(document.Content || "");
+    setContentSaveCallback(() => (newContent: string) => {
+      update(document.DocumentId, { ...document, Content: newContent });
+      editorModal.close();
+    });
+    editorModal.open();
+  };
+
+  const handleEditContentFromForm = (currentContent: string, onContentSaved: (newContent: string) => void) => {
+    setEditingContent(currentContent);
+    setContentSaveCallback(() => onContentSaved);
+    editorModal.open();
+  };
+
   const handleEditFromViewer = () => {
     if (viewing) {
       viewModal.close();
@@ -46,8 +61,7 @@ const DocumentPage: React.FC = () => {
     }
   };
 
-  // ✅ MODIFICAÇÃO NAS COLUNAS PARA INCLUIR BOTÃO DE VISUALIZAÇÃO
-  const Columns = (onEdit: (c: Document) => void, onToggleStatus: (id: number) => void, onView: (c: Document) => void): ColumnDef<Document>[] => {
+  const Columns = (onEdit: (c: Document) => void, onToggleStatus: (id: number) => void, onView: (c: Document) => void, onEditContent: (c: Document) => void): ColumnDef<Document>[] => {
     const baseCols: ColumnDef<Document>[] = [
       { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" },
       { key: "FolderId", header: t("documents.folder"), render: (row) => row.FolderId || "-" },
@@ -65,13 +79,19 @@ const DocumentPage: React.FC = () => {
         header: t("actions.actions"),
         render: (row) => (
           <div style={{ display: 'flex', gap: '4px' }}>
-            {/* ✅ NOVO BOTÃO DE VISUALIZAR */}
             <Button 
               variant="ghost" 
               onClick={() => onView(row)}
               title="Visualizar documento"
             >
               <FiEye />
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => onEditContent(row)}
+              title="Editar conteúdo"
+            >
+              <FiEdit />
             </Button>
             <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
           </div>
@@ -127,8 +147,14 @@ const DocumentPage: React.FC = () => {
     }
   };
 
-  // ✅ MODIFICAÇÃO PARA INCLUIR handleView
-  const columns = Columns(handleEdit, handleToggleStatus, handleView);
+  const handleSaveContent = (newContent: string) => {
+    if (contentSaveCallback) {
+      contentSaveCallback(newContent);
+    }
+    editorModal.close();
+  };
+
+  const columns = Columns(handleEdit, handleToggleStatus, handleView, handleEditContent);
 
   return (
     <PageLayout
@@ -150,7 +176,6 @@ const DocumentPage: React.FC = () => {
       )}
       <DataTable columns={columns} data={filteredDocument} />
       
-      {/* ✅ MODAL EXISTENTE PARA EDIÇÃO */}
       <Modal
         isOpen={modal.isOpen}
         onClose={modal.close}
@@ -160,10 +185,10 @@ const DocumentPage: React.FC = () => {
           initial={editing ?? undefined}
           onCancel={modal.close}
           onSave={handleSave}
+          onEditContent={handleEditContentFromForm} 
         />
       </Modal>
 
-      {/* ✅ NOVO MODAL PARA VISUALIZAÇÃO */}
       <Modal
         isOpen={viewModal.isOpen}
         onClose={viewModal.close}
@@ -177,6 +202,18 @@ const DocumentPage: React.FC = () => {
             onClose={viewModal.close}
           />
         )}
+      </Modal>
+
+      <Modal
+        isOpen={editorModal.isOpen}
+        onClose={editorModal.close}
+        title="Editor de Markdown"
+      >
+        <MarkdownEditorPage
+          initialContent={editingContent}
+          onSave={handleSaveContent}
+          onCancel={editorModal.close}
+        />
       </Modal>
     </PageLayout>
   );

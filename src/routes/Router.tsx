@@ -16,6 +16,7 @@ import IntegrationsPage from "../features/integrations/IntegrationsPage" // Nova
 import ResetPassword from "../features/login/ResetPassword"
 import ValidateRecoveryToken from "../features/login/ValidateRecoveryToken"
 import RequestPasswordRecovery from "../features/login/RequestPasswordRecovery"
+import { MarkdownEditorPage } from "../features/markdown-editor/MarkdownEditorPage"
 
 export const AppRoutes = () => {
     return (
@@ -25,10 +26,10 @@ export const AppRoutes = () => {
                     <LoginPage />
                 </AuthRoutes>}
             />
-             <Route path="/request-password-recovery" element={<RequestPasswordRecovery />} />
-      <Route path="/validate-recovery-token" element={<ValidateRecoveryToken />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-        
+            <Route path="/request-password-recovery" element={<RequestPasswordRecovery />} />
+            <Route path="/validate-recovery-token" element={<ValidateRecoveryToken />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+
 
             {/* PROTECTED ROUTES */}
 
@@ -38,7 +39,7 @@ export const AppRoutes = () => {
                 </ProtectedRoutes>
             } />
 
-            
+
             <Route path="/settings" element={
                 <ProtectedRoutes>
                     <SettingsPage />
@@ -87,6 +88,8 @@ export const AppRoutes = () => {
                     <DocumentPage />
                 </AdmRoutes>
             } />
+
+
 
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

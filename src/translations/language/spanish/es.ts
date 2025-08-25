@@ -116,7 +116,8 @@ export const esTranslations = {
     created_at: "Creado en",
     updated_at: "Actualizado en",
     is_active: "Estado",
-    validator:"Validador"
+    validator: "Validador",
+    no_parent_folder: "sin carpeta principal"
   },
 
   // Tareas
@@ -140,7 +141,7 @@ export const esTranslations = {
     priority_medium: "Media",
     priority_low: "Baja",
     creator: "Creador",
-    select_assignee:"Seleccionar Cesionario",
+    select_assignee: "Seleccionar Cesionario",
     statusTask: {
       todo: "To Do",
       inprogress: "En Curso",

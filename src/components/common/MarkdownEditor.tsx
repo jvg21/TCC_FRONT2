@@ -1,4 +1,3 @@
-// src/components/common/MarkdownEditor.tsx
 import React, { useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 

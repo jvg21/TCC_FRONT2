@@ -7,18 +7,44 @@ import { useTranslation } from "react-i18next";
 import { useFolder } from "../folder/useFolder";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
-import { MarkdownEditor } from "../markdown-editor/MarkdownEditor";
+import { FiEdit } from "react-icons/fi";
+import styled from "styled-components";
+
+const ContentPreview = styled.div`
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: ${({ theme }) => theme.borderRadius};
+  padding: 12px;
+  background: #f8f9fa;
+  min-height: 100px;
+  color: #666;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 8px;
+`;
+
+const EditorButton = styled(Button)`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+`;
 
 interface DocumentFormProps {
     initial?: Partial<Document>;
     onSave: (data: Partial<Document>) => void;
     onCancel: () => void;
+    onEditContent?: (currentContent: string, onContentSaved: (newContent: string) => void) => void;
 }
 
 export const DocumentForm: React.FC<DocumentFormProps> = ({
     initial = {},
     onSave,
-    onCancel
+    onCancel,
+    onEditContent
 }) => {
     const [Title, setTitle] = useState(initial.Title ?? "");
     const [Content, setContent] = useState(initial.Content ?? "");
@@ -27,8 +53,6 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     
     // Integração com hooks
     const { activeFolder } = useFolder();
-
-    console.log(activeFolder)
 
     useEffect(() => {
         setTitle(initial.Title ?? "");
@@ -55,6 +79,14 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
         });
     };
 
+    const handleEditContent = () => {
+        if (onEditContent) {
+            onEditContent(Content, (newContent: string) => {
+                setContent(newContent);
+            });
+        }
+    };
+
     return (
         <form onSubmit={handleSubmit}>
             <Row>
@@ -72,14 +104,22 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
             
             <Row>
                 <Col>
-                    {/* 🔄 SUBSTITUIÇÃO: Input por MarkdownEditor */}
-                    <MarkdownEditor
-                        label={t("documents.content")}
-                        value={Content}
-                        onChange={setContent}
-                        required
-                        placeholder="Digite o conteúdo do documento em markdown..."
-                    />
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: '#333' }}>
+                        {t("documents.content")} *
+                    </label>
+                    <ContentPreview>
+                        {Content ? 
+                            `${Content.substring(0, 100)}${Content.length > 100 ? '...' : ''}` : 
+                            'Clique em "Editar Conteúdo" para adicionar o conteúdo do documento'
+                        }
+                    </ContentPreview>
+                    <EditorButton 
+                        type="button" 
+                        onClick={handleEditContent}
+                    >
+                        <FiEdit />
+                        Editar Conteúdo
+                    </EditorButton>
                 </Col>
             </Row>
             

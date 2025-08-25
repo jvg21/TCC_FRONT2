@@ -116,7 +116,9 @@ export const ptTranslations = {
     created_at: "Criado em",
     updated_at: "Atualizado em",
     is_active: "Status",
-    validator: "Validador"
+    validator: "Validador",
+   
+
   },
 
   // Tarefas
