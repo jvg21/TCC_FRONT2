@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
+import { useTypedTranslation } from "../../context/LanguageContext";
+import { FiBriefcase } from "react-icons/fi";
 import { 
   FiHome, 
-  FiUsers, 
-  FiUsers as FiGroup, 
+  FiUsers,  
+  FiGrid,
   FiFolderPlus, 
   FiCheckSquare, 
   FiFile, 
@@ -60,55 +62,49 @@ const Logo = styled.div<{ $isCollapsed: boolean }>`
   align-items: center;
   gap: 12px;
   opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
-  transition: opacity 0.3s ease;
-  
+  transform: ${({ $isCollapsed }) => 
+    $isCollapsed ? 'scale(0.8)' : 'scale(1)'};
+  transition: all 0.3s ease;
+
   h2 {
+    color: ${({ theme }) => theme.colors.text};
     font-size: 20px;
     font-weight: 700;
     margin: 0;
-    background: linear-gradient(135deg, 
-      ${({ theme }) => theme.colors.primary}, 
-      ${({ theme }) => theme.colors.primary}80
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    white-space: nowrap;
   }
 `;
 
 const LogoIcon = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, 
-    ${({ theme }) => theme.colors.primary}, 
-    ${({ theme }) => theme.colors.primary}80
-  );
+  width: 40px;
+  height: 40px;
+  background: ${({ theme }) => theme.colors.primary};
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 16px;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 18px;
   flex-shrink: 0;
 `;
 
 const ToggleButton = styled.button`
-  background: none;
+  width: 36px;
+  height: 36px;
   border: none;
-  color: ${({ theme }) => theme.colors.muted};
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 6px;
+  background: ${({ theme }) => theme.colors.background};
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.muted};
   transition: all 0.2s ease;
-  
+  flex-shrink: 0;
+
   &:hover {
-    background: ${({ theme }) => theme.colors.background};
-    color: ${({ theme }) => theme.colors.text};
+    background: ${({ theme }) => theme.colors.primary}15;
+    color: ${({ theme }) => theme.colors.primary};
   }
 
   @media (max-width: 768px) {
@@ -116,15 +112,27 @@ const ToggleButton = styled.button`
   }
 `;
 
-const MobileToggle = styled(ToggleButton)`
-  display: none;
+const MobileToggle = styled.button`
   position: fixed;
   top: 20px;
   left: 20px;
   z-index: 1001;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: ${({ theme }) => theme.colors.primary};
+  border-radius: 12px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 
   @media (max-width: 768px) {
     display: flex;
@@ -132,246 +140,180 @@ const MobileToggle = styled(ToggleButton)`
 `;
 
 const Navigation = styled.nav`
-  padding: 20px 0;
   flex: 1;
+  padding: 20px 0;
   overflow-y: auto;
   overflow-x: hidden;
-  min-height: 0;
-  
+
   &::-webkit-scrollbar {
     width: 4px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.muted}30;
-    border-radius: 4px;
-  }
-
-  @media (max-height: 600px) {
-    padding: 10px 0;
-  }
-
-  @media (max-height: 500px) {
-    padding: 5px 0;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
   }
 `;
 
 const NavGroup = styled.div`
-  margin-bottom: 32px;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  @media (max-height: 600px) {
-    margin-bottom: 20px;
-  }
-
-  @media (max-height: 500px) {
-    margin-bottom: 10px;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 20px;
 `;
 
 const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
-  color: ${({ $isActive, theme }) => 
-    $isActive ? theme.colors.primary : theme.colors.text};
+  padding: 12px 16px;
+  border-radius: 12px;
   text-decoration: none;
+  color: ${({ theme, $isActive }) => 
+    $isActive ? theme.colors.primary : theme.colors.muted};
+  background: ${({ theme, $isActive }) => 
+    $isActive ? theme.colors.primary + '15' : 'transparent'};
+  font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
+  font-size: 14px;
   transition: all 0.2s ease;
   position: relative;
-  font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
-  min-height: 44px;
-  
-  &:hover {
-    background: ${({ theme }) => theme.colors.primary}08;
-    color: ${({ theme }) => theme.colors.primary};
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: ${({ $isActive }) => ($isActive ? '20px' : '0px')};
-    background: ${({ theme }) => theme.colors.primary};
-    border-radius: 0 2px 2px 0;
-    transition: height 0.2s ease;
-  }
-  
+  justify-content: ${({ $isCollapsed }) => 
+    $isCollapsed ? 'center' : 'flex-start'};
+
   svg {
     flex-shrink: 0;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
-  
+
   span {
     opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
-    transform: translateX(${({ $isCollapsed }) => ($isCollapsed ? '-10px' : '0')});
+    transform: ${({ $isCollapsed }) => 
+      $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
     transition: all 0.3s ease;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
-  
-  @media (max-width: 768px) {
-    span {
-      opacity: 1;
-      transform: translateX(0);
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary}15;
+    color: ${({ theme }) => theme.colors.primary};
+  }
+
+  ${({ $isCollapsed }) => $isCollapsed && `
+    &:hover {
+      &::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 1000;
+        margin-left: 8px;
+      }
     }
-  }
-
-  @media (max-height: 600px) {
-    padding: 10px 20px;
-    min-height: 40px;
-  }
-
-  @media (max-height: 500px) {
-    padding: 8px 20px;
-    min-height: 36px;
-  }
+  `}
 `;
 
+// Estilos para dropdown de integrações
 const DropdownContainer = styled.div`
   position: relative;
 `;
 
 const DropdownTrigger = styled.div<{ 
   $isActive: boolean; 
-  $isCollapsed: boolean; 
-  $isOpen: boolean;
+  $isCollapsed: boolean;
+  $isOpen: boolean; 
 }>`
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
-  color: ${({ $isActive, theme }) => 
-    $isActive ? theme.colors.primary : theme.colors.text};
-  text-decoration: none;
-  transition: all 0.2s ease;
-  position: relative;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: ${({ theme, $isActive }) => 
+    $isActive ? theme.colors.primary : theme.colors.muted};
+  background: ${({ theme, $isActive }) => 
+    $isActive ? theme.colors.primary + '15' : 'transparent'};
   font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
-  min-height: 44px;
+  font-size: 14px;
   cursor: pointer;
-  
-  &:hover {
-    background: ${({ theme }) => theme.colors.primary}08;
-    color: ${({ theme }) => theme.colors.primary};
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: ${({ $isActive, $isOpen }) => ($isActive || $isOpen ? '20px' : '0px')};
-    background: ${({ theme }) => theme.colors.primary};
-    border-radius: 0 2px 2px 0;
-    transition: height 0.2s ease;
-  }
-  
-  svg {
+  transition: all 0.2s ease;
+  justify-content: ${({ $isCollapsed }) => 
+    $isCollapsed ? 'center' : 'space-between'};
+
+  svg:first-child {
     flex-shrink: 0;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
-  
+
   span {
     opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
-    transform: translateX(${({ $isCollapsed }) => ($isCollapsed ? '-10px' : '0')});
+    transform: ${({ $isCollapsed }) => 
+      $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
     transition: all 0.3s ease;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     flex: 1;
   }
-  
-  @media (max-width: 768px) {
-    span {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
 
-  @media (max-height: 600px) {
-    padding: 10px 20px;
-    min-height: 40px;
-  }
-
-  @media (max-height: 500px) {
-    padding: 8px 20px;
-    min-height: 36px;
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary}15;
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
 const ChevronIcon = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
   opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
+  transform: ${({ $isOpen, $isCollapsed }) => 
+    $isCollapsed ? 'translateX(10px)' : 
+    $isOpen ? 'rotate(90deg)' : 'rotate(0deg)'};
   transition: all 0.3s ease;
-  transform: ${({ $isOpen }) => $isOpen ? 'rotate(90deg)' : 'rotate(0deg)'};
-  
-  @media (max-width: 768px) {
-    opacity: 1;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const DropdownContent = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
-  max-height: ${({ $isOpen, $isCollapsed }) => 
-    $isOpen && !$isCollapsed ? '200px' : '0px'};
+  max-height: ${({ $isOpen }) => ($isOpen ? '200px' : '0')};
+  opacity: ${({ $isOpen, $isCollapsed }) => 
+    $isOpen && !$isCollapsed ? 1 : 0};
   overflow: hidden;
   transition: all 0.3s ease;
-  background: ${({ theme }) => theme.colors.background};
-  margin: 4px 0;
-  border-radius: 8px;
+  margin-left: ${({ $isCollapsed }) => ($isCollapsed ? '0' : '32px')};
+  margin-top: 4px;
 `;
 
 const DropdownItem = styled(Link)<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 20px 10px 52px;
-  color: ${({ $isActive, theme }) => 
-    $isActive ? theme.colors.primary : theme.colors.text};
+  padding: 8px 16px;
+  border-radius: 8px;
   text-decoration: none;
+  color: ${({ theme, $isActive }) => 
+    $isActive ? theme.colors.primary : theme.colors.muted};
+  background: ${({ theme, $isActive }) => 
+    $isActive ? theme.colors.primary + '10' : 'transparent'};
+  font-size: 13px;
+  font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
   transition: all 0.2s ease;
-  font-weight: ${({ $isActive }) => ($isActive ? '600' : '400')};
-  font-size: 14px;
-  
+
   &:hover {
-    background: ${({ theme }) => theme.colors.primary}05;
+    background: ${({ theme }) => theme.colors.primary}10;
     color: ${({ theme }) => theme.colors.primary};
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2px;
-    height: ${({ $isActive }) => ($isActive ? '16px' : '0px')};
-    background: ${({ theme }) => theme.colors.primary};
-    border-radius: 0 1px 1px 0;
-    transition: height 0.2s ease;
   }
 `;
 
 const Overlay = styled.div<{ $isVisible: boolean }>`
-  display: none;
-  
   @media (max-width: 768px) {
-    display: block;
     position: fixed;
     top: 0;
     left: 0;
@@ -406,6 +348,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
 
   const { user } = useAuthContext();
+  const { t } = useTypedTranslation();
   const location = useLocation();
 
   useEffect(() => {
@@ -427,25 +370,24 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
-  }, []); // Removido isCollapsed da dependência
+  }, []);
 
   // Verificar se estamos numa rota de integrações
   const isIntegrationsActive = location.pathname.startsWith('/integrations');
   const isOpenAIActive = location.pathname === '/integrations/openai';
 
-  // Items de navegação básicos
+  // Items de navegação básicos com traduções
   const navigationItems = [
-    { path: "/", label: "Home", icon: FiHome, show: true },
-    { path: "/companies", label: "Empresas", icon: FiUsers, show: profile === 1 },
-    { path: "/user", label: "Usuários", icon: FiUsers, show: profile <= 2 && profile > 0 },
-    { path: "/group", label: "Grupos", icon: FiGroup, show: profile <= 2 && profile > 0 },
-    { path: "/folder", label: "Pastas", icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
-    { path: "/task", label: "Tarefas", icon: FiCheckSquare, show: true },
-    { path: "/document", label: "Documentos", icon: FiFile, show: true },
+    { path: "/", label: t("navigation.home"), icon: FiHome, show: true },
+    { path: "/companies", label: t("navigation.companies"), icon: FiBriefcase, show: profile === 1 },
+    { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2 && profile > 0 },
+    { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile <= 2 && profile > 0 },
+    { path: "/folder", label: t("navigation.folders"), icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
+    { path: "/task", label: t("navigation.tasks"), icon: FiCheckSquare, show: true },
+    { path: "/document", label: t("navigation.documents"), icon: FiFile, show: true },
   ];
 
   const toggleSidebar = () => {
-    console.log('Toggle clicado:', { isCollapsed, isMobile }); // DEBUG - remover após teste
     setIsCollapsed(!isCollapsed);
   };
 
@@ -494,7 +436,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
           )}
           {isCollapsed && <LogoIcon>D</LogoIcon>}
           
-          {/* Removida a condição !isMobile - deixar o CSS controlar */}
           <ToggleButton onClick={toggleSidebar}>
             {isCollapsed ? <FiMenu size={20} /> : <FiX size={20} />}
           </ToggleButton>
@@ -512,6 +453,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                   $isActive={location.pathname === path}
                   $isCollapsed={isCollapsed}
                   onClick={handleNavItemClick}
+                  data-tooltip={label}
                 >
                   <Icon />
                   <span>{label}</span>
@@ -527,7 +469,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                 onClick={toggleIntegrationsDropdown}
               >
                 <FiLink2 />
-                <span>Integrações</span>
+                <span>{t("navigation.integrations")}</span>
                 <ChevronIcon $isOpen={integrationsOpen} $isCollapsed={isCollapsed}>
                   <FiChevronRight size={14} />
                 </ChevronIcon>
@@ -539,7 +481,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                   $isActive={isOpenAIActive}
                   onClick={handleNavItemClick}
                 >
-                  OpenAI
+                  {t("navigation.openai")}
                 </DropdownItem>
               </DropdownContent>
             </DropdownContainer>
@@ -550,9 +492,10 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               $isActive={location.pathname === '/settings'}
               $isCollapsed={isCollapsed}
               onClick={handleNavItemClick}
+              data-tooltip={t("navigation.settings")}
             >
               <FiSettings />
-              <span>Configurações</span>
+              <span>{t("navigation.settings")}</span>
             </NavItem>
           </NavGroup>
         </Navigation>

@@ -7,7 +7,10 @@ export const ptTranslations = {
     groups: "Grupos",
     folders: "Pastas",
     tasks: "Tarefas",
-    documents: "Documentos"
+    documents: "Documentos",
+    integrations: "Integrações",
+    settings: "Configurações",
+    openai: "OpenAI"
   },
 
   // Ações gerais
