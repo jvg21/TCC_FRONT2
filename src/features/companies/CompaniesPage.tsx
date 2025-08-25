@@ -140,7 +140,7 @@ const CompaniesPage: React.FC = () => {
     <PageLayout
       title={t("companies.title")}
       actions={
-        <Button onClick={handleAdd}>
+        <Button disabled={!userProfile} onClick={handleAdd}>
           <FiPlus />&nbsp;{t("companies.add_company")}
         </Button>
       }

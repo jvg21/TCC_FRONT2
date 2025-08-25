@@ -4,10 +4,12 @@ import { t } from "i18next";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
+import { useAuthContext } from "../../context/AuthContext";
 
 export const useGroup = () => {
   const [group, setGroup] = useState<Group[]>([]);
   const [query, setQuery] = useState("");
+  const { user: compan } = useAuthContext();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
@@ -24,7 +26,7 @@ export const useGroup = () => {
     return {
       name: payload.Name,
       description: payload.Description,
-      userId: payload.UserId,
+      companyId: payload.CompanyId || compan?.CompanyId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isActive: payload.IsActive ?? true
@@ -36,7 +38,7 @@ export const useGroup = () => {
       GroupId: item.groupId,
       Name: item.name,
       Description: item.description,
-      UserId: item.userId,
+      CompanyId: item.companyId,
       IsActive: item.isActive,
       CreatedAt: item.createdAt,
       UpdatedAt: item.updatedAt
@@ -48,7 +50,6 @@ export const useGroup = () => {
       GroupId: item.groupId,
       Name: item.name,
       Description: item.description,
-      UserId: item.userId,
       IsActive: item.isActive,
       CreatedAt: item.createdAt,
       UpdatedAt: item.updatedAt
@@ -198,8 +199,7 @@ export const useGroup = () => {
     }
   };
 
-  // Adicionar após a função softDelete (linha ~165):
-
+  // Funções para gerenciamento de usuários
   const getUsersByGroup = async (groupId: number) => {
     try {
       const response = await fetch(`${apiUrl}/Group/GetListUserByGroup/${groupId}`, {
@@ -215,7 +215,14 @@ export const useGroup = () => {
         throw new Error(data.mensagem);
       }
 
-      return transformApiDataToPascalCase(data.objeto);
+      // Transformar dados dos usuários do grupo
+      return data.objeto.map((item: any) => ({
+        UserId: item.userId,
+        Name: item.name,
+        Email: item.email,
+        Profile: item.profile,
+        IsActive: item.isActive
+      }));
     } catch (err) {
       console.error("Erro ao buscar usuários do grupo:", err);
       throw err;
@@ -243,7 +250,7 @@ export const useGroup = () => {
         throw new Error(data.mensagem);
       }
 
-      notificationActions.showNotification(t('groups.addUserSuccess'), 'success');
+      notificationActions.showNotification(t('groups.addUserSuccess') || 'Usuário adicionado ao grupo com sucesso!', 'success');
       return data;
     } catch (err) {
       console.error("Erro ao adicionar usuário ao grupo:", err);
@@ -272,7 +279,7 @@ export const useGroup = () => {
         throw new Error(data.mensagem);
       }
 
-      notificationActions.showNotification(t('groups.removeUserSuccess'), 'success');
+      notificationActions.showNotification(t('groups.removeUserSuccess') || 'Usuário removido do grupo com sucesso!', 'success');
       return data;
     } catch (err) {
       console.error("Erro ao remover usuário do grupo:", err);

@@ -9,7 +9,7 @@ interface AuthContextType {
   setIsAuthenticated: (value: boolean) => void;
   user: User | null;
   setUser: (user: User | null) => void;
-  userProfile: Boolean;
+  userProfile: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

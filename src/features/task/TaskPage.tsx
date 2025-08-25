@@ -118,7 +118,7 @@ const TaskPage: React.FC = () => {
   const columns = Columns(handleEdit, handleDelete);
 
   return (
-    <PageLayout title={t("tasks.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("tasks.add_task")}</Button>}>
+    <PageLayout title={t("tasks.title")} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("tasks.add_task")}</Button>}>
       <FilterBar
         columns={columns}
         value={query}

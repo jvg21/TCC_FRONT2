@@ -3,7 +3,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import {  FiPlus} from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { Folder } from "./types";
@@ -124,7 +124,7 @@ const FolderPage: React.FC = () => {
   const columns = Columns(handleEdit, handleToggleStatus);
 
   return (
-    <PageLayout title={t("folders.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("folders.add_folder")}</Button>}>
+    <PageLayout title={t("folders.title")} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("folders.add_folder")}</Button>}>
       <FilterBar
         columns={columns}
         value={query}

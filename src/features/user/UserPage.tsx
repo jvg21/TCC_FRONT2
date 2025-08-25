@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
@@ -98,7 +97,7 @@ const UserPage: React.FC = () => {
   const columns = Columns(handleEdit, handleDelete);
 
   return (
-    <PageLayout title={t("users.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("users.add_user")}</Button>}>
+    <PageLayout title={t("users.title")} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("users.add_user")}</Button>}>
       <FilterBar
         columns={columns}
         value={query}

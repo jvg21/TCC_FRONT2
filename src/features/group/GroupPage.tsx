@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import {  FiPlus } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { Group } from "./types";
@@ -95,7 +95,7 @@ const handleToggleStatus = async (id: number) => {
 const columns = Columns(handleEdit, handleToggleStatus);
 
 return (
-  <PageLayout title={t("groups.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("groups.add_group")}</Button>}>
+  <PageLayout title={t("groups.title")} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("groups.add_group")}</Button>}>
     <FilterBar
       columns={columns}
       value={query}
