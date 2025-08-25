@@ -7,13 +7,16 @@ export const esTranslations = {
     groups: "Grupos",
     folders: "Carpetas",
     tasks: "Tareas",
-    documents: "Documentos"
+    documents: "Documentos",
+    integrations: "Integraciones",
+    settings: "Configuración",
+    openai: "OpenAI"
   },
 
   // Acciones generales
   actions: {
     add: "Agregar",
-    actions: "Comportamiento",
+    actions: "Acciones",
     edit: "Editar",
     delete: "Eliminar",
     save: "Guardar",
@@ -27,7 +30,9 @@ export const esTranslations = {
     close: "Cerrar",
     view: "Ver",
     export: "Exportar",
-    import: "Importar"
+    import: "Importar",
+    activate: "Activar",
+    deactivate: "Desactivar"
   },
 
   // Estados
@@ -51,12 +56,15 @@ export const esTranslations = {
     name: "Nombre",
     tax_id: "RUT/CUIT",
     email: "Correo",
-    zipcode:"Código Postal",
+    zipcode: "Código Postal",
     phone: "Teléfono",
     address: "Dirección",
     created_at: "Creado en",
     updated_at: "Actualizado en",
-    is_active: "Estado"
+    is_active: "Estado",
+    createSucess: "¡Empresa creada exitosamente!",
+    updateSucess: "¡Empresa actualizada exitosamente!",
+    updateStatusSucess: "¡Estado de empresa cambiado exitosamente!"
   },
 
   // Usuarios
@@ -73,7 +81,12 @@ export const esTranslations = {
     created_at: "Creado en",
     updated_at: "Actualizado en",
     is_active: "Estado",
-    last_login: "Último Acceso"
+    last_login: "Último Acceso",
+    password: "Contraseña",
+    passwordRequirements: "La contraseña debe tener al menos 6 caracteres, incluyendo mayúscula, minúscula y número",
+    createSucess: "¡Usuario creado exitosamente!",
+    updateSucess: "¡Usuario actualizado exitosamente!",
+    createError: "Error al crear usuario"
   },
 
   // Grupos
@@ -148,11 +161,12 @@ export const esTranslations = {
     email_placeholder: "Ingresa tu correo",
     password_placeholder: "Ingresa tu contraseña",
     remember_me: "Recordarme",
-    forgot_password: "¿Olvidaste tu contraseña?",
+    forgot_password: "¿Olvidaste la contraseña?",
     login_button: "Iniciar Sesión",
     logging_in: "Iniciando sesión...",
     light_mode: "Modo Claro",
     dark_mode: "Modo Oscuro",
+    is_active: "Estado",
     logout: "Cerrar Sesión"
   },
 
@@ -187,9 +201,38 @@ export const esTranslations = {
     statistics: "Estadísticas"
   },
 
+  // Configuraciones
+  settings: {
+    title: "Configuración",
+    account: "Cuenta",
+    account_description: "Información de tu cuenta",
+    appearance: "Apariencia",
+    appearance_description: "Personaliza la apariencia del sistema",
+    theme: "Tema",
+    theme_description: "Elige entre modo claro u oscuro",
+    language: "Idioma",
+    language_description: "Selecciona tu idioma preferido",
+    session: "Sesión",
+    session_description: "Administra tu sesión del sistema",
+    logout: "Cerrar Sesión",
+    logout_description: "Termina tu sesión actual y regresa a la pantalla de login"
+  },
+
+  // Perfiles de usuario
+  profiles: {
+    administrator: "Administrador",
+    manager: "Gerente",
+    employee: "Empleado"
+  },
+
+  // Perfiles (usado en enum)
+  administrator: "Administrador",
+  manager: "Gerente",
+  employee: "Empleado",
+
   // Formularios
   forms: {
-    required_field: "Campo requerido",
+    required_field: "Campo obligatorio",
     invalid_email: "Correo inválido",
     password_too_short: "Contraseña muy corta",
     passwords_dont_match: "Las contraseñas no coinciden",
@@ -212,11 +255,11 @@ export const esTranslations = {
       unauthorized: "Acceso no autorizado.",
       not_found: "Elemento no encontrado.",
       validation: "Datos inválidos. Verifica los campos.",
-      login_failed: "Error de inicio de sesión. Verifica tus credenciales."
+      login_failed: "Inicio de sesión falló. Verifica tus credenciales."
     },
     confirm: {
       delete: "¿Estás seguro de que quieres eliminar este elemento?",
-      unsaved_changes: "Tienes cambios sin guardar. ¿Quieres continuar?"
+      unsaved_changes: "Tienes cambios no guardados. ¿Quieres continuar?"
     }
   },
 
@@ -243,30 +286,8 @@ export const esTranslations = {
 
   // Carga
   loading: {
-    please_wait: "Por favor, espera...",
+    please_wait: "Por favor espera...",
     loading: "Cargando...",
-    processing: "Procesando..."},
-
-    settings: {
-    title: "Configuración",
-    account: "Cuenta",
-    account_description: "Información de tu cuenta",
-    appearance: "Apariencia",
-    appearance_description: "Personaliza la apariencia del sistema",
-    theme: "Tema",
-    theme_description: "Elige entre modo claro u oscuro",
-    language: "Idioma", 
-    language_description: "Selecciona tu idioma preferido",
-    session: "Sesión",
-    session_description: "Administra tu sesión del sistema",
-    logout: "Cerrar Sesión",
-    logout_description: "Finaliza tu sesión actual y regresa a la pantalla de inicio"
-  },
-
-  // Perfiles de usuario
-  profiles: {
-    administrator: "Administrador",
-    manager: "Gerente",
-    employee: "Empleado"
-  },
+    processing: "Procesando..."
   }
+};
