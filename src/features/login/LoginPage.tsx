@@ -6,6 +6,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { ThemeSelector } from "../../components/common/ThemeSelector";
 import { useLogin } from "./useLogin";
 import { useNavigate } from "react-router-dom";
+import { t } from "i18next";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -187,9 +188,14 @@ const LoginPage = () => {
           </InputGroup>
 
           <RememberForgot>
-            <ForgotLink href="/resetpassword" >Esqueceu a senha?</ForgotLink>
+            <div></div> {/* Espaço vazio para alinhar o link à direita */}
+            <ForgotLink
+              type="button"
+              onClick={() => navigate("/request-password-recovery")}
+            >
+              {t("login.forgot_password")}
+            </ForgotLink>
           </RememberForgot>
-
           <LoginButton
             type="submit"
             disabled={!canSubmit || isLoading}

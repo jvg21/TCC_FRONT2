@@ -13,6 +13,9 @@ import { AdmRoutes } from "./AdmRoutes"
 import UserPage from "../features/user/UserPage"
 import SettingsPage from "../features/settings/SettingPage"
 import IntegrationsPage from "../features/integrations/IntegrationsPage" // Nova importação
+import ResetPassword from "../features/login/ResetPassword"
+import ValidateRecoveryToken from "../features/login/ValidateRecoveryToken"
+import RequestPasswordRecovery from "../features/login/RequestPasswordRecovery"
 
 export const AppRoutes = () => {
     return (
@@ -22,6 +25,9 @@ export const AppRoutes = () => {
                     <LoginPage />
                 </AuthRoutes>}
             />
+             <Route path="/request-password-recovery" element={<RequestPasswordRecovery />} />
+      <Route path="/validate-recovery-token" element={<ValidateRecoveryToken />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
         
 
             {/* PROTECTED ROUTES */}
