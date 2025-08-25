@@ -34,7 +34,7 @@ export const useUser = () => {
       companyId: payload.CompanyId || compan?.CompanyId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      isActive: payload.IsActive ?? true
+      isActive: payload.IsActive || true
     };
   };
 

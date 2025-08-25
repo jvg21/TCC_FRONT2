@@ -1,42 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
-import styled from "styled-components";
 import type { Folder } from "./types";
 import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
+import { Row } from "../../components/common/Row";
+import { Col } from "../../components/common/Col";
 
-
-
-const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
-const Col = styled.div` flex:1; `;
 
 type Props = {
   initial?: Partial<Folder>;
   isEditing?: boolean;
   onCancel: () => void;
-  onSave: (data: Omit<Folder, "ParentFolderId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "FolderId"> & Partial<Folder>) => void;
+  onSave: (data: Partial<Folder>) => void;
 };
 
 export const FolderForm: React.FC<Props> = ({ initial = {}, isEditing = false, onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
-  const [FolderId, setFolderId] = useState(initial.FolderId ?? "");
-  const [UserId, setUserId] = useState(initial.UserId ?? "");
+  const [FolderId, setFolderId] = useState(initial.FolderId ?? 0);
   const { t } = useTranslation();
 
   useEffect(() => {
     setName(initial.Name ?? "");
-    setFolderId(initial.FolderId ?? "");
-    setUserId(initial.UserId ?? "");
+    setFolderId(initial.FolderId ?? 0);
   }, [initial.Name, initial.FolderId, initial.UserId]);
 
   const validateFields = () => {
-      const isNameValid = Name.trim().length > 0;
-      console.log("Validation results:", {
-        isNameValid,
-      });
-      return isNameValid;
-    };
+    const isNameValid = Name.trim().length > 0;
+    console.log("Validation results:", {
+      isNameValid,
+    });
+    return isNameValid;
+  };
 
   const canSave = validateFields();
 
@@ -44,7 +39,7 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, isEditing = false, o
     e.preventDefault();
     if (!canSave) return;
 
-    onSave({ Name, FolderId, UserId});
+    onSave({ Name, FolderId });
   };
 
   return (
@@ -53,22 +48,12 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, isEditing = false, o
         <Col><Input label={t("folders.name")} maxLength={20} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
       </Row>
       <Row>
-        <Col><Select label={t("folders.user")} required options={[
-          { value: "false", label: t("status.disabled") },
-          { value: "true", label: t("status.enabled") },
-        ]} /></Col>
         <Col><Select label={t("folders.parent_folder")} required options={[
           { value: "false", label: t("status.disabled") },
           { value: "true", label: t("status.enabled") },
         ]} /></Col>
       </Row>
 
-      {/* <Row>
-        <Col><Select label={t("folders.is_active")} required options={[
-          { value: "false", label: t("status.disabled") },
-          { value: "true", label: t("status.enabled") },
-        ]} /></Col>
-      </Row> */}
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
         <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>

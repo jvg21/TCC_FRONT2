@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
-import styled from "styled-components";
 import type { Group } from "./types";
 import { useTranslation } from "react-i18next";
-
-
-
-const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
-const Col = styled.div` flex:1; `;
+import { Row } from "../../components/common/Row";
+import { Col } from "../../components/common/Col";
 
 type Props = {
   initial?: Partial<Group>;
