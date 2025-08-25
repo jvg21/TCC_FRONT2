@@ -5,10 +5,10 @@ export interface Task {
     CreatedAt?: string;
     UpdatedAt?: string;
     DueDate?: string;
-    Priority?: string;
-    Status?: string;
-    AssigneeId?: string;
-    UserId?: string;
+    Priority?: number;
+    Status?: number;
+    AssigneeId?: number;
+    UserId?: number;
     ParentTaskId?: string;
     IsActive?: boolean;
   }

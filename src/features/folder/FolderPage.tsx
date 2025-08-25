@@ -19,16 +19,22 @@ const FolderPage: React.FC = () => {
   const [editing, setEditing] = useState<Folder | null>(null);
   const [query, setQuery] = useState("");
   const { t } = useTranslation();
-
-
   const Columns = (onEdit: (c: Folder) => void, onDelete: (id: number) => void): ColumnDef<Folder>[] => [
     { key: "Name", header: t("folders.name"), render: (row) => row.Name || "-" },
-    { key: "FolderId", header: t("folders.parent_folder"), render: (row) => row.FolderId || "-" },
+    {
+      key: "ParentFolderId",
+      header: t("folders.parent_folder"),
+      render: (row) => {
+        if (!row.ParentFolderId) return t("folders.no_parent_folder") || "Nenhuma";
+        const parentFolder = activeFolder.find(f => f.FolderId === row.ParentFolderId);
+        return parentFolder ? parentFolder.Name : row.ParentFolderId.toString();
+      }
+    },
     { key: "UserId", header: t("folders.user"), render: (row) => row.UserId || "-" },
+    { key: "ValidatorId", header: t("folders.validator"), render: (row) => row.ValidatorId || "-" },
     {
       key: "IsActive",
       header: t("folders.is_active"),
-      // Renderiza o status com cores -------------------------------------------
       render: (row) => (
         <span style={{
           color: row.IsActive ? '#28a745' : '#dc3545',
@@ -58,17 +64,21 @@ const FolderPage: React.FC = () => {
     }
   ];
 
+  // Correção na função de filtro
   const filteredFolder = React.useMemo(() => {
     if (!query) return activeFolder;
 
     const searchQuery = query.toLowerCase();
     return activeFolder.filter(folder => {
+      const parentFolderName = folder.ParentFolderId
+        ? activeFolder.find(f => f.FolderId === folder.ParentFolderId)?.Name || ""
+        : "";
+
       const searchableText = [
         folder.Name || "",
-        folder.FolderId || "",
-        folder.UserId || "",
-
-
+        parentFolderName,
+        folder.ValidatorId?.toString() || "",
+        folder.UserId?.toString() || ""
       ].join(" ").toLowerCase();
 
       return searchableText.includes(searchQuery);

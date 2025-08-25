@@ -12,7 +12,7 @@ import type { User } from "./types";
 import { UserForm } from "./UserForm";
 import { useUser } from "./useUser";
 import { useTranslation } from "react-i18next";
-import { profiles } from "../../enum/profile";
+import { profiles } from "../../enum/userProfile";
 
 
 

@@ -6,7 +6,7 @@ import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
 import { regexPatterns } from "../../utils/regexUtils";
 import { useAuthContext } from "../../context/AuthContext";
-import { profiles } from "../../enum/profile";
+import { profiles } from "../../enum/userProfile";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
 
