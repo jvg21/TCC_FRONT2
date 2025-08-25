@@ -136,7 +136,20 @@ export const enTranslations = {
     is_active: "Status",
     priority_high: "High",
     priority_medium: "Medium",
-    priority_low: "Low"
+    priority_low: "Low",
+    statusTask: {
+      todo: "To Do",
+      inprogress: "Em Progresso",
+      inreview: "Em Revisão",
+      done: "Concluído",
+      canceled: "Cancelado"
+    },
+    priorityTask: {
+      low: "Baixa",
+      medium: "Média",
+      high: "Alta",
+      urgent: "Urgente"
+    }
   },
 
   // Documents
