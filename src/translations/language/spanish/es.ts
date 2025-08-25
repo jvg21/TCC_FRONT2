@@ -44,7 +44,8 @@ export const esTranslations = {
     pending: "Pendiente",
     completed: "Completado",
     in_progress: "En Progreso",
-    cancelled: "Cancelado"
+    cancelled: "Cancelado",
+    all:"Todos"
   },
 
   // Empresas

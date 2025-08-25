@@ -17,6 +17,8 @@ import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActionButtons } from "../../components/lib/ActionButtons";
 import { taskPriority } from "../../enum/taskPriority";
+import { useLanguage } from "../../context/LanguageContext";
+import { dateUtils } from "../../utils/dateUtils";
 
 
 const TaskPage: React.FC = () => {
@@ -30,12 +32,18 @@ const TaskPage: React.FC = () => {
   const { t } = useTranslation();
   const { activeUser } = useUser()
   const { userProfile } = useAuthContext()
+  const { currentLanguage } = useLanguage();
+
 
   const Columns = (onEdit: (c: Task) => void, onToggleStatus: (id: number) => void): ColumnDef<Task>[] => {
     const baseCols: ColumnDef<Task>[] = [
       { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },
       { key: "Description", header: t("tasks.description"), render: (row) => row.Description || "-" },
-      { key: "DueDate", header: t("tasks.due_date"), render: (row) => row.DueDate || "-" },
+      {
+        key: "DueDate",
+        header: t("tasks.due_date"),
+        render: (row) => dateUtils.formatDateShort(row.DueDate, currentLanguage)
+      },
       {
         key: "Priority", header: t("tasks.priority"), render: (row) => {
           const priorityObj = taskPriority.find(p => p.value === row.Priority?.toString())

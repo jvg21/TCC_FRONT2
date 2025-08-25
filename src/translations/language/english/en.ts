@@ -44,7 +44,8 @@ export const enTranslations = {
     pending: "Pending",
     completed: "Completed",
     in_progress: "In Progress",
-    cancelled: "Cancelled"
+    cancelled: "Cancelled",
+    all:"All"
   },
 
   // Companies
