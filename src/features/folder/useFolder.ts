@@ -72,10 +72,13 @@ export const useFolder = () => {
   });
 
   const transformPayloadToCamelCase = (payload: any) => ({
-    folderId: payload.FolderId || null,
     name: payload.Name,
     parentFolderId: payload.ParentFolderId || null,
-    validatorId: payload.ValidatorId
+    validatorId: payload.ValidatorId,
+    
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isActive: payload.IsActive || true
   });
 
   const create = async (payload: Omit<Folder, "FolderId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId" | "Documents">) => {

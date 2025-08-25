@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
-import styled from "styled-components";
 import type { Company } from "./types";
 import { useTypedTranslation } from "../../context/LanguageContext";
 import { regexPatterns } from "../../utils/regexUtils";
+import { Row } from "../../components/common/Row";
+import { Col } from "../../components/common/Col";
 
-const Row = styled.div` display:flex; gap:12px; margin-bottom: 12px; `;
-const Col = styled.div` flex:1; `;
 
 type Props = {
   initial?: Partial<Company>;
