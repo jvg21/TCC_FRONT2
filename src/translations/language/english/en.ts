@@ -7,7 +7,10 @@ export const enTranslations = {
     groups: "Groups",
     folders: "Folders",
     tasks: "Tasks",
-    documents: "Documents"
+    documents: "Documents",
+    integrations: "Integrations",
+    settings: "Settings",
+    openai: "OpenAI"
   },
 
   // General actions
@@ -27,7 +30,9 @@ export const enTranslations = {
     close: "Close",
     view: "View",
     export: "Export",
-    import: "Import"
+    import: "Import",
+    activate: "Activate",
+    deactivate: "Deactivate"
   },
 
   // Status
@@ -51,12 +56,15 @@ export const enTranslations = {
     name: "Name",
     tax_id: "Tax ID",
     email: "Email",
-    zipcode:"Zip Code",
+    zipcode: "Zip Code",
     phone: "Phone",
     address: "Address",
     created_at: "Created at",
     updated_at: "Updated at",
-    is_active: "Status"
+    is_active: "Status",
+    createSucess: "Company created successfully!",
+    updateSucess: "Company updated successfully!",
+    updateStatusSucess: "Company status changed successfully!"
   },
 
   // Users
@@ -74,7 +82,11 @@ export const enTranslations = {
     updated_at: "Updated at",
     is_active: "Status",
     last_login: "Last Login",
-    
+    password: "Password",
+    passwordRequirements: "Password must have at least 6 characters, including uppercase, lowercase and number",
+    createSucess: "User created successfully!",
+    updateSucess: "User updated successfully!",
+    createError: "Error creating user"
   },
 
   // Groups
@@ -154,7 +166,8 @@ export const enTranslations = {
     logging_in: "Signing in...",
     light_mode: "Light Mode",
     dark_mode: "Dark Mode",
-    logout: "Sign Out"
+    is_active: "Status",
+    logout: "Logout"
   },
 
   // Password recovery
@@ -188,6 +201,35 @@ export const enTranslations = {
     statistics: "Statistics"
   },
 
+  // Settings
+  settings: {
+    title: "Settings",
+    account: "Account",
+    account_description: "Your account information",
+    appearance: "Appearance",
+    appearance_description: "Customize system appearance",
+    theme: "Theme",
+    theme_description: "Choose between light or dark mode",
+    language: "Language",
+    language_description: "Select your preferred language",
+    session: "Session",
+    session_description: "Manage your system session",
+    logout: "Sign Out",
+    logout_description: "End your current session and return to login screen"
+  },
+
+  // User profiles
+  profiles: {
+    administrator: "Administrator",
+    manager: "Manager",
+    employee: "Employee"
+  },
+
+  // Profiles (used in enum)
+  administrator: "Administrator",
+  manager: "Manager",
+  employee: "Employee",
+
   // Forms
   forms: {
     required_field: "Required field",
@@ -195,7 +237,7 @@ export const enTranslations = {
     password_too_short: "Password too short",
     passwords_dont_match: "Passwords don't match",
     invalid_phone: "Invalid phone",
-    invalid_tax_id: "Invalid tax ID"
+    invalid_tax_id: "Invalid Tax ID"
   },
 
   // Messages
@@ -246,30 +288,6 @@ export const enTranslations = {
   loading: {
     please_wait: "Please wait...",
     loading: "Loading...",
-    processing: "Processing..."},
-
-  // Settings
-  settings: {
-    title: "Settings",
-    account: "Account",
-    account_description: "Your account information",
-    appearance: "Appearance", 
-    appearance_description: "Customize the system appearance",
-    theme: "Theme",
-    theme_description: "Choose between light or dark mode",
-    language: "Language",
-    language_description: "Select your preferred language",
-    session: "Session",
-    session_description: "Manage your system session",
-    logout: "Sign Out",
-    logout_description: "End your current session and return to login screen"
-  },
-
-  // User profiles
-  profiles: {
-    administrator: "Administrator",
-    manager: "Manager",
-    employee: "Employee"
-  },
-
+    processing: "Processing..."
   }
+};
