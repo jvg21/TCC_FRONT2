@@ -139,15 +139,15 @@ export const esTranslations = {
     priority_low: "Baja",
     statusTask: {
       todo: "To Do",
-      inprogress: "Em Progresso",
-      inreview: "Em Revisão",
-      done: "Concluído",
+      inprogress: "En Curso",
+      inreview: "Bajo Revisión",
+      done: "Terminado",
       canceled: "Cancelado"
     },
     priorityTask: {
-      low: "Baixa",
-      medium: "Média",
-      high: "Alta",
+      low: "Bajo",
+      medium: "Promedio",
+      high: "Alto",
       urgent: "Urgente"
     }
   },

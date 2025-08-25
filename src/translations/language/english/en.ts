@@ -138,17 +138,17 @@ export const enTranslations = {
     priority_medium: "Medium",
     priority_low: "Low",
     statusTask: {
-      todo: "To Do",
-      inprogress: "Em Progresso",
-      inreview: "Em Revisão",
-      done: "Concluído",
-      canceled: "Cancelado"
+      todo: "All",
+      inprogress: "In Progress",
+      inreview: "Under Review",
+      done: "Completed",
+      canceled: "Canceled"
     },
     priorityTask: {
-      low: "Baixa",
-      medium: "Média",
-      high: "Alta",
-      urgent: "Urgente"
+      low: "Low",
+      medium: "Medium",
+      high: "High",
+      urgent: "Urgent"
     }
   },
 
