@@ -6,8 +6,8 @@ import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
-import { taskStatus } from "../../enum/taskStatus";
-import { taskPriority } from "../../enum/taskPriority";
+import { getTaskStatus, taskStatus } from "../../enum/taskStatus";
+import { getTaskPriority, taskPriority } from "../../enum/taskPriority";
 import { useUser } from "../user/useUser";
 
 type Props = {
@@ -53,13 +53,12 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
             label: user.Name
         }))
     ];
-
-    const taskStatusOptions = taskStatus.map(status => ({
+    const taskStatusOptions = getTaskStatus(t).map(status => ({
         value: status.value,
         label: status.label
     }));
 
-    const taskPriorityOptions = taskPriority.map(priority => ({
+    const taskPriorityOptions = getTaskPriority(t).map(priority => ({
         value: priority.value,
         label: priority.label
     }));
@@ -68,7 +67,7 @@ export const TaskForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
         e.preventDefault();
         if (!canSave) return;
 
-        onSave({ Title, Description, DueDate, Priority, Status, AssigneeId});
+        onSave({ Title, Description, DueDate, Priority, Status, AssigneeId });
     };
 
     return (

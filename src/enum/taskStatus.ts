@@ -7,3 +7,11 @@ export const taskStatus = [
     { value: '4', label: t('tasks.statusTask.done') },
     { value: '5', label: t('tasks.statusTask.canceled') }
 ];
+
+export const getTaskStatus = (t: any) => [
+    { value: '1', label: t('tasks.statusTask.todo') },
+    { value: '2', label: t('tasks.statusTask.inprogress') },
+    { value: '3', label: t('tasks.statusTask.inreview') },
+    { value: '4', label: t('tasks.statusTask.done') },
+    { value: '5', label: t('tasks.statusTask.canceled') }
+];

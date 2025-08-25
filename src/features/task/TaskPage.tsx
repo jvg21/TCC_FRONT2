@@ -11,12 +11,12 @@ import type { Task } from "./types";
 import { TaskForm } from "./TaskForm";
 import { useTask } from "./useTask";
 import { useTranslation } from "react-i18next";
-import { taskStatus } from "../../enum/taskStatus";
+import { getTaskStatus, taskStatus } from "../../enum/taskStatus";
 import { useUser } from "../user/useUser";
 import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActionButtons } from "../../components/lib/ActionButtons";
-import { taskPriority } from "../../enum/taskPriority";
+import { getTaskPriority, taskPriority } from "../../enum/taskPriority";
 import { useLanguage } from "../../context/LanguageContext";
 import { dateUtils } from "../../utils/dateUtils";
 
@@ -46,13 +46,13 @@ const TaskPage: React.FC = () => {
       },
       {
         key: "Priority", header: t("tasks.priority"), render: (row) => {
-          const priorityObj = taskPriority.find(p => p.value === row.Priority?.toString())
+          const priorityObj = getTaskPriority(t).find(p => p.value === row.Priority?.toString())
           return priorityObj ? priorityObj.label : "-";
         }
       },
       {
         key: "Status", header: t("tasks.status"), render: (row) => {
-          const statusObj = taskStatus.find(p => p.value === row.Status?.toString())
+          const statusObj = getTaskStatus(t).find(p => p.value === row.Status?.toString())
           return statusObj ? statusObj.label : "-";
         }
       },

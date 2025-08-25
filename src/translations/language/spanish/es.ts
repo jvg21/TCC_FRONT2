@@ -117,7 +117,7 @@ export const esTranslations = {
     updated_at: "Actualizado en",
     is_active: "Estado",
     validator: "Validador",
-    no_parent_folder: "sin carpeta principal"
+    no_parent_folder: "Sin carpeta principal"
   },
 
   // Tareas

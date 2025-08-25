@@ -17,6 +17,8 @@ import { ActiveLabel } from "../../components/lib/ActiveLabel";
 import { ActionButtons } from "../../components/lib/ActionButtons";
 import { DocumentViewer } from "./DocumentViewer";
 import { MarkdownEditorPage } from "../markdown-editor/MarkdownEditorPage";
+import { useUser } from "../user/useUser";
+import { useFolder } from "../folder/useFolder";
 
 const DocumentPage: React.FC = () => {
   const { activeDocument, deactiveDocument, create, update, softDelete } = useDocument();
@@ -24,14 +26,18 @@ const DocumentPage: React.FC = () => {
   const Documents = searchStatus === 1 ? activeDocument : searchStatus === 2 ? deactiveDocument : [...activeDocument, ...deactiveDocument];
   const modal = useModal();
   const viewModal = useModal();
-  const editorModal = useModal(); 
+  const editorModal = useModal();
   const [editing, setEditing] = useState<Document | null>(null);
   const [viewing, setViewing] = useState<Document | null>(null);
-  const [editingContent, setEditingContent] = useState<string>(""); 
+  const [editingContent, setEditingContent] = useState<string>("");
   const [contentSaveCallback, setContentSaveCallback] = useState<((content: string) => void) | null>(null);
   const [query, setQuery] = useState("");
   const { t } = useTranslation();
   const { userProfile } = useAuthContext();
+  const { activeUser } = useUser()
+  const { activeFolder } = useFolder()
+
+
 
   const handleView = (document: Document) => {
     setViewing(document);
@@ -64,30 +70,43 @@ const DocumentPage: React.FC = () => {
   const Columns = (onEdit: (c: Document) => void, onToggleStatus: (id: number) => void, onView: (c: Document) => void, onEditContent: (c: Document) => void): ColumnDef<Document>[] => {
     const baseCols: ColumnDef<Document>[] = [
       { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" },
-      { key: "FolderId", header: t("documents.folder"), render: (row) => row.FolderId || "-" },
-      { key: "UserId", header: t("documents.creator"), render: (row) => row.UserId || "-" },
+
+
+      {
+        key: "FolderId", header: t("documents.folder"), render: (row) => {
+          const folder = activeFolder.filter((a) => a.FolderId === row.FolderId)[0]
+          return folder ? folder.Name : "-";
+        }
+      },
+
+      {
+        key: "UserId", header: t("documents.creator"), render: (row) => {
+          const creator = activeUser.filter((a) => a.UserId === row.UserId)[0]
+          return creator ? creator.Name : "-";
+        }
+      },
       {
         key: "IsActive",
         header: t("documents.is_active"),
         render: (row) => <ActiveLabel IsActive={row.IsActive} />
       }
     ];
-    
+
     if (userProfile) {
       baseCols.push({
         key: "actions",
         header: t("actions.actions"),
         render: (row) => (
           <div style={{ display: 'flex', gap: '4px' }}>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => onView(row)}
               title="Visualizar documento"
             >
               <FiEye />
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => onEditContent(row)}
               title="Editar conteúdo"
             >
@@ -175,7 +194,7 @@ const DocumentPage: React.FC = () => {
         <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
       )}
       <DataTable columns={columns} data={filteredDocument} />
-      
+
       <Modal
         isOpen={modal.isOpen}
         onClose={modal.close}
@@ -185,7 +204,7 @@ const DocumentPage: React.FC = () => {
           initial={editing ?? undefined}
           onCancel={modal.close}
           onSave={handleSave}
-          onEditContent={handleEditContentFromForm} 
+          onEditContent={handleEditContentFromForm}
         />
       </Modal>
 

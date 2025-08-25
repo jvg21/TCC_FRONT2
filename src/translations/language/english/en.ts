@@ -144,7 +144,7 @@ export const enTranslations = {
     select_assignee: "Select Assignee",
 
     statusTask: {
-      todo: "All",
+      todo: "To Do",
       inprogress: "In Progress",
       inreview: "Under Review",
       done: "Completed",
