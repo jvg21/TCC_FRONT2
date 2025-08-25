@@ -6,10 +6,8 @@ import FolderPage from "../features/folder/FolderPage"
 import GroupPage from "../features/group/GroupPage"
 import CompaniesPage from "../features/companies/CompaniesPage"
 import DashboardPage from "../features/dashboard/DashboardPage"
-import ResetTokenPage from "../features/login/ValidateRecoveryToken"
 import { AuthRoutes } from "./AuthRoutes"
 import LoginPage from "../features/login/LoginPage"
-import RecoverPasswordPage from "../features/login/RequestPasswordRecovery"
 import { DevRoutes } from "./DevRoutes"
 import { AdmRoutes } from "./AdmRoutes"
 import UserPage from "../features/user/UserPage"
@@ -24,16 +22,7 @@ export const AppRoutes = () => {
                     <LoginPage />
                 </AuthRoutes>}
             />
-            <Route path="/resetpassword" element={
-                <AuthRoutes>
-                    <RecoverPasswordPage />
-                </AuthRoutes>
-            } />
-            <Route path="/resettokenpage" element={
-                <AuthRoutes>
-                    <ResetTokenPage />
-                </AuthRoutes>
-            } />
+        
 
             {/* PROTECTED ROUTES */}
 
