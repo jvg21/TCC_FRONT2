@@ -136,7 +136,21 @@ export const ptTranslations = {
     is_active: "Status",
     priority_high: "Alta",
     priority_medium: "Média",
-    priority_low: "Baixa"
+    priority_low: "Baixa",
+    statusTask: {
+      todo: "A Fazer",
+      inprogress: "Em Progresso",
+      inreview: "Em Revisão",
+      done: "Concluído",
+      canceled: "Cancelado"
+    },
+    priorityTask: {
+      low: "Baixa",
+      medium: "Média",
+      high: "Alta",
+      urgent: "Urgente"
+    }
+
   },
 
   // Documentos

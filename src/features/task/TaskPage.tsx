@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import {  FiPlus } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { Task } from "./types";
@@ -16,6 +16,7 @@ import { useUser } from "../user/useUser";
 import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActionButtons } from "../../components/lib/ActionButtons";
+import { taskPriority } from "../../enum/taskPriority";
 
 
 const TaskPage: React.FC = () => {
@@ -37,7 +38,7 @@ const TaskPage: React.FC = () => {
       { key: "DueDate", header: t("tasks.due_date"), render: (row) => row.DueDate || "-" },
       {
         key: "Priority", header: t("tasks.priority"), render: (row) => {
-          const priorityObj = taskStatus.find(p => p.value === row.Priority?.toString())
+          const priorityObj = taskPriority.find(p => p.value === row.Priority?.toString())
           return priorityObj ? priorityObj.label : "-";
         }
       },
