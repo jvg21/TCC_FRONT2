@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useFolder } from "../folder/useFolder";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
+import { MarkdownEditor } from "../markdown-editor/MarkdownEditor";
 
 interface DocumentFormProps {
     initial?: Partial<Document>;
@@ -38,7 +39,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     const validateFields = () => {
         const isTitleValid = Title.trim().length > 0;
         const isContentValid = Content.trim().length > 0;
-        return isTitleValid && isContentValid  ;
+        return isTitleValid && isContentValid;
     };
 
     const canSave = validateFields();
@@ -71,18 +72,18 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
             
             <Row>
                 <Col>
-                    <Input 
-                        label={t("documents.content")} 
-                        required 
-                        value={Content} 
-                        onChange={(e) => setContent(e.target.value)} 
+                    {/* 🔄 SUBSTITUIÇÃO: Input por MarkdownEditor */}
+                    <MarkdownEditor
+                        label={t("documents.content")}
+                        value={Content}
+                        onChange={setContent}
+                        required
+                        placeholder="Digite o conteúdo do documento em markdown..."
                     />
                 </Col>
             </Row>
             
             <Row>
-               
-                
                 <Col>
                     <Select 
                         label={t("documents.folder")} 
