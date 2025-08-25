@@ -115,7 +115,8 @@ export const ptTranslations = {
     user: "Usuário",
     created_at: "Criado em",
     updated_at: "Atualizado em",
-    is_active: "Status"
+    is_active: "Status",
+    validator: "Validador"
   },
 
   // Tarefas
@@ -137,6 +138,9 @@ export const ptTranslations = {
     is_active: "Status",
     priority_high: "Alta",
     priority_medium: "Média",
+    creator: "Criador",
+    select_assignee: "Selecionar Funcionário",
+
     priority_low: "Baixa",
     statusTask: {
       todo: "A Fazer",
@@ -166,7 +170,8 @@ export const ptTranslations = {
     user: "Usuário",
     created_at: "Criado em",
     updated_at: "Atualizado em",
-    is_active: "Status"
+    is_active: "Status",
+    creator: "Criador"
   },
 
   // Login

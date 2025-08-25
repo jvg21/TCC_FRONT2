@@ -45,7 +45,7 @@ export const enTranslations = {
     completed: "Completed",
     in_progress: "In Progress",
     cancelled: "Cancelled",
-    all:"All"
+    all: "All"
   },
 
   // Companies
@@ -115,7 +115,8 @@ export const enTranslations = {
     user: "User",
     created_at: "Created at",
     updated_at: "Updated at",
-    is_active: "Status"
+    is_active: "Status",
+    validator: "Validator"
   },
 
   // Tasks
@@ -138,6 +139,9 @@ export const enTranslations = {
     priority_high: "High",
     priority_medium: "Medium",
     priority_low: "Low",
+    creator: "Creator",
+    select_assignee: "Select Assignee",
+
     statusTask: {
       todo: "All",
       inprogress: "In Progress",
@@ -165,7 +169,9 @@ export const enTranslations = {
     user: "User",
     created_at: "Created at",
     updated_at: "Updated at",
-    is_active: "Status"
+    is_active: "Status",
+    creator: "Creator"
+
   },
 
   // Login
