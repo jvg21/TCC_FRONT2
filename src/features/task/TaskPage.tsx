@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { Task } from "./types";
@@ -13,18 +13,24 @@ import { useTask } from "./useTask";
 import { useTranslation } from "react-i18next";
 import { taskStatus } from "../../enum/taskStatus";
 import { useUser } from "../user/useUser";
+import { SelectSelector } from "../../components/lib/StatusSelector";
+import { useAuthContext } from "../../context/AuthContext";
+import { ActiveLabel } from "../../components/lib/ActiveLabel";
 
 
 const TaskPage: React.FC = () => {
-  const { activeTask, create, update, softDelete } = useTask();
-  const modal = useModal();
+  const { activeTask, deactiveTask,create, update, softDelete } = useTask();
+  const [searchStatus, setSearchStatus] = useState<number>(1)
+  const Task = searchStatus === 1 ? activeTask : searchStatus === 2 ? deactiveTask : [...activeTask, ...deactiveTask]
   const [editing, setEditing] = useState<Task | null>(null);
   const [query, setQuery] = useState("");
 
-  const { activeUser } = useUser()
-
+  const modal = useModal();
   const { t } = useTranslation();
-  const Columns = (onEdit: (c: Task) => void, onDelete: (id: string) => void): ColumnDef<Task>[] => [
+  const { activeUser } = useUser()
+  const { userProfile } = useAuthContext()
+
+  const Columns = (onEdit: (c: Task) => void, onDelete: (id: number) => void): ColumnDef<Task>[] => [
     { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },
     { key: "Description", header: t("tasks.description"), render: (row) => row.Description || "-" },
     { key: "DueDate", header: t("tasks.due_date"), render: (row) => row.DueDate || "-" },
@@ -56,14 +62,7 @@ const TaskPage: React.FC = () => {
       key: "IsActive",
       header: t("companies.is_active"),
       // Renderiza o status com cores -------------------------------------------
-      render: (row) => (
-        <span style={{
-          color: row.IsActive ? '#28a745' : '#dc3545',
-          fontWeight: 'bold'
-        }}>
-          {row.IsActive ? t("status.enabled") : t("status.disabled")}
-        </span>
-      )
+      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
     },
     {
       key: "actions",
@@ -79,7 +78,9 @@ const TaskPage: React.FC = () => {
             //onClick={() => onToggleStatus(row.TaskId)}
             onClick={() => { }}
           >
-            <FiTrash2 />
+            {
+              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
+            }
           </button>
         </div>
       )
@@ -87,10 +88,10 @@ const TaskPage: React.FC = () => {
   ];
 
   const filteredTask = React.useMemo(() => {
-    if (!query) return activeTask;
+    if (!query) return Task;
 
     const searchQuery = query.toLowerCase();
-    return activeTask.filter(task => {
+    return Task.filter(task => {
       const searchableText = [
         task.Title || "",
         task.Description || "",
@@ -103,7 +104,7 @@ const TaskPage: React.FC = () => {
 
       return searchableText.includes(searchQuery);
     });
-  }, [activeTask, query]);
+  }, [Task, query]);
 
   const handleAdd = () => {
     setEditing(null);
@@ -124,7 +125,7 @@ const TaskPage: React.FC = () => {
     modal.close();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     softDelete(id);
   };
 
@@ -138,6 +139,10 @@ const TaskPage: React.FC = () => {
         onChange={setQuery}
         placeholder={t("tasks.search_tasks")}
       />
+      {
+        userProfile &&
+        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+      }
       <DataTable columns={columns} data={filteredTask} />
       <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("tasks.edit_task") : t("tasks.add_task")}>
         <TaskForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />

@@ -4,36 +4,36 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
 import { useDocument } from "./useDocument";
 import type { Document } from "./types";
 import { useTranslation } from "react-i18next";
+import { SelectSelector } from "../../components/lib/StatusSelector";
+import { useAuthContext } from "../../context/AuthContext";
+import { ActiveLabel } from "../../components/lib/ActiveLabel";
 
 const DocumentPage: React.FC = () => {
-  const { activeDocument, create, update, softDelete } = useDocument();
+  const { activeDocument, deactiveDocument, create, update, softDelete } = useDocument();
+  const [searchStatus, setSearchStatus] = useState<number>(1)
+  const Documents = searchStatus === 1 ? activeDocument : searchStatus === 2 ? deactiveDocument : [...activeDocument, ...deactiveDocument]
   const modal = useModal();
   const [editing, setEditing] = useState<Document | null>(null);
   const [query, setQuery] = useState("");
   const { t } = useTranslation();
-  
+  const { userProfile } = useAuthContext()
+
+
   const Columns = (onEdit: (c: Document) => void, onToggleStatus: (id: number) => void): ColumnDef<Document>[] => [
-    { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" }, 
+    { key: "Title", header: t("documents.title_field"), render: (row) => row.Title || "-" },
     { key: "FolderId", header: t("documents.folder"), render: (row) => row.FolderId || "-" },
     { key: "UserId", header: t("documents.creator"), render: (row) => row.UserId || "-" },
     {
       key: "IsActive",
       header: t("documents.is_active"),
-      render: (row) => (
-        <span style={{
-          color: row.IsActive ? '#28a745' : '#dc3545',
-          fontWeight: 'bold'
-        }}>
-          {row.IsActive ? t("status.enabled") : t("status.disabled")}
-        </span>
-      )
+      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
     },
     {
       key: "actions",
@@ -48,7 +48,9 @@ const DocumentPage: React.FC = () => {
             title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
             onClick={() => onToggleStatus(row.DocumentId)}
           >
-            <FiTrash2 />
+            {
+              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
+            }
           </button>
         </div>
       )
@@ -56,11 +58,11 @@ const DocumentPage: React.FC = () => {
   ];
 
   const filteredDocument = React.useMemo(() => {
-    if (!query) return activeDocument;
+    if (!query) return Documents;
 
     const searchQuery = query.toLowerCase();
-    
-    return activeDocument.filter(document => {
+
+    return Documents.filter(document => {
       const searchableText = [
         document.Title || "",
         document.Content || "",
@@ -68,7 +70,7 @@ const DocumentPage: React.FC = () => {
 
       return searchableText.includes(searchQuery);
     });
-  }, [activeDocument, query]);
+  }, [Documents, query]);
 
   const handleAdd = () => {
     setEditing(null);
@@ -104,8 +106,8 @@ const DocumentPage: React.FC = () => {
   const columns = Columns(handleEdit, handleToggleStatus);
 
   return (
-    <PageLayout 
-      title={t("documents.title")} 
+    <PageLayout
+      title={t("documents.title")}
       actions={
         <Button onClick={handleAdd}>
           <FiPlus />&nbsp;{t("documents.add_document")}
@@ -118,16 +120,20 @@ const DocumentPage: React.FC = () => {
         onChange={setQuery}
         placeholder={t("documents.search_documents")}
       />
+      {
+        userProfile &&
+        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+      }
       <DataTable columns={columns} data={filteredDocument} />
-      <Modal 
-        isOpen={modal.isOpen} 
-        onClose={modal.close} 
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={modal.close}
         title={editing ? t("documents.edit_document") : t("documents.add_document")}
       >
-        <DocumentForm 
-          initial={editing ?? undefined} 
-          onCancel={modal.close} 
-          onSave={handleSave} 
+        <DocumentForm
+          initial={editing ?? undefined}
+          onCancel={modal.close}
+          onSave={handleSave}
         />
       </Modal>
     </PageLayout>

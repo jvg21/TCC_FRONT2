@@ -9,7 +9,7 @@ import { useAuthContext } from "../../context/AuthContext";
 export const useUser = () => {
   const [user, setUser] = useState<User[]>([]);
   const [query, setQuery] = useState("");
-  const {user: compan} = useAuthContext();
+  const { user: compan } = useAuthContext();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
@@ -27,8 +27,8 @@ export const useUser = () => {
       name: payload.Name,
       email: payload.Email?.toLowerCase(),
       phone: payload.Phone?.replace(/\D/g, ""),
-      preferredLanguage: payload.PreferredLanguage ||1,
-      preferredTheme: payload.PreferredTheme||2,
+      preferredLanguage: payload.PreferredLanguage || 1,
+      preferredTheme: payload.PreferredTheme || 2,
       profile: payload.Profile,
       password: payload.Password,
       companyId: payload.CompanyId || compan?.CompanyId,

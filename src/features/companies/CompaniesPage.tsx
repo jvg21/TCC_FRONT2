@@ -6,19 +6,25 @@ import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
 import { CompanyForm } from "./CompanyForm";
-import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import type { Company } from "./types";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { useTranslation } from "react-i18next";
 import { regexPatterns } from "../../utils/regexUtils";
+import { SelectSelector } from "../../components/lib/StatusSelector";
+import { useAuthContext } from "../../context/AuthContext";
+import { ActiveLabel } from "../../components/lib/ActiveLabel";
 
 const CompaniesPage: React.FC = () => {
-  const { activeCompanies, query, setQuery, create, update, softDelete } = useCompanies();
-  const modal = useModal();
+  const { activeCompanies, deactiveCompanies, query, setQuery, create, update, softDelete } = useCompanies();
+  const [searchStatus, setSearchStatus] = useState<number>(1)
+  const Companies = searchStatus === 1 ? activeCompanies : searchStatus === 2 ? deactiveCompanies : [...activeCompanies, ...deactiveCompanies]
   const [editing, setEditing] = useState<Company | null>(null);
 
+  const modal = useModal();
   const { t } = useTranslation();
+  const { userProfile } = useAuthContext()
 
 
   // adicionado o metodo render para as colunas -------------------------------------------
@@ -53,20 +59,11 @@ const CompaniesPage: React.FC = () => {
     {
       key: "IsActive",
       header: t("companies.is_active"),
-      // Renderiza o status com cores -------------------------------------------
-      render: (row) => (
-        <span style={{
-          color: row.IsActive ? '#28a745' : '#dc3545',
-          fontWeight: 'bold'
-        }}>
-          {row.IsActive ? t("status.enabled") : t("status.disabled")}
-        </span>
-      )
+      render: (row) => ( <ActiveLabel IsActive={row.IsActive}/>)
     },
-    {
+    { 
       key: "actions",
       header: t("actions.actions"),
-      width: "160px",
       render: (row) => (
         <div style={{ display: "flex", gap: 8 }}>
           <button title={t("actions.edit")} onClick={() => onEdit(row)}>
@@ -76,21 +73,21 @@ const CompaniesPage: React.FC = () => {
             title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
             onClick={() => onToggleStatus(row.CompanyId)}
           >
-            <FiTrash2 />
+            {
+              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
+            }
           </button>
         </div>
       )
     }
   ];
-  // Filtrar dados baseado na busca global
 
   const filteredCompanies = React.useMemo(() => {
-    if (!query) return activeCompanies;
+    if (!query) return Companies;
 
     const searchQuery = query.toLowerCase();
 
-    // adicionado o || "" e remover o IsActive
-    return activeCompanies.filter(company => {
+    return Companies.filter(company => {
       const searchableText = [
         company.Name || "",
         company.TaxId || "",
@@ -102,7 +99,7 @@ const CompaniesPage: React.FC = () => {
 
       return searchableText.includes(searchQuery);
     });
-  }, [activeCompanies, query]);
+  }, [Companies, query]);
 
   const handleAdd = () => {
     setEditing(null);
@@ -132,7 +129,6 @@ const CompaniesPage: React.FC = () => {
     try {
       await softDelete(id);
     } catch (error) {
-      // Error já é tratado no hook useCompanies
       console.error("Erro ao alterar status da empresa:", error);
     }
   };
@@ -154,6 +150,10 @@ const CompaniesPage: React.FC = () => {
         onChange={setQuery}
         placeholder={t("companies.search_companies")}
       />
+      {
+        userProfile &&
+        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+      }
       <DataTable columns={columns} data={filteredCompanies} />
       <Modal
         isOpen={modal.isOpen}

@@ -5,7 +5,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { User } from "./types";
@@ -13,66 +13,68 @@ import { UserForm } from "./UserForm";
 import { useUser } from "./useUser";
 import { useTranslation } from "react-i18next";
 import { profiles } from "../../enum/userProfile";
-
-
+import { SelectSelector } from "../../components/lib/StatusSelector";
+import { useAuthContext } from "../../context/AuthContext";
+import { ActiveLabel } from "../../components/lib/ActiveLabel";
 
 const UserPage: React.FC = () => {
-  const { activeUser, create, update, softDelete } = useUser();
-  const modal = useModal();
+  const { activeUser, deactiveUser, create, update, softDelete } = useUser();
+  const [searchStatus, setSearchStatus] = useState<number>(1)
+  const User = searchStatus === 1 ? activeUser : searchStatus === 2 ? deactiveUser : [...activeUser, ...deactiveUser]
   const [editing, setEditing] = useState<User | null>(null);
   const [query, setQuery] = useState("");
 
+  const modal = useModal();
   const { t } = useTranslation();
+  const { userProfile } = useAuthContext()
+
   const Columns = (onEdit: (c: User) => void, onDelete: (id: number) => void): ColumnDef<User>[] => [
     { key: "Name", header: t("users.name"), render: (row) => row.Name || "-" },
 
-    { key: "Profile", header: t("users.profile"), render: (row) => {
-      const profileObj = profiles.find(p => p.value === row.Profile.toString());
-      return profileObj ? profileObj.label : "-";
-    }},
-    
+    {
+      key: "Profile", header: t("users.profile"), render: (row) => {
+        const profileObj = profiles.find(p => p.value === row.Profile.toString());
+        return profileObj ? profileObj.label : "-";
+      }
+    },
+
     { key: "Email", header: t("users.email"), render: (row) => row.Email || "-" },
     {
       key: "IsActive",
       header: t("companies.is_active"),
       // Renderiza o status com cores -------------------------------------------
-      render: (row) => (
-        <span style={{
-          color: row.IsActive ? '#28a745' : '#dc3545',
-          fontWeight: 'bold'
-        }}>
-          {row.IsActive ? t("status.enabled") : t("status.disabled")}
-        </span>
-      )
+      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
     },
 
     {
-          key: "actions",
-          header: t("actions.actions"),
-          width: "160px",
-          render: (row) => (
-            <div style={{ display: "flex", gap: 8 }}>
-              <button title={t("actions.edit")} onClick={() => onEdit(row)}>
-                <FiEdit />
-              </button>
-              <button
-                title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
-                //onClick={() => onToggleStatus(row.UserId)}
-                onClick={() => {}}
-              >
-                <FiTrash2 />
-              </button>
-            </div>
-          )
-        }
+      key: "actions",
+      header: t("actions.actions"),
+      width: "160px",
+      render: (row) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <button title={t("actions.edit")} onClick={() => onEdit(row)}>
+            <FiEdit />
+          </button>
+          <button
+            title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
+            //onClick={() => onToggleStatus(row.UserId)}
+            onClick={() => { }}
+          >
+            {
+              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
+            }
+          </button>
+        </div>
+      )
+    }
   ];
 
   // Filtrar dados baseado na busca global
   const filteredUser = React.useMemo(() => {
-    if (!query) return activeUser;
+    if (!query) return User;
 
     const searchQuery = query.toLowerCase();
-    return activeUser.filter(user => {
+    return User.filter(user => {
       const searchableText = [
         user.Name || "",
         user.Profile || "",
@@ -81,7 +83,7 @@ const UserPage: React.FC = () => {
 
       return searchableText.includes(searchQuery);
     });
-  }, [activeUser, query]);
+  }, [User, query]);
 
   const handleAdd = () => {
     setEditing(null);
@@ -116,6 +118,10 @@ const UserPage: React.FC = () => {
         onChange={setQuery}
         placeholder={t("users.search_users")}
       />
+      {
+        userProfile &&
+        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+      }
       <DataTable columns={columns} data={filteredUser} />
       <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("users.edit_user") : t("users.add_user")}>
         <UserForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />

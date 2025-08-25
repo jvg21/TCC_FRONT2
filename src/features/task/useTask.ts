@@ -157,7 +157,7 @@ export const useTask = () => {
     }
   };
 
-  const update = async (id: string, updates: Partial<Task>) => {
+  const update = async (id: number, updates: Partial<Task>) => {
     try {
       const camelCasePayload = {
         taskId: id,
@@ -190,7 +190,7 @@ export const useTask = () => {
     }
   };
 
-  const softDelete = async (id: string) => {
+  const softDelete = async (id: number) => {
     try {
       const response = await fetch(`${apiUrl}/Task/ToogleStatusTask/${id}`, {
         method: "PUT",

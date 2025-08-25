@@ -8,7 +8,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   setIsAuthenticated: (value: boolean) => void;
   user: User | null;
-  setUser: (user: User|null) => void
+  setUser: (user: User | null) => void;
+  userProfile: Boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const userProfile = user ? user.Profile < 3 : false;
 
   useEffect(() => {
     const token = getCookie("authToken");
@@ -50,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, setIsAuthenticated, setUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, setIsAuthenticated, setUser, userProfile }}>
       {children}
     </AuthContext.Provider>
   );

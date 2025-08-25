@@ -8,16 +8,32 @@ const Table = styled.table`
   border-radius: ${({ theme }) => theme.borderRadius};
   overflow: hidden;
 `;
+
 const TableContainer = styled.div`
   overflow-x: auto;
   width: 100%;
 `;
 
 const Th = styled.th`
-  text-align:left; padding: 12px; font-size: 13px; border-bottom: 1px solid rgba(0,0,0,0.06);
+  text-align:left; 
+  padding: 12px; 
+  font-size: 13px; 
+  border-bottom: 1px solid rgba(0,0,0,0.06);
 `;
 
-const Td = styled.td` padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.04); vertical-align: middle;`;
+const Td = styled.td`
+  padding: 12px; 
+  border-bottom: 1px solid rgba(0,0,0,0.04); 
+  vertical-align: middle;
+`;
+
+const Tr = styled.tr`
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+`;
 
 type Props<T> = {
   columns: ColumnDef<T>[];
@@ -35,13 +51,13 @@ export function DataTable<T extends Record<string, any>>({ columns, data }: Prop
         </thead>
         <tbody>
           {data.map((row, idx) => (
-            <tr key={idx}>
+            <Tr key={idx}>
               {columns.map((c) => (
                 <Td key={String(c.key)}>
                   {c.render ? c.render(row) : (row as any)[c.key as string]}
                 </Td>
               ))}
-            </tr>
+            </Tr>
           ))}
         </tbody>
       </Table>

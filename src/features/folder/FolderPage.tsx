@@ -3,7 +3,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+import { FiEdit, FiPlus, FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { Folder } from "./types";
@@ -12,15 +12,24 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFolder } from "./useFolder";
 import { useUser } from "../user/useUser";
+import { useAuthContext } from "../../context/AuthContext";
+import { SelectSelector } from "../../components/lib/StatusSelector";
+import { ActiveLabel } from "../../components/lib/ActiveLabel";
 
 
 const FolderPage: React.FC = () => {
-  const { activeFolder, create, update, softDelete } = useFolder();
-  const modal = useModal();
+  const { activeFolder, deactiveFolder, create, update, softDelete } = useFolder();
+  const [searchStatus, setSearchStatus] = useState<number>(1)
+  const Folder = searchStatus === 1 ? activeFolder : searchStatus === 2 ? deactiveFolder : [...activeFolder, ...deactiveFolder]
   const [editing, setEditing] = useState<Folder | null>(null);
   const [query, setQuery] = useState("");
+  const modal = useModal();
   const { t } = useTranslation();
+  const { userProfile } = useAuthContext()
+
+
   const { activeUser } = useUser();
+
 
   const Columns = (onEdit: (c: Folder) => void, onDelete: (id: number) => void): ColumnDef<Folder>[] => [
     { key: "Name", header: t("folders.name"), render: (row) => row.Name || "-" },
@@ -29,7 +38,7 @@ const FolderPage: React.FC = () => {
       header: t("folders.parent_folder"),
       render: (row) => {
         if (!row.ParentFolderId) return t("folders.no_parent_folder");
-        const parentFolder = activeFolder.find(f => f.FolderId === row.ParentFolderId);
+        const parentFolder = Folder.find(f => f.FolderId === row.ParentFolderId);
         return parentFolder ? parentFolder.Name : row.ParentFolderId.toString();
       }
     },
@@ -48,14 +57,7 @@ const FolderPage: React.FC = () => {
     {
       key: "IsActive",
       header: t("folders.is_active"),
-      render: (row) => (
-        <span style={{
-          color: row.IsActive ? '#28a745' : '#dc3545',
-          fontWeight: 'bold'
-        }}>
-          {row.IsActive ? t("status.enabled") : t("status.disabled")}
-        </span>
-      )
+      render: (row) => <ActiveLabel IsActive={row.IsActive}/>
     },
     {
       key: "actions",
@@ -70,7 +72,9 @@ const FolderPage: React.FC = () => {
             title={row.IsActive ? t("actions.deactivate") : t("actions.activate")}
             onClick={() => softDelete(row.FolderId)}
           >
-            <FiTrash2 />
+            {
+              row.IsActive ? <FiMinusCircle /> : <FiPlusCircle />
+            }
           </button>
         </div>
       )
@@ -79,12 +83,12 @@ const FolderPage: React.FC = () => {
 
   // Correção na função de filtro
   const filteredFolder = React.useMemo(() => {
-    if (!query) return activeFolder;
+    if (!query) return Folder;
 
     const searchQuery = query.toLowerCase();
-    return activeFolder.filter(folder => {
+    return Folder.filter(folder => {
       const parentFolderName = folder.ParentFolderId
-        ? activeFolder.find(f => f.FolderId === folder.ParentFolderId)?.Name || ""
+        ? Folder.find(f => f.FolderId === folder.ParentFolderId)?.Name || ""
         : "";
 
       const searchableText = [
@@ -96,7 +100,7 @@ const FolderPage: React.FC = () => {
 
       return searchableText.includes(searchQuery);
     });
-  }, [activeFolder, query]);
+  }, [Folder, query]);
 
   const handleAdd = () => {
     setEditing(null);
@@ -131,6 +135,10 @@ const FolderPage: React.FC = () => {
         onChange={setQuery}
         placeholder={t("folders.search_folders")}
       />
+      {
+        userProfile &&
+        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+      }
       <DataTable columns={columns} data={filteredFolder} />
       <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("folders.edit_folder") : t("folders.add_folder")}>
         <FolderForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
