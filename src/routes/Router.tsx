@@ -17,6 +17,7 @@ import ResetPassword from "../features/login/ResetPassword"
 import ValidateRecoveryToken from "../features/login/ValidateRecoveryToken"
 import RequestPasswordRecovery from "../features/login/RequestPasswordRecovery"
 import { MarkdownEditorPage } from "../features/markdown-editor/MarkdownEditorPage"
+import TemplatePage from "../features/templates/TemplatePage"
 
 export const AppRoutes = () => {
     return (
@@ -86,6 +87,12 @@ export const AppRoutes = () => {
             <Route path="/document" element={
                 <AdmRoutes>
                     <DocumentPage />
+                </AdmRoutes>
+            } />
+
+            <Route path="/templates" element={
+                <AdmRoutes>
+                    <TemplatePage />
                 </AdmRoutes>
             } />
 
