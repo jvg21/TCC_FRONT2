@@ -17,6 +17,7 @@ import ResetPassword from "../features/login/ResetPassword"
 import ValidateRecoveryToken from "../features/login/ValidateRecoveryToken"
 import RequestPasswordRecovery from "../features/login/RequestPasswordRecovery"
 import TemplatePage from "../features/templates/TemplatePage"
+import DocumentDetailsPage from "../features/documentdetails/DocumentDetailsPage"
 
 export const AppRoutes = () => {
     return (
@@ -95,8 +96,11 @@ export const AppRoutes = () => {
                 </AdmRoutes>
             } />
 
-         
-
+            <Route path="/document/details/:id" element={
+                <AdmRoutes>
+                    <DocumentDetailsPage />
+                </AdmRoutes>
+            } />
 
 
             <Route path="*" element={<Navigate to="/" replace />} />

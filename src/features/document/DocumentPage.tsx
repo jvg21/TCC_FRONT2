@@ -19,6 +19,7 @@ import { DocumentViewer } from "./DocumentViewer";
 import { MarkdownEditorPage } from "../markdown-editor/MarkdownEditorPage";
 import { useUser } from "../user/useUser";
 import { useFolder } from "../folder/useFolder";
+import { useNavigate } from "react-router-dom";
 
 const DocumentPage: React.FC = () => {
   const { activeDocument, deactiveDocument, create, update, softDelete } = useDocument();
@@ -38,11 +39,11 @@ const DocumentPage: React.FC = () => {
   const { activeFolder } = useFolder()
 
 
-
+  const navigate = useNavigate()
   const handleView = (document: Document) => {
-    setViewing(document);
-    viewModal.open();
+    navigate(`/document/details/${document.DocumentId}`);
   };
+
 
   const handleEditContent = (document: Document) => {
     setEditingContent(document.Content || "");
