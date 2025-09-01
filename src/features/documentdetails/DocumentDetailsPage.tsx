@@ -11,6 +11,7 @@ import { useDocument } from '../document/useDocument';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 import { MarkdownEditor } from '../../components/common/MarkdownEditor';
+import { notificationActions } from '../notifications/useNotification';
 
 const DetailsContainer = styled.div`
   display: grid;
@@ -289,7 +290,7 @@ const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
-  const { getById, update } = useDocument();
+  const { getById, update, updateValidationStatus } = useDocument();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
@@ -298,7 +299,7 @@ const DocumentDetailsPage: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [validatorNote, setValidatorNote] = useState('');
-  const [validationStatus, setValidationStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  const [validationStatus, setValidationStatus] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [documentContent, setDocumentContent] = useState('');
@@ -403,23 +404,18 @@ const DocumentDetailsPage: React.FC = () => {
   // Funções de validação
   const handleApprove = async () => {
     try {
-      // Aqui você chamaria a API para aprovar o documento
-      setValidationStatus('approved');
+      setValidationStatus(true);
+      await updateValidationStatus(document.documentId, true, validatorNote);
 
-      // Adicionar comentário de aprovação se houver nota
-      if (validatorNote.trim()) {
-        const comment: Comment = {
-          id: Date.now().toString(),
-          text: `✅ Documento aprovado: ${validatorNote.trim()}`,
-          author: user?.Name || 'Validador',
-          date: new Date().toLocaleString('pt-BR')
-        };
-        setComments([...comments, comment]);
-      }
+      // Adicionar comentário de aprovação
+      const comment: Comment = {
+        id: Date.now().toString(),
+        text: `✅ Documento aprovado por ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
+        author: user?.Name || 'Validador',
+        date: new Date().toLocaleString('pt-BR')
+      };
+      setComments([...comments, comment]);
       setValidatorNote('');
-
-      // Aqui você pode adicionar notificação de sucesso
-      console.log('Documento aprovado com sucesso!');
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
     }
@@ -427,26 +423,22 @@ const DocumentDetailsPage: React.FC = () => {
 
   const handleReject = async () => {
     if (!validatorNote.trim()) {
-      alert('Por favor, adicione uma nota explicando o motivo da rejeição.');
+      notificationActions.showError(t('document.reject'));
       return;
     }
-
     try {
-      // Aqui você chamaria a API para rejeitar o documento
-      setValidationStatus('rejected');
+      setValidationStatus(false);
+      await updateValidationStatus(document.documentId, false, validatorNote);
 
       // Adicionar comentário de rejeição
       const comment: Comment = {
         id: Date.now().toString(),
-        text: `❌ Documento rejeitado: ${validatorNote.trim()}`,
+        text: `❌ Documento rejeitado por ${user?.Name}: ${validatorNote}`,
         author: user?.Name || 'Validador',
         date: new Date().toLocaleString('pt-BR')
       };
       setComments([...comments, comment]);
       setValidatorNote('');
-
-      // Aqui você pode adicionar notificação de sucesso
-      console.log('Documento rejeitado com sucesso!');
     } catch (error) {
       console.error('Erro ao rejeitar documento:', error);
     }
@@ -565,13 +557,13 @@ const DocumentDetailsPage: React.FC = () => {
 
               <ValidationStatus>
                 <StatusBadge status={validationStatus}>
-                  {validationStatus === 'pending' && '⏳ Pendente de Validação'}
-                  {validationStatus === 'approved' && '✅ Documento Aprovado'}
-                  {validationStatus === 'rejected' && '❌ Documento Rejeitado'}
+                  {validationStatus === null && '⏳ Pendente de Validação'}
+                  {validationStatus === true && '✅ Documento Aprovado'}
+                  {validationStatus === false && '❌ Documento Rejeitado'}
                 </StatusBadge>
               </ValidationStatus>
 
-              {validationStatus === 'pending' && (
+              {validationStatus === null && (
                 <ValidatorActions>
                   <ValidatorNote
                     value={validatorNote}
@@ -596,7 +588,7 @@ const DocumentDetailsPage: React.FC = () => {
                 </ValidatorActions>
               )}
 
-              {validationStatus !== 'pending' && (
+              {validationStatus !== null && (
                 <div style={{ textAlign: 'center', color: '#666', fontSize: '14px' }}>
                   Documento já foi validado
                 </div>
