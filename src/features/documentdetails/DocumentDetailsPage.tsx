@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-
 import { useUser } from '../user/useUser';
 import { useFolder } from '../folder/useFolder';
 import { useAuthContext } from '../../context/AuthContext';
@@ -11,7 +10,7 @@ import { useTypedTranslation } from '../../context/LanguageContext';
 import { useDocument } from '../document/useDocument';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
-import { DocumentViewer } from '../document/DocumentViewer';
+import { MarkdownEditor } from '../../components/common/MarkdownEditor';
 
 const DetailsContainer = styled.div`
   display: grid;
@@ -88,7 +87,7 @@ const MetaIcon = styled.div`
   color: #007bff;
 `;
 
-const DocumentViewerContainer = styled.div`
+const MarkdownEditorContainer = styled.div`
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -289,6 +288,7 @@ const DocumentDetailsPage: React.FC = () => {
   const [validationStatus, setValidationStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [documentContent, setDocumentContent] = useState('');
 
   useEffect(() => {
     const loadDocument = async () => {
@@ -302,6 +302,7 @@ const DocumentDetailsPage: React.FC = () => {
         const response = await getById(Number(id));
         if (response && !response.erro) {
           setDocument(response.objeto);
+          setDocumentContent(response.objeto.content || '');
           setError(null);
         } else {
           setError('Documento não encontrado');
@@ -316,6 +317,31 @@ const DocumentDetailsPage: React.FC = () => {
 
     loadDocument();
   }, [id, getById]);
+
+  const handleContentChange = (newContent: string) => {
+    setDocumentContent(newContent);
+  };
+
+  const handleSaveDocument = async () => {
+    if (document && user) {
+      try {
+        // Aqui você chamaria a API para salvar o documento
+        // await updateDocument(document.id, { content: documentContent });
+        console.log('Documento salvo:', documentContent);
+        
+        // Adicionar comentário de edição
+        const comment: Comment = {
+          id: Date.now().toString(),
+          text: `📝 Documento editado por ${user.Name}`,
+          author: user.Name || 'Usuário',
+          date: new Date().toLocaleString('pt-BR')
+        };
+        setComments([...comments, comment]);
+      } catch (error) {
+        console.error('Erro ao salvar documento:', error);
+      }
+    }
+  };
 
   const handleAddComment = () => {
     if (newComment.trim()) {
@@ -434,8 +460,8 @@ const DocumentDetailsPage: React.FC = () => {
           <Button variant="ghost" onClick={handleBack}>
             <FiArrowLeft /> Voltar
           </Button>
-          <Button onClick={handleEdit}>
-            <FiEdit /> Editar
+          <Button onClick={handleSaveDocument}>
+            <FiEdit /> Salvar Alterações
           </Button>
         </div>
       }
@@ -467,14 +493,14 @@ const DocumentDetailsPage: React.FC = () => {
             </DocumentMeta>
           </DocumentCard>
 
-          <DocumentViewerContainer>
-            <DocumentViewer
-              title=""
-              content={document.content || "Este documento não possui conteúdo."}
-              onEdit={undefined}
-              onClose={undefined}
+          <MarkdownEditorContainer>
+            <MarkdownEditor
+              label=""
+              value={documentContent}
+              onChange={handleContentChange}
+              placeholder="Este documento não possui conteúdo..."
             />
-          </DocumentViewerContainer>
+          </MarkdownEditorContainer>
         </LeftColumn>
 
         <RightColumn>
