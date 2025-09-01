@@ -3,7 +3,8 @@ export interface Comment {
   Content: string;
   DocumentId: number;
   UserId: number;
+  UserName?: string;
   CreatedAt: string;
   UpdatedAt: string;
-  isActive: boolean;
+  IsActive: boolean;
 }

@@ -3,20 +3,9 @@ import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
 import { useAuthContext } from "../../context/AuthContext";
+import type { Comment } from "./types";
 
-// Interface para comentários
-export interface Comment {
-  CommentId: number;
-  Content: string;
-  DocumentId: number;
-  UserId: number;
-  UserName?: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-  IsActive: boolean;
-}
 
-// Interface para criar comentário
 export interface CreateCommentPayload {
   Content: string;
   DocumentId: number;
