@@ -4,10 +4,12 @@ import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
 import { t } from "i18next";
+import { useAuthContext } from "../../context/AuthContext";
 
 export const useFolder = () => {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [query, setQuery] = useState("");
+  const { user } = useAuthContext();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
@@ -71,15 +73,16 @@ export const useFolder = () => {
     Documents: item.documents || []
   });
 
+  // Na função transformPayloadToCamelCase, adicionar o UserId do usuário logado
   const transformPayloadToCamelCase = (payload: Partial<Folder>) => ({
     name: payload.Name,
     parentFolderId: payload.ParentFolderId || null,
     validatorId: payload.ValidatorId,
+    userId: user?.UserId,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     isActive: payload.IsActive || true
   });
-
   const create = async (payload: Omit<Folder, "FolderId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId" | "Documents">) => {
     try {
       console.log(payload)

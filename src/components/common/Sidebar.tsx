@@ -5,16 +5,16 @@ import styled from "styled-components";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { useTypedTranslation } from "../../context/LanguageContext";
-import { FiBriefcase } from "react-icons/fi";
+import { FiBriefcase, FiCheckCircle } from "react-icons/fi";
 
 
-import { 
-  FiHome, 
-  FiUsers, 
+import {
+  FiHome,
+  FiUsers,
   FiGrid,
-  FiFolderPlus, 
-  FiCheckSquare, 
-  FiFile, 
+  FiFolderPlus,
+  FiCheckSquare,
+  FiFile,
   FiMenu,
   FiX,
   FiSettings,
@@ -37,7 +37,7 @@ const Wrap = styled.aside<WrapProps>`
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  box-shadow: ${({ $isCollapsed }) => 
+  box-shadow: ${({ $isCollapsed }) =>
     $isCollapsed ? 'none' : '2px 0 10px rgba(0, 0, 0, 0.1)'};
 
   width: ${({ $isCollapsed }) => ($isCollapsed ? '80px' : '260px')};
@@ -45,8 +45,8 @@ const Wrap = styled.aside<WrapProps>`
   @media (max-width: 768px) {
     width: 280px;
     transform: translateX(${({ $isCollapsed }) => ($isCollapsed ? '-100%' : '0')});
-    box-shadow: ${({ $isCollapsed }) => 
-      $isCollapsed ? 'none' : '0 0 20px rgba(0, 0, 0, 0.3)'};
+    box-shadow: ${({ $isCollapsed }) =>
+    $isCollapsed ? 'none' : '0 0 20px rgba(0, 0, 0, 0.3)'};
   }
 `;
 
@@ -55,7 +55,7 @@ const Header = styled.div<{ $isCollapsed: boolean }>`
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
-  justify-content: ${({ $isCollapsed }) => 
+  justify-content: ${({ $isCollapsed }) =>
     $isCollapsed ? 'center' : 'space-between'};
   min-height: 80px;
   flex-shrink: 0;
@@ -66,7 +66,7 @@ const Logo = styled.div<{ $isCollapsed: boolean }>`
   align-items: center;
   gap: 12px;
   opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
-  transform: ${({ $isCollapsed }) => 
+  transform: ${({ $isCollapsed }) =>
     $isCollapsed ? 'scale(0.8)' : 'scale(1)'};
   transition: all 0.3s ease;
 
@@ -173,14 +173,14 @@ const NavGroup = styled.div`
   @media (min-width: 769px) {
     /* Desktop only - evita interferir com mobile */
     padding: ${props => {
-      // Aqui você pode acessar props do contexto styled-components
-      // mas vamos usar uma abordagem mais simples
-      return '0 12px';
-    }};
+    // Aqui você pode acessar props do contexto styled-components
+    // mas vamos usar uma abordagem mais simples
+    return '0 12px';
+  }};
   }
 `;
 
-const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
+const NavItem = styled(Link) <{ $isActive: boolean; $isCollapsed: boolean }>`
   display: flex;
   align-items: center;
   gap: ${({ $isCollapsed }) => ($isCollapsed ? '0' : '12px')};
@@ -188,15 +188,15 @@ const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
   margin: ${({ $isCollapsed }) => ($isCollapsed ? '0 6px' : '0')};
   border-radius: 12px;
   text-decoration: none;
-  color: ${({ theme, $isActive }) => 
+  color: ${({ theme, $isActive }) =>
     $isActive ? theme.colors.primary : theme.colors.muted};
-  background: ${({ theme, $isActive }) => 
+  background: ${({ theme, $isActive }) =>
     $isActive ? theme.colors.primary + '15' : 'transparent'};
   font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
   font-size: 14px;
   transition: all 0.2s ease;
   position: relative;
-  justify-content: ${({ $isCollapsed }) => 
+  justify-content: ${({ $isCollapsed }) =>
     $isCollapsed ? 'center' : 'flex-start'};
   width: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
   height: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
@@ -215,8 +215,8 @@ const NavItem = styled(Link)<{ $isActive: boolean; $isCollapsed: boolean }>`
   span {
     opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
     visibility: ${({ $isCollapsed }) => ($isCollapsed ? 'hidden' : 'visible')};
-    transform: ${({ $isCollapsed }) => 
-      $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
+    transform: ${({ $isCollapsed }) =>
+    $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
     transition: all 0.3s ease;
     white-space: nowrap;
     width: ${({ $isCollapsed }) => ($isCollapsed ? '0' : 'auto')};
@@ -255,10 +255,10 @@ const DropdownContainer = styled.div`
   position: relative;
 `;
 
-const DropdownTrigger = styled.div<{ 
-  $isActive: boolean; 
+const DropdownTrigger = styled.div<{
+  $isActive: boolean;
   $isCollapsed: boolean;
-  $isOpen: boolean; 
+  $isOpen: boolean;
 }>`
   display: flex;
   align-items: center;
@@ -266,15 +266,15 @@ const DropdownTrigger = styled.div<{
   padding: ${({ $isCollapsed }) => ($isCollapsed ? '12px' : '12px 16px')};
   margin: ${({ $isCollapsed }) => ($isCollapsed ? '0 6px' : '0')};
   border-radius: 12px;
-  color: ${({ theme, $isActive }) => 
+  color: ${({ theme, $isActive }) =>
     $isActive ? theme.colors.primary : theme.colors.muted};
-  background: ${({ theme, $isActive }) => 
+  background: ${({ theme, $isActive }) =>
     $isActive ? theme.colors.primary + '15' : 'transparent'};
   font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
-  justify-content: ${({ $isCollapsed }) => 
+  justify-content: ${({ $isCollapsed }) =>
     $isCollapsed ? 'center' : 'space-between'};
   position: relative;
   width: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
@@ -294,8 +294,8 @@ const DropdownTrigger = styled.div<{
   span {
     opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
     visibility: ${({ $isCollapsed }) => ($isCollapsed ? 'hidden' : 'visible')};
-    transform: ${({ $isCollapsed }) => 
-      $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
+    transform: ${({ $isCollapsed }) =>
+    $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
     transition: all 0.3s ease;
     white-space: nowrap;
     flex: 1;
@@ -333,9 +333,9 @@ const DropdownTrigger = styled.div<{
 const ChevronIcon = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
   opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
   visibility: ${({ $isCollapsed }) => ($isCollapsed ? 'hidden' : 'visible')};
-  transform: ${({ $isOpen, $isCollapsed }) => 
-    $isCollapsed ? 'translateX(10px)' : 
-    $isOpen ? 'rotate(90deg)' : 'rotate(0deg)'};
+  transform: ${({ $isOpen, $isCollapsed }) =>
+    $isCollapsed ? 'translateX(10px)' :
+      $isOpen ? 'rotate(90deg)' : 'rotate(0deg)'};
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -346,9 +346,9 @@ const ChevronIcon = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
 `;
 
 const DropdownContent = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
-  max-height: ${({ $isOpen, $isCollapsed }) => 
+  max-height: ${({ $isOpen, $isCollapsed }) =>
     $isOpen && !$isCollapsed ? '200px' : '0'};
-  opacity: ${({ $isOpen, $isCollapsed }) => 
+  opacity: ${({ $isOpen, $isCollapsed }) =>
     $isOpen && !$isCollapsed ? 1 : 0};
   overflow: hidden;
   transition: all 0.3s ease;
@@ -356,15 +356,15 @@ const DropdownContent = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
   margin-top: 4px;
 `;
 
-const DropdownItem = styled(Link)<{ $isActive: boolean }>`
+const DropdownItem = styled(Link) <{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   padding: 8px 16px;
   border-radius: 8px;
   text-decoration: none;
-  color: ${({ theme, $isActive }) => 
+  color: ${({ theme, $isActive }) =>
     $isActive ? theme.colors.primary : theme.colors.muted};
-  background: ${({ theme, $isActive }) => 
+  background: ${({ theme, $isActive }) =>
     $isActive ? theme.colors.primary + '10' : 'transparent'};
   font-size: 13px;
   font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
@@ -428,14 +428,14 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     const checkIsMobile = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      
+
       // Só colapsar automaticamente na primeira vez (mobile)
       if (mobile && !document.body.hasAttribute('data-sidebar-initialized')) {
         setIsCollapsed(true);
         document.body.setAttribute('data-sidebar-initialized', 'true');
       }
     };
-    
+
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
     return () => window.removeEventListener('resize', checkIsMobile);
@@ -446,6 +446,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const isOpenAIActive = location.pathname === '/integrations/openai';
 
   // Items de navegação básicos com traduções
+  // No array navigationItems, adicionar a nova rota:
   const navigationItems = [
     { path: "/", label: t("navigation.home"), icon: FiHome, show: true },
     { path: "/companies", label: t("navigation.companies"), icon: FiBriefcase, show: profile === 1 },
@@ -504,9 +505,9 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
           {isCollapsed ? <FiMenu size={20} /> : <FiX size={20} />}
         </MobileToggle>
       )}
-      
+
       <Overlay $isVisible={!isCollapsed && isMobile} onClick={handleOverlayClick} />
-      
+
       <Wrap $isCollapsed={isCollapsed}>
         <Header $isCollapsed={isCollapsed}>
           {!isCollapsed && (
@@ -516,7 +517,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
             </Logo>
           )}
           {isCollapsed && <LogoIcon>D</LogoIcon>}
-          
+
           <ToggleButton onClick={toggleSidebar}>
             {isCollapsed ? <FiMenu size={20} /> : <FiX size={20} />}
           </ToggleButton>
@@ -568,7 +569,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                     <FiChevronRight size={14} />
                   </ChevronIcon>
                 </DropdownTrigger>
-                
+
                 <DropdownContent $isOpen={integrationsOpen} $isCollapsed={isCollapsed}>
                   <DropdownItem
                     to="/integrations/openai"

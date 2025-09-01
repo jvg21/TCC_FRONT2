@@ -16,9 +16,7 @@ import IntegrationsPage from "../features/integrations/IntegrationsPage" // Nova
 import ResetPassword from "../features/login/ResetPassword"
 import ValidateRecoveryToken from "../features/login/ValidateRecoveryToken"
 import RequestPasswordRecovery from "../features/login/RequestPasswordRecovery"
-import { MarkdownEditorPage } from "../features/markdown-editor/MarkdownEditorPage"
 import TemplatePage from "../features/templates/TemplatePage"
-import { DocumentApproval } from "../features/documentapproval/DocumentApproval"
 
 export const AppRoutes = () => {
     return (
@@ -97,11 +95,7 @@ export const AppRoutes = () => {
                 </AdmRoutes>
             } />
 
-            {/* <Route path="/documentapproval" element={
-                <AdmRoutes>
-                    <DocumentApproval />
-                </AdmRoutes>
-            } /> */}
+         
 
 
 
