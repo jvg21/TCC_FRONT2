@@ -138,7 +138,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
               variant="ghost" 
               onClick={() => setShowUserSection(!showUserSection)}
             >
-              {showUserSection ? t("group.hide_group_users") : t("group.manage_group_users")}
+              {showUserSection ? t("groups.hide_group_users") : t("groups.manage_users")}
             </Button>
           </div>
           

@@ -108,7 +108,9 @@ export const ptTranslations = {
     select_user: "Selecionar Usuário",
     users_in_group: "Usuários no Grupo",
     no_users_in_group: "Nenhum usuário no grupo",
-    hide_group_users: "Ocultar Usuários do Grupo"
+    hide_group_users: "Ocultar Usuários do Grupo",
+    manage_group_users: "Gerenciar Usuários do Grupo",
+    group_user_management: "Gestão de Usuários do Grupo"
   },
 
   // Pastas
