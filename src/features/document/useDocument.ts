@@ -211,6 +211,47 @@ export const useDocument = () => {
     }
   };
 
+  const updateValidationStatus = async (documentId: number, isValid: boolean, comment?: string) => {
+    try {
+
+      const payload = {
+        documentId,
+        isValid,
+        comment: comment || ""
+      };
+
+      const response = await fetch(`${apiUrl}/DocumentValidation/UpdateDocumentValidationStatus`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      // Atualizar o documento local com o novo status de validação
+      setDocument((s) => s.map((doc) =>
+        doc.DocumentId === documentId
+          ? { ...doc, isValid }
+          : doc
+      ));
+
+      notificationActions.showNotification(t('documents.validationUpdateSuccess'), 'success');
+      return data;
+
+    } catch (err) {
+      console.error("Erro ao atualizar status de validação:", err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     if (token) get();
   }, [token]);
@@ -225,5 +266,6 @@ export const useDocument = () => {
     update,
     softDelete,
     getById,
+    updateValidationStatus
   } as const;
 };
