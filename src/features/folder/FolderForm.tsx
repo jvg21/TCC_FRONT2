@@ -18,7 +18,7 @@ type Props = {
 export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
   const [ParentFolderId, setParentFolderId] = useState(initial.ParentFolderId?.toString() ?? "");
-  const [ValidatorId, setValidatorId] = useState(initial.ValidatorId ?? 0);
+  const [ValidatorId, setValidatorId] = useState(initial.ValidatorId?.toString() ?? "");
   const { t } = useTranslation();
   const { activeFolder } = useFolder();
   const { activeUser } = useUser();
@@ -26,12 +26,12 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
   useEffect(() => {
     setName(initial.Name ?? "");
     setParentFolderId(initial.ParentFolderId?.toString() ?? "");
-    setValidatorId(initial.ValidatorId?? 0);
+    setValidatorId(initial.ValidatorId?.toString() ?? "");
   }, [initial.Name, initial.ParentFolderId, initial.ValidatorId]);
 
   const validateFields = () => {
     const isNameValid = Name.trim().length >= 3 && Name.trim().length <= 20;
-    return isNameValid ;
+    return isNameValid;
   };
 
   const canSave = validateFields();
@@ -40,12 +40,12 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
     e.preventDefault();
     if (!canSave) return;
 
-    console.log(ParentFolderId,ValidatorId)
+    console.log(ParentFolderId, ValidatorId);
 
     const payload = {
       Name: Name.trim(),
       ParentFolderId: ParentFolderId ? parseInt(ParentFolderId) : null,
-      ValidatorId: ValidatorId
+      ValidatorId: ValidatorId ? parseInt(ValidatorId) : null // Corrigir aqui
     };
 
     onSave(payload);
@@ -63,8 +63,9 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
   ];
 
   const validatorOptions = [
+    { value: "", label: t("folders.select_validator") }, // Adicionar opção padrão
     ...activeUser.map(user => ({
-      value: user.UserId,
+      value: user.UserId.toString(), // Converter para string
       label: user.Name
     }))
   ]
@@ -101,7 +102,7 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
           <Select
             label={t("folders.validator")}
             value={ValidatorId}
-            onChange={(e) => setValidatorId(parseInt(e.target.value))}
+            onChange={(e) => setValidatorId(e.target.value)} // Remover parseInt aqui
             options={validatorOptions}
           />
         </Col>
