@@ -7,5 +7,5 @@ export interface Document {
   IsActive: boolean;
   CreatedAt: string;
   UpdatedAt: string;
-  isValid?:boolean;
+  isValid?:boolean|null;
 }
