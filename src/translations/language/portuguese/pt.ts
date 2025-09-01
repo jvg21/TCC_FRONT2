@@ -102,7 +102,13 @@ export const ptTranslations = {
     user: "Usuário",
     created_at: "Criado em",
     updated_at: "Atualizado em",
-    is_active: "Status"
+    is_active: "Status",
+    manage_users: "Gerenciar Usuários",
+    add_user: "Adicionar Usuário",
+    select_user: "Selecionar Usuário",
+    users_in_group: "Usuários no Grupo",
+    no_users_in_group: "Nenhum usuário no grupo",
+    hide_group_users: "Ocultar Usuários do Grupo"
   },
 
   // Pastas
@@ -118,7 +124,10 @@ export const ptTranslations = {
     updated_at: "Atualizado em",
     is_active: "Status",
     validator: "Validador",
-   
+    name_placeholder: "Digite o nome da pasta",
+    no_parent_folder: "Sem Pasta Pai",
+    select_validator: "Selecionar Validador",
+
 
   },
 
@@ -315,24 +324,25 @@ export const ptTranslations = {
   },
 
   templates: {
-  title: "Templates",
-  add_template: "Novo Template", 
-  edit_template: "Editar Template",
-  search_templates: "Buscar templates...",
-  name: "Nome",
-  content: "Conteúdo",
-  created_at: "Criado em",
-  updated_at: "Atualizado em", 
-  is_active: "Status",
-  no_templates: "Nenhum template encontrado",
-  no_templates_description: "Crie seu primeiro template para começar a padronizar seus documentos.",
-  create_first_template: "Criar Primeiro Template",
-  createSuccess: "Template criado com sucesso!",
-  updateSuccess: "Template atualizado com sucesso!",
-  updateStatusSuccess: "Status do template alterado com sucesso!",
-  copySuccess: "Template copiado com sucesso!",
-  deleteSuccess: "Template excluído com sucesso!",
-  copy: "Copiar",
-  preview: "Visualizar"
-}
+    title: "Templates",
+    add_template: "Novo Template",
+    edit_template: "Editar Template",
+    search_templates: "Buscar templates...",
+    name: "Nome",
+    content: "Conteúdo",
+    created_at: "Criado em",
+    updated_at: "Atualizado em",
+    is_active: "Status",
+    no_templates: "Nenhum template encontrado",
+    no_templates_description: "Crie seu primeiro template para começar a padronizar seus documentos.",
+    create_first_template: "Criar Primeiro Template",
+    createSuccess: "Template criado com sucesso!",
+    updateSuccess: "Template atualizado com sucesso!",
+    updateStatusSuccess: "Status do template alterado com sucesso!",
+    copySuccess: "Template copiado com sucesso!",
+    deleteSuccess: "Template excluído com sucesso!",
+    copy: "Copiar",
+    preview: "Visualizar",
+    create_template: "Criar Template"
+  }
 };

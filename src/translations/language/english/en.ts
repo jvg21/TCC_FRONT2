@@ -102,7 +102,13 @@ export const enTranslations = {
     user: "User",
     created_at: "Created at",
     updated_at: "Updated at",
-    is_active: "Status"
+    is_active: "Status",
+    manage_users: "Manage Users",
+    add_user: "Add User",
+    select_user: "Select User",
+    users_in_group: "Users in Group",
+    no_users_in_group: "No users in group",
+    hide_group_users: "Hide Group Users"
   },
 
   // Folders
@@ -118,7 +124,9 @@ export const enTranslations = {
     updated_at: "Updated at",
     is_active: "Status",
     validator: "Validator",
-    no_parent_folder:"No Parent Folder"
+    no_parent_folder: "No Parent Folder",
+    select_validator: "Select Validator",
+    name_placeholder: "Enter folder name"
   },
 
   // Tasks
@@ -314,24 +322,25 @@ export const enTranslations = {
   },
 
   templates: {
-  title: "Templates",
-  add_template: "Add Template",
-  edit_template: "Edit Template", 
-  search_templates: "Search templates...",
-  name: "Name",
-  content: "Content",
-  created_at: "Created at",
-  updated_at: "Updated at",
-  is_active: "Status",
-  no_templates: "No templates found",
-  no_templates_description: "Create your first template to start standardizing your documents.",
-  create_first_template: "Create First Template",
-  createSuccess: "Template created successfully!",
-  updateSuccess: "Template updated successfully!",
-  updateStatusSuccess: "Template status changed successfully!",
-  copySuccess: "Template copied successfully!",
-  deleteSuccess: "Template deleted successfully!",
-  copy: "Copy",
-  preview: "Preview"
-}
+    title: "Templates",
+    add_template: "Add Template",
+    edit_template: "Edit Template",
+    search_templates: "Search templates...",
+    name: "Name",
+    content: "Content",
+    created_at: "Created at",
+    updated_at: "Updated at",
+    is_active: "Status",
+    no_templates: "No templates found",
+    no_templates_description: "Create your first template to start standardizing your documents.",
+    create_first_template: "Create First Template",
+    createSuccess: "Template created successfully!",
+    updateSuccess: "Template updated successfully!",
+    updateStatusSuccess: "Template status changed successfully!",
+    copySuccess: "Template copied successfully!",
+    deleteSuccess: "Template deleted successfully!",
+    copy: "Copy",
+    preview: "Preview",
+    create_template: "Create Template"
+  }
 };
