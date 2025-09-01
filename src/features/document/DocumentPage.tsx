@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus, FiEye, FiEdit } from "react-icons/fi";
+import { FiPlus, FiEye } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -106,13 +106,7 @@ const DocumentPage: React.FC = () => {
             >
               <FiEye />
             </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onEditContent(row)}
-              title="Editar conteúdo"
-            >
-              <FiEdit />
-            </Button>
+     
             <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
           </div>
         )

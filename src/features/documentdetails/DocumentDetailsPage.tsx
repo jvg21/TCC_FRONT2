@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { useUser } from '../user/useUser';
 import { useFolder } from '../folder/useFolder';
 import { useAuthContext } from '../../context/AuthContext';
@@ -191,6 +192,29 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
+  const handleResetValidation = async () => {
+    try {
+      await updateValidationStatus(document.documentId, null, 'Validação resetada para revalidação');
+      
+      // Atualizar estado local do documento
+      setDocument((prev:any) => ({ ...prev, isValid: null }));
+      setValidationStatus(null);
+
+      // Adicionar comentário de reset
+      const comment: Comment = {
+        id: Date.now().toString(),
+        text: `🔄 Validação resetada por ${user?.Name} - Documento disponível para revalidação`,
+        author: user?.Name || 'Validador',
+        date: new Date().toLocaleString('pt-BR')
+      };
+      setComments([...comments, comment]);
+    } catch (error) {
+      console.error('Erro ao resetar validação:', error);
+      // Reverter estado em caso de erro
+      setValidationStatus(document?.isValid ?? null);
+    }
+  };
+
   if (loading) {
     return (
       <PageLayout title="Detalhes do Documento">
@@ -339,9 +363,30 @@ const DocumentDetailsPage: React.FC = () => {
               )}
 
               {validationStatus !== null && (
-                <div style={{ textAlign: 'center', color: '#666', fontSize: '14px' }}>
-                  Documento já foi validado
-                </div>
+                <ValidatorActions>
+                  <div style={{ 
+                    textAlign: 'center', 
+                    color: '#666', 
+                    fontSize: '14px',
+                    marginBottom: '16px' 
+                  }}>
+                    Documento já foi validado. Deseja permitir revalidação?
+                  </div>
+                  
+                  <Button
+                    onClick={handleResetValidation}
+                    style={{ 
+                      background: '#6c757d', 
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    🔄 Resetar Validação
+                  </Button>
+                </ValidatorActions>
               )}
             </ValidationSection>
           )}

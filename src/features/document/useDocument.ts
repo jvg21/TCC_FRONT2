@@ -211,12 +211,19 @@ export const useDocument = () => {
     }
   };
 
-  const updateValidationStatus = async (documentId: number, status, comment?: string) => {
+  const updateValidationStatus = async (documentId: number, isValid: boolean | null, comment?: string) => {
   try {
+    let status = null
+    if(isValid){
+      status = 1
+    }
+    if(!isValid){
+      status = 0
+    }
 
     const payload = {
       documentId,
-      status: status,
+      status: status, // Permitir null para revalidação
       comment: comment || ""
     };
 
