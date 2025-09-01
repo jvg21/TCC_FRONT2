@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
 import { useFolder } from "./useFolder";
+import { useUser } from "../user/useUser";
 
 type Props = {
   initial?: Partial<Folder>;
@@ -17,20 +18,20 @@ type Props = {
 export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
   const [ParentFolderId, setParentFolderId] = useState(initial.ParentFolderId?.toString() ?? "");
-  const [ValidatorId, setValidatorId] = useState(initial.ValidatorId?.toString() ?? "");
+  const [ValidatorId, setValidatorId] = useState(initial.ValidatorId ?? 0);
   const { t } = useTranslation();
   const { activeFolder } = useFolder();
+  const { activeUser } = useUser();
 
   useEffect(() => {
     setName(initial.Name ?? "");
     setParentFolderId(initial.ParentFolderId?.toString() ?? "");
-    setValidatorId(initial.ValidatorId?.toString() ?? "");
+    setValidatorId(initial.ValidatorId?? 0);
   }, [initial.Name, initial.ParentFolderId, initial.ValidatorId]);
 
   const validateFields = () => {
     const isNameValid = Name.trim().length >= 3 && Name.trim().length <= 20;
-    const isValidatorValid = ValidatorId.trim().length > 0;
-    return isNameValid && isValidatorValid;
+    return isNameValid ;
   };
 
   const canSave = validateFields();
@@ -39,10 +40,12 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
     e.preventDefault();
     if (!canSave) return;
 
+    console.log(ParentFolderId,ValidatorId)
+
     const payload = {
       Name: Name.trim(),
       ParentFolderId: ParentFolderId ? parseInt(ParentFolderId) : null,
-      ValidatorId: parseInt(ValidatorId)
+      ValidatorId: ValidatorId
     };
 
     onSave(payload);
@@ -52,12 +55,19 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
   const parentFolderOptions = [
     { value: "", label: t("folders.no_parent_folder") },
     ...activeFolder
-      .filter(folder => folder.FolderId !== initial.FolderId) 
+      .filter(folder => folder.FolderId !== initial.FolderId)
       .map(folder => ({
         value: folder.FolderId.toString(),
         label: folder.Name
       }))
   ];
+
+  const validatorOptions = [
+    ...activeUser.map(user => ({
+      value: user.UserId,
+      label: user.Name
+    }))
+  ]
 
   return (
     <form onSubmit={handleSubmit}>
@@ -80,7 +90,7 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
           <Select
             label={t("folders.parent_folder")}
             value={ParentFolderId}
-            onChange={(e) => setParentFolderId(e.target.value)}
+            onChange={(e) => setParentFolderId(e.target.value.toString())}
             options={parentFolderOptions}
           />
         </Col>
@@ -88,14 +98,11 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
 
       <Row>
         <Col>
-          <Input
-            label={t("folders.validator_id")}
-            type="number"
-            required
+          <Select
+            label={t("folders.validator")}
             value={ValidatorId}
-            onChange={(e) => setValidatorId(e.target.value)}
-            placeholder={t("folders.validator_placeholder")}
-            min="1"
+            onChange={(e) => setValidatorId(parseInt(e.target.value))}
+            options={validatorOptions}
           />
         </Col>
       </Row>

@@ -82,6 +82,7 @@ export const useFolder = () => {
 
   const create = async (payload: Omit<Folder, "FolderId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId" | "Documents">) => {
     try {
+      console.log(payload)
       const camelCasePayload = transformPayloadToCamelCase(payload);
 
       console.log("Dados enviados para criar pasta:", camelCasePayload);
