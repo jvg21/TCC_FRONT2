@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useUser } from '../user/useUser';
@@ -79,66 +79,81 @@ const MetaItem = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #666;
   font-size: 14px;
+  color: #666;
 `;
 
 const MetaIcon = styled.div`
   color: #007bff;
+  display: flex;
+  align-items: center;
 `;
 
-const MarkdownEditorContainer = styled.div`
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border: 1px solid #e9ecef;
-  overflow: hidden;
-  min-height: 70vh;
-  
-  /* Otimizações para evitar piscamento */
-  * {
-    transition: none !important;
-    animation: none !important;
-  }
+const MetaValue = styled.span`
+  color: #333;
+  font-weight: 500;
+`;
+
+const DocumentContent = styled.div`
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 16px;
 `;
 
 const ValidationSection = styled.div`
   background: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   border: 1px solid #e9ecef;
   margin-bottom: 16px;
 `;
 
-const ValidationTitle = styled.h3`
-  margin: 0 0 16px 0;
-  color: #333;
-  font-size: 16px;
+const ValidationTitle = styled.h2`
+  font-size: 18px;
   font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
 `;
 
-const ValidationStatus = styled.div<{ status: 'pending' | 'approved' | 'rejected' }>`
+const ValidationStatus = styled.div`
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+const StatusBadge = styled.span<{ status: 'pending' | 'approved' | 'rejected' }>`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 20px;
-  font-size: 12px;
   font-weight: 500;
-  margin-bottom: 16px;
+  font-size: 14px;
   
   ${({ status }) => {
     switch (status) {
       case 'approved':
-        return 'background: #d4edda; color: #155724; border: 1px solid #c3e6cb;';
+        return `
+          background: #d4edda;
+          color: #155724;
+          border: 1px solid #c3e6cb;
+        `;
       case 'rejected':
-        return 'background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;';
+        return `
+          background: #f8d7da;
+          color: #721c24;
+          border: 1px solid #f5c6cb;
+        `;
       default:
-        return 'background: #fff3cd; color: #856404; border: 1px solid #ffeaa7;';
+        return `
+          background: #fff3cd;
+          color: #856404;
+          border: 1px solid #ffeaa7;
+        `;
     }
   }}
 `;
@@ -146,19 +161,17 @@ const ValidationStatus = styled.div<{ status: 'pending' | 'approved' | 'rejected
 const ValidatorActions = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 `;
 
 const ValidatorNote = styled.textarea`
-  width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 14px;
   resize: vertical;
   min-height: 80px;
-  margin-bottom: 12px;
   
   &:focus {
     outline: none;
@@ -276,11 +289,11 @@ const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
-  const { getById } = useDocument();
+  const { getById, update } = useDocument();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
-  
+
   const [document, setDocument] = useState<any>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
@@ -290,13 +303,23 @@ const DocumentDetailsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [documentContent, setDocumentContent] = useState('');
 
+  // Ref para controlar carregamento único
+  const hasLoadedRef = useRef(false);
+
+  // useEffect modificado para carregar apenas uma vez
   useEffect(() => {
     const loadDocument = async () => {
-      if (!id) {
-        setError('ID do documento não fornecido');
-        setLoading(false);
+      // Se já carregou ou não tem ID, não executa
+      if (hasLoadedRef.current || !id) {
+        if (!id) {
+          setError('ID do documento não fornecido');
+          setLoading(false);
+        }
         return;
       }
+
+      // Marca que já iniciou o carregamento
+      hasLoadedRef.current = true;
 
       try {
         const response = await getById(Number(id));
@@ -310,13 +333,20 @@ const DocumentDetailsPage: React.FC = () => {
       } catch (error) {
         console.error('Erro ao carregar documento:', error);
         setError('Erro ao carregar documento');
+        // Reset ref em caso de erro para permitir retry
+        hasLoadedRef.current = false;
       } finally {
         setLoading(false);
       }
     };
 
     loadDocument();
-  }, [id, getById]);
+  }, [id]); // Removido getById das dependências
+
+  // Reset do ref quando o ID mudar
+  useEffect(() => {
+    hasLoadedRef.current = false;
+  }, [id]);
 
   const handleContentChange = (newContent: string) => {
     setDocumentContent(newContent);
@@ -325,10 +355,12 @@ const DocumentDetailsPage: React.FC = () => {
   const handleSaveDocument = async () => {
     if (document && user) {
       try {
-        // Aqui você chamaria a API para salvar o documento
-        // await updateDocument(document.id, { content: documentContent });
-        console.log('Documento salvo:', documentContent);
-        
+        await update(document.documentId, {
+          Title: document.title,
+          Content: documentContent,
+          FolderId: document.folderId
+        });
+
         // Adicionar comentário de edição
         const comment: Comment = {
           id: Date.now().toString(),
@@ -351,7 +383,7 @@ const DocumentDetailsPage: React.FC = () => {
         author: user?.Name || 'Usuário Atual',
         date: new Date().toLocaleString('pt-BR')
       };
-      
+
       setComments([...comments, comment]);
       setNewComment('');
     }
@@ -373,7 +405,7 @@ const DocumentDetailsPage: React.FC = () => {
     try {
       // Aqui você chamaria a API para aprovar o documento
       setValidationStatus('approved');
-      
+
       // Adicionar comentário de aprovação se houver nota
       if (validatorNote.trim()) {
         const comment: Comment = {
@@ -385,7 +417,7 @@ const DocumentDetailsPage: React.FC = () => {
         setComments([...comments, comment]);
       }
       setValidatorNote('');
-      
+
       // Aqui você pode adicionar notificação de sucesso
       console.log('Documento aprovado com sucesso!');
     } catch (error) {
@@ -398,11 +430,11 @@ const DocumentDetailsPage: React.FC = () => {
       alert('Por favor, adicione uma nota explicando o motivo da rejeição.');
       return;
     }
-    
+
     try {
       // Aqui você chamaria a API para rejeitar o documento
       setValidationStatus('rejected');
-      
+
       // Adicionar comentário de rejeição
       const comment: Comment = {
         id: Date.now().toString(),
@@ -412,7 +444,7 @@ const DocumentDetailsPage: React.FC = () => {
       };
       setComments([...comments, comment]);
       setValidatorNote('');
-      
+
       // Aqui você pode adicionar notificação de sucesso
       console.log('Documento rejeitado com sucesso!');
     } catch (error) {
@@ -470,45 +502,73 @@ const DocumentDetailsPage: React.FC = () => {
 
             <DocumentMeta>
               <MetaItem>
-                <MetaIcon><FiUser /></MetaIcon>
-                <span>Criado por: {creator?.Name || 'Desconhecido'}</span>
+                <MetaIcon>
+                  <FiUser />
+                </MetaIcon>
+                <div>
+                  <div style={{ fontSize: '12px', color: '#999' }}>Criado por</div>
+                  <MetaValue>{creator?.Name || 'Usuário não encontrado'}</MetaValue>
+                </div>
               </MetaItem>
+
               <MetaItem>
-                <MetaIcon><FiFolder /></MetaIcon>
-                <span>Pasta: {folder?.Name || 'Sem pasta'}</span>
+                <MetaIcon>
+                  <FiFolder />
+                </MetaIcon>
+                <div>
+                  <div style={{ fontSize: '12px', color: '#999' }}>Pasta</div>
+                  <MetaValue>{folder?.Name || 'Pasta não encontrada'}</MetaValue>
+                </div>
               </MetaItem>
+
               <MetaItem>
-                <MetaIcon><FiCalendar /></MetaIcon>
-                <span>Criado em: {new Date(document.createdAt).toLocaleString('pt-BR')}</span>
+                <MetaIcon>
+                  <FiCalendar />
+                </MetaIcon>
+                <div>
+                  <div style={{ fontSize: '12px', color: '#999' }}>Criado em</div>
+                  <MetaValue>
+                    {document.createdAt ? new Date(document.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível'}
+                  </MetaValue>
+                </div>
               </MetaItem>
+
               <MetaItem>
-                <MetaIcon><FiCalendar /></MetaIcon>
-                <span>Última modificação: {new Date(document.updatedAt).toLocaleString('pt-BR')}</span>
+                <MetaIcon>
+                  <FiCalendar />
+                </MetaIcon>
+                <div>
+                  <div style={{ fontSize: '12px', color: '#999' }}>Atualizado em</div>
+                  <MetaValue>
+                    {document.updatedAt ? new Date(document.updatedAt).toLocaleDateString('pt-BR') : 'Data não disponível'}
+                  </MetaValue>
+                </div>
               </MetaItem>
             </DocumentMeta>
-          </DocumentCard>
 
-          <MarkdownEditorContainer>
-            <MarkdownEditor
-              label=""
-              value={documentContent}
-              onChange={handleContentChange}
-              placeholder="Este documento não possui conteúdo..."
-            />
-          </MarkdownEditorContainer>
+            <DocumentContent>
+              <MarkdownEditor
+                value={documentContent}
+                onChange={handleContentChange}
+              />
+            </DocumentContent>
+          </DocumentCard>
         </LeftColumn>
 
         <RightColumn>
+          {/* Seção de Validação - apenas para validadores */}
           {isValidator() && (
             <ValidationSection>
               <ValidationTitle>
                 🔍 Validação do Documento
               </ValidationTitle>
-              
-              <ValidationStatus status={validationStatus}>
-                {validationStatus === 'approved' && '✅ Aprovado'}
-                {validationStatus === 'rejected' && '❌ Rejeitado'}
-                {validationStatus === 'pending' && '⏳ Pendente de validação'}
+
+              <ValidationStatus>
+                <StatusBadge status={validationStatus}>
+                  {validationStatus === 'pending' && '⏳ Pendente de Validação'}
+                  {validationStatus === 'approved' && '✅ Documento Aprovado'}
+                  {validationStatus === 'rejected' && '❌ Documento Rejeitado'}
+                </StatusBadge>
               </ValidationStatus>
 
               {validationStatus === 'pending' && (
@@ -518,15 +578,15 @@ const DocumentDetailsPage: React.FC = () => {
                     onChange={(e) => setValidatorNote(e.target.value)}
                     placeholder="Adicione uma nota sobre a validação (opcional para aprovação, obrigatória para rejeição)..."
                   />
-                  
+
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <Button 
+                    <Button
                       onClick={handleApprove}
                       style={{ background: '#28a745', color: 'white', flex: 1 }}
                     >
                       ✅ Aprovar
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleReject}
                       style={{ background: '#dc3545', color: 'white', flex: 1 }}
                     >
@@ -574,7 +634,7 @@ const DocumentDetailsPage: React.FC = () => {
                 placeholder="Digite seu comentário..."
               />
               <div style={{ alignSelf: 'flex-start' }}>
-                <Button 
+                <Button
                   onClick={handleAddComment}
                   disabled={!newComment.trim()}
                 >
