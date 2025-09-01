@@ -308,5 +308,27 @@ export const esTranslations = {
     please_wait: "Por favor espera...",
     loading: "Cargando...",
     processing: "Procesando..."
-  }
+  },
+
+  templates: {
+  title: "Plantillas",
+  add_template: "Nueva Plantilla",
+  edit_template: "Editar Plantilla", 
+  search_templates: "Buscar plantillas...",
+  name: "Nombre",
+  content: "Contenido",
+  created_at: "Creado en",
+  updated_at: "Actualizado en",
+  is_active: "Estado", 
+  no_templates: "No se encontraron plantillas",
+  no_templates_description: "Crea tu primera plantilla para comenzar a estandarizar tus documentos.",
+  create_first_template: "Crear Primera Plantilla",
+  createSuccess: "¡Plantilla creada con éxito!",
+  updateSuccess: "¡Plantilla actualizada con éxito!", 
+  updateStatusSuccess: "¡Estado de la plantilla cambiado con éxito!",
+  copySuccess: "¡Plantilla copiada con éxito!",
+  deleteSuccess: "¡Plantilla eliminada con éxito!",
+  copy: "Copiar",
+  preview: "Vista previa"
+}
 };

@@ -311,5 +311,27 @@ export const ptTranslations = {
     please_wait: "Por favor, aguarde...",
     loading: "Carregando...",
     processing: "Processando..."
-  }
+  },
+
+  templates: {
+  title: "Templates",
+  add_template: "Novo Template", 
+  edit_template: "Editar Template",
+  search_templates: "Buscar templates...",
+  name: "Nome",
+  content: "Conteúdo",
+  created_at: "Criado em",
+  updated_at: "Atualizado em", 
+  is_active: "Status",
+  no_templates: "Nenhum template encontrado",
+  no_templates_description: "Crie seu primeiro template para começar a padronizar seus documentos.",
+  create_first_template: "Criar Primeiro Template",
+  createSuccess: "Template criado com sucesso!",
+  updateSuccess: "Template atualizado com sucesso!",
+  updateStatusSuccess: "Status do template alterado com sucesso!",
+  copySuccess: "Template copiado com sucesso!",
+  deleteSuccess: "Template excluído com sucesso!",
+  copy: "Copiar",
+  preview: "Visualizar"
+}
 };
