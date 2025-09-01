@@ -8,6 +8,7 @@ export const enTranslations = {
     folders: "Folders",
     tasks: "Tasks",
     documents: "Documents",
+    templates: "Templates",
     integrations: "Integrations",
     settings: "Settings",
     openai: "OpenAI"

@@ -8,6 +8,7 @@ export const ptTranslations = {
     folders: "Pastas",
     tasks: "Tarefas",
     documents: "Documentos",
+    templates: "Templates",
     integrations: "Integrações",
     settings: "Configurações",
     openai: "OpenAI"
