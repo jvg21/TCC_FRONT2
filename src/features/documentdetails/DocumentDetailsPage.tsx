@@ -357,11 +357,6 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  const handleEdit = () => {
-    navigate(`/document`);
-    // Aqui você pode implementar a navegação para edição
-  };
-
   const handleBack = () => {
     navigate('/document');
   };
