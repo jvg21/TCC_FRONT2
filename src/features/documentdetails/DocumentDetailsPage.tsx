@@ -327,6 +327,8 @@ const DocumentDetailsPage: React.FC = () => {
         if (response && !response.erro) {
           setDocument(response.objeto);
           setDocumentContent(response.objeto.content || '');
+          // NOVA LINHA - Inicializar status de validação
+          setValidationStatus(response.objeto.isValid ?? null);
           setError(null);
         } else {
           setError('Documento não encontrado');
@@ -342,7 +344,7 @@ const DocumentDetailsPage: React.FC = () => {
     };
 
     loadDocument();
-  }, [id]); // Removido getById das dependências
+  }, [id]);
 
   // Reset do ref quando o ID mudar
   useEffect(() => {
@@ -401,11 +403,14 @@ const DocumentDetailsPage: React.FC = () => {
     return folder && folder.ValidatorId === user.UserId;
   };
 
-  // Funções de validação
+  // Funções de validação ATUALIZADAS
   const handleApprove = async () => {
     try {
-      setValidationStatus(true);
       await updateValidationStatus(document.documentId, true, validatorNote);
+      
+      // Atualizar estado local do documento
+      setDocument((prev:any) => ({ ...prev, isValid: true }));
+      setValidationStatus(true);
 
       // Adicionar comentário de aprovação
       const comment: Comment = {
@@ -418,6 +423,8 @@ const DocumentDetailsPage: React.FC = () => {
       setValidatorNote('');
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
+      // Reverter estado em caso de erro
+      setValidationStatus(document?.isValid ?? null);
     }
   };
 
@@ -426,9 +433,13 @@ const DocumentDetailsPage: React.FC = () => {
       notificationActions.showError(t('document.reject'));
       return;
     }
+    
     try {
-      setValidationStatus(false);
       await updateValidationStatus(document.documentId, false, validatorNote);
+      
+      // Atualizar estado local do documento
+      setDocument((prev:any) => ({ ...prev, isValid: false }));
+      setValidationStatus(false);
 
       // Adicionar comentário de rejeição
       const comment: Comment = {
@@ -441,6 +452,8 @@ const DocumentDetailsPage: React.FC = () => {
       setValidatorNote('');
     } catch (error) {
       console.error('Erro ao rejeitar documento:', error);
+      // Reverter estado em caso de erro
+      setValidationStatus(document?.isValid ?? null);
     }
   };
 
@@ -489,7 +502,7 @@ const DocumentDetailsPage: React.FC = () => {
         <LeftColumn>
           <DocumentCard>
             <DocumentHeader>
-              <DocumentTitle>{document.title || 'Documento sem título'}</DocumentTitle>
+              <DocumentTitle>{document.title}</DocumentTitle>
             </DocumentHeader>
 
             <DocumentMeta>
@@ -556,7 +569,10 @@ const DocumentDetailsPage: React.FC = () => {
               </ValidationTitle>
 
               <ValidationStatus>
-                <StatusBadge status={validationStatus}>
+                <StatusBadge status={
+                  validationStatus === null ? 'pending' : 
+                  validationStatus === true ? 'approved' : 'rejected'
+                }>
                   {validationStatus === null && '⏳ Pendente de Validação'}
                   {validationStatus === true && '✅ Documento Aprovado'}
                   {validationStatus === false && '❌ Documento Rejeitado'}
@@ -604,7 +620,7 @@ const DocumentDetailsPage: React.FC = () => {
             <CommentsList>
               {comments.length === 0 ? (
                 <EmptyComments>
-                  Nenhum comentário ainda
+                  Nenhum comentário ainda. Seja o primeiro a comentar!
                 </EmptyComments>
               ) : (
                 comments.map((comment) => (
@@ -625,14 +641,9 @@ const DocumentDetailsPage: React.FC = () => {
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Digite seu comentário..."
               />
-              <div style={{ alignSelf: 'flex-start' }}>
-                <Button
-                  onClick={handleAddComment}
-                  disabled={!newComment.trim()}
-                >
-                  Adicionar Comentário
-                </Button>
-              </div>
+              <Button onClick={handleAddComment}>
+                Adicionar Comentário
+              </Button>
             </CommentForm>
           </CommentsSection>
         </RightColumn>
