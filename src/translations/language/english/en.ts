@@ -310,5 +310,27 @@ export const enTranslations = {
     please_wait: "Please wait...",
     loading: "Loading...",
     processing: "Processing..."
-  }
+  },
+
+  templates: {
+  title: "Templates",
+  add_template: "Add Template",
+  edit_template: "Edit Template", 
+  search_templates: "Search templates...",
+  name: "Name",
+  content: "Content",
+  created_at: "Created at",
+  updated_at: "Updated at",
+  is_active: "Status",
+  no_templates: "No templates found",
+  no_templates_description: "Create your first template to start standardizing your documents.",
+  create_first_template: "Create First Template",
+  createSuccess: "Template created successfully!",
+  updateSuccess: "Template updated successfully!",
+  updateStatusSuccess: "Template status changed successfully!",
+  copySuccess: "Template copied successfully!",
+  deleteSuccess: "Template deleted successfully!",
+  copy: "Copy",
+  preview: "Preview"
+}
 };
