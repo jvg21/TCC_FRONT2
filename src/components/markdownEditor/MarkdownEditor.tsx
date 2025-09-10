@@ -12,6 +12,7 @@ import 'bytemd/dist/index.css';
 import 'highlight.js/styles/default.css';
 import 'katex/dist/katex.css';
 import 'medium-zoom/dist/style.css';
+import { getCookie } from '../../utils/Cookies';
 
 const EditorContainer = styled.div`
   .bytemd {
@@ -102,7 +103,7 @@ const uploadImages = async (files: File[]): Promise<string[]> => {
     formData.append('Image', file);
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = getCookie('authToken') || "";
       const apiUrl = import.meta.env.VITE_API_URL;
       const response = await fetch(`${apiUrl}/Supabase/UploadImage`, {
         method: 'POST',
