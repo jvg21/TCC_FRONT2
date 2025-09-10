@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
-import { MarkdownEditor } from "../../components/common/MarkdownEditor";
+import { MarkdownEditor } from "../../components/markdownEditor/MarkdownEditor";
 import { useTypedTranslation } from "../../context/LanguageContext";
 import type { Template } from "./types";
 

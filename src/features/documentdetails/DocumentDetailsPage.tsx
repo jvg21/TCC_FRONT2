@@ -10,7 +10,7 @@ import { useTypedTranslation } from '../../context/LanguageContext';
 import { useDocument } from '../document/useDocument';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
-import { MarkdownEditor } from '../../components/common/MarkdownEditor';
+import { MarkdownEditor } from '../../components/markdownEditor/MarkdownEditor';
 import { notificationActions } from '../notifications/useNotification';
 import { CommentAuthor, CommentDate, CommentForm, CommentHeader, CommentItem, CommentsList, CommentsSection, CommentsTitle, CommentText, CommentTextarea, DetailsContainer, DocumentCard, DocumentContent, DocumentHeader, DocumentMeta, DocumentTitle, EmptyComments, ErrorContainer, LeftColumn, LoadingContainer, MetaIcon, MetaItem, MetaValue, RightColumn, StatusBadge, ValidationSection, ValidationStatus, ValidationTitle, ValidatorActions, ValidatorNote } from '../../components/common/Components';
 

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { FiSave, FiX } from "react-icons/fi";
 import styled from "styled-components";
 import PageLayout from "../../components/common/PageLayout";
-import { MarkdownEditor } from "../../components/common/MarkdownEditor";
+import { MarkdownEditor } from "../../components/markdownEditor/MarkdownEditor";
 
 const EditorContainer = styled.div`
   height: calc(100vh - 200px);
