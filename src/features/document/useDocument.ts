@@ -9,6 +9,8 @@ import { useAuthContext } from "../../context/AuthContext";
 
 export const useDocument = () => {
   const [document, setDocument] = useState<Document[]>([]);
+  const [userValidatorDocuments, setUserValidatorDocuments] = useState<Document[]>([]);
+  const [userDocuments, setUserDocuments] = useState<Document[]>([]);
   const [query, setQuery] = useState("");
   const { user } = useAuthContext();
 
@@ -23,6 +25,8 @@ export const useDocument = () => {
   const deactiveDocument = useMemo(() => {
     return document.filter((c) => !c.IsActive);
   }, [document, query]);
+
+
 
   const transformPayloadToCamelCase = (payload: any) => {
     return {
@@ -211,60 +215,142 @@ export const useDocument = () => {
     }
   };
 
+
+  const getValidationsByDocumentId = async (documentId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/DocumentValidation/GetDocumentValidationById/${documentId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      return data;
+
+    } catch (err) {
+      console.error("Erro ao buscar validações:", err);
+      throw err;
+    }
+  };
+
+  const getDocumentValidatorByValidator = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationByValidator`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      setUserValidatorDocuments(data.objeto)
+      return data;
+
+    } catch (err) {
+      console.error("Erro ao buscar validações:", err);
+      throw err;
+    }
+  };
+
+  const getDocumentToEdit = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationToEdit`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      setUserDocuments(data.objeto)
+      return data;
+
+    } catch (err) {
+      console.error("Erro ao buscar validações:", err);
+      throw err;
+    }
+  };
+
   const updateValidationStatus = async (documentId: number, isValid: boolean | null, comment?: string) => {
-  try {
-    let status = null
-    if(isValid){
-      status = 1
+    try {
+      let status = null
+      if (isValid) {
+        status = 1
+      }
+      if (!isValid) {
+        status = 0
+      }
+
+      const payload = {
+        documentId,
+        status: status, // Permitir null para revalidação
+        comment: comment || ""
+      };
+
+      const response = await fetch(`${apiUrl}/DocumentValidation/UpdateDocumentValidationStatus`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      // Atualizar o documento local com o novo status de validação
+      setDocument((s) => s.map((doc) =>
+        doc.DocumentId === documentId
+          ? { ...doc, isValid }
+          : doc
+      ));
+
+      const successMessage = isValid === null
+        ? t('documents.resetValidationSuccess')
+        : t('documents.validationUpdateSuccess');
+
+      notificationActions.showNotification(successMessage, 'success');
+      return data;
+
+    } catch (err) {
+      console.error("Erro ao atualizar status de validação:", err);
+      throw err;
     }
-    if(!isValid){
-      status = 0
-    }
-
-    const payload = {
-      documentId,
-      status: status, // Permitir null para revalidação
-      comment: comment || ""
-    };
-
-    const response = await fetch(`${apiUrl}/DocumentValidation/UpdateDocumentValidationStatus`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data: ApiResponse = await response.json();
-
-    if (data.erro) {
-      notificationActions.showError(data.mensagem);
-      throw new Error(data.mensagem);
-    }
-
-    // Atualizar o documento local com o novo status de validação
-    setDocument((s) => s.map((doc) =>
-      doc.DocumentId === documentId
-        ? { ...doc, isValid }
-        : doc
-    ));
-
-    const successMessage = isValid === null 
-      ? t('documents.resetValidationSuccess') 
-      : t('documents.validationUpdateSuccess');
-    
-    notificationActions.showNotification(successMessage, 'success');
-    return data;
-
-  } catch (err) {
-    console.error("Erro ao atualizar status de validação:", err);
-    throw err;
-  }
-};
+  };
 
   useEffect(() => {
-    if (token) get();
+    if (token) {
+      get()
+      getDocumentToEdit()
+      getDocumentValidatorByValidator()
+    };
   }, [token]);
 
   return {
@@ -277,6 +363,7 @@ export const useDocument = () => {
     update,
     softDelete,
     getById,
+    getValidationsByDocumentId,
     updateValidationStatus
   } as const;
 };
