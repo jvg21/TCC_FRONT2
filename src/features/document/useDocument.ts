@@ -28,6 +28,7 @@ export const useDocument = () => {
 
 
 
+
   const transformPayloadToCamelCase = (payload: any) => {
     return {
       title: payload.Title,
@@ -357,6 +358,8 @@ export const useDocument = () => {
     document,
     activeDocument,
     deactiveDocument,
+    userDocuments,
+    userValidatorDocuments,
     query,
     setQuery,
     create,

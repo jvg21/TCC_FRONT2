@@ -121,7 +121,7 @@ export const useTemplate = () => {
 
       const newTemplate: Template = transformSingleApiData(data.objeto);
       setTemplates((s) => [newTemplate, ...s]);
-      notificationActions.showNotification(t('templates.createSuccess') || 'Template criado com sucesso!', 'success');
+      notificationActions.showNotification(t('templates.createSuccess'), 'success');
       return data;
     } catch (err) {
       console.error("Erro ao criar template:", err);
@@ -153,7 +153,7 @@ export const useTemplate = () => {
       setTemplates((s) => s.map(template => 
         template.TemplateId === templateId ? updatedTemplate : template
       ));
-      notificationActions.showNotification(t('templates.updateSuccess') || 'Template atualizado com sucesso!', 'success');
+      notificationActions.showNotification(t('templates.updateSuccess'), 'success');
       return data;
     } catch (err) {
       console.error("Erro ao atualizar template:", err);
@@ -164,7 +164,7 @@ export const useTemplate = () => {
   const softDelete = async (templateId: number) => {
     try {
       const response = await fetch(`${apiUrl}/Template/ToggleStatusTemplate/${templateId}`, {
-        method: 'GET',
+        method: 'PUT',
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
