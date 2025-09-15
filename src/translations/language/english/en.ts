@@ -12,7 +12,10 @@ export const enTranslations = {
     integrations: "Integrations",
     settings: "Settings",
     openai: "OpenAI",
-    tasksdashboard: "TaskDashboard"
+    tasksBoardPage: "Tasks Board",
+    tasksDashboard: "Tasks Dashboard",
+    cascadeview: "Cascade View"
+
   },
 
   // General actions
@@ -109,7 +112,13 @@ export const enTranslations = {
     select_user: "Select User",
     users_in_group: "Users in Group",
     no_users_in_group: "No users in group",
-    hide_group_users: "Hide Group Users"
+    hide_group_users: "Hide Group Users",
+    manage_folders: "Manage Folders",
+    add_folder: "Add Folder",
+    select_folder: "Select Folder",
+    folders_in_group: "Folders in Group",
+    no_folders_in_group: "No folders in group",
+    hide_group_folders: "Hide Group Folders"
   },
 
   // Folders
@@ -165,13 +174,29 @@ export const enTranslations = {
     task_count: "task(s)",
     view_task_details: "View task details",
     task_actions: "Task actions",
-    
     createSuccess: "Task created successfully!",
     updateSuccess: "Task updated successfully!",
     updateStatusSuccess: "Task status changed successfully!",
     deleteSuccess: "Task deleted successfully!",
     moveSuccess: "Task moved successfully!",
-  
+    task_dashboard: "Task Dashboard",
+    all_tasks: "All Tasks",
+    upcoming_deadlines: "Upcoming Deadlines",
+    task_statistics: "Task Statistics",
+    completion_rate: "Completion Rate",
+    progress_rate: "Progress Rate",
+    pending_rate: "Pending Rate",
+    total_tasks: "Total Tasks",
+    completed_tasks: "Completed Tasks",
+    in_progress_tasks: "In Progress Tasks",
+    pending_tasks: "Pending Tasks",
+    in_review_tasks: "In Review Tasks",
+    no_upcoming_deadlines: "No upcoming deadlines",
+    no_tasks_in_progress: "No tasks in progress",
+    no_tasks_in_review: "No tasks in review",
+    no_completed_tasks: "No completed tasks",
+    empty_column: "This column is empty",
+
     statusTask: {
       todo: "To Do",
       inprogress: "In Progress",
@@ -179,7 +204,7 @@ export const enTranslations = {
       done: "Completed",
       canceled: "Canceled"
     },
- 
+
     priorityTask: {
       low: "Low",
       medium: "Medium",
@@ -202,7 +227,7 @@ export const enTranslations = {
     updated_at: "Updated at",
     is_active: "Status",
     creator: "Creator",
-    
+
 
   },
 
@@ -364,5 +389,64 @@ export const enTranslations = {
     copy: "Copy",
     preview: "Preview",
     create_template: "Create Template"
+  },
+
+  cascadeview: {
+    title: "Cascade View",
+    folder_structure: "Folder Structure",
+    document_hierarchy: "Document Hierarchy",
+    expand_all: "Expand All",
+    collapse_all: "Collapse All",
+    expand_folder: "Expand Folder",
+    collapse_folder: "Collapse Folder",
+    view_document: "View Document",
+    edit_document: "Edit Document",
+    no_folders: "No folders found",
+    no_documents: "No documents in this folder",
+    loading_structure: "Loading folder structure...",
+    search_placeholder: "Search folders and documents...",
+    folder_count: "folder(s)",
+    document_count: "document(s)",
+    total_items: "Total items",
+    breadcrumb_home: "Home",
+    breadcrumb_root: "Root",
+    folder_actions: "Folder Actions",
+    document_actions: "Document Actions",
+    move_to_folder: "Move to Folder",
+    create_subfolder: "Create Subfolder",
+    upload_document: "Upload Document",
+    tree_view: "Tree View",
+    list_view: "List View",
+    grid_view: "Grid View",
+    show_hidden: "Show Hidden Items",
+    hide_hidden: "Hide Hidden Items",
+    filter_by_type: "Filter by Type",
+    sort_by_name: "Sort by Name",
+    sort_by_date: "Sort by Date",
+    sort_by_size: "Sort by Size",
+    empty_folder: "This folder is empty",
+    permission_denied: "Permission Denied",
+    access_restricted: "Access to this folder is restricted",
+    filters: "Filters",
+    new_folder: "New Folder",
+    new_document: "New Document",
+    quick_search: "Quick search...",
+    status: "Status",
+    show_inactive: "Show inactive",
+    document_validation: "Document Validation",
+    valid_documents: "Valid documents",
+    pending_validation: "Pending validation",
+    invalid_documents: "Invalid documents",
+    active: "Active",
+    inactive: "Inactive",
+    valid: "Valid",
+    invalid: "Invalid",
+    pending: "Pending",
+    items: "items",
+    folders: "Folders",
+    documents: "Documents",
+    created_on: "Created on"
   }
-};
+
+}
+

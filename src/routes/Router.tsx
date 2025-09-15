@@ -20,6 +20,7 @@ import TemplatePage from "../features/templates/TemplatePage"
 import DocumentDetailsPage from "../features/documentdetails/DocumentDetailsPage"
 import TaskBoardPage from "../features/task/TaskBoardPage"
 import TaskDashboard from "../features/task/TaskDashboard"
+import CascadeView from "../features/folder/CascadeView"
 
 export const AppRoutes = () => {
     return (
@@ -113,6 +114,12 @@ export const AppRoutes = () => {
             <Route path="/TaskDashboard" element={
                 <AdmRoutes>
                     <TaskDashboard />
+                </AdmRoutes>
+            } />
+
+            <Route path="/CascadeView" element={
+                <AdmRoutes>
+                    <CascadeView />
                 </AdmRoutes>
             } />
 
