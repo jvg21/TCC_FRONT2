@@ -12,7 +12,8 @@ export const enTranslations = {
     integrations: "Integrations",
     settings: "Settings",
     openai: "OpenAI",
-    tasksdashboard: "TaskDashboard"
+    tasksBoardPage: "Tasks Board",
+    tasksDashboard: "Tasks Dashboard"
   },
 
   // General actions
@@ -165,13 +166,29 @@ export const enTranslations = {
     task_count: "task(s)",
     view_task_details: "View task details",
     task_actions: "Task actions",
-    
     createSuccess: "Task created successfully!",
     updateSuccess: "Task updated successfully!",
     updateStatusSuccess: "Task status changed successfully!",
     deleteSuccess: "Task deleted successfully!",
     moveSuccess: "Task moved successfully!",
-  
+    task_dashboard: "Task Dashboard",
+    all_tasks: "All Tasks",
+    upcoming_deadlines: "Upcoming Deadlines",
+    task_statistics: "Task Statistics",
+    completion_rate: "Completion Rate",
+    progress_rate: "Progress Rate",
+    pending_rate: "Pending Rate",
+    total_tasks: "Total Tasks",
+    completed_tasks: "Completed Tasks",
+    in_progress_tasks: "In Progress Tasks",
+    pending_tasks: "Pending Tasks",
+    in_review_tasks: "In Review Tasks",
+    no_upcoming_deadlines: "No upcoming deadlines",
+    no_tasks_in_progress: "No tasks in progress",
+    no_tasks_in_review: "No tasks in review",
+    no_completed_tasks: "No completed tasks",
+    empty_column: "This column is empty",
+
     statusTask: {
       todo: "To Do",
       inprogress: "In Progress",
@@ -179,7 +196,7 @@ export const enTranslations = {
       done: "Completed",
       canceled: "Canceled"
     },
- 
+
     priorityTask: {
       low: "Low",
       medium: "Medium",
@@ -202,7 +219,7 @@ export const enTranslations = {
     updated_at: "Updated at",
     is_active: "Status",
     creator: "Creator",
-    
+
 
   },
 

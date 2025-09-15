@@ -11,7 +11,9 @@ export const esTranslations = {
     templates: "Plantillas",
     integrations: "Integraciones",
     settings: "Configuración",
-    openai: "OpenAI"
+    openai: "OpenAI",
+    tasksBoardPage: "Panel de Tareas",
+    tasksDashboard: "Panel de Tareas"
   },
 
   // Acciones generales
@@ -164,13 +166,30 @@ export const esTranslations = {
     task_count: "tarea(s)",
     view_task_details: "Ver detalles de la tarea",
     task_actions: "Acciones de la tarea",
-    
+
     createSuccess: "¡Tarea creada con éxito!",
     updateSuccess: "¡Tarea actualizada con éxito!",
     updateStatusSuccess: "¡Estado de la tarea cambiado con éxito!",
     deleteSuccess: "¡Tarea eliminada con éxito!",
     moveSuccess: "¡Tarea movida con éxito!",
-    
+    task_dashboard: "Dashboard de Tareas",
+    all_tasks: "Todas las Tareas",
+    upcoming_deadlines: "Próximos Vencimientos",
+    task_statistics: "Estadísticas de Tareas",
+    completion_rate: "Tasa de Finalización",
+    progress_rate: "Tasa de Progreso",
+    pending_rate: "Tasa Pendiente",
+    total_tasks: "Total de Tareas",
+    completed_tasks: "Tareas Completadas",
+    in_progress_tasks: "Tareas en Progreso",
+    pending_tasks: "Tareas Pendientes",
+    in_review_tasks: "Tareas en Revisión",
+    no_upcoming_deadlines: "No hay vencimientos próximos",
+    no_tasks_in_progress: "No hay tareas en progreso",
+    no_tasks_in_review: "No hay tareas en revisión",
+    no_completed_tasks: "No hay tareas completadas",
+    empty_column: "Esta columna está vacía",
+
     statusTask: {
       todo: "To Do",
       inprogress: "En Curso",
@@ -178,171 +197,172 @@ export const esTranslations = {
       done: "Terminado",
       canceled: "Cancelado"
     },
-    
+
     priorityTask: {
       low: "Bajo",
       medium: "Promedio",
       high: "Alto",
       urgent: "Urgente"
-  },
+    },
 
-  // Login
-  login: {
-    title: "Documentin",
-    subtitle: "Inicia sesión en tu cuenta",
-    email_placeholder: "Ingresa tu correo",
-    password_placeholder: "Ingresa tu contraseña",
-    remember_me: "Recordarme",
-    forgot_password: "¿Olvidaste la contraseña?",
-    login_button: "Iniciar Sesión",
-    logging_in: "Iniciando sesión...",
-    light_mode: "Modo Claro",
-    dark_mode: "Modo Oscuro",
-    is_active: "Estado",
-    logout: "Cerrar Sesión"
-  },
+    // Login
+    login: {
+      title: "Documentin",
+      subtitle: "Inicia sesión en tu cuenta",
+      email_placeholder: "Ingresa tu correo",
+      password_placeholder: "Ingresa tu contraseña",
+      remember_me: "Recordarme",
+      forgot_password: "¿Olvidaste la contraseña?",
+      login_button: "Iniciar Sesión",
+      logging_in: "Iniciando sesión...",
+      light_mode: "Modo Claro",
+      dark_mode: "Modo Oscuro",
+      is_active: "Estado",
+      logout: "Cerrar Sesión"
+    },
 
-  // Recuperación de contraseña
-  password_recovery: {
-    title: "Documentin",
-    subtitle: "Recupera el acceso a tu cuenta",
-    email_placeholder: "Ingresa tu correo",
-    send_button: "Enviar enlace de recuperación",
-    sending: "Enviando...",
-    back_to_login: "Iniciar sesión",
-    remembered_password: "¿Recordaste tu contraseña?"
-  },
+    // Recuperación de contraseña
+    password_recovery: {
+      title: "Documentin",
+      subtitle: "Recupera el acceso a tu cuenta",
+      email_placeholder: "Ingresa tu correo",
+      send_button: "Enviar enlace de recuperación",
+      sending: "Enviando...",
+      back_to_login: "Iniciar sesión",
+      remembered_password: "¿Recordaste tu contraseña?"
+    },
 
-  // Reset de token
-  token_reset: {
-    title: "Documentin",
-    subtitle: "Recupera el acceso a tu cuenta",
-    token_placeholder: "Ingresa tu token",
-    send_button: "Enviar token",
-    sending: "Enviando...",
-    back_to_login: "Iniciar sesión",
-    remembered_password: "¿Recordaste tu contraseña?"
-  },
+    // Reset de token
+    token_reset: {
+      title: "Documentin",
+      subtitle: "Recupera el acceso a tu cuenta",
+      token_placeholder: "Ingresa tu token",
+      send_button: "Enviar token",
+      sending: "Enviando...",
+      back_to_login: "Iniciar sesión",
+      remembered_password: "¿Recordaste tu contraseña?"
+    },
 
-  // Dashboard
-  dashboard: {
-    title: "Panel de Control",
-    welcome: "Bienvenido a Documentin",
-    overview: "Resumen",
-    recent_activities: "Actividades Recientes",
-    statistics: "Estadísticas"
-  },
+    // Dashboard
+    dashboard: {
+      title: "Panel de Control",
+      welcome: "Bienvenido a Documentin",
+      overview: "Resumen",
+      recent_activities: "Actividades Recientes",
+      statistics: "Estadísticas"
+    },
 
-  // Configuraciones
-  settings: {
-    title: "Configuración",
-    account: "Cuenta",
-    account_description: "Información de tu cuenta",
-    appearance: "Apariencia",
-    appearance_description: "Personaliza la apariencia del sistema",
-    theme: "Tema",
-    theme_description: "Elige entre modo claro u oscuro",
-    language: "Idioma",
-    language_description: "Selecciona tu idioma preferido",
-    session: "Sesión",
-    session_description: "Administra tu sesión del sistema",
-    logout: "Cerrar Sesión",
-    logout_description: "Termina tu sesión actual y regresa a la pantalla de login"
-  },
+    // Configuraciones
+    settings: {
+      title: "Configuración",
+      account: "Cuenta",
+      account_description: "Información de tu cuenta",
+      appearance: "Apariencia",
+      appearance_description: "Personaliza la apariencia del sistema",
+      theme: "Tema",
+      theme_description: "Elige entre modo claro u oscuro",
+      language: "Idioma",
+      language_description: "Selecciona tu idioma preferido",
+      session: "Sesión",
+      session_description: "Administra tu sesión del sistema",
+      logout: "Cerrar Sesión",
+      logout_description: "Termina tu sesión actual y regresa a la pantalla de login"
+    },
 
-  // Perfiles de usuario
-  profiles: {
+    // Perfiles de usuario
+    profiles: {
+      administrator: "Administrador",
+      manager: "Gerente",
+      employee: "Empleado"
+    },
+
+    // Perfiles (usado en enum)
     administrator: "Administrador",
     manager: "Gerente",
-    employee: "Empleado"
-  },
+    employee: "Empleado",
 
-  // Perfiles (usado en enum)
-  administrator: "Administrador",
-  manager: "Gerente",
-  employee: "Empleado",
-
-  // Formularios
-  forms: {
-    required_field: "Campo obligatorio",
-    invalid_email: "Correo inválido",
-    password_too_short: "Contraseña muy corta",
-    passwords_dont_match: "Las contraseñas no coinciden",
-    invalid_phone: "Teléfono inválido",
-    invalid_tax_id: "RUT/CUIT inválido"
-  },
-
-  // Mensajes
-  messages: {
-    success: {
-      created: "¡Creado exitosamente!",
-      updated: "¡Actualizado exitosamente!",
-      deleted: "¡Eliminado exitosamente!",
-      saved: "¡Guardado exitosamente!",
-      login_success: "¡Inicio de sesión exitoso!"
+    // Formularios
+    forms: {
+      required_field: "Campo obligatorio",
+      invalid_email: "Correo inválido",
+      password_too_short: "Contraseña muy corta",
+      passwords_dont_match: "Las contraseñas no coinciden",
+      invalid_phone: "Teléfono inválido",
+      invalid_tax_id: "RUT/CUIT inválido"
     },
-    error: {
-      generic: "Ocurrió un error. Inténtalo de nuevo.",
-      network: "Error de conexión. Verifica tu internet.",
-      unauthorized: "Acceso no autorizado.",
-      not_found: "Elemento no encontrado.",
-      validation: "Datos inválidos. Verifica los campos.",
-      login_failed: "Inicio de sesión falló. Verifica tus credenciales."
+
+    // Mensajes
+    messages: {
+      success: {
+        created: "¡Creado exitosamente!",
+        updated: "¡Actualizado exitosamente!",
+        deleted: "¡Eliminado exitosamente!",
+        saved: "¡Guardado exitosamente!",
+        login_success: "¡Inicio de sesión exitoso!"
+      },
+      error: {
+        generic: "Ocurrió un error. Inténtalo de nuevo.",
+        network: "Error de conexión. Verifica tu internet.",
+        unauthorized: "Acceso no autorizado.",
+        not_found: "Elemento no encontrado.",
+        validation: "Datos inválidos. Verifica los campos.",
+        login_failed: "Inicio de sesión falló. Verifica tus credenciales."
+      },
+      confirm: {
+        delete: "¿Estás seguro de que quieres eliminar este elemento?",
+        unsaved_changes: "Tienes cambios no guardados. ¿Quieres continuar?"
+      }
     },
-    confirm: {
-      delete: "¿Estás seguro de que quieres eliminar este elemento?",
-      unsaved_changes: "Tienes cambios no guardados. ¿Quieres continuar?"
+
+    // Tema
+    theme: {
+      light: "Claro",
+      dark: "Oscuro",
+      toggle_theme: "Cambiar tema"
+    },
+
+    // Paginación
+    pagination: {
+      previous: "Anterior",
+      next: "Siguiente",
+      first: "Primero",
+      last: "Último",
+      page: "Página",
+      of: "de",
+      items_per_page: "Elementos por página",
+      showing: "Mostrando",
+      to: "a",
+      entries: "entradas"
+    },
+
+    // Carga
+    loading: {
+      please_wait: "Por favor espera...",
+      loading: "Cargando...",
+      processing: "Procesando..."
+    },
+
+    templates: {
+      title: "Plantillas",
+      add_template: "Nueva Plantilla",
+      edit_template: "Editar Plantilla",
+      search_templates: "Buscar plantillas...",
+      name: "Nombre",
+      content: "Contenido",
+      created_at: "Creado en",
+      updated_at: "Actualizado en",
+      is_active: "Estado",
+      no_templates: "No se encontraron plantillas",
+      no_templates_description: "Crea tu primera plantilla para comenzar a estandarizar tus documentos.",
+      create_first_template: "Crear Primera Plantilla",
+      createSuccess: "¡Plantilla creada con éxito!",
+      updateSuccess: "¡Plantilla actualizada con éxito!",
+      updateStatusSuccess: "¡Estado de la plantilla cambiado con éxito!",
+      copySuccess: "¡Plantilla copiada con éxito!",
+      deleteSuccess: "¡Plantilla eliminada con éxito!",
+      copy: "Copiar",
+      preview: "Vista previa",
+      create_template: "Crear Plantilla"
     }
-  },
-
-  // Tema
-  theme: {
-    light: "Claro",
-    dark: "Oscuro",
-    toggle_theme: "Cambiar tema"
-  },
-
-  // Paginación
-  pagination: {
-    previous: "Anterior",
-    next: "Siguiente",
-    first: "Primero",
-    last: "Último",
-    page: "Página",
-    of: "de",
-    items_per_page: "Elementos por página",
-    showing: "Mostrando",
-    to: "a",
-    entries: "entradas"
-  },
-
-  // Carga
-  loading: {
-    please_wait: "Por favor espera...",
-    loading: "Cargando...",
-    processing: "Procesando..."
-  },
-
-  templates: {
-    title: "Plantillas",
-    add_template: "Nueva Plantilla",
-    edit_template: "Editar Plantilla",
-    search_templates: "Buscar plantillas...",
-    name: "Nombre",
-    content: "Contenido",
-    created_at: "Creado en",
-    updated_at: "Actualizado en",
-    is_active: "Estado",
-    no_templates: "No se encontraron plantillas",
-    no_templates_description: "Crea tu primera plantilla para comenzar a estandarizar tus documentos.",
-    create_first_template: "Crear Primera Plantilla",
-    createSuccess: "¡Plantilla creada con éxito!",
-    updateSuccess: "¡Plantilla actualizada con éxito!",
-    updateStatusSuccess: "¡Estado de la plantilla cambiado con éxito!",
-    copySuccess: "¡Plantilla copiada con éxito!",
-    deleteSuccess: "¡Plantilla eliminada con éxito!",
-    copy: "Copiar",
-    preview: "Vista previa",
-    create_template: "Crear Plantilla"
   }
-}};
+};

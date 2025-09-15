@@ -11,7 +11,9 @@ export const ptTranslations = {
     templates: "Templates",
     integrations: "Integrações",
     settings: "Configurações",
-    openai: "OpenAI"
+    openai: "OpenAI",
+    tasksBoardPage: "Painel de Tarefas",
+    tasksDashboard: "Dashboard de Tarefas"
   },
 
   // Ações gerais
@@ -168,13 +170,29 @@ export const ptTranslations = {
     task_count: "tarefa(s)",
     view_task_details: "Ver detalhes da tarefa",
     task_actions: "Ações da tarefa",
-    
     createSuccess: "Tarefa criada com sucesso!",
     updateSuccess: "Tarefa atualizada com sucesso!",
     updateStatusSuccess: "Status da tarefa alterado com sucesso!",
     deleteSuccess: "Tarefa removida com sucesso!",
     moveSuccess: "Tarefa movida com sucesso!",
-    
+    task_dashboard: "Dashboard de Tarefas",
+    all_tasks: "Todas as Tarefas",
+    upcoming_deadlines: "Próximos Prazos",
+    task_statistics: "Estatísticas de Tarefas",
+    completion_rate: "Taxa de Conclusão",
+    progress_rate: "Taxa de Progresso",
+    pending_rate: "Taxa Pendente",
+    total_tasks: "Total de Tarefas",
+    completed_tasks: "Tarefas Concluídas",
+    in_progress_tasks: "Tarefas em Progresso",
+    pending_tasks: "Tarefas Pendentes",
+    in_review_tasks: "Tarefas em Revisão",
+    no_upcoming_deadlines: "Não há prazos próximos",
+    no_tasks_in_progress: "Nenhuma tarefa em progresso",
+    no_tasks_in_review: "Nenhuma tarefa em revisão",
+    no_completed_tasks: "Nenhuma tarefa concluída",
+    empty_column: "Esta coluna está vazia",
+
     statusTask: {
       todo: "A Fazer",
       inprogress: "Em Progresso",
@@ -182,7 +200,7 @@ export const ptTranslations = {
       done: "Concluído",
       canceled: "Cancelado"
     },
-    
+
     priorityTask: {
       low: "Baixa",
       medium: "Média",
