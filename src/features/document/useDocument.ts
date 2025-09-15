@@ -259,6 +259,7 @@ export const useDocument = () => {
         throw new Error(data.mensagem);
       }
 
+      console.log(data.objeto)
       setUserValidatorDocuments(data.objeto)
       return data;
 

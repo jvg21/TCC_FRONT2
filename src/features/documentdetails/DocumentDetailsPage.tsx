@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 import { useUser } from '../user/useUser';
 import { useFolder } from '../folder/useFolder';
 import { useAuthContext } from '../../context/AuthContext';
@@ -14,12 +13,7 @@ import { MarkdownEditor } from '../../components/markdownEditor/MarkdownEditor';
 import { notificationActions } from '../notifications/useNotification';
 import { CommentAuthor, CommentDate, CommentForm, CommentHeader, CommentItem, CommentsList, CommentsSection, CommentsTitle, CommentText, CommentTextarea, DetailsContainer, DocumentCard, DocumentContent, DocumentHeader, DocumentMeta, DocumentTitle, EmptyComments, ErrorContainer, LeftColumn, LoadingContainer, MetaIcon, MetaItem, MetaValue, RightColumn, StatusBadge, ValidationSection, ValidationStatus, ValidationTitle, ValidatorActions, ValidatorNote } from '../../components/common/Components';
 
-interface Comment {
-  id: string;
-  text: string;
-  author: string;
-  date: string;
-}
+
 
 const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

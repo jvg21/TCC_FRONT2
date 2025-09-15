@@ -1,25 +1,33 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
 import { useAuthContext } from "../../context/AuthContext";
+import { useTranslation } from "react-i18next";
 import type { Comment } from "./types";
 
 
-export interface CreateCommentPayload {
-  Content: string;
-  DocumentId: number;
-}
 
-export const useDocumentComment = () => {
-  const [documentComments, setDocumentComments] = useState<Comment[]>([]);
+export const useComment = () => {
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
   const { user } = useAuthContext();
+  const { t } = useTranslation();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
 
-  // Transformar dados da API para Pascal Case
+  // Filtros em memória
+  const activeComments = useMemo(() => {
+    return comments.filter((c) => c.IsActive);
+  }, [comments]);
+
+  const deactiveComments = useMemo(() => {
+    return comments.filter((c) => !c.IsActive);
+  }, [comments]);
+
+  // Transformar dados da API
   const transformApiDataToPascalCase = (apiData: any[]): Comment[] => {
     return apiData.map(item => ({
       CommentId: item.commentId || item.CommentId,
@@ -46,13 +54,11 @@ export const useDocumentComment = () => {
     };
   };
 
-  // Buscar comentários por documento
-  const getCommentsByDocumentId = useCallback(async (documentId: number) => {
-    if (!documentId) return;
-    
+  // Buscar todos os comentários da empresa
+  const getComments = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${apiUrl}/Comment/GetListCommentByDocumentId/${documentId}`, {
+      const response = await fetch(`${apiUrl}/Comment/GetListComment`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -68,20 +74,19 @@ export const useDocumentComment = () => {
       }
 
       const transformedComments = transformApiDataToPascalCase(data.objeto || []);
-      setDocumentComments(transformedComments);
+      setComments(transformedComments);
       return transformedComments;
     } catch (err) {
       console.error("Erro ao buscar comentários:", err);
-      notificationActions.showError("Erro ao carregar comentários");
-      setDocumentComments([]);
+      setComments([]);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, token]);
+  };
 
   // Buscar comentário por ID
-  const getCommentById = useCallback(async (commentId: number) => {
+  const getCommentById = async (commentId: number) => {
     try {
       const response = await fetch(`${apiUrl}/Comment/GetCommentById/${commentId}`, {
         method: "GET",
@@ -103,27 +108,60 @@ export const useDocumentComment = () => {
       console.error("Erro ao buscar comentário:", err);
       throw err;
     }
-  }, [apiUrl, token]);
+  };
+
+  // Buscar comentários por documento
+  const getCommentsByDocumentId = async (documentId: number) => {
+    if (!documentId) return [];
+    
+    setLoading(true);
+    try {
+      const response = await fetch(`${apiUrl}/Comment/GetListCommentByDocumentId/${documentId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      const transformedComments = transformApiDataToPascalCase(data.objeto || []);
+      return transformedComments;
+    } catch (err) {
+      console.error("Erro ao buscar comentários do documento:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Criar novo comentário
-  const createComment = useCallback(async (payload: CreateCommentPayload) => {
+  const createComment = async (payload: Comment) => {
     if (!payload.Content.trim() || !payload.DocumentId) {
-      notificationActions.showError("Conteúdo e documento são obrigatórios");
+      notificationActions.showError(t('comments.contentRequired') || 'Conteúdo e documento são obrigatórios');
       return;
     }
 
     setLoading(true);
     try {
+      const requestPayload = {
+        content: payload.Content,
+        documentId: payload.DocumentId
+      };
+
       const response = await fetch(`${apiUrl}/Comment/AddComment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          content: payload.Content,
-          documentId: payload.DocumentId
-        }),
+        body: JSON.stringify(requestPayload),
       });
 
       const data: ApiResponse = await response.json();
@@ -133,39 +171,40 @@ export const useDocumentComment = () => {
         throw new Error(data.mensagem);
       }
 
-      // Recarregar comentários do documento
-      await getCommentsByDocumentId(payload.DocumentId);
-      
-      notificationActions.showNotification("Comentário adicionado com sucesso!",'success');
-      return transformSingleApiData(data.objeto);
+      const newComment = transformSingleApiData(data.objeto);
+      setComments((prev) => [...prev, newComment]);
+      notificationActions.showNotification(t('comments.createSuccess') || 'Comentário adicionado com sucesso!', 'success');
+      return newComment;
     } catch (err) {
       console.error("Erro ao criar comentário:", err);
-      notificationActions.showError("Erro ao adicionar comentário");
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, token, getCommentsByDocumentId]);
+  };
 
-  // Atualizar comentário existente
-  const updateComment = useCallback(async (commentId: number, content: string) => {
-    if (!content.trim()) {
-      notificationActions.showError("Conteúdo não pode estar vazio");
+  // Atualizar comentário
+  const updateComment = async (commentId: number, payload: Comment) => {
+    if (!payload.Content.trim()) {
+      notificationActions.showError(t('comments.contentRequired') || 'Conteúdo é obrigatório');
       return;
     }
 
     setLoading(true);
     try {
+      const requestPayload = {
+        commentId: commentId,
+        content: payload.Content,
+        documentId: payload.DocumentId
+      };
+
       const response = await fetch(`${apiUrl}/Comment/UpdateComment`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          commentId: commentId,
-          content: content
-        }),
+        body: JSON.stringify(requestPayload),
       });
 
       const data: ApiResponse = await response.json();
@@ -175,28 +214,20 @@ export const useDocumentComment = () => {
         throw new Error(data.mensagem);
       }
 
-      // Atualizar estado local
-      setDocumentComments(prev => 
-        prev.map(comment => 
-          comment.CommentId === commentId 
-            ? { ...comment, Content: content, UpdatedAt: new Date().toISOString() }
-            : comment
-        )
-      );
-
-      notificationActions.showNotification("Comentário atualizado com sucesso!",'success');
-      return transformSingleApiData(data.objeto);
+      const updatedComment = transformSingleApiData(data.objeto);
+      setComments((prev) => prev.map((c) => c.CommentId === commentId ? updatedComment : c));
+      notificationActions.showNotification(t('comments.updateSuccess') || 'Comentário atualizado com sucesso!', 'success');
+      return updatedComment;
     } catch (err) {
       console.error("Erro ao atualizar comentário:", err);
-      notificationActions.showError("Erro ao atualizar comentário");
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, token]);
+  };
 
-  // Deletar comentário
-  const deleteComment = useCallback(async (commentId: number, documentId: number) => {
+  // Excluir/toggle status comentário
+  const softDeleteComment = async (commentId: number) => {
     setLoading(true);
     try {
       const response = await fetch(`${apiUrl}/Comment/ToggleStatusComment/${commentId}`, {
@@ -214,37 +245,37 @@ export const useDocumentComment = () => {
         throw new Error(data.mensagem);
       }
 
-      // Recarregar comentários do documento
-      await getCommentsByDocumentId(documentId);
-      
-      notificationActions.showNotification("Comentário removido com sucesso!",'success');
-      return data;
+      const updatedComment = transformSingleApiData(data.objeto);
+      setComments((prev) => prev.map((c) => c.CommentId === commentId ? updatedComment : c));
+      notificationActions.showNotification(t('comments.statusUpdateSuccess') || 'Status do comentário alterado com sucesso!', 'success');
+      return updatedComment;
     } catch (err) {
-      console.error("Erro ao deletar comentário:", err);
-      notificationActions.showError("Erro ao remover comentário");
+      console.error("Erro ao alterar status do comentário:", err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, token, getCommentsByDocumentId]);
+  };
 
-  // Limpar comentários do estado
-  const clearComments = useCallback(() => {
-    setDocumentComments([]);
-  }, []);
+  // Carregar comentários ao inicializar
+  useEffect(() => {
+    if (token) {
+      getComments();
+    }
+  }, [token]);
 
   return {
-    // Estados
-    documentComments,
+    comments,
+    activeComments,
+    deactiveComments,
     loading,
-    
-    // Funções
-    getCommentsByDocumentId,
+    query,
+    setQuery,
+    getComments,
     getCommentById,
+    getCommentsByDocumentId,
     createComment,
     updateComment,
-    deleteComment,
-    clearComments,
-
-  };
+    softDeleteComment,
+  } as const;
 };

@@ -201,7 +201,8 @@ export const enTranslations = {
     created_at: "Created at",
     updated_at: "Updated at",
     is_active: "Status",
-    creator: "Creator"
+    creator: "Creator",
+    
 
   },
 

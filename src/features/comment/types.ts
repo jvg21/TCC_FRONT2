@@ -1,10 +1,10 @@
 export interface Comment {
-  CommentId: number;
+  CommentId?: number;
   Content: string;
   DocumentId: number;
   UserId: number;
   UserName?: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-  IsActive: boolean;
+  CreatedAt?: string;
+  UpdatedAt?: string;
+  IsActive?: boolean;
 }
