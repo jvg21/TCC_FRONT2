@@ -13,7 +13,8 @@ export const ptTranslations = {
     settings: "Configurações",
     openai: "OpenAI",
     tasksBoardPage: "Painel de Tarefas",
-    tasksDashboard: "Dashboard de Tarefas"
+    tasksDashboard: "Dashboard de Tarefas",
+    cascadeview: "Visualização em Cascata"
   },
 
   // Ações gerais
@@ -112,7 +113,13 @@ export const ptTranslations = {
     no_users_in_group: "Nenhum usuário no grupo",
     hide_group_users: "Ocultar Usuários do Grupo",
     manage_group_users: "Gerenciar Usuários do Grupo",
-    group_user_management: "Gestão de Usuários do Grupo"
+    group_user_management: "Gestão de Usuários do Grupo",
+    manage_folders: "Gerenciar Pastas",
+    add_folder: "Adicionar Pasta",
+    select_folder: "Selecionar Pasta",
+    folders_in_group: "Pastas no Grupo",
+    no_folders_in_group: "Nenhuma pasta no grupo",
+    hide_group_folders: "Ocultar Pastas do Grupo"
   },
 
   // Pastas
@@ -384,5 +391,63 @@ export const ptTranslations = {
     copy: "Copiar",
     preview: "Visualizar",
     create_template: "Criar Template"
+  },
+
+
+  cascadeview: {
+    title: "Visualização em Cascata",
+    folder_structure: "Estrutura de Pastas",
+    document_hierarchy: "Hierarquia de Documentos",
+    expand_all: "Expandir Todas",
+    collapse_all: "Recolher Todas", 
+    expand_folder: "Expandir Pasta",
+    collapse_folder: "Recolher Pasta",
+    view_document: "Visualizar Documento",
+    edit_document: "Editar Documento",
+    no_folders: "Nenhuma pasta encontrada",
+    no_documents: "Nenhum documento nesta pasta",
+    loading_structure: "Carregando estrutura de pastas...",
+    search_placeholder: "Buscar pastas e documentos...",
+    folder_count: "pasta(s)",
+    document_count: "documento(s)",
+    total_items: "Total de itens",
+    breadcrumb_home: "Início",
+    breadcrumb_root: "Raiz",
+    folder_actions: "Ações da Pasta",
+    document_actions: "Ações do Documento",
+    move_to_folder: "Mover para Pasta",
+    create_subfolder: "Criar Subpasta",
+    upload_document: "Enviar Documento",
+    tree_view: "Visualização em Árvore",
+    list_view: "Visualização em Lista",
+    grid_view: "Visualização em Grade",
+    show_hidden: "Mostrar Itens Ocultos",
+    hide_hidden: "Ocultar Itens Ocultos",
+    filter_by_type: "Filtrar por Tipo",
+    sort_by_name: "Ordenar por Nome",
+    sort_by_date: "Ordenar por Data", 
+    sort_by_size: "Ordenar por Tamanho",
+    empty_folder: "Esta pasta está vazia",
+    permission_denied: "Permissão Negada",
+    access_restricted: "Acesso a esta pasta é restrito",
+    filters: "Filtros",
+    new_folder: "Nova Pasta",
+    new_document: "Novo Documento",
+    quick_search: "Busca rápida...",
+    status: "Status",
+    show_inactive: "Mostrar inativos",
+    document_validation: "Validação de Documentos",
+    valid_documents: "Documentos válidos",
+    pending_validation: "Pendentes de validação",
+    invalid_documents: "Documentos inválidos",
+    active: "Ativa",
+    inactive: "Inativa",
+    valid: "Válido",
+    invalid: "Inválido",
+    pending: "Pendente",
+    items: "itens",
+    folders: "Pastas",
+    documents: "Documentos",
+    created_on: "Criado em"
   }
 };

@@ -1,12 +1,8 @@
-
-
 import React, { useState, useMemo, useEffect } from 'react';
-
 import styled from 'styled-components';
-
 import { useTranslation } from 'react-i18next';
 
-// Interfaces
+
 interface Document {
   DocumentId: number;
   Title: string;
@@ -18,8 +14,6 @@ interface Document {
   UpdatedAt: string;
   isValid?: boolean | null;
 }
-
-// Interfaces ajustadas para os tipos reais
 interface Folder {
   FolderId: number;
   Name: string;
@@ -32,7 +26,6 @@ interface Folder {
   Documents?: Document[];
 }
 
-// Styled Components
 const CascadeContainer = styled.div`
   display: flex;
   height: calc(100vh - 120px);
@@ -424,7 +417,6 @@ const StatsBar = styled.div`
   }
 `;
 
-// Componente de busca rápida para mobile
 const QuickSearch = styled.div`
   position: sticky;
   top: 0;
@@ -448,22 +440,22 @@ const QuickSearch = styled.div`
   }
 `;
 
-// Imports dos hooks reais
+
 import { useFolder } from '../folder/useFolder';
 import { useDocument } from '../document/useDocument';
 import { FiFolder, FiFile, FiChevronRight, FiChevronDown, FiPlus, FiSearch, FiFilter, FiChevronUp } from 'react-icons/fi';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 
-// Componente principal
+
 export const CascadeView: React.FC = () => {
   const { t } = useTranslation();
   
-  // Usar hooks reais
+  
   const { activeFolder, deactiveFolder } = useFolder();
   const { activeDocument, deactiveDocument } = useDocument();
   
-  // Estados
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set([1, 2]));
   const [selectedNode, setSelectedNode] = useState<{ type: 'folder' | 'document'; id: number } | null>(null);
@@ -477,13 +469,13 @@ export const CascadeView: React.FC = () => {
     showInvalid: true,
   });
 
-  // Hook para detectar tamanho da tela
+  
   const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
-      // Auto-colapsar filtros em mobile
+      
       if (window.innerWidth <= 768) {
         setFiltersCollapsed(true);
       }
@@ -494,25 +486,25 @@ export const CascadeView: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Carregar dados ao montar o componente
+  
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        // Os hooks já fazem o carregamento automático
-        await new Promise(resolve => setTimeout(resolve, 100)); // Simular loading
+        
+        await new Promise(resolve => setTimeout(resolve, 100)); 
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+        setError(err instanceof Error ? err.message : t('loading.error'));
       } finally {
         setIsLoading(false);
       }
     };
     
     loadData();
-  }, []);
+  }, [t]);
 
-  // Função para expandir todas as pastas (útil em mobile)
+  
   const expandAllFolders = () => {
     const allFolderIds = new Set<number>();
     const addFolderIds = (folders: any[]) => {
@@ -527,12 +519,12 @@ export const CascadeView: React.FC = () => {
     setExpandedFolders(allFolderIds);
   };
 
-  // Função para colapsar todas as pastas
+  
   const collapseAllFolders = () => {
     setExpandedFolders(new Set());
   };
 
-  // Função para alternar expansão de pasta
+  
   const toggleFolder = (folderId: number) => {
     setExpandedFolders(prev => {
       const newSet = new Set(prev);
@@ -545,21 +537,21 @@ export const CascadeView: React.FC = () => {
     });
   };
 
-  // Função para construir árvore hierárquica
+  
   const buildTree = useMemo(() => {
     const tree: any[] = [];
     const folderMap = new Map();
     
-    // Combinar pastas ativas e inativas baseado no filtro
+    
     const allFolders = filters.showInactive ? [...activeFolder, ...deactiveFolder] : activeFolder;
     const allDocuments = filters.showInactive ? [...activeDocument, ...deactiveDocument] : activeDocument;
     
-    // Filtrar pastas baseado na busca
+    
     const filteredFolders = allFolders.filter(folder => 
       folder.Name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     
-    // Filtrar documentos
+    
     const filteredDocuments = allDocuments.filter(doc => 
       doc.Title.toLowerCase().includes(searchTerm.toLowerCase()) &&
       ((filters.showValidated && doc.isValid === true) ||
@@ -567,12 +559,12 @@ export const CascadeView: React.FC = () => {
        (filters.showInvalid && doc.isValid === false))
     );
     
-    // Criar mapa de pastas
+    
     filteredFolders.forEach(folder => {
       folderMap.set(folder.FolderId, { ...folder, children: [], documents: [] });
     });
     
-    // Adicionar documentos às pastas
+    
     filteredDocuments.forEach(doc => {
       const folder = folderMap.get(doc.FolderId);
       if (folder) {
@@ -580,7 +572,7 @@ export const CascadeView: React.FC = () => {
       }
     });
     
-    // Construir hierarquia
+    
     folderMap.forEach(folder => {
       if (folder.ParentFolderId === null) {
         tree.push(folder);
@@ -595,7 +587,7 @@ export const CascadeView: React.FC = () => {
     return tree;
   }, [activeFolder, deactiveFolder, activeDocument, deactiveDocument, searchTerm, filters]);
 
-  // Renderizar nó da árvore
+  
   const renderTreeNode = (node: any, level: number = 0): React.ReactNode => {
     const isFolder = 'FolderId' in node && 'Name' in node;
     
@@ -623,26 +615,26 @@ export const CascadeView: React.FC = () => {
               <NodeTitle $isFolder={true}>{node.Name}</NodeTitle>
               <NodeMeta>
                 <StatusBadge $status={node.IsActive ? 'active' : 'inactive'}>
-                  {node.IsActive ? 'Ativa' : 'Inativa'}
+                  {node.IsActive ? t("cascadeview.active") : t("cascadeview.inactive")}
                 </StatusBadge>
-                <span>{(node.children?.length || 0) + (node.documents?.length || 0)} itens</span>
+                <span>{(node.children?.length || 0) + (node.documents?.length || 0)} {t("cascadeview.items")}</span>
               </NodeMeta>
             </NodeHeader>
           </TreeNode>
           
           {isExpanded && (
             <>
-              {/* Renderizar subpastas primeiro */}
+              {}
               {node.children && node.children.map((child: any) => renderTreeNode(child, level + 1))}
               
-              {/* Renderizar documentos da pasta */}
+              {}
               {node.documents && node.documents.map((doc: Document) => renderTreeNode(doc, level + 1))}
             </>
           )}
         </React.Fragment>
       );
     } else {
-      // Renderizar documento
+      
       const isSelected = selectedNode?.type === 'document' && selectedNode?.id === node.DocumentId;
       
       return (
@@ -652,7 +644,7 @@ export const CascadeView: React.FC = () => {
             $isSelected={isSelected}
             onClick={() => setSelectedNode({ type: 'document', id: node.DocumentId })}
             onDoubleClick={() => {
-              // Navegar para detalhes do documento
+              
               window.location.href = `/document/${node.DocumentId}`;
             }}
           >
@@ -663,18 +655,18 @@ export const CascadeView: React.FC = () => {
             <NodeTitle $isFolder={false}>{node.Title}</NodeTitle>
             <NodeMeta>
               <StatusBadge $status={node.IsActive ? 'active' : 'inactive'}>
-                {node.IsActive ? 'Ativo' : 'Inativo'}
+                {node.IsActive ? t("cascadeview.active") : t("cascadeview.inactive")}
               </StatusBadge>
               {node.isValid !== undefined && (
                 <StatusBadge $status={
                   node.isValid === true ? 'valid' : 
                   node.isValid === false ? 'invalid' : 'pending'
                 }>
-                  {node.isValid === true ? 'Válido' : 
-                   node.isValid === false ? 'Inválido' : 'Pendente'}
+                  {node.isValid === true ? t("cascadeview.valid") : 
+                   node.isValid === false ? t("cascadeview.invalid") : t("cascadeview.pending")}
                 </StatusBadge>
               )}
-              <span title={`Criado em ${new Date(node.CreatedAt).toLocaleDateString()}`}>
+              <span title={`${t("cascadeview.created_on")} ${new Date(node.CreatedAt).toLocaleDateString()}`}>
                 {new Date(node.CreatedAt).toLocaleDateString()}
               </span>
             </NodeMeta>
@@ -686,7 +678,7 @@ export const CascadeView: React.FC = () => {
 
   return (
     <PageLayout
-      title="Visualização em Cascata"
+      title={t("cascadeview.title")}
       actions={
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <Button 
@@ -697,7 +689,7 @@ export const CascadeView: React.FC = () => {
             }}
           >
             <FiPlus />
-            {!isMobile && <span style={{ marginLeft: '4px' }}>Nova Pasta</span>}
+            {!isMobile && <span style={{ marginLeft: '4px' }}>{t("cascadeview.new_folder")}</span>}
           </Button>
           <Button 
             style={{ 
@@ -706,18 +698,18 @@ export const CascadeView: React.FC = () => {
             }}
           >
             <FiPlus />
-            {!isMobile && <span style={{ marginLeft: '4px' }}>Novo Documento</span>}
+            {!isMobile && <span style={{ marginLeft: '4px' }}>{t("cascadeview.new_document")}</span>}
           </Button>
         </div>
       }
     >
       <CascadeContainer>
-        {/* Painel de Filtros */}
+        {}
         <FilterPanel $isCollapsed={filtersCollapsed}>
           <FilterHeader onClick={() => setFiltersCollapsed(!filtersCollapsed)}>
             <h3>
               <FiFilter size={16} />
-              Filtros
+              {t("cascadeview.filters")}
             </h3>
             <FilterToggle>
               {filtersCollapsed ? <FiChevronDown size={16} /> : <FiChevronUp size={16} />}
@@ -727,32 +719,32 @@ export const CascadeView: React.FC = () => {
           <FilterContent $isCollapsed={filtersCollapsed}>
             <SearchInput
               type="text"
-              placeholder="Buscar pastas e documentos..."
+              placeholder={t("cascadeview.search_placeholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             
             <FilterSection>
-              <h4>Status</h4>
+              <h4>{t("cascadeview.status")}</h4>
               <FilterOption>
                 <input 
                   type="checkbox" 
                   checked={filters.showInactive}
                   onChange={(e) => setFilters(prev => ({ ...prev, showInactive: e.target.checked }))}
                 />
-                Mostrar inativos
+                {t("cascadeview.show_inactive")}
               </FilterOption>
             </FilterSection>
             
             <FilterSection>
-              <h4>Validação de Documentos</h4>
+              <h4>{t("cascadeview.document_validation")}</h4>
               <FilterOption>
                 <input 
                   type="checkbox" 
                   checked={filters.showValidated}
                   onChange={(e) => setFilters(prev => ({ ...prev, showValidated: e.target.checked }))}
                 />
-                Documentos válidos
+                {t("cascadeview.valid_documents")}
               </FilterOption>
               <FilterOption>
                 <input 
@@ -760,7 +752,7 @@ export const CascadeView: React.FC = () => {
                   checked={filters.showPending}
                   onChange={(e) => setFilters(prev => ({ ...prev, showPending: e.target.checked }))}
                 />
-                Pendentes de validação
+                {t("cascadeview.pending_validation")}
               </FilterOption>
               <FilterOption>
                 <input 
@@ -768,27 +760,27 @@ export const CascadeView: React.FC = () => {
                   checked={filters.showInvalid}
                   onChange={(e) => setFilters(prev => ({ ...prev, showInvalid: e.target.checked }))}
                 />
-                Documentos inválidos
+                {t("cascadeview.invalid_documents")}
               </FilterOption>
             </FilterSection>
           </FilterContent>
         </FilterPanel>
 
-        {/* Árvore de Pastas e Documentos */}
+        {}
         <TreeContainer>
-          {/* Busca rápida mobile */}
+          {}
           {isMobile && (
             <QuickSearch>
               <SearchInput
                 type="text"
-                placeholder="Busca rápida..."
+                placeholder={t("cascadeview.quick_search")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </QuickSearch>
           )}
           
-          {/* Controles de expansão para mobile */}
+          {}
           {isMobile && buildTree.length > 0 && (
             <div style={{ 
               display: 'flex', 
@@ -801,14 +793,14 @@ export const CascadeView: React.FC = () => {
                 onClick={expandAllFolders}
                 style={{ fontSize: '12px', padding: '6px 12px' }}
               >
-                Expandir Tudo
+                {t("cascadeview.expand_all")}
               </Button>
               <Button 
                 variant="primary" 
                 onClick={collapseAllFolders}
                 style={{ fontSize: '12px', padding: '6px 12px' }}
               >
-                Colapsar Tudo
+                {t("cascadeview.collapse_all")}
               </Button>
             </div>
           )}
@@ -816,8 +808,8 @@ export const CascadeView: React.FC = () => {
           
             <div>
               <StatsBar>
-                <span>📁 Pastas: {buildTree.length}</span>
-                <span>📄 Documentos: {buildTree.reduce((acc, folder) => acc + (folder.documents?.length || 0), 0)}</span>
+                <span>📁 {t("cascadeview.folders")}: {buildTree.length}</span>
+                <span>📄 {t("cascadeview.documents")}: {buildTree.reduce((acc, folder) => acc + (folder.documents?.length || 0), 0)}</span>
               </StatsBar>
               {buildTree.map(node => renderTreeNode(node))}
             </div>

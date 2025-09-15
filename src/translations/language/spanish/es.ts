@@ -13,7 +13,8 @@ export const esTranslations = {
     settings: "Configuración",
     openai: "OpenAI",
     tasksBoardPage: "Panel de Tareas",
-    tasksDashboard: "Panel de Tareas"
+    tasksDashboard: "Panel de Tareas",
+    cascadeview: "Vista en Cascada"
   },
 
   // Acciones generales
@@ -110,7 +111,13 @@ export const esTranslations = {
     select_user: "Seleccionar Usuario",
     users_in_group: "Usuarios en Grupo",
     no_users_in_group: "Ningún usuario en el grupo",
-    hide_group_users: "Ocultar Usuarios del Grupo"
+    hide_group_users: "Ocultar Usuarios del Grupo",
+    manage_folders: "Gestionar Carpetas",
+    add_folder: "Agregar Carpeta",
+    select_folder: "Seleccionar Carpeta",
+    folders_in_group: "Carpetas en Grupo",
+    no_folders_in_group: "Ninguna carpeta en el grupo",
+    hide_group_folders: "Ocultar Carpetas del Grupo"
   },
 
   // Carpetas
@@ -363,6 +370,65 @@ export const esTranslations = {
       copy: "Copiar",
       preview: "Vista previa",
       create_template: "Crear Plantilla"
+    },
+
+    cascadeview: {
+      title: "Vista en Cascada",
+      folder_structure: "Estructura de Carpetas",
+      document_hierarchy: "Jerarquía de Documentos",
+      expand_all: "Expandir Todas",
+      collapse_all: "Contraer Todas",
+      expand_folder: "Expandir Carpeta",
+      collapse_folder: "Contraer Carpeta",
+      view_document: "Ver Documento",
+      edit_document: "Editar Documento",
+      no_folders: "No se encontraron carpetas",
+      no_documents: "No hay documentos en esta carpeta",
+      loading_structure: "Cargando estructura de carpetas...",
+      search_placeholder: "Buscar carpetas y documentos...",
+      folder_count: "carpeta(s)",
+      document_count: "documento(s)",
+      total_items: "Total de elementos",
+      breadcrumb_home: "Inicio",
+      breadcrumb_root: "Raíz",
+      folder_actions: "Acciones de Carpeta",
+      document_actions: "Acciones de Documento",
+      move_to_folder: "Mover a Carpeta",
+      create_subfolder: "Crear Subcarpeta",
+      upload_document: "Subir Documento",
+      tree_view: "Vista de Árbol",
+      list_view: "Vista de Lista",
+      grid_view: "Vista de Cuadrícula",
+      show_hidden: "Mostrar Elementos Ocultos",
+      hide_hidden: "Ocultar Elementos Ocultos",
+      filter_by_type: "Filtrar por Tipo",
+      sort_by_name: "Ordenar por Nombre",
+      sort_by_date: "Ordenar por Fecha",
+      sort_by_size: "Ordenar por Tamaño",
+      empty_folder: "Esta carpeta está vacía",
+      permission_denied: "Permiso Denegado",
+      access_restricted: "El acceso a esta carpeta está restringido",
+
+      // Textos específicos do código
+      filters: "Filtros",
+      new_folder: "Nueva Carpeta",
+      new_document: "Nuevo Documento",
+      quick_search: "Búsqueda rápida...",
+      status: "Estado",
+      show_inactive: "Mostrar inactivos",
+      document_validation: "Validación de Documentos",
+      valid_documents: "Documentos válidos",
+      pending_validation: "Pendientes de validación",
+      invalid_documents: "Documentos inválidos",
+      active: "Activa",
+      inactive: "Inactiva",
+      valid: "Válido",
+      invalid: "Inválido",
+      pending: "Pendiente",
+      items: "elementos",
+      folders: "Carpetas",
+      documents: "Documentos",
+      created_on: "Creado en"
     }
   }
 };
