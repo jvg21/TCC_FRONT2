@@ -67,6 +67,18 @@ export const useDocument = () => {
     };
   };
 
+  const mapApiDocumentToFrontend = (apiDoc: any) => ({
+    DocumentId: apiDoc.documentId,
+    Title: apiDoc.title,
+    Content: apiDoc.content,
+    UserId: apiDoc.userId,
+    FolderId: apiDoc.folderId,
+    IsActive: apiDoc.isActive,
+    IsValid: apiDoc.isValid,
+    CreatedAt: apiDoc.createdAt,
+    UpdatedAt: apiDoc.updatedAt
+  });
+
 
   const get = async () => {
     try {
@@ -214,7 +226,7 @@ export const useDocument = () => {
   const softDelete = async (id: number) => {
     try {
       const response = await fetch(`${apiUrl}/Document/ToogleStatusDocument/${id}`, {
-        
+
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -266,59 +278,75 @@ export const useDocument = () => {
       throw err;
     }
   };
-
   const getDocumentValidatorByValidator = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationByValidator`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+  try {
+    console.log("🔍 Buscando documentos para validação...");
+    const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationByValidator`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
 
-      const data: ApiResponse = await response.json();
+    const data: ApiResponse = await response.json();
+    console.log("📋 Resposta da API (validator):", data);
 
-      if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
-      }
-
-      
-      setUserValidatorDocuments(data.objeto)
-      return data;
-
-    } catch (err) {
-      console.error("Erro ao buscar validações:", err);
-      throw err;
+    if (data.erro) {
+      notificationActions.showError(data.mensagem);
+      throw new Error(data.mensagem);
     }
-  };
 
-  const getDocumentToEdit = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationToEdit`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+    // Mapear dados da API para o formato do frontend
+    const documents = Array.isArray(data.objeto) 
+      ? data.objeto.map(mapApiDocumentToFrontend)
+      : [];
+    
+    console.log("✅ Documentos para validação mapeados:", documents);
+    setUserValidatorDocuments(documents);
+    return data;
 
-      const data: ApiResponse = await response.json();
+  } catch (err) {
+    console.error("❌ Erro ao buscar validações:", err);
+    setUserValidatorDocuments([]);
+    throw err;
+  }
+};
 
-      if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
-      }
+const getDocumentToEdit = async () => {
+  try {
+    console.log("🔍 Buscando documentos para edição...");
+    const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationToEdit`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
 
-      setUserDocuments(data.objeto)
-      return data;
+    const data: ApiResponse = await response.json();
+    console.log("📋 Resposta da API (edit):", data);
 
-    } catch (err) {
-      console.error("Erro ao buscar validações:", err);
-      throw err;
+    if (data.erro) {
+      notificationActions.showError(data.mensagem);
+      throw new Error(data.mensagem);
     }
-  };
+
+    // Mapear dados da API para o formato do frontend
+    const documents = Array.isArray(data.objeto) 
+      ? data.objeto.map(mapApiDocumentToFrontend)
+      : [];
+    
+    console.log("✅ Documentos para edição mapeados:", documents);
+    setUserDocuments(documents);
+    return data;
+
+  } catch (err) {
+    console.error("❌ Erro ao buscar documentos para edição:", err);
+    setUserDocuments([]);
+    throw err;
+  }
+};
 
   const updateValidationStatus = async (documentId: number, isValid: boolean | null, comment?: string) => {
     try {
@@ -326,13 +354,13 @@ export const useDocument = () => {
       if (isValid === true) {
         status = 1
       }
-      if (!isValid ===false) {
+      if (!isValid === false) {
         status = 2
       }
 
       const payload = {
         documentId,
-        status: status, // Permitir null para revalidação
+        status: status,
         comment: comment || ""
       };
 
@@ -374,10 +402,20 @@ export const useDocument = () => {
 
   useEffect(() => {
     if (token) {
-      get()
-      getDocumentToEdit()
-      getDocumentValidatorByValidator()
-    };
+      console.log("🚀 Iniciando carregamento de dados...");
+      const loadData = async () => {
+        try {
+          await get(); // Documentos gerais
+          await getDocumentToEdit(); // Documentos para edição
+          await getDocumentValidatorByValidator(); // Documentos para validação
+          console.log("✅ Todos os dados foram carregados");
+        } catch (error) {
+          console.error("❌ Erro ao carregar dados:", error);
+        }
+      };
+
+      loadData();
+    }
   }, [token]);
 
   return {
