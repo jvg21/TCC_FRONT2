@@ -19,6 +19,7 @@ import RequestPasswordRecovery from "../features/login/RequestPasswordRecovery"
 import TemplatePage from "../features/templates/TemplatePage"
 import DocumentDetailsPage from "../features/documentdetails/DocumentDetailsPage"
 import TaskBoardPage from "../features/task/TaskBoardPage"
+import TaskDashboard from "../features/task/TaskDashboard"
 
 export const AppRoutes = () => {
     return (
@@ -106,6 +107,12 @@ export const AppRoutes = () => {
             <Route path="/TaskBoardPage" element={
                 <AdmRoutes>
                     <TaskBoardPage />
+                </AdmRoutes>
+            } />
+
+            <Route path="/TaskDashboard" element={
+                <AdmRoutes>
+                    <TaskDashboard />
                 </AdmRoutes>
             } />
 

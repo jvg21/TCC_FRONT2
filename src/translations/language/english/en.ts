@@ -11,7 +11,8 @@ export const enTranslations = {
     templates: "Templates",
     integrations: "Integrations",
     settings: "Settings",
-    openai: "OpenAI"
+    openai: "OpenAI",
+    tasksdashboard: "TaskDashboard"
   },
 
   // General actions

@@ -456,7 +456,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     { path: "/task", label: t("navigation.tasks"), icon: FiCheckSquare, show: true },
     { path: "/document", label: t("navigation.documents"), icon: FiFile, show: true },
     { path: "/templates", label: t("navigation.templates"), icon: FiFile, show: true },
-    { path: "/TaskBoardPage", label: t("navigation.tasks"), icon: FiCheckSquare, show: true },
+    { path: "/TaskBoardPage", label: t("navigation.tasksDashboard"), icon: FiCheckSquare, show: true },
+    { path: "/TaskDashboard", label: t("navigation.tasksDashboard"), icon: FiCheckSquare, show: true },
   ];
 
   const toggleSidebar = () => {
