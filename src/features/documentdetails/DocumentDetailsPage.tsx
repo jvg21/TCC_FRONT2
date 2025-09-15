@@ -21,10 +21,11 @@ const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
-  const { getById, update, updateValidationStatus } = useDocument();
-  const { activeUser, getById: getUserId } = useUser();
+  const { GetDocumentValidationById, update, updateValidationStatus } = useDocument();
+  const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
+  // GetDocumentValidationById
 
 
   const [document, setDocument] = useState<any>(null);
@@ -39,7 +40,7 @@ const DocumentDetailsPage: React.FC = () => {
 
   const { generateSummary } = useAI();
   const [validatorNote, setValidatorNote] = useState('');
-  const [validationStatus, setValidationStatus] = useState<boolean | null>(null);
+  const [validationStatus, setValidationStatus] = useState<number|boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [documentContent, setDocumentContent] = useState('');
@@ -58,11 +59,11 @@ const DocumentDetailsPage: React.FC = () => {
       }
       hasLoadedRef.current = true;
       try {
-        const response = await getById(Number(id));
+        const response = await GetDocumentValidationById(Number(id));
         if (response && !response.erro) {
-          setDocument(response.objeto);
-          setDocumentContent(response.objeto.content || '');
-          setValidationStatus(response.objeto.isValid ?? null);
+          setDocument(response.objeto.document);
+          setDocumentContent(response.objeto.document.content || '');
+          setValidationStatus(response.objeto.status ?? null);
           setError(null);
           await getCommentsByDocumentId(Number(id));
         } else {
@@ -142,7 +143,7 @@ const DocumentDetailsPage: React.FC = () => {
     try {
       await updateValidationStatus(document.documentId, status, validatorNote);
       setDocument((prev: any) => ({ ...prev, isValid: true }));
-      setValidationStatus(true);
+      setValidationStatus(status?1:2);
       if (user && user.UserId) {
         await createComment({
           Content: status?`✅ Documento aprovado por ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`:`❌ Documento rejeitado por ${user?.Name}: ${validatorNote}`,
@@ -283,16 +284,16 @@ const DocumentDetailsPage: React.FC = () => {
 
               <ValidationStatus>
                 <StatusBadge status={
-                  validationStatus === null ? 'pending' :
-                    validationStatus === true ? 'approved' : 'rejected'
+                  validationStatus === 0 ? 'pending' :
+                    validationStatus === 1 ? 'approved' : 'rejected'
                 }>
-                  {validationStatus === null && '⏳ Pendente de Validação'}
-                  {validationStatus === true && '✅ Documento Aprovado'}
-                  {validationStatus === false && '❌ Documento Rejeitado'}
+                  {validationStatus === 0 && '⏳ Pendente de Validação'}
+                  {validationStatus === 1 && '✅ Documento Aprovado'}
+                  {validationStatus === 2 && '❌ Documento Rejeitado'}
                 </StatusBadge>
               </ValidationStatus>
 
-              {validationStatus === null && (
+              {validationStatus === 0 && (
                 <ValidatorActions>
                   <ValidatorNote
                     value={validatorNote}

@@ -118,6 +118,30 @@ export const useDocument = () => {
       throw err;
     }
   };
+  const GetDocumentValidationById = async (documentId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/DocumentValidation/GetDocumentValidationById/${documentId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      return data;
+
+    } catch (err) {
+      console.error("Erro ao buscar documento:", err);
+      throw err;
+    }
+  };
 
   const create = async (payload: Omit<Document, "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId">) => {
     try {
@@ -303,7 +327,7 @@ export const useDocument = () => {
         status = 1
       }
       if (!isValid) {
-        status = 0
+        status = 2
       }
 
       const payload = {
@@ -362,6 +386,7 @@ export const useDocument = () => {
     deactiveDocument,
     userDocuments,
     userValidatorDocuments,
+    GetDocumentValidationById,
     query,
     setQuery,
     create,
