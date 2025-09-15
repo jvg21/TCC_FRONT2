@@ -322,11 +322,11 @@ export const useDocument = () => {
 
   const updateValidationStatus = async (documentId: number, isValid: boolean | null, comment?: string) => {
     try {
-      let status = null
-      if (isValid) {
+      let status = 0
+      if (isValid === true) {
         status = 1
       }
-      if (!isValid) {
+      if (!isValid ===false) {
         status = 2
       }
 

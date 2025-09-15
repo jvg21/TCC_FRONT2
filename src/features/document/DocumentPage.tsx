@@ -54,6 +54,7 @@ console.log(userDocuments,userValidatorDocuments)
   const { userProfile, user } = useAuthContext();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
+  const {updateValidationStatus} = useDocument();
 
   const navigate = useNavigate();
 
@@ -186,7 +187,9 @@ console.log(userDocuments,userValidatorDocuments)
         await update(editing.DocumentId, payload);
       } else {
         await create(payload);
+
       }
+      await updateValidationStatus(payload.DocumentId, null, ""); // Define o status como "Pendente" (0) ao criar ou editar
       modal.close();
     } catch (error) {
       console.error("Erro ao salvar documento:", error);

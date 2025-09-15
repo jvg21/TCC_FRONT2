@@ -77,6 +77,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
             Content, 
             FolderId: parseInt(FolderId) 
         });
+        
     };
 
     const handleEditContent = () => {
