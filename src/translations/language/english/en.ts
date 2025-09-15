@@ -152,6 +152,25 @@ export const enTranslations = {
     creator: "Creator",
     select_assignee: "Select Assignee",
 
+    task_board: "Task Board",
+    board_view: "Board View",
+    list_view: "List View",
+    no_tasks: "No tasks",
+    no_assignee: "Unassigned",
+    move_to: "Move to",
+    drag_drop_hint: "Drag and drop to reorganize",
+    column_empty: "This column is empty",
+    add_task_to_column: "Add task to this column",
+    task_count: "task(s)",
+    view_task_details: "View task details",
+    task_actions: "Task actions",
+    
+    createSuccess: "Task created successfully!",
+    updateSuccess: "Task updated successfully!",
+    updateStatusSuccess: "Task status changed successfully!",
+    deleteSuccess: "Task deleted successfully!",
+    moveSuccess: "Task moved successfully!",
+  
     statusTask: {
       todo: "To Do",
       inprogress: "In Progress",
@@ -159,6 +178,7 @@ export const enTranslations = {
       done: "Completed",
       canceled: "Canceled"
     },
+ 
     priorityTask: {
       low: "Low",
       medium: "Medium",

@@ -151,6 +151,26 @@ export const esTranslations = {
     priority_low: "Baja",
     creator: "Creador",
     select_assignee: "Seleccionar Cesionario",
+
+    task_board: "Tablero de Tareas",
+    board_view: "Vista de Tablero",
+    list_view: "Vista de Lista",
+    no_tasks: "Sin tareas",
+    no_assignee: "Sin asignar",
+    move_to: "Mover a",
+    drag_drop_hint: "Arrastra y suelta para reorganizar",
+    column_empty: "Esta columna está vacía",
+    add_task_to_column: "Agregar tarea a esta columna",
+    task_count: "tarea(s)",
+    view_task_details: "Ver detalles de la tarea",
+    task_actions: "Acciones de la tarea",
+    
+    createSuccess: "¡Tarea creada con éxito!",
+    updateSuccess: "¡Tarea actualizada con éxito!",
+    updateStatusSuccess: "¡Estado de la tarea cambiado con éxito!",
+    deleteSuccess: "¡Tarea eliminada con éxito!",
+    moveSuccess: "¡Tarea movida con éxito!",
+    
     statusTask: {
       todo: "To Do",
       inprogress: "En Curso",
@@ -158,28 +178,12 @@ export const esTranslations = {
       done: "Terminado",
       canceled: "Cancelado"
     },
+    
     priorityTask: {
       low: "Bajo",
       medium: "Promedio",
       high: "Alto",
       urgent: "Urgente"
-    }
-  },
-
-  // Documentos
-  documents: {
-    title: "Documentos",
-    add_document: "Agregar Documento",
-    edit_document: "Editar Documento",
-    search_documents: "Buscar documentos...",
-    title_field: "Título",
-    content: "Contenido",
-    folder: "Carpeta",
-    user: "Usuario",
-    created_at: "Creado en",
-    updated_at: "Actualizado en",
-    is_active: "Estado",
-    creator: "Creador"
   },
 
   // Login
@@ -341,4 +345,4 @@ export const esTranslations = {
     preview: "Vista previa",
     create_template: "Crear Plantilla"
   }
-};
+}};

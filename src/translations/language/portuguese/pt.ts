@@ -152,10 +152,29 @@ export const ptTranslations = {
     is_active: "Status",
     priority_high: "Alta",
     priority_medium: "Média",
+    priority_low: "Baixa",
     creator: "Criador",
     select_assignee: "Selecionar Funcionário",
 
-    priority_low: "Baixa",
+    task_board: "Quadro de Tarefas",
+    board_view: "Visualização em Quadro",
+    list_view: "Visualização em Lista",
+    no_tasks: "Nenhuma tarefa",
+    no_assignee: "Não atribuído",
+    move_to: "Mover para",
+    drag_drop_hint: "Arraste e solte para reorganizar",
+    column_empty: "Esta coluna está vazia",
+    add_task_to_column: "Adicionar tarefa a esta coluna",
+    task_count: "tarefa(s)",
+    view_task_details: "Ver detalhes da tarefa",
+    task_actions: "Ações da tarefa",
+    
+    createSuccess: "Tarefa criada com sucesso!",
+    updateSuccess: "Tarefa atualizada com sucesso!",
+    updateStatusSuccess: "Status da tarefa alterado com sucesso!",
+    deleteSuccess: "Tarefa removida com sucesso!",
+    moveSuccess: "Tarefa movida com sucesso!",
+    
     statusTask: {
       todo: "A Fazer",
       inprogress: "Em Progresso",
@@ -163,6 +182,7 @@ export const ptTranslations = {
       done: "Concluído",
       canceled: "Cancelado"
     },
+    
     priorityTask: {
       low: "Baixa",
       medium: "Média",
