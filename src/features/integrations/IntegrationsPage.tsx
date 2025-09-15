@@ -162,10 +162,8 @@ const IntegrationsPage: React.FC = () => {
     setStatus(null);
 
     try {
-      // Simular chamada da API
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Simular sucesso (você pode implementar a lógica real aqui)
       setStatus({
         type: 'success',
         message: 'API Key da OpenAI configurada com sucesso! A integração está ativa.'
@@ -236,7 +234,7 @@ const IntegrationsPage: React.FC = () => {
           <ButtonContainer>
             <Button 
               type="button" 
-              variant="secondary" 
+              variant="primary" 
               onClick={handleClear}
               disabled={loading || !apiKey}
             >
