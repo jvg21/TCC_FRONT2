@@ -229,6 +229,39 @@ export const useGroup = () => {
     }
   };
 
+  const getFoldersByGroup = async (groupId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/Group/GetListFolderByGroup/${groupId}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      // Transformar dados das pastas do grupo
+      return data.objeto.map((item: any) => ({
+        FolderId: item.folderId,
+        Name: item.name,
+        ParentFolderId: item.parentFolderId,
+        UserId: item.userId,
+        ValidatorId: item.validatorId,
+        IsActive: item.isActive,
+        CreatedAt: item.createdAt,
+        UpdatedAt: item.updatedAt,
+        Documents: item.documents || []
+      }));
+    } catch (err) {
+      console.error("Erro ao buscar pastas do grupo:", err);
+      throw err;
+    }
+  };
+
   const addUserToGroup = async (userId: number, groupId: number) => {
     try {
       const response = await fetch(`${apiUrl}/User/AddUserXGroup`, {
@@ -303,6 +336,7 @@ export const useGroup = () => {
     update,
     softDelete,
     addUserToGroup,
+    getFoldersByGroup,
     removeUserFromGroup,
     getUsersByGroup
   } as const;
