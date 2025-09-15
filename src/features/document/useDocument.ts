@@ -189,7 +189,8 @@ export const useDocument = () => {
 
   const softDelete = async (id: number) => {
     try {
-      const response = await fetch(`${apiUrl}/Document/ToggleStatusDocument/${id}`, {
+      const response = await fetch(`${apiUrl}/Document/ToogleStatusDocument/${id}`, {
+        
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

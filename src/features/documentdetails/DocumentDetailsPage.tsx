@@ -3,17 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../user/useUser';
 import { useFolder } from '../folder/useFolder';
 import { useAuthContext } from '../../context/AuthContext';
-
 import { FiArrowLeft, FiEdit, FiFolder, FiUser, FiCalendar } from 'react-icons/fi';
 import { useTypedTranslation } from '../../context/LanguageContext';
 import { useDocument } from '../document/useDocument';
 import { useComment } from '../comment/useComment';
-import type { Comment } from '../comment/types';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 import { MarkdownEditor } from '../../components/markdownEditor/MarkdownEditor';
 import { notificationActions } from '../notifications/useNotification';
 import { CommentAuthor, CommentDate, CommentForm, CommentHeader, CommentItem, CommentsList, CommentsSection, CommentsTitle, CommentText, CommentTextarea, DetailsContainer, DocumentCard, DocumentContent, DocumentHeader, DocumentMeta, DocumentTitle, EmptyComments, ErrorContainer, LeftColumn, LoadingContainer, MetaIcon, MetaItem, MetaValue, RightColumn, StatusBadge, ValidationSection, ValidationStatus, ValidationTitle, ValidatorActions, ValidatorNote } from '../../components/common/Components';
+import { useAI } from '../ai/useAI';
 
 
 
@@ -23,31 +22,31 @@ const DocumentDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
   const { getById, update, updateValidationStatus } = useDocument();
-  const { activeUser,getById:getUserId } = useUser();
+  const { activeUser, getById: getUserId } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
-  
+
 
   const [document, setDocument] = useState<any>(null);
+  const [summary, setSummary] = useState('');
   const [newComment, setNewComment] = useState('');
-  // useComment hook para comentários reais
   const {
     comments,
     getCommentsByDocumentId,
     createComment,
     loading: loadingComments
   } = useComment();
+
+  const { generateSummary } = useAI();
   const [validatorNote, setValidatorNote] = useState('');
   const [validationStatus, setValidationStatus] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [documentContent, setDocumentContent] = useState('');
 
-  // Ref para controlar carregamento único
   const hasLoadedRef = useRef(false);
 
 
-  // Carregar documento e comentários ao abrir a página
   useEffect(() => {
     const loadDocument = async () => {
       if (hasLoadedRef.current || !id) {
@@ -65,7 +64,6 @@ const DocumentDetailsPage: React.FC = () => {
           setDocumentContent(response.objeto.content || '');
           setValidationStatus(response.objeto.isValid ?? null);
           setError(null);
-          // Buscar comentários reais do documento
           await getCommentsByDocumentId(Number(id));
         } else {
           setError('Documento não encontrado');
@@ -79,10 +77,8 @@ const DocumentDetailsPage: React.FC = () => {
       }
     };
     loadDocument();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // Reset do ref quando o ID mudar
   useEffect(() => {
     hasLoadedRef.current = false;
   }, [id]);
@@ -142,15 +138,14 @@ const DocumentDetailsPage: React.FC = () => {
   };
 
   // Funções de validação ATUALIZADAS
-  const handleApprove = async () => {
+  const handleApprove = async (status:boolean) => {
     try {
-      await updateValidationStatus(document.documentId, true, validatorNote);
-      setDocument((prev:any) => ({ ...prev, isValid: true }));
+      await updateValidationStatus(document.documentId, status, validatorNote);
+      setDocument((prev: any) => ({ ...prev, isValid: true }));
       setValidationStatus(true);
-      // Adicionar comentário real de aprovação
       if (user && user.UserId) {
         await createComment({
-          Content: `✅ Documento aprovado por ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
+          Content: status?`✅ Documento aprovado por ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`:`❌ Documento rejeitado por ${user?.Name}: ${validatorNote}`,
           DocumentId: document.documentId,
           UserId: user.UserId
         });
@@ -162,48 +157,15 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  const handleReject = async () => {
-    if (!validatorNote.trim()) {
-      notificationActions.showError(t('document.reject'));
-      return;
-    }
-    try {
-      await updateValidationStatus(document.documentId, false, validatorNote);
-      setDocument((prev:any) => ({ ...prev, isValid: false }));
-      setValidationStatus(false);
-      // Adicionar comentário real de rejeição
-      if (user && user.UserId) {
-        await createComment({
-          Content: `❌ Documento rejeitado por ${user?.Name}: ${validatorNote}`,
-          DocumentId: document.documentId,
-          UserId: user.UserId
-        });
-      }
-      setValidatorNote('');
-    } catch (error) {
-      console.error('Erro ao rejeitar documento:', error);
-      setValidationStatus(document?.isValid ?? null);
-    }
-  };
 
-  const handleResetValidation = async () => {
-    try {
-      await updateValidationStatus(document.documentId, null, 'Validação resetada para revalidação');
-      setDocument((prev:any) => ({ ...prev, isValid: null }));
-      setValidationStatus(null);
-      // Adicionar comentário real de reset
-      if (user && user.UserId) {
-        await createComment({
-          Content: `🔄 Validação resetada por ${user?.Name} - Documento disponível para revalidação`,
-          DocumentId: document.documentId,
-          UserId: user.UserId
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao resetar validação:', error);
-      setValidationStatus(document?.isValid ?? null);
+  const handleGenerateSummary = async () => {
+    if (documentContent) {
+      generateSummary(Number(id))
+      setSummary(summary)
+    } else {
+      notificationActions.showError('O conteúdo do documento está vazio.');
     }
-  };
+  }
 
   if (loading || loadingComments) {
     return (
@@ -239,6 +201,9 @@ const DocumentDetailsPage: React.FC = () => {
         <div style={{ display: 'flex', gap: '8px' }}>
           <Button variant="ghost" onClick={handleBack}>
             <FiArrowLeft /> Voltar
+          </Button>
+          <Button onClick={handleGenerateSummary}>
+            <FiEdit /> Gerar Resumo
           </Button>
           <Button onClick={handleSaveDocument}>
             <FiEdit /> Salvar Alterações
@@ -318,8 +283,8 @@ const DocumentDetailsPage: React.FC = () => {
 
               <ValidationStatus>
                 <StatusBadge status={
-                  validationStatus === null ? 'pending' : 
-                  validationStatus === true ? 'approved' : 'rejected'
+                  validationStatus === null ? 'pending' :
+                    validationStatus === true ? 'approved' : 'rejected'
                 }>
                   {validationStatus === null && '⏳ Pendente de Validação'}
                   {validationStatus === true && '✅ Documento Aprovado'}
@@ -337,13 +302,13 @@ const DocumentDetailsPage: React.FC = () => {
 
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <Button
-                      onClick={handleApprove}
+                      onClick={()=>handleApprove(true)}
                       style={{ background: '#28a745', color: 'white', flex: 1 }}
                     >
                       ✅ Aprovar
                     </Button>
                     <Button
-                      onClick={handleReject}
+                      onClick={()=>handleApprove(false)}
                       style={{ background: '#dc3545', color: 'white', flex: 1 }}
                     >
                       ❌ Rejeitar
@@ -352,32 +317,7 @@ const DocumentDetailsPage: React.FC = () => {
                 </ValidatorActions>
               )}
 
-              {validationStatus !== null && (
-                <ValidatorActions>
-                  <div style={{ 
-                    textAlign: 'center', 
-                    color: '#666', 
-                    fontSize: '14px',
-                    marginBottom: '16px' 
-                  }}>
-                    Documento já foi validado. Deseja permitir revalidação?
-                  </div>
-                  
-                  <Button
-                    onClick={handleResetValidation}
-                    style={{ 
-                      background: '#6c757d', 
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px'
-                    }}
-                  >
-                    🔄 Resetar Validação
-                  </Button>
-                </ValidatorActions>
-              )}
+
             </ValidationSection>
           )}
 
