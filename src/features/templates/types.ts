@@ -4,12 +4,7 @@ export interface Template {
   Name: string;
   Content: string;
   IsActive?: boolean;
-  CreatedAt: string;
-  UpdatedAt: string;
+  CreatedAt?: string;
+  UpdatedAt?: string;
 }
 
-export interface TemplateRequestDTO {
-  templateId?: number;
-  name: string;
-  content: string;
-}

@@ -163,8 +163,8 @@ export const useTemplate = () => {
 
   const softDelete = async (templateId: number) => {
     try {
-      const response = await fetch(`${apiUrl}/Template/SoftDeleteTemplate/${templateId}`, {
-        method: 'PUT',
+      const response = await fetch(`${apiUrl}/Template/ToggleStatusTemplate/${templateId}`, {
+        method: 'GET',
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,

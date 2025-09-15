@@ -265,3 +265,291 @@ export const ErrorContainer = styled.div`
   padding: 40px 20px;
   color: #666;
 `;
+
+export const TemplatesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+export const ViewToggle = styled.div`
+  display: flex;
+  gap: 8px;
+  background: ${({ theme }) => theme.colors.background};
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+`;
+
+export const ViewButton = styled.button<{ $active: boolean }>`
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: ${({ $active, theme }) => 
+    $active ? theme.colors.primary : 'transparent'};
+  color: ${({ $active, theme }) => 
+    $active ? 'white' : theme.colors.muted};
+    
+  &:hover {
+    color: ${({ $active, theme }) => 
+      $active ? 'white' : theme.colors.text};
+  }
+`;
+
+export const TemplatesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+`;
+
+export const TemplateCard = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: ${({ theme }) => theme.colors.primary}40;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+    min-height: 160px;
+  }
+`;
+
+export const TemplateIcon = styled.div`
+  width: 48px;
+  height: 48px;
+  background: ${({ theme }) => theme.colors.primary}15;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.primary};
+  margin-bottom: 16px;
+  flex-shrink: 0;
+  
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 12px;
+  }
+`;
+
+export const TemplateTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
+export const TemplatePreview = styled.p`
+  color: ${({ theme }) => theme.colors.muted};
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  
+  @media (max-width: 768px) {
+    font-size: 13px;
+    -webkit-line-clamp: 2;
+  }
+`;
+
+export const TemplateActions = styled.div`
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: auto;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  
+  ${TemplateCard}:hover & {
+    opacity: 1;
+  }
+  
+  @media (max-width: 768px) {
+    opacity: 1;
+  }
+`;
+
+export const ActionButton = styled.button`
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &.edit {
+    background: ${({ theme }) => theme.colors.primary}15;
+    color: ${({ theme }) => theme.colors.primary};
+    
+    &:hover {
+      background: ${({ theme }) => theme.colors.primary}25;
+    }
+  }
+  
+  &.copy {
+    background: rgba(34, 197, 94, 0.15);
+    color: rgb(34, 197, 94);
+    
+    &:hover {
+      background: rgba(34, 197, 94, 0.25);
+    }
+  }
+  
+  &.delete {
+    background: ${({ theme }) => theme.colors.danger}15;
+    color: ${({ theme }) => theme.colors.danger};
+    
+    &:hover {
+      background: ${({ theme }) => theme.colors.danger}25;
+    }
+  }
+`;
+
+export const CreateTemplateCard = styled.div`
+  background: transparent;
+  border: 2px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: ${({ theme }) => theme.colors.muted};
+  
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary}60;
+    background: ${({ theme }) => theme.colors.primary}05;
+    color: ${({ theme }) => theme.colors.primary};
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+    min-height: 160px;
+  }
+`;
+
+export const CreateIcon = styled.div`
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.primary}15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+  
+  ${CreateTemplateCard}:hover & {
+    background: ${({ theme }) => theme.colors.primary}25;
+    transform: scale(1.05);
+  }
+  
+  @media (max-width: 768px) {
+    width: 48px;
+    height: 48px;
+  }
+`;
+
+export const CreateText = styled.p`
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
+
+export const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  color: ${({ theme }) => theme.colors.muted};
+  text-align: center;
+  grid-column: 1 / -1;
+  
+  @media (max-width: 768px) {
+    padding: 48px 16px;
+  }
+`;
+
+export const EmptyIcon = styled.div`
+  width: 80px;
+  height: 80px;
+  background: ${({ theme }) => theme.colors.primary}10;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.primary};
+  margin-bottom: 16px;
+  
+  @media (max-width: 768px) {
+    width: 64px;
+    height: 64px;
+  }
+`;
+
+export const EmptyTitle = styled.h3`
+  font-size: 20px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0 0 8px 0;
+  
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
+`;
+
+export const EmptyDescription = styled.p`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin: 0 0 24px 0;
+  max-width: 400px;
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
