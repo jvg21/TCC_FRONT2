@@ -205,6 +205,93 @@ export const useFolder = () => {
     }
   };
 
+  // Adicionar ao final do hook, antes do return
+  const addFolderXGroup = async (folderId: number, groupId: number) => {
+    try {
+      const payload = {
+        folderId: folderId,
+        groupId: groupId
+      };
+
+      const response = await fetch(`${apiUrl}/Folder/AddFolderXGroup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      notificationActions.showNotification(t("folders.groupAddedSuccess"), 'success');
+      return data;
+    } catch (err) {
+      console.error("Erro ao adicionar grupo à pasta:", err);
+      throw err;
+    }
+  };
+
+  const deleteFolderXGroup = async (folderId: number, groupId: number) => {
+    try {
+      const payload = {
+        folderId: folderId,
+        groupId: groupId
+      };
+
+      const response = await fetch(`${apiUrl}/Folder/DeleteFolderXGroup`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      notificationActions.showNotification(t("folders.groupRemovedSuccess"), 'success');
+      return data;
+    } catch (err) {
+      console.error("Erro ao remover grupo da pasta:", err);
+      throw err;
+    }
+  };
+
+  const getListFolderXGroupByFolder = async (folderId: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/Folder/GetListFolderXGroupByFolder/${folderId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      return data;
+    } catch (err) {
+      console.error("Erro ao buscar grupos da pasta:", err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     if (token) get();
   }, [token]);
@@ -219,6 +306,9 @@ export const useFolder = () => {
     create,
     update,
     softDelete,
-    moveFolder
+    moveFolder,
+    addFolderXGroup,
+    deleteFolderXGroup,
+    getListFolderXGroupByFolder
   };
 };
