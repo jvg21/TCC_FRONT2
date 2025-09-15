@@ -7,6 +7,8 @@ import { useAuthContext } from '../../context/AuthContext';
 import { FiArrowLeft, FiEdit, FiFolder, FiUser, FiCalendar } from 'react-icons/fi';
 import { useTypedTranslation } from '../../context/LanguageContext';
 import { useDocument } from '../document/useDocument';
+import { useComment } from '../comment/useComment';
+import type { Comment } from '../comment/types';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 import { MarkdownEditor } from '../../components/markdownEditor/MarkdownEditor';
@@ -15,18 +17,26 @@ import { CommentAuthor, CommentDate, CommentForm, CommentHeader, CommentItem, Co
 
 
 
+
 const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
   const { getById, update, updateValidationStatus } = useDocument();
-  const { activeUser } = useUser();
+  const { activeUser,getById:getUserId } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
+  
 
   const [document, setDocument] = useState<any>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
+  // useComment hook para comentários reais
+  const {
+    comments,
+    getCommentsByDocumentId,
+    createComment,
+    loading: loadingComments
+  } = useComment();
   const [validatorNote, setValidatorNote] = useState('');
   const [validationStatus, setValidationStatus] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,10 +46,10 @@ const DocumentDetailsPage: React.FC = () => {
   // Ref para controlar carregamento único
   const hasLoadedRef = useRef(false);
 
-  // useEffect modificado para carregar apenas uma vez
+
+  // Carregar documento e comentários ao abrir a página
   useEffect(() => {
     const loadDocument = async () => {
-      // Se já carregou ou não tem ID, não executa
       if (hasLoadedRef.current || !id) {
         if (!id) {
           setError('ID do documento não fornecido');
@@ -47,32 +57,29 @@ const DocumentDetailsPage: React.FC = () => {
         }
         return;
       }
-
-      // Marca que já iniciou o carregamento
       hasLoadedRef.current = true;
-
       try {
         const response = await getById(Number(id));
         if (response && !response.erro) {
           setDocument(response.objeto);
           setDocumentContent(response.objeto.content || '');
-          // NOVA LINHA - Inicializar status de validação
           setValidationStatus(response.objeto.isValid ?? null);
           setError(null);
+          // Buscar comentários reais do documento
+          await getCommentsByDocumentId(Number(id));
         } else {
           setError('Documento não encontrado');
         }
       } catch (error) {
         console.error('Erro ao carregar documento:', error);
         setError('Erro ao carregar documento');
-        // Reset ref em caso de erro para permitir retry
         hasLoadedRef.current = false;
       } finally {
         setLoading(false);
       }
     };
-
     loadDocument();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Reset do ref quando o ID mudar
@@ -92,32 +99,34 @@ const DocumentDetailsPage: React.FC = () => {
           Content: documentContent,
           FolderId: document.folderId
         });
-
-        // Adicionar comentário de edição
-        const comment: Comment = {
-          id: Date.now().toString(),
-          text: `📝 Documento editado por ${user.Name}`,
-          author: user.Name || 'Usuário',
-          date: new Date().toLocaleString('pt-BR')
-        };
-        setComments([...comments, comment]);
+        // Adicionar comentário de edição real
+        if (user.UserId) {
+          await createComment({
+            Content: `📝 Documento editado por ${user.Name}`,
+            DocumentId: document.documentId,
+            UserId: user.UserId
+          });
+        }
       } catch (error) {
         console.error('Erro ao salvar documento:', error);
       }
     }
   };
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const comment: Comment = {
-        id: Date.now().toString(),
-        text: newComment.trim(),
-        author: user?.Name || 'Usuário Atual',
-        date: new Date().toLocaleString('pt-BR')
-      };
-
-      setComments([...comments, comment]);
-      setNewComment('');
+  const handleAddComment = async () => {
+    if (newComment.trim() && document && user) {
+      try {
+        if (user.UserId) {
+          await createComment({
+            Content: newComment.trim(),
+            DocumentId: document.documentId,
+            UserId: user.UserId
+          });
+        }
+        setNewComment('');
+      } catch (error) {
+        notificationActions.showError('Erro ao adicionar comentário');
+      }
     }
   };
 
@@ -136,23 +145,19 @@ const DocumentDetailsPage: React.FC = () => {
   const handleApprove = async () => {
     try {
       await updateValidationStatus(document.documentId, true, validatorNote);
-      
-      // Atualizar estado local do documento
       setDocument((prev:any) => ({ ...prev, isValid: true }));
       setValidationStatus(true);
-
-      // Adicionar comentário de aprovação
-      const comment: Comment = {
-        id: Date.now().toString(),
-        text: `✅ Documento aprovado por ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
-        author: user?.Name || 'Validador',
-        date: new Date().toLocaleString('pt-BR')
-      };
-      setComments([...comments, comment]);
+      // Adicionar comentário real de aprovação
+      if (user && user.UserId) {
+        await createComment({
+          Content: `✅ Documento aprovado por ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
+          DocumentId: document.documentId,
+          UserId: user.UserId
+        });
+      }
       setValidatorNote('');
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
-      // Reverter estado em caso de erro
       setValidationStatus(document?.isValid ?? null);
     }
   };
@@ -162,26 +167,21 @@ const DocumentDetailsPage: React.FC = () => {
       notificationActions.showError(t('document.reject'));
       return;
     }
-    
     try {
       await updateValidationStatus(document.documentId, false, validatorNote);
-      
-      // Atualizar estado local do documento
       setDocument((prev:any) => ({ ...prev, isValid: false }));
       setValidationStatus(false);
-
-      // Adicionar comentário de rejeição
-      const comment: Comment = {
-        id: Date.now().toString(),
-        text: `❌ Documento rejeitado por ${user?.Name}: ${validatorNote}`,
-        author: user?.Name || 'Validador',
-        date: new Date().toLocaleString('pt-BR')
-      };
-      setComments([...comments, comment]);
+      // Adicionar comentário real de rejeição
+      if (user && user.UserId) {
+        await createComment({
+          Content: `❌ Documento rejeitado por ${user?.Name}: ${validatorNote}`,
+          DocumentId: document.documentId,
+          UserId: user.UserId
+        });
+      }
       setValidatorNote('');
     } catch (error) {
       console.error('Erro ao rejeitar documento:', error);
-      // Reverter estado em caso de erro
       setValidationStatus(document?.isValid ?? null);
     }
   };
@@ -189,27 +189,23 @@ const DocumentDetailsPage: React.FC = () => {
   const handleResetValidation = async () => {
     try {
       await updateValidationStatus(document.documentId, null, 'Validação resetada para revalidação');
-      
-      // Atualizar estado local do documento
       setDocument((prev:any) => ({ ...prev, isValid: null }));
       setValidationStatus(null);
-
-      // Adicionar comentário de reset
-      const comment: Comment = {
-        id: Date.now().toString(),
-        text: `🔄 Validação resetada por ${user?.Name} - Documento disponível para revalidação`,
-        author: user?.Name || 'Validador',
-        date: new Date().toLocaleString('pt-BR')
-      };
-      setComments([...comments, comment]);
+      // Adicionar comentário real de reset
+      if (user && user.UserId) {
+        await createComment({
+          Content: `🔄 Validação resetada por ${user?.Name} - Documento disponível para revalidação`,
+          DocumentId: document.documentId,
+          UserId: user.UserId
+        });
+      }
     } catch (error) {
       console.error('Erro ao resetar validação:', error);
-      // Reverter estado em caso de erro
       setValidationStatus(document?.isValid ?? null);
     }
   };
 
-  if (loading) {
+  if (loading || loadingComments) {
     return (
       <PageLayout title="Detalhes do Documento">
         <LoadingContainer>
@@ -396,15 +392,24 @@ const DocumentDetailsPage: React.FC = () => {
                   Nenhum comentário ainda. Seja o primeiro a comentar!
                 </EmptyComments>
               ) : (
-                comments.map((comment) => (
-                  <CommentItem key={comment.id}>
-                    <CommentHeader>
-                      <CommentAuthor>{comment.author}</CommentAuthor>
-                      <CommentDate>{comment.date}</CommentDate>
-                    </CommentHeader>
-                    <CommentText>{comment.text}</CommentText>
-                  </CommentItem>
-                ))
+                comments
+                  .filter((c) => c.DocumentId === document.documentId && (c.IsActive ?? true))
+                  .sort((a, b) => {
+                    const dateA = new Date(a.CreatedAt || '').getTime();
+                    const dateB = new Date(b.CreatedAt || '').getTime();
+                    return dateA - dateB;
+                  })
+                  .map((comment) => (
+                    <CommentItem key={comment.CommentId}>
+                      <CommentHeader>
+                        <CommentAuthor>{
+                          activeUser.find(u => u.UserId === comment.UserId)?.Name || 'Usuário'
+                        }</CommentAuthor>
+                        <CommentDate>{comment.CreatedAt ? new Date(comment.CreatedAt).toLocaleString('pt-BR') : ''}</CommentDate>
+                      </CommentHeader>
+                      <CommentText>{comment.Content}</CommentText>
+                    </CommentItem>
+                  ))
               )}
             </CommentsList>
 
