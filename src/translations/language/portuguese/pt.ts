@@ -124,7 +124,7 @@ export const ptTranslations = {
 
   // Pastas
   folders: {
-    title: "Pastas",
+    title: "Lista",
     add_folder: "Adicionar Pasta",
     edit_folder: "Editar Pasta",
     search_folders: "Buscar pastas...",
@@ -144,7 +144,7 @@ export const ptTranslations = {
 
   // Tarefas
   tasks: {
-    title: "Tarefas",
+    title: "Lista de Tarefas",
     add_task: "Adicionar Tarefa",
     edit_task: "Editar Tarefa",
     search_tasks: "Buscar tarefas...",
@@ -430,7 +430,7 @@ export const ptTranslations = {
     copy: "Copiar",
     preview: "Visualizar",
     create_template: "Criar Template",
-    change_view: "Alterar Visualização"
+    
   },
 
 
