@@ -212,6 +212,53 @@ export const esTranslations = {
       urgent: "Urgente"
     },
 
+    documents: {
+  title: "Documentos",
+  add_document: "Agregar Documento",
+  edit_document: "Editar Documento",
+  search_documents: "Buscar documentos...",
+  title_field: "Título",
+  content: "Contenido",
+  folder: "Carpeta",
+  user: "Usuario",
+  created_at: "Creado en",
+  updated_at: "Actualizado en",
+  is_active: "Estado",
+  creator: "Creador",
+  
+  tabs: {
+    general: "General",
+    my_documents: "Mis Documentos",
+    to_edit: "Para Editar",
+    validations: "Validaciones",
+    general_alert_title: "Todos los Documentos",
+    general_alert_description: "Vea todos los documentos del sistema y administre según sea necesario.",
+    my_documents_alert_title: "Sus Documentos",
+    my_documents_alert_description: "Documentos que creó y puede editar en cualquier momento.",
+    to_edit_alert_title: "Documentos para Editar",
+    to_edit_alert_description: "Documentos asignados a usted para edición y revisión.",
+    validations_alert_title: "Validaciones Pendientes",
+    validations_alert_description: "Documentos esperando su validación como revisor.",
+    search_my_documents: "Buscar mis documentos...",
+    search_to_edit: "Buscar documentos para editar...",
+    search_validations: "Buscar validaciones...",
+    no_documents_created_title: "Ningún documento creado",
+    no_documents_created_description: "Aún no ha creado ningún documento. Comience creando su primer documento.",
+    no_documents_to_edit_title: "Ningún documento para editar",
+    no_documents_to_edit_description: "No hay documentos asignados a usted para editar en este momento.",
+    no_validations_pending_title: "Ninguna validación pendiente",
+    no_validations_pending_description: "Todas las validaciones han sido procesadas. ¡Buen trabajo!"
+  },
+  
+  view_document: "Ver Documento",
+  untitled_document: "Documento sin título",
+  markdown_editor: "Editor Markdown",
+  createSuccess: "¡Documento creado con éxito!",
+  updateSuccess: "¡Documento actualizado con éxito!",
+  updateStatusSuccess: "¡Estado del documento cambiado con éxito!",
+  deleteSuccess: "¡Documento eliminado con éxito!"
+},
+
     // Login
     login: {
       title: "Documentin",
@@ -369,7 +416,8 @@ export const esTranslations = {
       deleteSuccess: "¡Plantilla eliminada con éxito!",
       copy: "Copiar",
       preview: "Vista previa",
-      create_template: "Crear Plantilla"
+      create_template: "Crear Plantilla",
+      change_view: "Cambiar Vista"
     },
 
     cascadeview: {

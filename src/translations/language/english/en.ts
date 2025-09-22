@@ -215,21 +215,51 @@ export const enTranslations = {
 
   // Documents
   documents: {
-    title: "Documents",
-    add_document: "Add Document",
-    edit_document: "Edit Document",
-    search_documents: "Search documents...",
-    title_field: "Title",
-    content: "Content",
-    folder: "Folder",
-    user: "User",
-    created_at: "Created at",
-    updated_at: "Updated at",
-    is_active: "Status",
-    creator: "Creator",
-
-
+  title: "Documents",
+  add_document: "Add Document",
+  edit_document: "Edit Document",
+  search_documents: "Search documents...",
+  title_field: "Title",
+  content: "Content",
+  folder: "Folder",
+  user: "User",
+  created_at: "Created at",
+  updated_at: "Updated at",
+  is_active: "Status",
+  creator: "Creator",
+  
+  tabs: {
+    general: "General",
+    my_documents: "My Documents",
+    to_edit: "To Edit",
+    validations: "Validations",
+    general_alert_title: "All Documents",
+    general_alert_description: "View all system documents and manage as needed.",
+    my_documents_alert_title: "Your Documents",
+    my_documents_alert_description: "Documents you created and can edit at any time.",
+    to_edit_alert_title: "Documents to Edit",
+    to_edit_alert_description: "Documents assigned to you for editing and review.",
+    validations_alert_title: "Pending Validations",
+    validations_alert_description: "Documents waiting for your validation as a reviewer.",
+    search_my_documents: "Search my documents...",
+    search_to_edit: "Search documents to edit...",
+    search_validations: "Search validations...",
+    no_documents_created_title: "No documents created",
+    no_documents_created_description: "You haven't created any documents yet. Start by creating your first document.",
+    no_documents_to_edit_title: "No documents to edit",
+    no_documents_to_edit_description: "There are no documents assigned to you for editing at the moment.",
+    no_validations_pending_title: "No pending validations",
+    no_validations_pending_description: "All validations have been processed. Good job!"
   },
+  view_document: "View Document",
+  untitled_document: "Untitled Document",
+  markdown_editor: "Markdown Editor",
+  createSuccess: "Document created successfully!",
+  updateSuccess: "Document updated successfully!",
+  updateStatusSuccess: "Document status changed successfully!",
+  deleteSuccess: "Document deleted successfully!"
+},
+
 
   // Login
   login: {
@@ -388,7 +418,8 @@ export const enTranslations = {
     deleteSuccess: "Template deleted successfully!",
     copy: "Copy",
     preview: "Preview",
-    create_template: "Create Template"
+    create_template: "Create Template",
+    change_view: "Change View"
   },
 
   cascadeview: {
