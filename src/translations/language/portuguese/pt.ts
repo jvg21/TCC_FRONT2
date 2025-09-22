@@ -230,7 +230,46 @@ export const ptTranslations = {
     created_at: "Criado em",
     updated_at: "Atualizado em",
     is_active: "Status",
-    creator: "Criador"
+    creator: "Criador",
+
+    
+    tabs: {
+      general: "Geral",
+      my_documents: "Meus Documentos",
+      to_edit: "Para Editar",
+      validations: "Validações",
+      general_alert_title: "Todos os Documentos",
+      general_alert_description: "Visualize todos os documentos do sistema e gerencie conforme necessário.",
+      my_documents_alert_title: "Seus Documentos",
+      my_documents_alert_description: "Documentos que você criou e pode editar a qualquer momento.",
+      to_edit_alert_title: "Documentos para Edição",
+      to_edit_alert_description: "Documentos atribuídos a você para edição e revisão.",
+
+      validations_alert_title: "Validações Pendentes",
+      validations_alert_description: "Documentos aguardando sua validação como revisor.",
+
+      
+      search_my_documents: "Buscar meus documentos...",
+      search_to_edit: "Buscar documentos para editar...",
+      search_validations: "Buscar validações...",
+
+      
+      no_documents_created_title: "Nenhum documento criado",
+      no_documents_created_description: "Você ainda não criou nenhum documento. Comece criando seu primeiro documento.",
+
+      no_documents_to_edit_title: "Nenhum documento para editar",
+      no_documents_to_edit_description: "Não há documentos atribuídos a você para edição no momento.",
+
+      no_validations_pending_title: "Nenhuma validação pendente",
+      no_validations_pending_description: "Todas as validações foram processadas. Bom trabalho!"
+    },
+    view_document: "Visualizar Documento",
+    untitled_document: "Documento sem título",
+    markdown_editor: "Editor Markdown",
+    createSuccess: "Documento criado com sucesso!",
+    updateSuccess: "Documento atualizado com sucesso!",
+    updateStatusSuccess: "Status do documento alterado com sucesso!",
+    deleteSuccess: "Documento excluído com sucesso!"
   },
 
   // Login
@@ -390,7 +429,8 @@ export const ptTranslations = {
     deleteSuccess: "Template excluído com sucesso!",
     copy: "Copiar",
     preview: "Visualizar",
-    create_template: "Criar Template"
+    create_template: "Criar Template",
+    change_view: "Alterar Visualização"
   },
 
 
@@ -399,7 +439,7 @@ export const ptTranslations = {
     folder_structure: "Estrutura de Pastas",
     document_hierarchy: "Hierarquia de Documentos",
     expand_all: "Expandir Todas",
-    collapse_all: "Recolher Todas", 
+    collapse_all: "Recolher Todas",
     expand_folder: "Expandir Pasta",
     collapse_folder: "Recolher Pasta",
     view_document: "Visualizar Documento",
@@ -425,7 +465,7 @@ export const ptTranslations = {
     hide_hidden: "Ocultar Itens Ocultos",
     filter_by_type: "Filtrar por Tipo",
     sort_by_name: "Ordenar por Nome",
-    sort_by_date: "Ordenar por Data", 
+    sort_by_date: "Ordenar por Data",
     sort_by_size: "Ordenar por Tamanho",
     empty_folder: "Esta pasta está vazia",
     permission_denied: "Permissão Negada",
