@@ -71,7 +71,6 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
     try {
       const response = await createTag({ Name: tagInput.trim() });
       if (response && !response.erro && response.objeto) {
-        await addDocumentToTag(documentId, response.objeto.TagId);
         await loadDocumentTags();
         setTagInput('');
         setShowSuggestions(false);
