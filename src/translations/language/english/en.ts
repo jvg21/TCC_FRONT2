@@ -123,7 +123,7 @@ export const enTranslations = {
 
   // Folders
   folders: {
-    title: "Folders",
+    title: "List",
     add_folder: "Add Folder",
     edit_folder: "Edit Folder",
     search_folders: "Search folders...",
@@ -141,7 +141,7 @@ export const enTranslations = {
 
   // Tasks
   tasks: {
-    title: "Tasks",
+    title: "Task List",
     add_task: "Add Task",
     edit_task: "Edit Task",
     search_tasks: "Search tasks...",

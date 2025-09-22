@@ -122,7 +122,7 @@ export const esTranslations = {
 
   // Carpetas
   folders: {
-    title: "Carpetas",
+    title: "Lista",
     add_folder: "Agregar Carpeta",
     edit_folder: "Editar Carpeta",
     search_folders: "Buscar carpetas...",
@@ -140,7 +140,7 @@ export const esTranslations = {
 
   // Tareas
   tasks: {
-    title: "Tareas",
+    title: "Lista de Tareas",
     add_task: "Agregar Tarea",
     edit_task: "Editar Tarea",
     search_tasks: "Buscar tareas...",
