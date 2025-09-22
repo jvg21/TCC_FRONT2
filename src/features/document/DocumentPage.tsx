@@ -22,21 +22,22 @@ import { useUser } from "../user/useUser";
 import { useFolder } from "../folder/useFolder";
 import { useNavigate } from "react-router-dom";
 import { TabContainer } from "../../components/common/TabContainer";
+import { useTag } from "../tag/useTag";
 
 const DocumentPage: React.FC = () => {
-  const { 
-    activeDocument, 
-    deactiveDocument, 
-    userDocuments, 
-    userValidatorDocuments, 
-    create, 
-    update, 
-    softDelete 
+  const {
+    activeDocument,
+    deactiveDocument,
+    userDocuments,
+    userValidatorDocuments,
+    create,
+    update,
+    softDelete
   } = useDocument();
-  
+
   const [searchStatus, setSearchStatus] = useState<number>(1);
   const Documents = searchStatus === 1 ? activeDocument : searchStatus === 2 ? deactiveDocument : [...activeDocument, ...deactiveDocument];
-  
+
   const modal = useModal();
   const viewModal = useModal();
   const editorModal = useModal();
@@ -46,15 +47,16 @@ const DocumentPage: React.FC = () => {
   const [contentSaveCallback, setContentSaveCallback] = useState<((content: string) => void) | null>(null);
   const [query, setQuery] = useState("");
   const [activeTabId, setActiveTabId] = useState("geral");
-  
 
-console.log(userDocuments,userValidatorDocuments)
+
+  console.log(userDocuments, userValidatorDocuments)
 
   const { t } = useTranslation();
   const { userProfile, user } = useAuthContext();
+  const { getTagsByDocument, getDocumentsByTag } = useTag()
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
-  const {updateValidationStatus} = useDocument();
+  const { updateValidationStatus } = useDocument();
 
   const navigate = useNavigate();
 
@@ -86,19 +88,19 @@ console.log(userDocuments,userValidatorDocuments)
   };
 
   const Columns = (
-    onEdit: (c: Document) => void, 
-    onToggleStatus: (id: number) => void, 
-    onView: (c: Document) => void, 
+    onEdit: (c: Document) => void,
+    onToggleStatus: (id: number) => void,
+    onView: (c: Document) => void,
     onEditContent: (c: Document) => void
   ): ColumnDef<Document>[] => {
     const baseCols: ColumnDef<Document>[] = [
-      { 
-        key: "Title", 
-        header: t("documents.title_field"), 
+      {
+        key: "Title",
+        header: t("documents.title_field"),
         render: (row) => (
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
             gap: '8px',
             fontWeight: '500'
           }}>
@@ -108,16 +110,16 @@ console.log(userDocuments,userValidatorDocuments)
         )
       },
       {
-        key: "FolderId", 
-        header: t("documents.folder"), 
+        key: "FolderId",
+        header: t("documents.folder"),
         render: (row) => {
           const folder = activeFolder.filter((a) => a.FolderId === row.FolderId)[0];
           return folder ? folder.Name : "-";
         }
       },
       {
-        key: "UserId", 
-        header: t("documents.creator"), 
+        key: "UserId",
+        header: t("documents.creator"),
         render: (row) => {
           const creator = activeUser.filter((a) => a.UserId === row.UserId)[0];
           return creator ? creator.Name : "-";
@@ -219,10 +221,10 @@ console.log(userDocuments,userValidatorDocuments)
   const columns = Columns(handleEdit, handleToggleStatus, handleView, handleEditContent);
 
   // Componente para estado vazio
-  const EmptyState: React.FC<{ 
-    icon: React.ReactNode; 
-    title: string; 
-    description: string; 
+  const EmptyState: React.FC<{
+    icon: React.ReactNode;
+    title: string;
+    description: string;
   }> = ({ icon, title, description }) => (
     <div style={{
       textAlign: 'center',
@@ -241,10 +243,10 @@ console.log(userDocuments,userValidatorDocuments)
   );
 
   // Componente para aviso informativo
-  const InfoAlert: React.FC<{ 
-    type: 'info' | 'warning' | 'success'; 
-    title: string; 
-    description: string; 
+  const InfoAlert: React.FC<{
+    type: 'info' | 'warning' | 'success';
+    title: string;
+    description: string;
   }> = ({ type, title, description }) => {
     const colors = {
       info: { bg: '#d1ecf1', border: '#bee5eb', icon: '🔍' },
@@ -255,11 +257,11 @@ console.log(userDocuments,userValidatorDocuments)
     const color = colors[type];
 
     return (
-      <div style={{ 
-        background: color.bg, 
-        border: `1px solid ${color.border}`, 
-        borderRadius: '8px', 
-        padding: '12px', 
+      <div style={{
+        background: color.bg,
+        border: `1px solid ${color.border}`,
+        borderRadius: '8px',
+        padding: '12px',
         marginBottom: '16px',
         fontSize: '14px'
       }}>
@@ -277,7 +279,7 @@ console.log(userDocuments,userValidatorDocuments)
       badge: Documents.length,
       content: (
         <div>
-          <InfoAlert 
+          <InfoAlert
             type="info"
             title={t("documents.tabs.general_alert_title")}
             description={t("documents.tabs.general_alert_description")}
@@ -304,7 +306,7 @@ console.log(userDocuments,userValidatorDocuments)
       badge: getMyDocuments().length,
       content: (
         <div>
-          <InfoAlert 
+          <InfoAlert
             type="success"
             title={t("documents.tabs.my_documents_alert_title")}
             description={t("documents.tabs.my_documents_alert_description")}
@@ -316,7 +318,7 @@ console.log(userDocuments,userValidatorDocuments)
             placeholder={t("documents.tabs.search_my_documents")}
           />
           {getMyDocuments().length === 0 ? (
-            <EmptyState 
+            <EmptyState
               icon="📄"
               title={t("documents.tabs.no_documents_created_title")}
               description={t("documents.tabs.no_documents_created_description")}
@@ -334,7 +336,7 @@ console.log(userDocuments,userValidatorDocuments)
       badge: userDocuments.length,
       content: (
         <div>
-          <InfoAlert 
+          <InfoAlert
             type="warning"
             title={t("documents.tabs.to_edit_alert_title")}
             description={t("documents.tabs.to_edit_alert_description")}
@@ -346,7 +348,7 @@ console.log(userDocuments,userValidatorDocuments)
             placeholder={t("documents.tabs.search_to_edit")}
           />
           {userDocuments.length === 0 ? (
-            <EmptyState 
+            <EmptyState
               icon="✅"
               title={t("documents.tabs.no_documents_to_edit_title")}
               description={t("documents.tabs.no_documents_to_edit_description")}
@@ -364,7 +366,7 @@ console.log(userDocuments,userValidatorDocuments)
       badge: userValidatorDocuments.length,
       content: (
         <div>
-          <InfoAlert 
+          <InfoAlert
             type="info"
             title={t("documents.tabs.validations_alert_title")}
             description={t("documents.tabs.validations_alert_description")}
@@ -376,7 +378,7 @@ console.log(userDocuments,userValidatorDocuments)
             placeholder={t("documents.tabs.search_validations")}
           />
           {userValidatorDocuments.length === 0 ? (
-            <EmptyState 
+            <EmptyState
               icon="🎉"
               title={t("documents.tabs.no_validations_pending_title")}
               description={t("documents.tabs.no_validations_pending_description")}
@@ -399,8 +401,8 @@ console.log(userDocuments,userValidatorDocuments)
       }
     >
       {/* Sistema de Abas */}
-      <TabContainer 
-        tabs={tabs} 
+      <TabContainer
+        tabs={tabs}
         defaultTab="geral"
         onTabChange={handleTabChange}
       />
