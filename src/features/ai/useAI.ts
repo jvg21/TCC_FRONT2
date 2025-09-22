@@ -74,7 +74,7 @@ export const useAI = () => {
       }
 
       notificationActions.showNotification(t('ai.summarySuccess'), 'success');
-      return data.objeto as AIResponse;
+      return data.objeto;
     } catch (err) {
       console.error("Erro ao gerar resumo:", err);
       throw err;

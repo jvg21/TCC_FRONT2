@@ -180,8 +180,9 @@ const DocumentDetailsPage: React.FC = () => {
 
   const handleGenerateSummary = async () => {
     if (documentContent) {
-      generateSummary(Number(id));
-      setSummary(summary);
+      const sumarryText = await generateSummary(Number(id));
+      console.log(sumarryText);
+      setSummary(sumarryText.Content || '');
 
       showResume.open();
     } else {
