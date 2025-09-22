@@ -1,3 +1,4 @@
+// src/translations/language/spanish/es.ts
 export const esTranslations = {
   // Navegación
   navigation: {
@@ -210,273 +211,225 @@ export const esTranslations = {
       medium: "Promedio",
       high: "Alto",
       urgent: "Urgente"
-    },
-
-    documents: {
-  title: "Documentos",
-  add_document: "Agregar Documento",
-  edit_document: "Editar Documento",
-  search_documents: "Buscar documentos...",
-  title_field: "Título",
-  content: "Contenido",
-  folder: "Carpeta",
-  user: "Usuario",
-  created_at: "Creado en",
-  updated_at: "Actualizado en",
-  is_active: "Estado",
-  creator: "Creador",
-  
-  tabs: {
-    general: "General",
-    my_documents: "Mis Documentos",
-    to_edit: "Para Editar",
-    validations: "Validaciones",
-    general_alert_title: "Todos los Documentos",
-    general_alert_description: "Vea todos los documentos del sistema y administre según sea necesario.",
-    my_documents_alert_title: "Sus Documentos",
-    my_documents_alert_description: "Documentos que creó y puede editar en cualquier momento.",
-    to_edit_alert_title: "Documentos para Editar",
-    to_edit_alert_description: "Documentos asignados a usted para edición y revisión.",
-    validations_alert_title: "Validaciones Pendientes",
-    validations_alert_description: "Documentos esperando su validación como revisor.",
-    search_my_documents: "Buscar mis documentos...",
-    search_to_edit: "Buscar documentos para editar...",
-    search_validations: "Buscar validaciones...",
-    no_documents_created_title: "Ningún documento creado",
-    no_documents_created_description: "Aún no ha creado ningún documento. Comience creando su primer documento.",
-    no_documents_to_edit_title: "Ningún documento para editar",
-    no_documents_to_edit_description: "No hay documentos asignados a usted para editar en este momento.",
-    no_validations_pending_title: "Ninguna validación pendiente",
-    no_validations_pending_description: "Todas las validaciones han sido procesadas. ¡Buen trabajo!"
-  },
-  
-  view_document: "Ver Documento",
-  untitled_document: "Documento sin título",
-  markdown_editor: "Editor Markdown",
-  createSuccess: "¡Documento creado con éxito!",
-  updateSuccess: "¡Documento actualizado con éxito!",
-  updateStatusSuccess: "¡Estado del documento cambiado con éxito!",
-  deleteSuccess: "¡Documento eliminado con éxito!"
-},
-
-    // Login
-    login: {
-      title: "Documentin",
-      subtitle: "Inicia sesión en tu cuenta",
-      email_placeholder: "Ingresa tu correo",
-      password_placeholder: "Ingresa tu contraseña",
-      remember_me: "Recordarme",
-      forgot_password: "¿Olvidaste la contraseña?",
-      login_button: "Iniciar Sesión",
-      logging_in: "Iniciando sesión...",
-      light_mode: "Modo Claro",
-      dark_mode: "Modo Oscuro",
-      is_active: "Estado",
-      logout: "Cerrar Sesión"
-    },
-
-    // Recuperación de contraseña
-    password_recovery: {
-      title: "Documentin",
-      subtitle: "Recupera el acceso a tu cuenta",
-      email_placeholder: "Ingresa tu correo",
-      send_button: "Enviar enlace de recuperación",
-      sending: "Enviando...",
-      back_to_login: "Iniciar sesión",
-      remembered_password: "¿Recordaste tu contraseña?"
-    },
-
-    // Reset de token
-    token_reset: {
-      title: "Documentin",
-      subtitle: "Recupera el acceso a tu cuenta",
-      token_placeholder: "Ingresa tu token",
-      send_button: "Enviar token",
-      sending: "Enviando...",
-      back_to_login: "Iniciar sesión",
-      remembered_password: "¿Recordaste tu contraseña?"
-    },
-
-    // Dashboard
-    dashboard: {
-      title: "Panel de Control",
-      welcome: "Bienvenido a Documentin",
-      overview: "Resumen",
-      recent_activities: "Actividades Recientes",
-      statistics: "Estadísticas"
-    },
-
-    // Configuraciones
-    settings: {
-      title: "Configuración",
-      account: "Cuenta",
-      account_description: "Información de tu cuenta",
-      appearance: "Apariencia",
-      appearance_description: "Personaliza la apariencia del sistema",
-      theme: "Tema",
-      theme_description: "Elige entre modo claro u oscuro",
-      language: "Idioma",
-      language_description: "Selecciona tu idioma preferido",
-      session: "Sesión",
-      session_description: "Administra tu sesión del sistema",
-      logout: "Cerrar Sesión",
-      logout_description: "Termina tu sesión actual y regresa a la pantalla de login"
-    },
-
-    // Perfiles de usuario
-    profiles: {
-      administrator: "Administrador",
-      manager: "Gerente",
-      employee: "Empleado"
-    },
-
-    // Perfiles (usado en enum)
-    administrator: "Administrador",
-    manager: "Gerente",
-    employee: "Empleado",
-
-    // Formularios
-    forms: {
-      required_field: "Campo obligatorio",
-      invalid_email: "Correo inválido",
-      password_too_short: "Contraseña muy corta",
-      passwords_dont_match: "Las contraseñas no coinciden",
-      invalid_phone: "Teléfono inválido",
-      invalid_tax_id: "RUT/CUIT inválido"
-    },
-
-    // Mensajes
-    messages: {
-      success: {
-        created: "¡Creado exitosamente!",
-        updated: "¡Actualizado exitosamente!",
-        deleted: "¡Eliminado exitosamente!",
-        saved: "¡Guardado exitosamente!",
-        login_success: "¡Inicio de sesión exitoso!"
-      },
-      error: {
-        generic: "Ocurrió un error. Inténtalo de nuevo.",
-        network: "Error de conexión. Verifica tu internet.",
-        unauthorized: "Acceso no autorizado.",
-        not_found: "Elemento no encontrado.",
-        validation: "Datos inválidos. Verifica los campos.",
-        login_failed: "Inicio de sesión falló. Verifica tus credenciales."
-      },
-      confirm: {
-        delete: "¿Estás seguro de que quieres eliminar este elemento?",
-        unsaved_changes: "Tienes cambios no guardados. ¿Quieres continuar?"
-      }
-    },
-
-    // Tema
-    theme: {
-      light: "Claro",
-      dark: "Oscuro",
-      toggle_theme: "Cambiar tema"
-    },
-
-    // Paginación
-    pagination: {
-      previous: "Anterior",
-      next: "Siguiente",
-      first: "Primero",
-      last: "Último",
-      page: "Página",
-      of: "de",
-      items_per_page: "Elementos por página",
-      showing: "Mostrando",
-      to: "a",
-      entries: "entradas"
-    },
-
-    // Carga
-    loading: {
-      please_wait: "Por favor espera...",
-      loading: "Cargando...",
-      processing: "Procesando..."
-    },
-
-    templates: {
-      title: "Plantillas",
-      add_template: "Nueva Plantilla",
-      edit_template: "Editar Plantilla",
-      search_templates: "Buscar plantillas...",
-      name: "Nombre",
-      content: "Contenido",
-      created_at: "Creado en",
-      updated_at: "Actualizado en",
-      is_active: "Estado",
-      no_templates: "No se encontraron plantillas",
-      no_templates_description: "Crea tu primera plantilla para comenzar a estandarizar tus documentos.",
-      create_first_template: "Crear Primera Plantilla",
-      createSuccess: "¡Plantilla creada con éxito!",
-      updateSuccess: "¡Plantilla actualizada con éxito!",
-      updateStatusSuccess: "¡Estado de la plantilla cambiado con éxito!",
-      copySuccess: "¡Plantilla copiada con éxito!",
-      deleteSuccess: "¡Plantilla eliminada con éxito!",
-      copy: "Copiar",
-      preview: "Vista previa",
-      create_template: "Crear Plantilla",
-      change_view: "Cambiar Vista"
-    },
-
-    cascadeview: {
-      title: "Vista en Cascada",
-      folder_structure: "Estructura de Carpetas",
-      document_hierarchy: "Jerarquía de Documentos",
-      expand_all: "Expandir Todas",
-      collapse_all: "Contraer Todas",
-      expand_folder: "Expandir Carpeta",
-      collapse_folder: "Contraer Carpeta",
-      view_document: "Ver Documento",
-      edit_document: "Editar Documento",
-      no_folders: "No se encontraron carpetas",
-      no_documents: "No hay documentos en esta carpeta",
-      loading_structure: "Cargando estructura de carpetas...",
-      search_placeholder: "Buscar carpetas y documentos...",
-      folder_count: "carpeta(s)",
-      document_count: "documento(s)",
-      total_items: "Total de elementos",
-      breadcrumb_home: "Inicio",
-      breadcrumb_root: "Raíz",
-      folder_actions: "Acciones de Carpeta",
-      document_actions: "Acciones de Documento",
-      move_to_folder: "Mover a Carpeta",
-      create_subfolder: "Crear Subcarpeta",
-      upload_document: "Subir Documento",
-      tree_view: "Vista de Árbol",
-      list_view: "Vista de Lista",
-      grid_view: "Vista de Cuadrícula",
-      show_hidden: "Mostrar Elementos Ocultos",
-      hide_hidden: "Ocultar Elementos Ocultos",
-      filter_by_type: "Filtrar por Tipo",
-      sort_by_name: "Ordenar por Nombre",
-      sort_by_date: "Ordenar por Fecha",
-      sort_by_size: "Ordenar por Tamaño",
-      empty_folder: "Esta carpeta está vacía",
-      permission_denied: "Permiso Denegado",
-      access_restricted: "El acceso a esta carpeta está restringido",
-
-      // Textos específicos do código
-      filters: "Filtros",
-      new_folder: "Nueva Carpeta",
-      new_document: "Nuevo Documento",
-      quick_search: "Búsqueda rápida...",
-      status: "Estado",
-      show_inactive: "Mostrar inactivos",
-      document_validation: "Validación de Documentos",
-      valid_documents: "Documentos válidos",
-      pending_validation: "Pendientes de validación",
-      invalid_documents: "Documentos inválidos",
-      active: "Activa",
-      inactive: "Inactiva",
-      valid: "Válido",
-      invalid: "Inválido",
-      pending: "Pendiente",
-      items: "elementos",
-      folders: "Carpetas",
-      documents: "Documentos",
-      created_on: "Creado en"
     }
+  },
+
+  // Documentos
+  documents: {
+    title: "Documentos",
+    add_document: "Agregar Documento",
+    edit_document: "Editar Documento",
+    search_documents: "Buscar documentos...",
+    title_field: "Título",
+    content: "Contenido",
+    folder: "Carpeta",
+    user: "Usuario",
+    created_at: "Creado en",
+    updated_at: "Actualizado en",
+    is_active: "Estado",
+    creator: "Creador",
+    
+    tabs: {
+      general: "General",
+      my_documents: "Mis Documentos",
+      to_edit: "Para Editar",
+      validations: "Validaciones",
+      general_alert_title: "Todos los Documentos",
+      general_alert_description: "Vea todos los documentos del sistema y administre según sea necesario.",
+      my_documents_alert_title: "Sus Documentos",
+      my_documents_alert_description: "Documentos que creó y puede editar en cualquier momento.",
+      to_edit_alert_title: "Documentos para Editar",
+      to_edit_alert_description: "Documentos asignados a usted para edición y revisión.",
+      validations_alert_title: "Validaciones Pendientes",
+      validations_alert_description: "Documentos esperando su validación como revisor.",
+      search_my_documents: "Buscar mis documentos...",
+      search_to_edit: "Buscar documentos para editar...",
+      search_validations: "Buscar validaciones...",
+      no_documents_created_title: "Ningún documento creado",
+      no_documents_created_description: "Aún no ha creado ningún documento. Comience creando su primer documento.",
+      no_documents_to_edit_title: "Ningún documento para editar",
+      no_documents_to_edit_description: "No hay documentos asignados a usted para editar en este momento.",
+      no_validations_pending_title: "Ninguna validación pendiente",
+      no_validations_pending_description: "Todas las validaciones han sido procesadas. ¡Buen trabajo!"
+    },
+    
+    view_document: "Ver Documento",
+    untitled_document: "Documento sin título",
+    markdown_editor: "Editor Markdown",
+    createSuccess: "¡Documento creado con éxito!",
+    updateSuccess: "¡Documento actualizado con éxito!",
+    updateStatusSuccess: "¡Estado del documento cambiado con éxito!",
+    deleteSuccess: "¡Documento eliminado con éxito!"
+  },
+
+  // Templates
+  templates: {
+    title: "Plantillas",
+    add_template: "Nueva Plantilla",
+    edit_template: "Editar Plantilla",
+    search_templates: "Buscar plantillas...",
+    name: "Nombre",
+    content: "Contenido",
+    created_at: "Creado en",
+    updated_at: "Actualizado en",
+    is_active: "Estado",
+    no_templates: "No se encontraron plantillas",
+    no_templates_description: "Crea tu primera plantilla para comenzar a estandarizar tus documentos.",
+    create_first_template: "Crear Primera Plantilla",
+    createSuccess: "¡Plantilla creada con éxito!",
+    updateSuccess: "¡Plantilla actualizada con éxito!",
+    updateStatusSuccess: "¡Estado de la plantilla cambiado con éxito!",
+    copySuccess: "¡Plantilla copiada con éxito!",
+    deleteSuccess: "¡Plantilla eliminada con éxito!",
+    copy: "Copiar",
+    preview: "Vista previa",
+    create_template: "Crear Plantilla",
+    change_view: "Cambiar Vista"
+  },
+
+  // Vista en Cascada
+  cascadeview: {
+    title: "Vista en Cascada",
+    folder_structure: "Estructura de Carpetas",
+    document_hierarchy: "Jerarquía de Documentos",
+    expand_all: "Expandir Todas",
+    collapse_all: "Contraer Todas",
+    expand_folder: "Expandir Carpeta",
+    collapse_folder: "Contraer Carpeta",
+    view_document: "Ver Documento",
+    edit_document: "Editar Documento",
+    no_folders: "No se encontraron carpetas",
+    no_documents: "No hay documentos en esta carpeta",
+    loading_structure: "Cargando estructura de carpetas...",
+    search_placeholder: "Buscar carpetas y documentos...",
+    folder_count: "carpeta(s)",
+    document_count: "documento(s)",
+    total_items: "Total de elementos",
+    breadcrumb_home: "Inicio",
+    breadcrumb_root: "Raíz",
+    folder_actions: "Acciones de Carpeta",
+    document_actions: "Acciones de Documento",
+    move_to_folder: "Mover a Carpeta",
+    create_subfolder: "Crear Subcarpeta",
+    upload_document: "Subir Documento",
+    tree_view: "Vista de Árbol",
+    list_view: "Vista de Lista",
+    grid_view: "Vista de Cuadrícula",
+    show_hidden: "Mostrar Elementos Ocultos",
+    hide_hidden: "Ocultar Elementos Ocultos",
+    filter_by_type: "Filtrar por Tipo",
+    sort_by_name: "Ordenar por Nombre",
+    sort_by_date: "Ordenar por Fecha",
+    sort_by_size: "Ordenar por Tamaño",
+    empty_folder: "Esta carpeta está vacía",
+    permission_denied: "Permiso Denegado",
+    access_restricted: "El acceso a esta carpeta está restringido",
+    filters: "Filtros",
+    new_folder: "Nueva Carpeta",
+    new_document: "Nuevo Documento",
+    quick_search: "Búsqueda rápida...",
+    status: "Estado",
+    show_inactive: "Mostrar inactivos",
+    document_validation: "Validación de Documentos",
+    valid_documents: "Documentos válidos",
+    pending_validation: "Pendientes de validación",
+    invalid_documents: "Documentos inválidos",
+    active: "Activa",
+    inactive: "Inactiva",
+    valid: "Válido",
+    invalid: "Inválido",
+    pending: "Pendiente",
+    items: "elementos",
+    folders: "Carpetas",
+    documents: "Documentos",
+    created_on: "Creado en"
+  },
+
+  // Login
+  login: {
+    title: "Documentin",
+    subtitle: "Inicia sesión en tu cuenta",
+    email_placeholder: "Ingresa tu correo",
+    password_placeholder: "Ingresa tu contraseña",
+    remember_me: "Recordarme",
+    forgot_password: "¿Olvidaste la contraseña?",
+    login_button: "Iniciar Sesión",
+    logging_in: "Iniciando sesión...",
+    light_mode: "Modo Claro",
+    dark_mode: "Modo Oscuro",
+    is_active: "Estado",
+    logout: "Cerrar Sesión"
+  },
+
+  // Recuperación de contraseña
+  password_recovery: {
+    title: "Documentin",
+    subtitle: "Recupera el acceso a tu cuenta",
+    email_placeholder: "Ingresa tu correo",
+    send_button: "Enviar enlace de recuperación",
+    sending: "Enviando...",
+    back_to_login: "Iniciar sesión",
+    remembered_password: "¿Recordaste tu contraseña?"
+  },
+
+  // Reset de token
+  token_reset: {
+    title: "Documentin",
+    subtitle: "Recupera el acceso a tu cuenta",
+    token_placeholder: "Ingresa tu token",
+    send_button: "Enviar token",
+    sending: "Enviando...",
+    back_to_login: "Iniciar sesión",
+    remembered_password: "¿Recordaste tu contraseña?"
+  },
+
+  // SEÇÕES ADICIONADAS (que estavam faltando)
+
+  // Notificações/Mensagens
+  notifications: {
+    success: {
+      saved: "¡Guardado con éxito!",
+      login_success: "¡Inicio de sesión exitoso!"
+    },
+    error: {
+      generic: "Ocurrió un error. Inténtalo de nuevo.",
+      network: "Error de conexión. Verifica tu internet.",
+      unauthorized: "Acceso no autorizado.",
+      not_found: "Elemento no encontrado.",
+      validation: "Datos inválidos. Verifica los campos.",
+      login_failed: "Inicio de sesión falló. Verifica tus credenciales."
+    },
+    confirm: {
+      delete: "¿Estás seguro de que quieres eliminar este elemento?",
+      unsaved_changes: "Tienes cambios no guardados. ¿Quieres continuar?"
+    }
+  },
+
+  // Tema
+  theme: {
+    light: "Claro",
+    dark: "Oscuro",
+    toggle_theme: "Cambiar tema"
+  },
+
+  // Paginación
+  pagination: {
+    previous: "Anterior",
+    next: "Siguiente",
+    first: "Primero",
+    last: "Último",
+    page: "Página",
+    of: "de",
+    items_per_page: "Elementos por página",
+    showing: "Mostrando",
+    to: "a",
+    entries: "entradas"
+  },
+
+  // Carga
+  loading: {
+    please_wait: "Por favor espera...",
+    loading: "Cargando...",
+    processing: "Procesando..."
   }
 };
