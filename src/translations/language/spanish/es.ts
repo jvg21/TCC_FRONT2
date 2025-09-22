@@ -1,4 +1,3 @@
-// src/translations/language/spanish/es.ts
 export const esTranslations = {
   // Navegación
   navigation: {
@@ -431,5 +430,76 @@ export const esTranslations = {
     please_wait: "Por favor espera...",
     loading: "Cargando...",
     processing: "Procesando..."
+  },
+
+  // Dashboard
+  dashboard: {
+    title: "Panel de Control",
+    welcome: "Bienvenido a Documentin",
+    overview: "Resumen",
+    recent_activities: "Actividades Recientes",
+    statistics: "Estadísticas"
+  },
+
+  // Configuraciones
+  settings: {
+    title: "Configuraciones",
+    account: "Cuenta",
+    account_description: "Información de su cuenta",
+    appearance: "Apariencia",
+    appearance_description: "Personalice la apariencia del sistema",
+    theme: "Tema",
+    theme_description: "Elija entre modo claro u oscuro",
+    language: "Idioma",
+    language_description: "Seleccione su idioma preferido",
+    session: "Sesión",
+    session_description: "Gestione su sesión en el sistema",
+    logout: "Cerrar Sesión",
+    logout_description: "Termina su sesión actual y regresa a la pantalla de inicio de sesión"
+  },
+
+  // Perfiles de usuario
+  profiles: {
+    administrator: "Administrador",
+    manager: "Gerente",
+    employee: "Empleado"
+  },
+
+  // Perfiles (usado en enum)
+  administrator: "Administrador",
+  manager: "Gerente",
+  employee: "Empleado",
+
+  // Formularios
+  forms: {
+    required_field: "Campo obligatorio",
+    invalid_email: "Email inválido",
+    password_too_short: "Contraseña muy corta",
+    passwords_dont_match: "Las contraseñas no coinciden",
+    invalid_phone: "Teléfono inválido",
+    invalid_tax_id: "RUT/CUIT inválido"
+  },
+
+  // Mensajes
+  messages: {
+    success: {
+      created: "¡Creado con éxito!",
+      updated: "¡Actualizado con éxito!",
+      deleted: "¡Eliminado con éxito!",
+      saved: "¡Guardado con éxito!",
+      login_success: "¡Inicio de sesión exitoso!"
+    },
+    error: {
+      generic: "Ha ocurrido un error. Inténtelo de nuevo.",
+      network: "Error de conexión. Verifique su internet.",
+      unauthorized: "Acceso no autorizado.",
+      not_found: "Elemento no encontrado.",
+      validation: "Datos inválidos. Verifique los campos.",
+      login_failed: "Error en el inicio de sesión. Verifique sus credenciales."
+    },
+    confirm: {
+      delete: "¿Está seguro de que desea eliminar este elemento?",
+      unsaved_changes: "Tiene cambios no guardados. ¿Desea continuar?"
+    }
   }
 };
