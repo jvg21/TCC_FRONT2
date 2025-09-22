@@ -645,3 +645,65 @@ export const EmptyTags = styled.div`
   background: #f8f9fa;
   border-radius: 8px;
 `;
+
+// Substituir TagSelect por:
+
+export const TagInputWrapper = styled.div`
+  position: relative;
+  flex: 1;
+`;
+
+export const TagInput = styled.input`
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+  }
+`;
+
+export const TagSuggestions = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+`;
+
+export const TagSuggestionItem = styled.div<{ $isCreate?: boolean }>`
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 14px;
+  
+  ${({ $isCreate }) => $isCreate && `
+    color: #007bff;
+    font-weight: 500;
+    border-top: 1px solid #eee;
+  `}
+  
+  &:hover {
+    background: #f8f9fa;
+  }
+`;
+
+export const TagSuggestionEmpty = styled.div`
+  padding: 10px 12px;
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
+  text-align: center;
+`;

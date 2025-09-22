@@ -224,7 +224,7 @@ export const useTag = () => {
 
   const getTagsByDocument = async (documentId: number) => {
     try {
-      const response = await fetch(`${apiUrl}/Tag/GetDocumentXTagByDocumentId?documentId=${documentId}`, {
+      const response = await fetch(`${apiUrl}/Tag/GetDocumentXTagByDocumentId?idDocument=${documentId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

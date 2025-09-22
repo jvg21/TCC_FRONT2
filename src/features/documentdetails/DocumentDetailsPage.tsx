@@ -3,11 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../user/useUser';
 import { useFolder } from '../folder/useFolder';
 import { useAuthContext } from '../../context/AuthContext';
-import { FiArrowLeft, FiEdit, FiFolder, FiUser, FiCalendar, FiTag, FiX, FiMessageSquare } from 'react-icons/fi';
+import { FiArrowLeft, FiEdit, FiFolder, FiUser, FiCalendar, FiMessageSquare } from 'react-icons/fi';
 import { useTypedTranslation } from '../../context/LanguageContext';
 import { useDocument } from '../document/useDocument';
 import { useComment } from '../comment/useComment';
-import { useTag } from '../tag/useTag';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 import { MarkdownEditor } from '../../components/markdownEditor/MarkdownEditor';
@@ -42,17 +41,10 @@ import {
   ValidationStatus,
   ValidationTitle,
   ValidatorActions,
-  ValidatorNote,
-  TagsSection,
-  TagsTitle,
-  TagsList,
-  TagItem,
-  TagRemoveButton,
-  TagForm,
-  TagSelect,
-  EmptyTags
+  ValidatorNote
 } from '../../components/common/Components';
 import { useAI } from '../ai/useAI';
+import { DocumentTags } from '../../components/common/DocumentTags';
 
 const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -73,18 +65,6 @@ const DocumentDetailsPage: React.FC = () => {
     createComment,
     loading: loadingComments
   } = useComment();
-
-  // Estados para gerenciamento de tags
-  const { 
-    activeTag, 
-    getTagsByDocument, 
-    addDocumentToTag, 
-    removeDocumentFromTag 
-  } = useTag();
-
-  const [documentTags, setDocumentTags] = useState<any[]>([]);
-  const [selectedTagId, setSelectedTagId] = useState<string>('');
-  const [loadingTags, setLoadingTags] = useState(false);
 
   const { generateSummary } = useAI();
   const [validatorNote, setValidatorNote] = useState('');
@@ -111,9 +91,6 @@ const DocumentDetailsPage: React.FC = () => {
           setDocument(response.objeto.document);
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status ?? response.objeto.document.isValid);
-          
-          // Carregar tags do documento
-          await loadDocumentTags();
         } else {
           setError('Erro ao carregar documento');
         }
@@ -134,55 +111,6 @@ const DocumentDetailsPage: React.FC = () => {
       getCommentsByDocumentId(document.documentId);
     }
   }, [document?.documentId]);
-
-  // Carregar tags do documento
-  const loadDocumentTags = async () => {
-    if (!id) return;
-    
-    setLoadingTags(true);
-    try {
-      const response = await getTagsByDocument(Number(id));
-      if (response && !response.erro) {
-        setDocumentTags(response.objeto || []);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar tags:', error);
-    } finally {
-      setLoadingTags(false);
-    }
-  };
-
-  // Adicionar tag ao documento
-  const handleAddTag = async () => {
-    if (!selectedTagId || !document) return;
-    
-    try {
-      await addDocumentToTag(document.documentId, Number(selectedTagId));
-      await loadDocumentTags();
-      setSelectedTagId('');
-      notificationActions.showNotification('Tag adicionada com sucesso!', 'success');
-    } catch (error) {
-      console.error('Erro ao adicionar tag:', error);
-    }
-  };
-
-  // Remover tag do documento
-  const handleRemoveTag = async (tagId: number) => {
-    if (!document) return;
-    
-    try {
-      await removeDocumentFromTag(document.documentId, tagId);
-      await loadDocumentTags();
-      notificationActions.showNotification('Tag removida com sucesso!', 'success');
-    } catch (error) {
-      console.error('Erro ao remover tag:', error);
-    }
-  };
-
-  // Filtrar tags disponíveis (excluir as já adicionadas)
-  const availableTags = activeTag.filter(
-    tag => !documentTags.some(dt => dt.tagId === tag.TagId)
-  );
 
   const handleBack = () => {
     navigate('/documents');
@@ -409,61 +337,9 @@ const DocumentDetailsPage: React.FC = () => {
           </ValidationSection>
 
           {/* Seção de Tags */}
-          <TagsSection>
-            <TagsTitle>
-              <FiTag />
-              Tags do Documento
-            </TagsTitle>
-
-            <TagsList>
-              {loadingTags ? (
-                <div style={{ width: '100%', textAlign: 'center', padding: '20px', color: '#666' }}>
-                  Carregando tags...
-                </div>
-              ) : documentTags.length === 0 ? (
-                <EmptyTags>
-                  Nenhuma tag adicionada ainda. Adicione tags para organizar melhor este documento!
-                </EmptyTags>
-              ) : (
-                documentTags.map((tag) => (
-                  <TagItem key={tag.tagId}>
-                    {tag.name}
-                    <TagRemoveButton
-                      onClick={() => handleRemoveTag(tag.tagId)}
-                      title="Remover tag"
-                    >
-                      <FiX />
-                    </TagRemoveButton>
-                  </TagItem>
-                ))
-              )}
-            </TagsList>
-
-            <TagForm>
-              <TagSelect
-                value={selectedTagId}
-                onChange={(e) => setSelectedTagId(e.target.value)}
-                disabled={availableTags.length === 0}
-              >
-                <option value="">
-                  {availableTags.length === 0 
-                    ? 'Todas as tags já foram adicionadas' 
-                    : 'Selecione uma tag...'}
-                </option>
-                {availableTags.map((tag) => (
-                  <option key={tag.TagId} value={tag.TagId}>
-                    {tag.Name}
-                  </option>
-                ))}
-              </TagSelect>
-              <Button 
-                onClick={handleAddTag}
-                disabled={!selectedTagId || availableTags.length === 0}
-              >
-                Adicionar Tag
-              </Button>
-            </TagForm>
-          </TagsSection>
+          {document?.documentId && (
+            <DocumentTags documentId={document.documentId} />
+          )}
 
           {/* Seção de Comentários */}
           <CommentsSection>
