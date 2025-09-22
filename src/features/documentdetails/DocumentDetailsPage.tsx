@@ -45,6 +45,9 @@ import {
 } from '../../components/common/Components';
 import { useAI } from '../ai/useAI';
 import { DocumentTags } from '../../components/common/DocumentTags';
+import { useModal } from '../../hooks/useModal';
+import { Modal } from '../../components/common/Modal';
+import { MarkdownEditorPage } from '../markdown-editor/MarkdownEditorPage';
 
 const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -54,11 +57,12 @@ const DocumentDetailsPage: React.FC = () => {
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
+  const showResume = useModal();
 
   const [document, setDocument] = useState<any>(null);
   const [summary, setSummary] = useState('');
   const [newComment, setNewComment] = useState('');
-  
+
   const {
     comments,
     getCommentsByDocumentId,
@@ -178,6 +182,8 @@ const DocumentDetailsPage: React.FC = () => {
     if (documentContent) {
       generateSummary(Number(id));
       setSummary(summary);
+
+      showResume.open();
     } else {
       notificationActions.showError('O conteúdo do documento está vazio.');
     }
@@ -262,7 +268,7 @@ const DocumentDetailsPage: React.FC = () => {
                 <div>
                   <div style={{ fontSize: '12px', color: '#999' }}>Criado em</div>
                   <MetaValue>
-                    {document.createdAt 
+                    {document.createdAt
                       ? new Date(document.createdAt).toLocaleDateString('pt-BR')
                       : '-'}
                   </MetaValue>
@@ -276,7 +282,7 @@ const DocumentDetailsPage: React.FC = () => {
                 <div>
                   <div style={{ fontSize: '12px', color: '#999' }}>Atualizado em</div>
                   <MetaValue>
-                    {document.updatedAt 
+                    {document.updatedAt
                       ? new Date(document.updatedAt).toLocaleDateString('pt-BR')
                       : '-'}
                   </MetaValue>
@@ -298,16 +304,16 @@ const DocumentDetailsPage: React.FC = () => {
           <ValidationSection>
             <ValidationTitle>Status de Validação</ValidationTitle>
             <ValidationStatus>
-              <StatusBadge 
+              <StatusBadge
                 status={
-                  validationStatus === null ? 'pending' 
-                  : validationStatus ? 'approved' 
-                  : 'rejected'
+                  validationStatus === null ? 'pending'
+                    : validationStatus ? 'approved'
+                      : 'rejected'
                 }
               >
-                {validationStatus === null ? '⏳ Pendente' 
-                 : validationStatus ? '✅ Aprovado' 
-                 : '❌ Rejeitado'}
+                {validationStatus === null ? '⏳ Pendente'
+                  : validationStatus ? '✅ Aprovado'
+                    : '❌ Rejeitado'}
               </StatusBadge>
             </ValidationStatus>
 
@@ -319,13 +325,13 @@ const DocumentDetailsPage: React.FC = () => {
                   onChange={(e) => setValidatorNote(e.target.value)}
                 />
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <Button 
+                  <Button
                     onClick={() => handleValidation(true)}
                     style={{ flex: 1, background: '#28a745' }}
                   >
                     ✅ Aprovar
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => handleValidation(false)}
                     style={{ flex: 1, background: '#dc3545' }}
                   >
@@ -368,8 +374,8 @@ const DocumentDetailsPage: React.FC = () => {
                           {activeUser.find(u => u.UserId === comment.UserId)?.Name || 'Usuário'}
                         </CommentAuthor>
                         <CommentDate>
-                          {comment.CreatedAt 
-                            ? new Date(comment.CreatedAt).toLocaleString('pt-BR') 
+                          {comment.CreatedAt
+                            ? new Date(comment.CreatedAt).toLocaleString('pt-BR')
                             : ''}
                         </CommentDate>
                       </CommentHeader>
@@ -392,6 +398,17 @@ const DocumentDetailsPage: React.FC = () => {
           </CommentsSection>
         </RightColumn>
       </DetailsContainer>
+      <Modal
+        isOpen={showResume.isOpen}
+        onClose={showResume.close}
+        title={t("documents.markdown_editor")}
+      >
+        <MarkdownEditorPage
+          initialContent={summary}
+          onSave={()=> {}}
+          onCancel={showResume.close}
+        />
+      </Modal>
     </PageLayout>
   );
 };

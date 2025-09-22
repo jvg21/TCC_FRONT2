@@ -1,11 +1,11 @@
 // src/features/document/DocumentPage.tsx
-import React, { use, useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus, FiEye, FiFileText, FiEdit3, FiCheckCircle, FiClock } from "react-icons/fi";
+import { FiPlus, FiEye, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -23,6 +23,57 @@ import { useFolder } from "../folder/useFolder";
 import { useNavigate } from "react-router-dom";
 import { TabContainer } from "../../components/common/TabContainer";
 import { useTag } from "../tag/useTag";
+
+// Componente para renderizar tags de forma assíncrona
+const DocumentTagsCell: React.FC<{ documentId: number }> = ({ documentId }) => {
+  const [tags, setTags] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { getTagsByDocument } = useTag();
+
+  useEffect(() => {
+    const loadTags = async () => {
+      setLoading(true);
+      try {
+        const response = await getTagsByDocument(documentId);
+        if (response && !response.erro) {
+          setTags(response.objeto || []);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar tags:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadTags();
+  }, [documentId]);
+
+  if (loading) {
+    return <span style={{ color: '#999', fontSize: '12px' }}>...</span>;
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+      {tags.length > 0 ? (
+        tags.map((tag) => (
+          <span
+            key={tag.tagId}
+            style={{
+              padding: '2px 8px',
+              borderRadius: '12px',
+              fontSize: '12px',
+              backgroundColor: tag.color || '#007bff',
+              color: '#fff'
+            }}
+          >
+            {tag.name}
+          </span>
+        ))
+      ) : (
+        <span style={{ color: '#999', fontSize: '12px' }}>-</span>
+      )}
+    </div>
+  );
+};
 
 const DocumentPage: React.FC = () => {
   const {
@@ -48,17 +99,52 @@ const DocumentPage: React.FC = () => {
   const [query, setQuery] = useState("");
   const [activeTabId, setActiveTabId] = useState("geral");
 
+  // Estados para filtros avançados
+  const [dateFilter, setDateFilter] = useState<{
+    startDate: string;
+    endDate: string;
+  }>({
+    startDate: "",
+    endDate: ""
+  });
+  const [authorFilter, setAuthorFilter] = useState<number | null>(null);
+  const [tagFilter, setTagFilter] = useState<number | null>(null);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [tagFilteredDocIds, setTagFilteredDocIds] = useState<number[]>([]);
 
-  console.log(userDocuments, userValidatorDocuments)
+  console.log(userDocuments, userValidatorDocuments);
 
   const { t } = useTranslation();
   const { userProfile, user } = useAuthContext();
-  const { getTagsByDocument, getDocumentsByTag } = useTag()
+  const { getTagsByDocument, getDocumentsByTag, activeTag } = useTag();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { updateValidationStatus } = useDocument();
 
   const navigate = useNavigate();
+
+  // useEffect para carregar documentos quando uma tag é selecionada
+  useEffect(() => {
+    const loadDocumentsByTag = async () => {
+      if (tagFilter) {
+        try {
+          const response = await getDocumentsByTag(tagFilter);
+          if (response && !response.erro && response.objeto) {
+            // Extrair os IDs dos documentos
+            const docIds = response.objeto.map((item: any) => item.documentId);
+            setTagFilteredDocIds(docIds);
+          }
+        } catch (error) {
+          console.error('Erro ao carregar documentos por tag:', error);
+          setTagFilteredDocIds([]);
+        }
+      } else {
+        setTagFilteredDocIds([]);
+      }
+    };
+
+    loadDocumentsByTag();
+  }, [tagFilter]);
 
   const handleView = (document: Document) => {
     navigate(`/document/details/${document.DocumentId}`);
@@ -85,63 +171,6 @@ const DocumentPage: React.FC = () => {
       setEditing(viewing);
       modal.open();
     }
-  };
-
-  const loadTagsForDocument = async (documentId: number) => {
-    const tags = await getTagsByDocument(documentId);
-    return tags;
-  }
-
-  // ADICIONAR este componente ANTES da função Columns (linha ~51)
-
-  const DocumentTagsCell: React.FC<{ documentId: number }> = ({ documentId }) => {
-    const [tags, setTags] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const { getTagsByDocument } = useTag();
-
-    useEffect(() => {
-      const loadTags = async () => {
-        setLoading(true);
-        try {
-          const response = await getTagsByDocument(documentId);
-          if (response && !response.erro) {
-            setTags(response.objeto || []);
-          }
-        } catch (error) {
-          console.error('Erro ao carregar tags:', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadTags();
-    }, [documentId]);
-
-    if (loading) {
-      return <span style={{ color: '#999', fontSize: '12px' }}>...</span>;
-    }
-
-    return (
-      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-        {tags.length > 0 ? (
-          tags.map((tag) => (
-            <span
-              key={tag.tagId}
-              style={{
-                padding: '2px 8px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                backgroundColor: tag.color || '#007bff',
-                color: '#fff'
-              }}
-            >
-              {tag.name}
-            </span>
-          ))
-        ) : (
-          <span style={{ color: '#999', fontSize: '12px' }}>-</span>
-        )}
-      </div>
-    );
   };
 
   const Columns = (
@@ -175,17 +204,17 @@ const DocumentPage: React.FC = () => {
         }
       },
       {
+        key: "Tags",
+        header: t("documents.tags") || "Tags",
+        render: (row) => <DocumentTagsCell documentId={row.DocumentId} />
+      },
+      {
         key: "UserId",
         header: t("documents.creator"),
         render: (row) => {
           const creator = activeUser.filter((a) => a.UserId === row.UserId)[0];
           return creator ? creator.Name : "-";
         }
-      },
-      {
-        key: "Tags",
-        header: t("documents.tags"),
-        render: (row) => <DocumentTagsCell documentId={row.DocumentId} />
       },
       {
         key: "IsActive",
@@ -215,18 +244,54 @@ const DocumentPage: React.FC = () => {
     return baseCols;
   };
 
-  // Função para filtrar documentos baseado na query
+  // Função ATUALIZADA para filtrar documentos com múltiplos critérios
   const getFilteredDocuments = (documents: Document[]) => {
-    if (!query) return documents;
+    let filtered = [...documents];
 
-    const searchQuery = query.toLowerCase();
-    return documents.filter(document => {
-      const searchableText = [
-        document.Title || "",
-        document.Content || "",
-      ].join(" ").toLowerCase();
-      return searchableText.includes(searchQuery);
-    });
+    // Filtro por texto
+    if (query) {
+      const searchQuery = query.toLowerCase();
+      filtered = filtered.filter(document => {
+        const searchableText = [
+          document.Title || "",
+          document.Content || "",
+        ].join(" ").toLowerCase();
+        return searchableText.includes(searchQuery);
+      });
+    }
+
+    // Filtro por data
+    if (dateFilter.startDate || dateFilter.endDate) {
+      filtered = filtered.filter(document => {
+        const docDate = new Date(document.CreatedAt);
+        const startDate = dateFilter.startDate ? new Date(dateFilter.startDate) : null;
+        const endDate = dateFilter.endDate ? new Date(dateFilter.endDate) : null;
+
+        if (startDate && endDate) {
+          return docDate >= startDate && docDate <= endDate;
+        } else if (startDate) {
+          return docDate >= startDate;
+        } else if (endDate) {
+          return docDate <= endDate;
+        }
+        return true;
+      });
+    }
+
+    // Filtro por autor
+    if (authorFilter) {
+      filtered = filtered.filter(document => document.UserId === authorFilter);
+    }
+
+    // Filtro por tag - usando os IDs carregados do backend
+    if (tagFilter && tagFilteredDocIds.length > 0) {
+      filtered = filtered.filter(document => tagFilteredDocIds.includes(document.DocumentId));
+    } else if (tagFilter && tagFilteredDocIds.length === 0) {
+      // Se uma tag está selecionada mas não há documentos, retornar array vazio
+      filtered = [];
+    }
+
+    return filtered;
   };
 
   // Função para obter documentos criados pelo usuário atual
@@ -251,9 +316,8 @@ const DocumentPage: React.FC = () => {
         await update(editing.DocumentId, payload);
       } else {
         await create(payload);
-
       }
-      await updateValidationStatus(payload.DocumentId, null, ""); // Define o status como "Pendente" (0) ao criar ou editar
+      await updateValidationStatus(payload.DocumentId, null, "");
       modal.close();
     } catch (error) {
       console.error("Erro ao salvar documento:", error);
@@ -268,55 +332,26 @@ const DocumentPage: React.FC = () => {
     }
   };
 
-  const handleSaveContent = (newContent: string) => {
+  const handleSaveContent = () => {
     if (contentSaveCallback) {
-      contentSaveCallback(newContent);
+      contentSaveCallback(editingContent);
     }
-    editorModal.close();
   };
 
   const handleTabChange = (tabId: string) => {
     setActiveTabId(tabId);
-    setQuery(""); // Limpa a busca ao trocar de aba
   };
 
   const columns = Columns(handleEdit, handleToggleStatus, handleView, handleEditContent);
 
-  // Componente para estado vazio
-  const EmptyState: React.FC<{
-    icon: React.ReactNode;
-    title: string;
-    description: string;
-  }> = ({ icon, title, description }) => (
-    <div style={{
-      textAlign: 'center',
-      padding: '60px 20px',
-      color: '#6c757d',
-      background: '#f8f9fa',
-      borderRadius: '8px',
-      border: '1px solid #dee2e6'
-    }}>
-      <div style={{ fontSize: '48px', marginBottom: '16px' }}>
-        {icon}
-      </div>
-      <h3 style={{ margin: '0 0 8px 0', color: '#495057' }}>{title}</h3>
-      <p style={{ margin: 0, fontSize: '14px' }}>{description}</p>
-    </div>
-  );
-
-  // Componente para aviso informativo
-  const InfoAlert: React.FC<{
-    type: 'info' | 'warning' | 'success';
-    title: string;
-    description: string;
-  }> = ({ type, title, description }) => {
+  // Componente InfoAlert
+  const InfoAlert = ({ type, title, description }: { type: string; title: string; description: string }) => {
     const colors = {
-      info: { bg: '#d1ecf1', border: '#bee5eb', icon: '🔍' },
-      warning: { bg: '#fff3cd', border: '#ffeaa7', icon: '📝' },
-      success: { bg: '#d4edda', border: '#c3e6cb', icon: '✅' }
+      info: { bg: '#e7f3ff', border: '#2196F3', icon: 'ℹ️' },
+      success: { bg: '#e8f5e9', border: '#4CAF50', icon: '✅' },
+      warning: { bg: '#fff3e0', border: '#FF9800', icon: '⚠️' },
     };
-
-    const color = colors[type];
+    const color = colors[type as keyof typeof colors] || colors.info;
 
     return (
       <div style={{
@@ -332,6 +367,150 @@ const DocumentPage: React.FC = () => {
     );
   };
 
+  // Componente EmptyState
+  const EmptyState = ({ icon, title, description }: { icon: string; title: string; description: string }) => (
+    <div style={{
+      textAlign: 'center',
+      padding: '48px 16px',
+      color: '#666'
+    }}>
+      <div style={{ fontSize: '48px', marginBottom: '16px' }}>{icon}</div>
+      <h3 style={{ marginBottom: '8px', color: '#333' }}>{title}</h3>
+      <p style={{ color: '#666' }}>{description}</p>
+    </div>
+  );
+
+  // Componente de Filtros Avançados
+  const AdvancedFilters = () => (
+    <div style={{
+      background: '#f8f9fa',
+      border: '1px solid #dee2e6',
+      borderRadius: '8px',
+      padding: '16px',
+      marginBottom: '16px',
+      display: showAdvancedFilters ? 'block' : 'none'
+    }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: '16px'
+      }}>
+        {/* Filtro de Data */}
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
+            {t("documents.filters.date_range") || "Período"}
+          </label>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              type="date"
+              value={dateFilter.startDate}
+              onChange={(e) => setDateFilter(prev => ({ ...prev, startDate: e.target.value }))}
+              style={{
+                flex: 1,
+                padding: '8px',
+                border: '1px solid #ced4da',
+                borderRadius: '4px',
+                fontSize: '14px'
+              }}
+            />
+            <input
+              type="date"
+              value={dateFilter.endDate}
+              onChange={(e) => setDateFilter(prev => ({ ...prev, endDate: e.target.value }))}
+              style={{
+                flex: 1,
+                padding: '8px',
+                border: '1px solid #ced4da',
+                borderRadius: '4px',
+                fontSize: '14px'
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Filtro de Autor */}
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
+            {t("documents.filters.author") || "Autor"}
+          </label>
+          <select
+            value={authorFilter || ""}
+            onChange={(e) => setAuthorFilter(e.target.value ? Number(e.target.value) : null)}
+            style={{
+              width: '100%',
+              padding: '8px',
+              border: '1px solid #ced4da',
+              borderRadius: '4px',
+              fontSize: '14px'
+            }}
+          >
+            <option value="">{t("documents.filters.all_authors") || "Todos os autores"}</option>
+            {activeUser.map(user => (
+              <option key={user.UserId} value={user.UserId}>
+                {user.Name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Filtro de Tag */}
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
+            {t("documents.filters.tag") || "Tag"}
+          </label>
+          <select
+            value={tagFilter || ""}
+            onChange={(e) => setTagFilter(e.target.value ? Number(e.target.value) : null)}
+            style={{
+              width: '100%',
+              padding: '8px',
+              border: '1px solid #ced4da',
+              borderRadius: '4px',
+              fontSize: '14px'
+            }}
+          >
+            <option value="">{t("documents.filters.all_tags") || "Todas as tags"}</option>
+            {activeTag.map(tag => (
+              <option key={tag.TagId} value={tag.TagId}>
+                {tag.Name}
+              </option>
+            ))}
+          </select>
+          {tagFilter && (
+            <div style={{ 
+              fontSize: '12px', 
+              color: '#666', 
+              marginTop: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              {tagFilteredDocIds.length === 0 ? (
+                <>⏳ Carregando documentos...</>
+              ) : (
+                <>✓ {tagFilteredDocIds.length} documento(s) encontrado(s)</>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Botão para limpar filtros */}
+      <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            setDateFilter({ startDate: "", endDate: "" });
+            setAuthorFilter(null);
+            setTagFilter(null);
+          }}
+        >
+          {t("documents.filters.clear_filters") || "Limpar filtros"}
+        </Button>
+      </div>
+    </div>
+  );
+
   // Definir as abas com seus respectivos conteúdos
   const tabs = [
     {
@@ -346,12 +525,27 @@ const DocumentPage: React.FC = () => {
             title={t("documents.tabs.general_alert_title")}
             description={t("documents.tabs.general_alert_description")}
           />
-          <FilterBar
-            columns={columns}
-            value={query}
-            onChange={setQuery}
-            placeholder={t("documents.search_documents")}
-          />
+          
+          {/* Barra de pesquisa com botão de filtros */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <FilterBar
+              columns={columns}
+              value={query}
+              onChange={setQuery}
+              placeholder={t("documents.search_documents")}
+            />
+            <Button
+              variant="ghost"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              title={t("documents.filters.advanced_filters") || "Filtros avançados"}
+            >
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+            </Button>
+          </div>
+
+          {/* Filtros Avançados */}
+          <AdvancedFilters />
+          
           {userProfile && (
             <div style={{ marginBottom: '16px' }}>
               <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
@@ -373,12 +567,24 @@ const DocumentPage: React.FC = () => {
             title={t("documents.tabs.my_documents_alert_title")}
             description={t("documents.tabs.my_documents_alert_description")}
           />
-          <FilterBar
-            columns={columns}
-            value={query}
-            onChange={setQuery}
-            placeholder={t("documents.tabs.search_my_documents")}
-          />
+          
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <FilterBar
+              columns={columns}
+              value={query}
+              onChange={setQuery}
+              placeholder={t("documents.tabs.search_my_documents")}
+            />
+            <Button
+              variant="ghost"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+            </Button>
+          </div>
+
+          <AdvancedFilters />
+          
           {getMyDocuments().length === 0 ? (
             <EmptyState
               icon="📄"
@@ -403,12 +609,24 @@ const DocumentPage: React.FC = () => {
             title={t("documents.tabs.to_edit_alert_title")}
             description={t("documents.tabs.to_edit_alert_description")}
           />
-          <FilterBar
-            columns={columns}
-            value={query}
-            onChange={setQuery}
-            placeholder={t("documents.tabs.search_to_edit")}
-          />
+          
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <FilterBar
+              columns={columns}
+              value={query}
+              onChange={setQuery}
+              placeholder={t("documents.tabs.search_to_edit")}
+            />
+            <Button
+              variant="ghost"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+            </Button>
+          </div>
+
+          <AdvancedFilters />
+          
           {userDocuments.length === 0 ? (
             <EmptyState
               icon="✅"
@@ -433,12 +651,24 @@ const DocumentPage: React.FC = () => {
             title={t("documents.tabs.validations_alert_title")}
             description={t("documents.tabs.validations_alert_description")}
           />
-          <FilterBar
-            columns={columns}
-            value={query}
-            onChange={setQuery}
-            placeholder={t("documents.tabs.search_validations")}
-          />
+          
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <FilterBar
+              columns={columns}
+              value={query}
+              onChange={setQuery}
+              placeholder={t("documents.tabs.search_validations")}
+            />
+            <Button
+              variant="ghost"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+            </Button>
+          </div>
+
+          <AdvancedFilters />
+          
           {userValidatorDocuments.length === 0 ? (
             <EmptyState
               icon="🎉"
@@ -509,6 +739,8 @@ const DocumentPage: React.FC = () => {
           onCancel={editorModal.close}
         />
       </Modal>
+
+ 
     </PageLayout>
   );
 };
