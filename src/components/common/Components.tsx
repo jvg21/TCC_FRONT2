@@ -553,3 +553,95 @@ export const EmptyDescription = styled.p`
     font-size: 14px;
   }
 `;
+// Adicionar após os componentes de Comments
+
+export const TagsSection = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+`;
+
+export const TagsTitle = styled.h2`
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const TagsList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  min-height: 40px;
+`;
+
+export const TagItem = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e7f3ff;
+  color: #0066cc;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #b3d9ff;
+`;
+
+export const TagRemoveButton = styled.button`
+  background: none;
+  border: none;
+  color: #0066cc;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #004499;
+  }
+`;
+
+export const TagForm = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+`;
+
+export const TagSelect = styled.select`
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  background: white;
+  
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+  }
+  
+  &:disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+  }
+`;
+
+export const EmptyTags = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: 8px;
+`;
