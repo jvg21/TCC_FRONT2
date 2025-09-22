@@ -232,7 +232,7 @@ export const ptTranslations = {
     is_active: "Status",
     creator: "Criador",
 
-    
+
     tabs: {
       general: "Geral",
       my_documents: "Meus Documentos",
@@ -248,12 +248,12 @@ export const ptTranslations = {
       validations_alert_title: "Validações Pendentes",
       validations_alert_description: "Documentos aguardando sua validação como revisor.",
 
-      
+
       search_my_documents: "Buscar meus documentos...",
       search_to_edit: "Buscar documentos para editar...",
       search_validations: "Buscar validações...",
 
-      
+
       no_documents_created_title: "Nenhum documento criado",
       no_documents_created_description: "Você ainda não criou nenhum documento. Comece criando seu primeiro documento.",
 
@@ -269,7 +269,31 @@ export const ptTranslations = {
     createSuccess: "Documento criado com sucesso!",
     updateSuccess: "Documento atualizado com sucesso!",
     updateStatusSuccess: "Status do documento alterado com sucesso!",
-    deleteSuccess: "Documento excluído com sucesso!"
+    deleteSuccess: "Documento excluído com sucesso!",
+
+    document_details: {
+      title: "Detalhes do Documento",
+      back: "Voltar",
+      generate_summary: "Gerar Resumo",
+      save_changes: "Salvar Alterações",
+      created_by: "Criado por",
+      folder: "Pasta",
+      created_at: "Criado em",
+      updated_at: "Atualizado em",
+      validation: {
+        title: "Validação do Documento",
+        pending: "Pendente de Validação",
+        approve: "Aprovar",
+        reject: "Rejeitar",
+        add_note: "Adicione uma nota sobre a validação (opcional para aprovação, obrigatória para rejeição)"
+      },
+      comments: {
+        title: "Comentários",
+        placeholder: "Digite seu comentário...",
+        add_comment: "Adicionar Comentário",
+        count: "Comentários"
+      }
+    }
   },
 
   // Login
@@ -430,7 +454,7 @@ export const ptTranslations = {
     copy: "Copiar",
     preview: "Visualizar",
     create_template: "Criar Template",
-    
+
   },
 
 

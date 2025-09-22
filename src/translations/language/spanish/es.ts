@@ -227,7 +227,7 @@ export const esTranslations = {
     updated_at: "Actualizado en",
     is_active: "Estado",
     creator: "Creador",
-    
+
     tabs: {
       general: "General",
       my_documents: "Mis Documentos",
@@ -251,14 +251,38 @@ export const esTranslations = {
       no_validations_pending_title: "Ninguna validación pendiente",
       no_validations_pending_description: "Todas las validaciones han sido procesadas. ¡Buen trabajo!"
     },
-    
+
     view_document: "Ver Documento",
     untitled_document: "Documento sin título",
     markdown_editor: "Editor Markdown",
     createSuccess: "¡Documento creado con éxito!",
     updateSuccess: "¡Documento actualizado con éxito!",
     updateStatusSuccess: "¡Estado del documento cambiado con éxito!",
-    deleteSuccess: "¡Documento eliminado con éxito!"
+    deleteSuccess: "¡Documento eliminado con éxito!",
+
+    document_details: {
+      title: "Detalles del Documento",
+      back: "Volver",
+      generate_summary: "Generar Resumen",
+      save_changes: "Guardar Cambios",
+      created_by: "Creado por",
+      folder: "Carpeta",
+      created_at: "Creado en",
+      updated_at: "Actualizado en",
+      validation: {
+        title: "Validación del Documento",
+        pending: "Pendiente de Validación",
+        approve: "Aprobar",
+        reject: "Rechazar",
+        add_note: "Agregue una nota sobre la validación (opcional para aprobación, obligatoria para rechazo)"
+      },
+      comments: {
+        title: "Comentarios",
+        placeholder: "Escriba su comentario...",
+        add_comment: "Agregar Comentario",
+        count: "Comentarios"
+      }
+    }
   },
 
   // Templates
