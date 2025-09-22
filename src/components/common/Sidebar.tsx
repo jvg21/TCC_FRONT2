@@ -1,64 +1,51 @@
-// src/components/common/Sidebar.tsx - VERSÃO CORRIGIDA
-
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { Link, useLocation } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthContext";
-import { useTypedTranslation } from "../../context/LanguageContext";
-import { FiBriefcase, FiCheckCircle } from "react-icons/fi";
-
-
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
 import {
   FiHome,
+  FiBriefcase,
   FiUsers,
   FiGrid,
   FiFolderPlus,
   FiCheckSquare,
   FiFile,
+  FiSettings,
   FiMenu,
   FiX,
-  FiSettings,
-  FiLink2,
-  FiChevronRight
-} from "react-icons/fi";
+  FiChevronRight,
+} from 'react-icons/fi';
+import { useAuthContext } from '../../context/AuthContext';
+import { useTypedTranslation } from '../../context/LanguageContext';
 
-interface WrapProps {
-  $isCollapsed: boolean;
-}
-
-const Wrap = styled.aside<WrapProps>`
+const Wrap = styled.aside<{ $isCollapsed: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
-  background: ${({ theme }) => theme.colors.surface};
   height: 100vh;
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: ${({ $isCollapsed }) => ($isCollapsed ? '80px' : '260px')};
+  background: ${({ theme }) => theme.colors.background};
+  border-right: 1px solid ${({ theme }) => theme.colors.border};
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  box-shadow: ${({ $isCollapsed }) =>
-    $isCollapsed ? 'none' : '2px 0 10px rgba(0, 0, 0, 0.1)'};
-
-  width: ${({ $isCollapsed }) => ($isCollapsed ? '80px' : '260px')};
-
+  overflow: hidden;
+  
   @media (max-width: 768px) {
-    width: 280px;
-    transform: translateX(${({ $isCollapsed }) => ($isCollapsed ? '-100%' : '0')});
-    box-shadow: ${({ $isCollapsed }) =>
-    $isCollapsed ? 'none' : '0 0 20px rgba(0, 0, 0, 0.3)'};
+    transform: ${({ $isCollapsed }) =>
+      $isCollapsed ? 'translateX(-100%)' : 'translateX(0)'};
+    width: 260px;
   }
 `;
 
 const Header = styled.div<{ $isCollapsed: boolean }>`
   padding: 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
   align-items: center;
   justify-content: ${({ $isCollapsed }) =>
     $isCollapsed ? 'center' : 'space-between'};
-  min-height: 80px;
-  flex-shrink: 0;
+  min-height: 70px;
 `;
 
 const Logo = styled.div<{ $isCollapsed: boolean }>`
@@ -66,14 +53,12 @@ const Logo = styled.div<{ $isCollapsed: boolean }>`
   align-items: center;
   gap: 12px;
   opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
-  transform: ${({ $isCollapsed }) =>
-    $isCollapsed ? 'scale(0.8)' : 'scale(1)'};
-  transition: all 0.3s ease;
-
+  transition: opacity 0.3s ease;
+  
   h2 {
-    color: ${({ theme }) => theme.colors.text};
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
+    color: ${({ theme }) => theme.colors.text};
     margin: 0;
   }
 `;
@@ -82,7 +67,7 @@ const LogoIcon = styled.div`
   width: 40px;
   height: 40px;
   background: ${({ theme }) => theme.colors.primary};
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,26 +78,20 @@ const LogoIcon = styled.div`
 `;
 
 const ToggleButton = styled.button`
-  width: 36px;
-  height: 36px;
+  background: none;
   border: none;
-  background: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.muted};
+  cursor: pointer;
+  padding: 8px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  color: ${({ theme }) => theme.colors.muted};
   transition: all 0.2s ease;
-  flex-shrink: 0;
-
+  
   &:hover {
-    background: ${({ theme }) => theme.colors.primary}15;
+    background: ${({ theme }) => theme.colors.primary}10;
     color: ${({ theme }) => theme.colors.primary};
-  }
-
-  @media (max-width: 768px) {
-    display: none;
   }
 `;
 
@@ -121,25 +100,20 @@ const MobileToggle = styled.button`
   top: 20px;
   left: 20px;
   z-index: 1001;
+  background: ${({ theme }) => theme.colors.primary};
+  border: none;
+  color: white;
   width: 44px;
   height: 44px;
-  border: none;
-  background: ${({ theme }) => theme.colors.primary};
   border-radius: 12px;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-
-  @media (max-width: 768px) {
-    display: flex;
+  
+  @media (min-width: 769px) {
+    display: none;
   }
 `;
 
@@ -147,40 +121,33 @@ const Navigation = styled.nav`
   flex: 1;
   padding: 20px 0;
   overflow-y: auto;
-  overflow-x: hidden;
-
+  
   &::-webkit-scrollbar {
     width: 4px;
   }
-
+  
   &::-webkit-scrollbar-track {
     background: transparent;
   }
-
+  
   &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.1);
+    background: ${({ theme }) => theme.colors.border};
     border-radius: 2px;
   }
 `;
 
 const NavGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 0 12px;
+  padding: 0 16px;
   
-  /* Ajuste especial para modo colapsado */
-  @media (min-width: 769px) {
-    /* Desktop only - evita interferir com mobile */
-    padding: ${props => {
-    // Aqui você pode acessar props do contexto styled-components
-    // mas vamos usar uma abordagem mais simples
-    return '0 12px';
-  }};
+  &:not(:last-child) {
+    margin-bottom: 24px;
   }
 `;
 
-const NavItem = styled(Link) <{ $isActive: boolean; $isCollapsed: boolean }>`
+const NavItem = styled(Link)<{
+  $isActive: boolean;
+  $isCollapsed: boolean;
+}>`
   display: flex;
   align-items: center;
   gap: ${({ $isCollapsed }) => ($isCollapsed ? '0' : '12px')};
@@ -208,7 +175,7 @@ const NavItem = styled(Link) <{ $isActive: boolean; $isCollapsed: boolean }>`
     display: block;
     ${({ $isCollapsed }) => $isCollapsed && `
       margin: 0;
-      transform: translateZ(0); /* Force GPU acceleration */
+      transform: translateZ(0);
     `}
   }
 
@@ -250,7 +217,6 @@ const NavItem = styled(Link) <{ $isActive: boolean; $isCollapsed: boolean }>`
   `}
 `;
 
-// Estilos para dropdown de integrações
 const DropdownContainer = styled.div`
   position: relative;
 `;
@@ -272,22 +238,22 @@ const DropdownTrigger = styled.div<{
     $isActive ? theme.colors.primary + '15' : 'transparent'};
   font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
   font-size: 14px;
-  cursor: pointer;
   transition: all 0.2s ease;
-  justify-content: ${({ $isCollapsed }) =>
-    $isCollapsed ? 'center' : 'space-between'};
   position: relative;
+  justify-content: ${({ $isCollapsed }) =>
+    $isCollapsed ? 'center' : 'flex-start'};
   width: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
   height: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
+  cursor: pointer;
 
-  svg:first-child {
+  svg {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
     display: block;
     ${({ $isCollapsed }) => $isCollapsed && `
       margin: 0;
-      transform: translateZ(0); /* Force GPU acceleration */
+      transform: translateZ(0);
     `}
   }
 
@@ -298,7 +264,6 @@ const DropdownTrigger = styled.div<{
     $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
     transition: all 0.3s ease;
     white-space: nowrap;
-    flex: 1;
     width: ${({ $isCollapsed }) => ($isCollapsed ? '0' : 'auto')};
     overflow: hidden;
   }
@@ -330,10 +295,8 @@ const DropdownTrigger = styled.div<{
   `}
 `;
 
-const ChevronIcon = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
-  opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
-  visibility: ${({ $isCollapsed }) => ($isCollapsed ? 'hidden' : 'visible')};
-  transform: ${({ $isOpen, $isCollapsed }) =>
+const ChevronIcon = styled.div<{ $isCollapsed: boolean; $isOpen: boolean }>`
+  transform: ${({ $isCollapsed, $isOpen }) =>
     $isCollapsed ? 'translateX(10px)' :
       $isOpen ? 'rotate(90deg)' : 'rotate(0deg)'};
   transition: all 0.3s ease;
@@ -356,7 +319,7 @@ const DropdownContent = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
   margin-top: 4px;
 `;
 
-const DropdownItem = styled(Link) <{ $isActive: boolean }>`
+const DropdownItem = styled(Link)<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   padding: 8px 16px;
@@ -376,9 +339,8 @@ const DropdownItem = styled(Link) <{ $isActive: boolean }>`
   }
 `;
 
-// Para o modo colapsado, criar um item simples para integrações
 const IntegrationsNavItem = styled(NavItem)`
-  // Herda todos os estilos do NavItem com as correções de pixel perfect
+  // Herda todos os estilos do NavItem
 `;
 
 const Overlay = styled.div<{ $isVisible: boolean }>`
@@ -415,6 +377,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
+  const [foldersOpen, setFoldersOpen] = useState(false);
+  const [tasksOpen, setTasksOpen] = useState(false);
 
   const { user } = useAuthContext();
   const { t } = useTypedTranslation();
@@ -429,7 +393,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
 
-      // Só colapsar automaticamente na primeira vez (mobile)
+      
       if (mobile && !document.body.hasAttribute('data-sidebar-initialized')) {
         setIsCollapsed(true);
         document.body.setAttribute('data-sidebar-initialized', 'true');
@@ -441,24 +405,23 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  // Verificar se estamos numa rota de integrações
+  
   const isIntegrationsActive = location.pathname.startsWith('/integrations');
   const isOpenAIActive = location.pathname === '/integrations/openai';
 
-  // Items de navegação básicos com traduções
-  // No array navigationItems, adicionar a nova rota:
+  
+  const isFoldersActive = location.pathname === '/folder' || location.pathname === '/CascadeView';
+
+  
+  const isTasksActive = location.pathname === '/task' || location.pathname === '/TaskBoardPage' || location.pathname === '/TaskDashboard';
+
   const navigationItems = [
     { path: "/", label: t("navigation.home"), icon: FiHome, show: true },
     { path: "/companies", label: t("navigation.companies"), icon: FiBriefcase, show: profile === 1 },
     { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2 && profile > 0 },
     { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile <= 2 && profile > 0 },
-    { path: "/folder", label: t("navigation.folders"), icon: FiFolderPlus, show: profile <= 2 && profile > 0 },
-    { path: "/task", label: t("navigation.tasks"), icon: FiCheckSquare, show: true },
     { path: "/document", label: t("navigation.documents"), icon: FiFile, show: true },
     { path: "/templates", label: t("navigation.templates"), icon: FiFile, show: true },
-    { path: "/TaskBoardPage", label: t("navigation.tasksBoardPage"), icon: FiCheckSquare, show: true },
-    { path: "/TaskDashboard", label: t("navigation.tasksDashboard"), icon: FiCheckSquare, show: true },
-    { path: "/CascadeView", label: t("navigation.cascadeview"), icon: FiCheckSquare, show: true },
   ];
 
   const toggleSidebar = () => {
@@ -485,21 +448,59 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
   const handleIntegrationsClick = () => {
     if (isCollapsed) {
-      // Se está colapsado, vai para a primeira página de integração
       handleNavItemClick();
-      // Você pode navegar programaticamente se necessário
-      // navigate('/integrations/openai');
     } else {
       toggleIntegrationsDropdown();
     }
   };
 
-  // Auto-abrir dropdown se estivermos numa rota de integração
+  const toggleFoldersDropdown = () => {
+    if (!isCollapsed) {
+      setFoldersOpen(!foldersOpen);
+    }
+  };
+
+  const handleFoldersClick = () => {
+    if (isCollapsed) {
+      handleNavItemClick();
+    } else {
+      toggleFoldersDropdown();
+    }
+  };
+
+  const toggleTasksDropdown = () => {
+    if (!isCollapsed) {
+      setTasksOpen(!tasksOpen);
+    }
+  };
+
+  const handleTasksClick = () => {
+    if (isCollapsed) {
+      handleNavItemClick();
+    } else {
+      toggleTasksDropdown();
+    }
+  };
+
+
   useEffect(() => {
     if (isIntegrationsActive && !isCollapsed) {
       setIntegrationsOpen(true);
     }
   }, [isIntegrationsActive, isCollapsed]);
+
+  useEffect(() => {
+    if (isFoldersActive && !isCollapsed) {
+      setFoldersOpen(true);
+    }
+  }, [isFoldersActive, isCollapsed]);
+
+  
+  useEffect(() => {
+    if (isTasksActive && !isCollapsed) {
+      setTasksOpen(true);
+    }
+  }, [isTasksActive, isCollapsed]);
 
   return (
     <>
@@ -528,7 +529,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
         <Navigation>
           <NavGroup>
-            {/* Items de navegação básicos */}
+            {}
             {navigationItems
               .filter(item => item.show)
               .map(({ path, label, icon: Icon }) => (
@@ -545,7 +546,88 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                 </NavItem>
               ))}
 
-            {/* Integrações - Dropdown quando expandido, item simples quando colapsado */}
+            {}
+            {isCollapsed ? (
+              <IntegrationsNavItem
+                to="/task"
+                $isActive={isTasksActive}
+                $isCollapsed={isCollapsed}
+                onClick={handleNavItemClick}
+                data-tooltip={t("navigation.tasks")}
+              >
+                <FiCheckSquare />
+                <span>{t("navigation.tasks")}</span>
+              </IntegrationsNavItem>
+            ) : (
+              <DropdownContainer>
+                <DropdownTrigger
+                  $isActive={isTasksActive}
+                  $isCollapsed={isCollapsed}
+                  $isOpen={tasksOpen}
+                  onClick={handleTasksClick}
+                  data-tooltip={t("navigation.tasks")}
+                >
+                  <FiCheckSquare />
+                  <span>{t("navigation.tasks")}</span>
+                  <ChevronIcon $isCollapsed={isCollapsed} $isOpen={tasksOpen}>
+                    <FiChevronRight />
+                  </ChevronIcon>
+                </DropdownTrigger>
+                <DropdownContent $isOpen={tasksOpen} $isCollapsed={isCollapsed}>
+                  <DropdownItem to="/task" $isActive={location.pathname === '/task'}>
+                    {t("navigation.tasks")}
+                  </DropdownItem>
+                  <DropdownItem to="/TaskBoardPage" $isActive={location.pathname === '/TaskBoardPage'}>
+                    {t("navigation.tasksBoardPage")}
+                  </DropdownItem>
+                  <DropdownItem to="/TaskDashboard" $isActive={location.pathname === '/TaskDashboard'}>
+                    {t("navigation.tasksDashboard")}
+                  </DropdownItem>
+                </DropdownContent>
+              </DropdownContainer>
+            )}
+
+            {}
+            {profile <= 2 && profile > 0 && (
+              isCollapsed ? (
+                <IntegrationsNavItem
+                  to="/folder"
+                  $isActive={isFoldersActive}
+                  $isCollapsed={isCollapsed}
+                  onClick={handleNavItemClick}
+                  data-tooltip={t("navigation.folders")}
+                >
+                  <FiFolderPlus />
+                  <span>{t("navigation.folders")}</span>
+                </IntegrationsNavItem>
+              ) : (
+                <DropdownContainer>
+                  <DropdownTrigger
+                    $isActive={isFoldersActive}
+                    $isCollapsed={isCollapsed}
+                    $isOpen={foldersOpen}
+                    onClick={handleFoldersClick}
+                    data-tooltip={t("navigation.folders")}
+                  >
+                    <FiFolderPlus />
+                    <span>{t("navigation.folders")}</span>
+                    <ChevronIcon $isCollapsed={isCollapsed} $isOpen={foldersOpen}>
+                      <FiChevronRight />
+                    </ChevronIcon>
+                  </DropdownTrigger>
+                  <DropdownContent $isOpen={foldersOpen} $isCollapsed={isCollapsed}>
+                    <DropdownItem to="/folder" $isActive={location.pathname === '/folder'}>
+                      {t("navigation.folders")}
+                    </DropdownItem>
+                    <DropdownItem to="/CascadeView" $isActive={location.pathname === '/CascadeView'}>
+                      {t("navigation.cascadeview")}
+                    </DropdownItem>
+                  </DropdownContent>
+                </DropdownContainer>
+              )
+            )}
+
+            {}
             {isCollapsed ? (
               <IntegrationsNavItem
                 to="/integrations/openai"
@@ -554,7 +636,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                 onClick={handleNavItemClick}
                 data-tooltip={t("navigation.integrations")}
               >
-                <FiLink2 />
+                <FiSettings />
                 <span>{t("navigation.integrations")}</span>
               </IntegrationsNavItem>
             ) : (
@@ -566,26 +648,21 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                   onClick={handleIntegrationsClick}
                   data-tooltip={t("navigation.integrations")}
                 >
-                  <FiLink2 />
+                  <FiSettings />
                   <span>{t("navigation.integrations")}</span>
-                  <ChevronIcon $isOpen={integrationsOpen} $isCollapsed={isCollapsed}>
-                    <FiChevronRight size={14} />
+                  <ChevronIcon $isCollapsed={isCollapsed} $isOpen={integrationsOpen}>
+                    <FiChevronRight />
                   </ChevronIcon>
                 </DropdownTrigger>
-
                 <DropdownContent $isOpen={integrationsOpen} $isCollapsed={isCollapsed}>
-                  <DropdownItem
-                    to="/integrations/openai"
-                    $isActive={isOpenAIActive}
-                    onClick={handleNavItemClick}
-                  >
+                  <DropdownItem to="/integrations/openai" $isActive={isOpenAIActive}>
                     {t("navigation.openai")}
                   </DropdownItem>
                 </DropdownContent>
               </DropdownContainer>
             )}
 
-            {/* Configurações */}
+            {}
             <NavItem
               to="/settings"
               $isActive={location.pathname === '/settings'}
