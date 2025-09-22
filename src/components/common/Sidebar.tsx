@@ -419,9 +419,9 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     { path: "/", label: t("navigation.home"), icon: FiHome, show: true },
     { path: "/companies", label: t("navigation.companies"), icon: FiBriefcase, show: profile === 1 },
     { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2 && profile > 0 },
-    { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile <= 2 && profile > 0 },
-    { path: "/document", label: t("navigation.documents"), icon: FiFile, show: true },
-    { path: "/templates", label: t("navigation.templates"), icon: FiFile, show: true },
+    { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile === 2 && profile > 0 },
+    { path: "/document", label: t("navigation.documents"), icon: FiFile, show: profile >2  },
+    { path: "/templates", label: t("navigation.templates"), icon: FiFile, show: profile >2  },
   ];
 
   const toggleSidebar = () => {
@@ -547,7 +547,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               ))}
 
             {}
-            {isCollapsed ? (
+            {profile === 2 && profile > 0 && (isCollapsed ? (
               <IntegrationsNavItem
                 to="/task"
                 $isActive={isTasksActive}
@@ -585,10 +585,10 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                   </DropdownItem>
                 </DropdownContent>
               </DropdownContainer>
-            )}
+            ))}
 
             {}
-            {profile <= 2 && profile > 0 && (
+            {profile === 2 && profile > 0 && (
               isCollapsed ? (
                 <IntegrationsNavItem
                   to="/folder"
@@ -628,7 +628,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
             )}
 
             {}
-            {isCollapsed ? (
+            {profile === 2 && profile > 0 && (isCollapsed ? (
               <IntegrationsNavItem
                 to="/integrations/openai"
                 $isActive={isIntegrationsActive}
@@ -660,7 +660,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                   </DropdownItem>
                 </DropdownContent>
               </DropdownContainer>
-            )}
+            ))}
 
             {}
             <NavItem
