@@ -182,7 +182,7 @@ const DocumentDetailsPage: React.FC = () => {
     if (documentContent) {
       const sumarryText = await generateSummary(Number(id));
       console.log(sumarryText);
-      setSummary(sumarryText.Content || '');
+      setSummary(sumarryText.content || '');
 
       showResume.open();
     } else {
