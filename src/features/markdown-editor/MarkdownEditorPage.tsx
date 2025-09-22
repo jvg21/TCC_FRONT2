@@ -47,7 +47,7 @@ export const MarkdownEditorPage: React.FC<MarkdownEditorPageProps> = ({
 
   return (
     <PageLayout
-      title="Editor de Markdown"
+      title={t('documents.markdown_editor')}
       actions={
         <div style={{ display: 'flex', gap: '8px' }}>
           <Button variant="ghost" onClick={onCancel}>

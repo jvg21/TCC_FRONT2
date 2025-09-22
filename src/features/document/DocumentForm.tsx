@@ -111,7 +111,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
                     <ContentPreview>
                         {Content ? 
                             `${Content.substring(0, 100)}${Content.length > 100 ? '...' : ''}` : 
-                            'Clique em "Editar Conteúdo" para adicionar o conteúdo do documento'
+                            t('documents.no_content')
                         }
                     </ContentPreview>
                     <EditorButton 
@@ -119,7 +119,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
                         onClick={handleEditContent}
                     >
                         <FiEdit />
-                        Editar Conteúdo
+                       { t("documents.edit_content")}
                     </EditorButton>
                 </Col>
             </Row>
@@ -131,7 +131,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
                         value={FolderId} 
                         onChange={(e) => setFolderId(e.target.value)}
                         options={[
-                            { value: "", label: "Selecione uma pasta..." },
+                            { value: "", label:(t("documents.select_folder")) },
                             ...activeFolder.map(folder => ({
                                 value: folder.FolderId.toString(),
                                 label: folder.Name
