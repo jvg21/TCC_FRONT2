@@ -182,7 +182,6 @@ const ValidateRecoveryToken: React.FC = () => {
         </Logo>
 
         <Form onSubmit={handleSubmit}>
-          <div>
             <TokenInput
               type="text"
               placeholder={t("token_reset.token_placeholder")}
@@ -192,7 +191,6 @@ const ValidateRecoveryToken: React.FC = () => {
               disabled={loading}
               required
             />
-          </div>
 
           <ValidateButton
             type="submit"

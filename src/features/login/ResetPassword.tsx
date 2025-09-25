@@ -224,12 +224,6 @@ const ResetPassword: React.FC = () => {
               disabled={loading}
               required
             />
-            <PasswordToggle
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-            </PasswordToggle>
             <PasswordStrengthIndicator strength={passwordStrength} />
             <PasswordHint>
               {passwordStrength < 25 && "Senha muito fraca"}
@@ -249,12 +243,7 @@ const ResetPassword: React.FC = () => {
               disabled={loading}
               required
             />
-            <PasswordToggle
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-            </PasswordToggle>
+           
             {confirmPassword.length > 0 && (
               <PasswordHint style={{ color: passwordsMatch ? '#10b981' : '#ef4444' }}>
                 {passwordsMatch ? "Senhas conferem" : "Senhas não conferem"}
