@@ -83,7 +83,7 @@ const DocumentDetailsPage: React.FC = () => {
     const loadDocument = async () => {
       if (hasLoadedRef.current || !id) {
         if (!id) {
-          setError('ID do documento não fornecido');
+          setError(t("messages.error.generic") || 'ID do documento não fornecido');
           setLoading(false);
         }
         return;
@@ -96,10 +96,10 @@ const DocumentDetailsPage: React.FC = () => {
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status ?? response.objeto.document.isValid);
         } else {
-          setError('Erro ao carregar documento');
+          setError(t("messages.error.generic") || 'Erro ao carregar documento');
         }
       } catch (err) {
-        setError('Erro ao carregar documento');
+        setError(t("messages.error.generic") || 'Erro ao carregar documento');
         console.error(err);
       } finally {
         setLoading(false);
@@ -107,7 +107,7 @@ const DocumentDetailsPage: React.FC = () => {
     };
 
     loadDocument();
-  }, [id]);
+  }, [id, t]);
 
   // Carregar comentários quando o documento for carregado
   useEffect(() => {
@@ -128,10 +128,15 @@ const DocumentDetailsPage: React.FC = () => {
         ...document,
         content: documentContent,
       });
-      notificationActions.showNotification('Documento atualizado com sucesso!', 'success');
+      notificationActions.showNotification(
+        t("documents.updateSuccess") || 'Documento atualizado com sucesso!',
+        'success'
+      );
     } catch (error) {
       console.error('Erro ao salvar documento:', error);
-      notificationActions.showError('Erro ao salvar documento');
+      notificationActions.showError(
+        t("messages.error.generic") || 'Erro ao salvar documento'
+      );
     }
   };
 
@@ -145,7 +150,10 @@ const DocumentDetailsPage: React.FC = () => {
         UserId: user!.UserId,
       });
       setNewComment('');
-      notificationActions.showNotification('Comentário adicionado com sucesso!', 'success');
+      notificationActions.showNotification(
+        t("messages.success.created") || 'Comentário adicionado com sucesso!',
+        'success'
+      );
     } catch (error) {
       console.error('Erro ao adicionar comentário:', error);
     }
@@ -160,13 +168,13 @@ const DocumentDetailsPage: React.FC = () => {
 
       if (isValid) {
         await createComment({
-          Content: `✅ Documento aprovado por ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
+          Content: `✅ ${t("documents.document_details.validation.approve") || "Documento aprovado"} ${t("documents.document_details.created_by") || "por"} ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
           DocumentId: document.documentId,
           UserId: user!.UserId
         });
       } else {
         await createComment({
-          Content: `❌ Documento rejeitado por ${user?.Name}: ${validatorNote}`,
+          Content: `❌ ${t("documents.document_details.validation.reject") || "Documento rejeitado"} ${t("documents.document_details.created_by") || "por"} ${user?.Name}: ${validatorNote}`,
           DocumentId: document.documentId,
           UserId: user!.UserId
         });
@@ -180,21 +188,39 @@ const DocumentDetailsPage: React.FC = () => {
 
   const handleGenerateSummary = async () => {
     if (documentContent) {
-      const sumarryText = await generateSummary(Number(id));
-      console.log(sumarryText);
-      setSummary(sumarryText.content || '');
-
+      const summaryText = await generateSummary(Number(id));
+      console.log(summaryText);
+      setSummary(summaryText.Content || '');
       showResume.open();
     } else {
-      notificationActions.showError('O conteúdo do documento está vazio.');
+      notificationActions.showError(
+        t("messages.error.validation") || 'O conteúdo do documento está vazio.'
+      );
     }
+  };
+
+  // Função para formatar data seguindo o padrão do projeto
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('pt-BR');
+  };
+
+  // Função para obter status de validação traduzido
+  const getValidationStatusText = () => {
+    if (validationStatus === null) {
+      return `⏳ ${t("documents.document_details.validation.pending") || "Pendente"}`;
+    }
+    if (validationStatus) {
+      return `✅ ${t("status.completed") || "Aprovado"}`;
+    }
+    return `❌ ${t("documents.document_details.validation.reject") || "Rejeitado"}`;
   };
 
   if (loading || loadingComments) {
     return (
-      <PageLayout title="Detalhes do Documento">
+      <PageLayout title={t("documents.document_details.title") || "Detalhes do Documento"}>
         <LoadingContainer>
-          <div>Carregando documento...</div>
+          <div>{t("loading.loading") || "Carregando documento..."}</div>
         </LoadingContainer>
       </PageLayout>
     );
@@ -202,34 +228,34 @@ const DocumentDetailsPage: React.FC = () => {
 
   if (error || !document) {
     return (
-      <PageLayout title="Detalhes do Documento">
+      <PageLayout title={t("documents.document_details.title") || "Detalhes do Documento"}>
         <ErrorContainer>
-          <div>{error || 'Documento não encontrado'}</div>
+          <div>{error || t("messages.error.not_found") || 'Documento não encontrado'}</div>
           <Button onClick={handleBack} style={{ marginTop: '16px' }}>
-            <FiArrowLeft /> Voltar
+            <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
         </ErrorContainer>
       </PageLayout>
     );
   }
 
-  // Buscar informações do criador e pasta
+  // Buscar informações do criador e pasta seguindo o padrão do projeto
   const creator = activeUser.find(u => u.UserId === document.userId);
   const folder = activeFolder.find(f => f.FolderId === document.folderId);
 
   return (
     <PageLayout
-      title="Detalhes do Documento"
+      title={t("documents.document_details.title") || "Detalhes do Documento"}
       actions={
         <div style={{ display: 'flex', gap: '8px' }}>
           <Button variant="ghost" onClick={handleBack}>
-            <FiArrowLeft /> Voltar
+            <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
           <Button onClick={handleGenerateSummary}>
-            <FiEdit /> Gerar Resumo
+            <FiEdit /> {t("documents.document_details.generate_summary") || "Gerar Resumo"}
           </Button>
           <Button onClick={handleSaveDocument}>
-            <FiEdit /> Salvar Alterações
+            <FiEdit /> {t("documents.document_details.save_changes") || "Salvar Alterações"}
           </Button>
         </div>
       }
@@ -247,8 +273,12 @@ const DocumentDetailsPage: React.FC = () => {
                   <FiUser />
                 </MetaIcon>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>Criado por</div>
-                  <MetaValue>{creator?.Name || 'Usuário não encontrado'}</MetaValue>
+                  <div style={{ fontSize: '12px', color: '#999' }}>
+                    {t("documents.document_details.created_by") || "Criado por"}
+                  </div>
+                  <MetaValue>
+                    {creator?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}
+                  </MetaValue>
                 </div>
               </MetaItem>
 
@@ -257,21 +287,11 @@ const DocumentDetailsPage: React.FC = () => {
                   <FiFolder />
                 </MetaIcon>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>Pasta</div>
-                  <MetaValue>{folder?.Name || 'Pasta não encontrada'}</MetaValue>
-                </div>
-              </MetaItem>
-
-              <MetaItem>
-                <MetaIcon>
-                  <FiCalendar />
-                </MetaIcon>
-                <div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>Criado em</div>
+                  <div style={{ fontSize: '12px', color: '#999' }}>
+                    {t("documents.document_details.folder") || "Pasta"}
+                  </div>
                   <MetaValue>
-                    {document.createdAt
-                      ? new Date(document.createdAt).toLocaleDateString('pt-BR')
-                      : '-'}
+                    {folder?.Name || t("messages.error.not_found") || 'Pasta não encontrada'}
                   </MetaValue>
                 </div>
               </MetaItem>
@@ -281,11 +301,25 @@ const DocumentDetailsPage: React.FC = () => {
                   <FiCalendar />
                 </MetaIcon>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>Atualizado em</div>
+                  <div style={{ fontSize: '12px', color: '#999' }}>
+                    {t("documents.document_details.created_at") || "Criado em"}
+                  </div>
                   <MetaValue>
-                    {document.updatedAt
-                      ? new Date(document.updatedAt).toLocaleDateString('pt-BR')
-                      : '-'}
+                    {formatDate(document.createdAt)}
+                  </MetaValue>
+                </div>
+              </MetaItem>
+
+              <MetaItem>
+                <MetaIcon>
+                  <FiCalendar />
+                </MetaIcon>
+                <div>
+                  <div style={{ fontSize: '12px', color: '#999' }}>
+                    {t("documents.document_details.updated_at") || "Atualizado em"}
+                  </div>
+                  <MetaValue>
+                    {formatDate(document.updatedAt)}
                   </MetaValue>
                 </div>
               </MetaItem>
@@ -303,7 +337,9 @@ const DocumentDetailsPage: React.FC = () => {
         <RightColumn>
           {/* Seção de Validação */}
           <ValidationSection>
-            <ValidationTitle>Status de Validação</ValidationTitle>
+            <ValidationTitle>
+              {t("documents.document_details.validation.title") || "Status de Validação"}
+            </ValidationTitle>
             <ValidationStatus>
               <StatusBadge
                 status={
@@ -312,16 +348,17 @@ const DocumentDetailsPage: React.FC = () => {
                       : 'rejected'
                 }
               >
-                {validationStatus === null ? '⏳ Pendente'
-                  : validationStatus ? '✅ Aprovado'
-                    : '❌ Rejeitado'}
+                {getValidationStatusText()}
               </StatusBadge>
             </ValidationStatus>
 
             {validationStatus === null && (
               <ValidatorActions>
                 <ValidatorNote
-                  placeholder="Adicione uma observação (opcional)..."
+                  placeholder={
+                    t("documents.document_details.validation.add_note") ||
+                    "Adicione uma observação (opcional)..."
+                  }
                   value={validatorNote}
                   onChange={(e) => setValidatorNote(e.target.value)}
                 />
@@ -330,13 +367,13 @@ const DocumentDetailsPage: React.FC = () => {
                     onClick={() => handleValidation(true)}
                     style={{ flex: 1, background: '#28a745' }}
                   >
-                    ✅ Aprovar
+                    ✅ {t("documents.document_details.validation.approve") || "Aprovar"}
                   </Button>
                   <Button
                     onClick={() => handleValidation(false)}
                     style={{ flex: 1, background: '#dc3545' }}
                   >
-                    ❌ Rejeitar
+                    ❌ {t("documents.document_details.validation.reject") || "Rejeitar"}
                   </Button>
                 </div>
               </ValidatorActions>
@@ -352,61 +389,63 @@ const DocumentDetailsPage: React.FC = () => {
           <CommentsSection>
             <CommentsTitle>
               <FiMessageSquare />
-              Comentários
+              {t("documents.document_details.comments.title") || "Comentários"}
             </CommentsTitle>
 
             <CommentsList>
               {!comments || comments.length === 0 ? (
                 <EmptyComments>
-                  Nenhum comentário ainda. Seja o primeiro a comentar!
+                  {t("documents.document_details.comments.count") || "Nenhum comentário ainda. Seja o primeiro a comentar!"}
                 </EmptyComments>
               ) : (
-                comments
-                  .filter((c) => c.DocumentId === document.documentId && (c.IsActive ?? true))
-                  .sort((a, b) => {
-                    const dateA = new Date(a.CreatedAt || '').getTime();
-                    const dateB = new Date(b.CreatedAt || '').getTime();
-                    return dateA - dateB;
-                  })
-                  .map((comment) => (
+                comments.map((comment) => {
+                  const commentAuthor = activeUser.find(u => u.UserId === comment.UserId);
+                  return (
                     <CommentItem key={comment.CommentId}>
                       <CommentHeader>
                         <CommentAuthor>
-                          {activeUser.find(u => u.UserId === comment.UserId)?.Name || 'Usuário'}
+                          {commentAuthor?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}
                         </CommentAuthor>
                         <CommentDate>
-                          {comment.CreatedAt
-                            ? new Date(comment.CreatedAt).toLocaleString('pt-BR')
-                            : ''}
+                          {formatDate(comment.CreatedAt!)}
                         </CommentDate>
                       </CommentHeader>
                       <CommentText>{comment.Content}</CommentText>
                     </CommentItem>
-                  ))
+                  );
+                })
               )}
             </CommentsList>
 
             <CommentForm>
               <CommentTextarea
+                placeholder={
+                  t("documents.document_details.comments.placeholder") ||
+                  "Digite seu comentário..."
+                }
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Digite seu comentário..."
               />
-              <Button onClick={handleAddComment}>
-                Adicionar Comentário
+              <Button
+                onClick={handleAddComment}
+                style={{ alignSelf: 'flex-start', marginTop: '8px' }}
+              >
+                {t("documents.document_details.comments.add_comment") || "Adicionar Comentário"}
               </Button>
             </CommentForm>
           </CommentsSection>
         </RightColumn>
       </DetailsContainer>
+
+      {/* Modal para resumo */}
       <Modal
         isOpen={showResume.isOpen}
         onClose={showResume.close}
-        title={t("documents.markdown_editor")}
+        title={t("documents.document_details.generate_summary") || "Resumo do Documento"}
       >
         <MarkdownEditorPage
           initialContent={summary}
-          onSave={()=> {}}
+          onSave={() => { }}
           onCancel={showResume.close}
         />
       </Modal>

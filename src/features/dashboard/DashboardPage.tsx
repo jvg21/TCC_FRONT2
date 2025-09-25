@@ -155,7 +155,7 @@ const StatCard = styled.div`
 
 const StatCardHeader = styled.div`
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 16px;
 `;
@@ -392,19 +392,21 @@ const DashboardPage: React.FC = () => {
     loadStats();
   }, []);
 
+  // Função de saudação usando traduções - seguindo padrão identificado
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Bom dia";
-    if (hour < 18) return "Boa tarde";
-    return "Boa noite";
+    if (hour < 12) return t("dashboard.greeting.good_morning") || "Bom dia";
+    if (hour < 18) return t("dashboard.greeting.good_afternoon") || "Boa tarde";
+    return t("dashboard.greeting.good_evening") || "Boa noite";
   };
 
+  // Função de perfil usando traduções - seguindo padrão identificado
   const getProfileName = (profile: number) => {
     switch (profile) {
-      case 1: return "Administrador";
-      case 2: return "Gerente";
-      case 3: return "Funcionário";
-      default: return "Usuário";
+      case 1: return t("dashboard.profiles.administrator") || "Administrador";
+      case 2: return t("dashboard.profiles.manager") || "Gerente";
+      case 3: return t("dashboard.profiles.employee") || "Funcionário";
+      default: return t("dashboard.profiles.user") || "Usuário";
     }
   };
 
@@ -412,9 +414,10 @@ const DashboardPage: React.FC = () => {
     navigate(route);
   };
 
+  // Array de estatísticas usando traduções - seguindo padrão identificado
   const statCards = [
     {
-      title: "Total de Usuários",
+      title: t("dashboard.stats.total_users") || "Total de Usuários",
       value: stats.totalUsers,
       change: "+12%",
       positive: true,
@@ -424,7 +427,7 @@ const DashboardPage: React.FC = () => {
       route: "/user"
     },
     {
-      title: "Documentos",
+      title: t("dashboard.stats.documents") || "Documentos",
       value: stats.totalDocuments,
       change: "+28%",
       positive: true,
@@ -434,7 +437,7 @@ const DashboardPage: React.FC = () => {
       route: "/document"
     },
     {
-      title: "Tarefas Concluídas",
+      title: t("dashboard.stats.completed_tasks") || "Tarefas Concluídas",
       value: `${stats.completedTasks}/${stats.totalTasks}`,
       change: "+15%",
       positive: true,
@@ -446,16 +449,16 @@ const DashboardPage: React.FC = () => {
   ];
 
   return (
-    <PageLayout title="Dashboard">
+    <PageLayout title={t("dashboard.title") || "Dashboard"}>
       <DashboardContainer>
         {/* Welcome Section */}
         <WelcomeSection>
           <WelcomeContent>
             <WelcomeTitle>
-              {getGreeting()}, {user?.Name || "Usuário"}!
+              {getGreeting()}, {user?.Name || t("dashboard.profiles.user") || "Usuário"}!
             </WelcomeTitle>
             <WelcomeSubtitle>
-              {getProfileName(user?.Profile || 0)} • Bem-vindo ao seu painel de controle
+              {getProfileName(user?.Profile || 0)} • {t("dashboard.stats.welcome_to_control_panel") || "Bem-vindo ao seu painel de controle"}
             </WelcomeSubtitle>
           </WelcomeContent>
         </WelcomeSection>
@@ -473,14 +476,12 @@ const DashboardPage: React.FC = () => {
                 <StatCardValue>{stat.value}</StatCardValue>
                 <StatCardChange positive={stat.positive}>
                   <FiTrendingUp size={14} />
-                  {stat.change} vs mês anterior
+                  {stat.change} {t("dashboard.stats.vs_previous_month") || "vs mês anterior"}
                 </StatCardChange>
               </StatCard>
             );
           })}
         </StatsGrid>
-
-
       </DashboardContainer>
     </PageLayout>
   );

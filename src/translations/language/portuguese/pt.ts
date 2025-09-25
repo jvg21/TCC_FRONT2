@@ -291,7 +291,23 @@ export const ptTranslations = {
         title: "Comentários",
         placeholder: "Digite seu comentário...",
         add_comment: "Adicionar Comentário",
-        count: "Comentários"
+        count: "Comentários",
+      }
+    },
+    messages: {
+      success: {
+        document_approved: "Documento aprovado com sucesso!",
+        document_rejected: "Documento rejeitado com sucesso!",
+        comment_added: "Comentário adicionado com sucesso!",
+        document_saved: "Documento salvo com sucesso!"
+      },
+      error: {
+        document_not_found: "Documento não encontrado",
+        user_not_found: "Usuário não encontrado",
+        folder_not_found: "Pasta não encontrada",
+        empty_content: "O conteúdo do documento está vazio",
+        validation_failed: "Erro ao validar documento",
+        comment_failed: "Erro ao adicionar comentário"
       }
     }
   },
@@ -340,7 +356,28 @@ export const ptTranslations = {
     welcome: "Bem-vindo ao Documentin",
     overview: "Visão Geral",
     recent_activities: "Atividades Recentes",
-    statistics: "Estatísticas"
+    statistics: "Estatísticas",
+
+    greeting: {
+      good_morning: "Bom dia",
+      good_afternoon: "Boa tarde",
+      good_evening: "Boa noite"
+    },
+
+    stats: {
+      total_users: "Total de Usuários",
+      documents: "Documentos",
+      completed_tasks: "Tarefas Concluídas",
+      vs_previous_month: "vs mês anterior",
+      welcome_to_control_panel: "Bem-vindo ao seu painel de controle"
+    },
+
+    profiles: {
+      administrator: "Administrador",
+      manager: "Gerente",
+      employee: "Funcionário",
+      user: "Usuário"
+    }
   },
 
   // Configurações
