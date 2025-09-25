@@ -83,12 +83,38 @@ const PasswordToggle = styled.button`
   color: ${({ theme }) => theme.colors.muted};
   cursor: pointer;
   padding: 4px;
-  border-radius: 4px;
-  transition: color 0.2s ease;
   
   &:hover {
     color: ${({ theme }) => theme.colors.text};
   }
+`;
+
+const PasswordStrengthIndicator = styled.div<{ strength: number }>`
+  height: 4px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: ${({ strength }) => strength}%;
+    background: ${({ strength, theme }) => 
+      strength < 33 ? '#ef4444' : 
+      strength < 66 ? '#f59e0b' : 
+      theme.colors.success || '#10b981'
+    };
+    transition: all 0.3s ease;
+  }
+`;
+
+const PasswordHint = styled.p`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.muted};
+  margin: 4px 0 0 0;
 `;
 
 const ResetButton = styled(Button)`
@@ -111,42 +137,10 @@ const BackToLogin = styled.button`
   font-size: 14px;
   cursor: pointer;
   text-decoration: none;
-  margin-top: 16px;
   
   &:hover {
     text-decoration: underline;
   }
-`;
-
-const PasswordStrengthIndicator = styled.div<{ strength: number }>`
-  height: 4px;
-  width: 100%;
-  background: ${({ theme }) => theme.colors.background};
-  border-radius: 2px;
-  margin-top: 8px;
-  position: relative;
-  overflow: hidden;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: ${({ strength }) => strength}%;
-    background: ${({ strength, theme }) => 
-      strength < 33 ? '#ef4444' : 
-      strength < 66 ? '#f59e0b' : 
-      theme.colors.success || '#10b981'
-    };
-    transition: all 0.3s ease;
-  }
-`;
-
-const PasswordHint = styled.p`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.muted};
-  margin: 4px 0 0 0;
 `;
 
 const ThemeToggle = styled.div`
@@ -187,6 +181,92 @@ const ResetPassword: React.FC = () => {
   const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0;
   const isFormValid = passwordStrength === 100 && passwordsMatch;
 
+  // Função para obter texto de força da senha traduzido
+  const getPasswordStrengthText = () => {
+    const strengthTexts = {
+      pt: {
+        veryWeak: "Senha muito fraca",
+        weak: "Senha fraca", 
+        moderate: "Senha moderada",
+        strong: "Senha forte",
+        veryStrong: "Senha muito forte"
+      },
+      en: {
+        veryWeak: "Very weak password",
+        weak: "Weak password",
+        moderate: "Moderate password", 
+        strong: "Strong password",
+        veryStrong: "Very strong password"
+      },
+      es: {
+        veryWeak: "Contraseña muy débil",
+        weak: "Contraseña débil",
+        moderate: "Contraseña moderada",
+        strong: "Contraseña fuerte", 
+        veryStrong: "Contraseña muy fuerte"
+      }
+    };
+
+    const currentLang = t("language") || 'pt';
+    const texts = strengthTexts[currentLang as keyof typeof strengthTexts] || strengthTexts.pt;
+
+    if (passwordStrength < 25) return texts.veryWeak;
+    if (passwordStrength >= 25 && passwordStrength < 50) return texts.weak;
+    if (passwordStrength >= 50 && passwordStrength < 75) return texts.moderate;
+    if (passwordStrength >= 75 && passwordStrength < 100) return texts.strong;
+    return texts.veryStrong;
+  };
+
+  // Função para obter texto de confirmação de senha traduzido
+  const getPasswordMatchText = () => {
+    const matchTexts = {
+      pt: { match: "Senhas conferem", noMatch: "Senhas não conferem" },
+      en: { match: "Passwords match", noMatch: "Passwords don't match" },
+      es: { match: "Las contraseñas coinciden", noMatch: "Las contraseñas no coinciden" }
+    };
+
+    const currentLang = t("language") || 'pt';
+    const texts = matchTexts[currentLang as keyof typeof matchTexts] || matchTexts.pt;
+    
+    return passwordsMatch ? texts.match : texts.noMatch;
+  };
+
+  // Função para obter placeholders traduzidos
+  const getPlaceholders = () => {
+    const placeholders = {
+      pt: { newPassword: "Nova senha", confirmPassword: "Confirmar nova senha" },
+      en: { newPassword: "New password", confirmPassword: "Confirm new password" },
+      es: { newPassword: "Nueva contraseña", confirmPassword: "Confirmar nueva contraseña" }
+    };
+
+    const currentLang = t("language") || 'pt';
+    return placeholders[currentLang as keyof typeof placeholders] || placeholders.pt;
+  };
+
+  // Função para obter textos de botões traduzidos
+  const getButtonTexts = () => {
+    const buttonTexts = {
+      pt: { updating: "Atualizando...", update: "Atualizar Senha", backToLogin: "Voltar ao Login" },
+      en: { updating: "Updating...", update: "Update Password", backToLogin: "Back to Login" },
+      es: { updating: "Actualizando...", update: "Actualizar Contraseña", backToLogin: "Volver al Login" }
+    };
+
+    const currentLang = t("language") || 'pt';
+    return buttonTexts[currentLang as keyof typeof buttonTexts] || buttonTexts.pt;
+  };
+
+  // Função para obter subtítulo traduzido
+  const getSubtitle = () => {
+    const subtitles = {
+      pt: "Redefina sua senha",
+      en: "Reset your password", 
+      es: "Restablece tu contraseña"
+    };
+
+    const currentLang = t("language") || 'pt';
+    return subtitles[currentLang as keyof typeof subtitles] || subtitles.pt;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) return;
@@ -202,6 +282,9 @@ const ResetPassword: React.FC = () => {
     }
   };
 
+  const placeholders = getPlaceholders();
+  const buttonTexts = getButtonTexts();
+
   return (
     <Container>
       <ThemeToggle>
@@ -210,43 +293,50 @@ const ResetPassword: React.FC = () => {
 
       <ResetCard>
         <Logo>
-          <LogoText>Documentin</LogoText>
-          <Subtitle>Redefina sua senha</Subtitle>
+          <LogoText>{t("login.title") || "Documentin"}</LogoText>
+          <Subtitle>{getSubtitle()}</Subtitle>
         </Logo>
 
         <Form onSubmit={handleSubmit}>
           <InputGroup>
             <StyledInput
               type={showPassword ? "text" : "password"}
-              placeholder="Nova senha"
+              placeholder={placeholders.newPassword}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               disabled={loading}
               required
             />
+            <PasswordToggle
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </PasswordToggle>
             <PasswordStrengthIndicator strength={passwordStrength} />
             <PasswordHint>
-              {passwordStrength < 25 && "Senha muito fraca"}
-              {passwordStrength >= 25 && passwordStrength < 50 && "Senha fraca"}
-              {passwordStrength >= 50 && passwordStrength < 75 && "Senha moderada"}
-              {passwordStrength >= 75 && passwordStrength < 100 && "Senha forte"}
-              {passwordStrength === 100 && "Senha muito forte"}
+              {getPasswordStrengthText()}
             </PasswordHint>
           </InputGroup>
 
           <InputGroup>
             <StyledInput
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirmar nova senha"
+              placeholder={placeholders.confirmPassword}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={loading}
               required
             />
-           
+            <PasswordToggle
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </PasswordToggle>
             {confirmPassword.length > 0 && (
               <PasswordHint style={{ color: passwordsMatch ? '#10b981' : '#ef4444' }}>
-                {passwordsMatch ? "Senhas conferem" : "Senhas não conferem"}
+                {getPasswordMatchText()}
               </PasswordHint>
             )}
           </InputGroup>
@@ -255,12 +345,12 @@ const ResetPassword: React.FC = () => {
             type="submit"
             disabled={loading || !isFormValid}
           >
-            {loading ? "Atualizando..." : "Atualizar Senha"}
+            {loading ? buttonTexts.updating : buttonTexts.update}
           </ResetButton>
 
           <div style={{ textAlign: "center" }}>
             <BackToLogin onClick={() => navigate("/login")}>
-              Voltar ao Login
+              {buttonTexts.backToLogin}
             </BackToLogin>
           </div>
         </Form>
