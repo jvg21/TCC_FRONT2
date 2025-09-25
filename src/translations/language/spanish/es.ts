@@ -282,6 +282,22 @@ export const esTranslations = {
         add_comment: "Agregar Comentario",
         count: "Comentarios"
       }
+    },
+    messages: {
+      success: {
+        document_approved: "¡Documento aprobado con éxito!",
+        document_rejected: "¡Documento rechazado con éxito!",
+        comment_added: "¡Comentario agregado con éxito!",
+        document_saved: "¡Documento guardado con éxito!"
+      },
+      error: {
+        document_not_found: "Documento no encontrado",
+        user_not_found: "Usuario no encontrado",
+        folder_not_found: "Carpeta no encontrada",
+        empty_content: "El contenido del documento está vacío",
+        validation_failed: "Error al validar documento",
+        comment_failed: "Error al agregar comentario"
+      }
     }
   },
 
@@ -462,7 +478,28 @@ export const esTranslations = {
     welcome: "Bienvenido a Documentin",
     overview: "Resumen",
     recent_activities: "Actividades Recientes",
-    statistics: "Estadísticas"
+    statistics: "Estadísticas",
+
+    greeting: {
+      good_morning: "Buenos días",
+      good_afternoon: "Buenas tardes",
+      good_evening: "Buenas noches"
+    },
+
+    stats: {
+      total_users: "Total de Usuarios",
+      documents: "Documentos",
+      completed_tasks: "Tareas Completadas",
+      vs_previous_month: "vs mes anterior",
+      welcome_to_control_panel: "Bienvenido a su panel de control"
+    },
+
+    profiles: {
+      administrator: "Administrador",
+      manager: "Gerente",
+      employee: "Empleado",
+      user: "Usuario"
+    }
   },
 
   // Configuraciones

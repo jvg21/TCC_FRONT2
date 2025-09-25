@@ -279,7 +279,23 @@ export const enTranslations = {
         title: "Comments",
         placeholder: "Type your comment...",
         add_comment: "Add Comment",
-        count: "Comments"
+        count: "Comments",
+      }
+    },
+    messages: {
+      success: {
+        document_approved: "Document approved successfully!",
+        document_rejected: "Document rejected successfully!",
+        comment_added: "Comment added successfully!",
+        document_saved: "Document saved successfully!"
+      },
+      error: {
+        document_not_found: "Document not found",
+        user_not_found: "User not found",
+        folder_not_found: "Folder not found",
+        empty_content: "Document content is empty",
+        validation_failed: "Failed to validate document",
+        comment_failed: "Failed to add comment"
       }
     }
   },
@@ -329,7 +345,28 @@ export const enTranslations = {
     welcome: "Welcome to Documentin",
     overview: "Overview",
     recent_activities: "Recent Activities",
-    statistics: "Statistics"
+    statistics: "Statistics",
+
+    greeting: {
+      good_morning: "Good morning",
+      good_afternoon: "Good afternoon",
+      good_evening: "Good evening"
+    },
+
+    stats: {
+      total_users: "Total Users",
+      documents: "Documents",
+      completed_tasks: "Completed Tasks",
+      vs_previous_month: "vs previous month",
+      welcome_to_control_panel: "Welcome to your control panel"
+    },
+
+    profiles: {
+      administrator: "Administrator",
+      manager: "Manager",
+      employee: "Employee",
+      user: "User"
+    }
   },
 
   // Settings
