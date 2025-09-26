@@ -16,9 +16,11 @@ import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
 import { ActionButtons } from "../../components/lib/ActionButtons";
+import { useCompanies } from "../companies/useCompanies";
 
 const UserPage: React.FC = () => {
   const { activeUser, deactiveUser, create, update, softDelete } = useUser();
+  const {activeCompanies} = useCompanies()
   const [searchStatus, setSearchStatus] = useState<number>(1)
   const User = searchStatus === 1 ? activeUser : searchStatus === 2 ? deactiveUser : [...activeUser, ...deactiveUser]
   const [editing, setEditing] = useState<User | null>(null);
@@ -26,7 +28,8 @@ const UserPage: React.FC = () => {
 
   const modal = useModal();
   const { t } = useTranslation();
-  const { userProfile } = useAuthContext()
+  const { userProfile,user } = useAuthContext()
+  const isDev = user?.Profile === 1;
 
   const Columns = (onEdit: (c: User) => void, onToggleStatus: (id: number) => void): ColumnDef<User>[] => {
     const baseCols: ColumnDef<User>[] = [
@@ -44,6 +47,15 @@ const UserPage: React.FC = () => {
         render: (row) => <ActiveLabel IsActive={row.IsActive} />
       },
     ];
+
+    if(isDev){
+      baseCols.push({
+        key: "CompanyId", header: t("users.company"), render: (row) => {
+          const company = activeCompanies.find(c => c.CompanyId === row.CompanyId);
+          return company ? company.Name : "-";
+        }
+      })
+    }
     if (userProfile) {
       baseCols.push({
         key: "actions",
