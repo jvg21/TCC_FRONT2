@@ -227,6 +227,22 @@ export const enTranslations = {
     updated_at: "Updated at",
     is_active: "Status",
     creator: "Creator",
+    tags: "Tags",
+    no_content: "No content added",
+    edit_content: "Edit Content",
+    select_folder: "Select folder",
+
+    filters: {
+      hide: "Hide",
+      show: "Show",
+      date_range: "Date Range",
+      author: "Author",
+      tag: "Tag",
+      all_authors: "All authors",
+      all_tags: "All tags",
+      clear_filters: "Clear filters",
+      advanced_filters: "Advanced filters"
+    },
 
     tabs: {
       general: "General",
@@ -295,8 +311,8 @@ export const enTranslations = {
         folder_not_found: "Folder not found",
         empty_content: "Document content is empty",
         validation_failed: "Failed to validate document",
-        comment_failed: "Failed to add comment"
-      }
+        comment_failed: "Failed to add comment",
+      },
     }
   },
 

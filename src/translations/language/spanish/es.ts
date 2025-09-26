@@ -227,6 +227,22 @@ export const esTranslations = {
     updated_at: "Actualizado en",
     is_active: "Estado",
     creator: "Creador",
+    tags: "Etiquetas",
+    no_content: "Sin contenido agregado",
+    edit_content: "Editar Contenido",
+    select_folder: "Seleccionar carpeta",
+
+    filters: {
+      hide: "Ocultar",
+      show: "Mostrar",
+      date_range: "Rango de Fechas",
+      author: "Autor",
+      tag: "Etiqueta",
+      all_authors: "Todos los autores",
+      all_tags: "Todas las etiquetas",
+      clear_filters: "Limpiar filtros",
+      advanced_filters: "Filtros avanzados"
+    },
 
     tabs: {
       general: "General",
@@ -296,8 +312,8 @@ export const esTranslations = {
         folder_not_found: "Carpeta no encontrada",
         empty_content: "El contenido del documento está vacío",
         validation_failed: "Error al validar documento",
-        comment_failed: "Error al agregar comentario"
-      }
+        comment_failed: "Error al agregar comentario",
+      },
     }
   },
 

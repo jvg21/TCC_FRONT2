@@ -231,6 +231,22 @@ export const ptTranslations = {
     updated_at: "Atualizado em",
     is_active: "Status",
     creator: "Criador",
+    tags: "Tags",
+    no_content: "Nenhum conteúdo adicionado",
+    edit_content: "Editar Conteúdo",
+    select_folder: "Selecionar pasta",
+
+    filters: {
+      hide: "Ocultar",
+      show: "Mostrar",
+      date_range: "Período",
+      author: "Autor",
+      tag: "Tag",
+      all_authors: "Todos os autores",
+      all_tags: "Todas as tags",
+      clear_filters: "Limpar filtros",
+      advanced_filters: "Filtros avançados"
+    },
 
 
     tabs: {
@@ -307,8 +323,8 @@ export const ptTranslations = {
         folder_not_found: "Pasta não encontrada",
         empty_content: "O conteúdo do documento está vazio",
         validation_failed: "Erro ao validar documento",
-        comment_failed: "Erro ao adicionar comentário"
-      }
+        comment_failed: "Erro ao adicionar comentário",
+      },
     }
   },
 
