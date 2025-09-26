@@ -6,7 +6,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { ThemeSelector } from "../../components/common/ThemeSelector";
 import { useLogin } from "./useLogin";
 import { useNavigate } from "react-router-dom";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -58,10 +58,8 @@ const InputGroup = styled.div`
   position: relative;
 `;
 
-
 const StyledInput = styled(Input)`
   input {
-    padding-left: 40px;
     height: 48px;
     border: 1px solid rgba(0, 0, 0, 0.08);
     transition: all 0.2s ease;
@@ -92,14 +90,15 @@ const PasswordToggle = styled.button`
   }
 `;
 
-const RememberForgot = styled.div`
+const ForgotLinkContainer = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end;
   margin: -8px 0 8px 0;
 `;
 
-const ForgotLink = styled.a`
+const ForgotLink = styled.button`
+  background: none;
+  border: none;
   font-size: 14px;
   color: ${({ theme }) => theme.colors.primary};
   text-decoration: none;
@@ -123,7 +122,13 @@ const LoginButton = styled(Button)`
   }
 `;
 
-const LoginPage = () => {
+const ThemeToggle = styled.div`
+  position: absolute;
+  top: 24px;
+  right: 24px;
+`;
+
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -131,6 +136,7 @@ const LoginPage = () => {
 
   const { login } = useLogin();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,8 +144,7 @@ const LoginPage = () => {
     try {
       await login(email, password);
       navigate("/");
-      window.location.reload(); // ← ADICIONAR ESTA LINHA
-
+      window.location.reload();
     } catch (error) {
       console.error("Login failed:", error);
     } finally {
@@ -147,26 +152,28 @@ const LoginPage = () => {
     }
   };
 
-
   const canSubmit = email.trim().length > 0 && password.length > 0;
 
   return (
     <Container>
-      <ThemeSelector />
+      <ThemeToggle>
+        <ThemeSelector />
+      </ThemeToggle>
 
       <LoginCard>
         <Logo>
-          <LogoText>Documentin</LogoText>
-          <Subtitle>Faça login em sua conta</Subtitle>
+          <LogoText>{t("login.title") || "Documentin"}</LogoText>
+          <Subtitle>{t("login.subtitle") || "Faça login em sua conta"}</Subtitle>
         </Logo>
 
         <Form onSubmit={handleSubmit}>
           <InputGroup>
             <StyledInput
               type="email"
-              placeholder="Digite seu e-mail"
+              placeholder={t("login.email_placeholder") || "Digite seu e-mail"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
               required
             />
           </InputGroup>
@@ -174,28 +181,39 @@ const LoginPage = () => {
           <InputGroup>
             <StyledInput
               type={showPassword ? "text" : "password"}
-              placeholder="Digite sua senha"
+              placeholder={t("login.password_placeholder") || "Digite sua senha"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
               required
             />
- 
+            <PasswordToggle
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              disabled={isLoading}
+            >
+              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </PasswordToggle>
           </InputGroup>
 
-          <RememberForgot>
-            <div></div> {/* Espaço vazio para alinhar o link à direita */}
+          <ForgotLinkContainer>
             <ForgotLink
               type="button"
               onClick={() => navigate("/request-password-recovery")}
+              disabled={isLoading}
             >
-              {t("login.forgot_password")}
+              {t("login.forgot_password") || "Esqueceu a senha?"}
             </ForgotLink>
-          </RememberForgot>
+          </ForgotLinkContainer>
+
           <LoginButton
             type="submit"
             disabled={!canSubmit || isLoading}
           >
-            {isLoading ? "Entrando..." : "Entrar"}
+            {isLoading 
+              ? (t("login.logging_in") || "Entrando...") 
+              : (t("login.login_button") || "Entrar")
+            }
           </LoginButton>
         </Form>
       </LoginCard>

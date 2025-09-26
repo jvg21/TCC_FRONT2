@@ -419,10 +419,33 @@ export const esTranslations = {
     send_button: "Enviar token",
     sending: "Enviando...",
     back_to_login: "Iniciar sesión",
-    remembered_password: "¿Recordaste tu contraseña?"
+    remembered_password: "¿Recordaste tu contraseña?",
+    request_new_code: "Solicitar nuevo código"
   },
 
-  // SEÇÕES ADICIONADAS (que estavam faltando)
+  reset_password: {
+    title: "Documentin",
+    subtitle: "Restablece tu contraseña",
+    new_password_placeholder: "Nueva contraseña",
+    confirm_password_placeholder: "Confirmar nueva contraseña",
+    updating: "Actualizando...",
+    update_password: "Actualizar Contraseña",
+    back_to_login: "Volver al Login",
+    password_strength: {
+      very_weak: "Contraseña muy débil",
+      weak: "Contraseña débil",
+      moderate: "Contraseña moderada",
+      strong: "Contraseña fuerte",
+      very_strong: "Contraseña muy fuerte"
+    },
+    password_match: {
+      match: "Las contraseñas coinciden",
+      no_match: "Las contraseñas no coinciden"
+    }
+  },
+
+
+
 
   // Notificações/Mensagens
   notifications: {

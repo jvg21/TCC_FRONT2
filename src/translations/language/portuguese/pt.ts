@@ -347,8 +347,31 @@ export const ptTranslations = {
     send_button: "Enviar token",
     sending: "Enviando...",
     back_to_login: "Fazer login",
-    remembered_password: "Lembrou sua senha?"
+    remembered_password: "Lembrou sua senha?",
+    request_new_code: "Solicitar novo código",
   },
+
+  reset_password: {
+    title: "Documentin",
+    subtitle: "Redefina sua senha",
+    new_password_placeholder: "Nova senha",
+    confirm_password_placeholder: "Confirmar nova senha",
+    updating: "Atualizando...",
+    update_password: "Atualizar Senha",
+    back_to_login: "Voltar ao Login",
+    password_strength: {
+      very_weak: "Senha muito fraca",
+      weak: "Senha fraca",
+      moderate: "Senha moderada",
+      strong: "Senha forte",
+      very_strong: "Senha muito forte"
+    },
+    password_match: {
+      match: "Senhas conferem",
+      no_match: "Senhas não conferem"
+    }
+  },
+
 
   // Dashboard
   dashboard: {

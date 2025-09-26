@@ -169,6 +169,15 @@ const ValidateRecoveryToken: React.FC = () => {
     navigate(`/request-password-recovery?email=${encodeURIComponent(email)}`);
   };
 
+  // Função para obter texto traduzido do link "Solicitar novo código"
+  const getRequestNewCodeText = () => {
+    const currentLang = t("language") || 'pt';
+    return t("token_reset.request_new_code") || 
+           (currentLang === 'en' ? "Request new code" : 
+            currentLang === 'es' ? "Solicitar nuevo código" : 
+            "Solicitar novo código");
+  };
+
   return (
     <Container>
       <ThemeToggle>
@@ -177,38 +186,43 @@ const ValidateRecoveryToken: React.FC = () => {
 
       <TokenCard>
         <Logo>
-          <LogoText>{t("token_reset.title")}</LogoText>
-          <Subtitle>{t("token_reset.subtitle")}</Subtitle>
+          <LogoText>{t("token_reset.title") || "Documentin"}</LogoText>
+          <Subtitle>{t("token_reset.subtitle") || "Recupere o acesso à sua conta"}</Subtitle>
         </Logo>
 
         <Form onSubmit={handleSubmit}>
+          <div>
             <TokenInput
               type="text"
-              placeholder={t("token_reset.token_placeholder")}
+              placeholder={t("token_reset.token_placeholder") || "Digite seu token"}
               value={token}
               onChange={handleTokenChange}
               maxLength={6}
               disabled={loading}
               required
             />
+          </div>
 
           <ValidateButton
             type="submit"
             disabled={loading || token.length !== 6}
           >
-            {loading ? t("token_reset.sending") : t("token_reset.send_button")}
+            {loading 
+              ? (t("token_reset.sending") || "Enviando...") 
+              : (t("token_reset.send_button") || "Enviar token")
+            }
           </ValidateButton>
 
           <ActionLinks>
             <ActionLink onClick={requestNewCode}>
-              Solicitar novo código
+              {getRequestNewCodeText()}
             </ActionLink>
             
             <ActionLink 
               className="secondary"
               onClick={() => navigate("/login")}
             >
-              {t("token_reset.back_to_login")}
+              {t("token_reset.back_to_login") || "Fazer login"}
             </ActionLink>
           </ActionLinks>
         </Form>

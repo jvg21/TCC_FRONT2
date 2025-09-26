@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Input } from "../../components/common/Input";
 import { Button } from "../../components/common/Button";
+import { Input } from "../../components/common/Input";
 import { ThemeSelector } from "../../components/common/ThemeSelector";
 import { usePasswordRecovery } from "./usePasswordRecovery";
 import { useNavigate } from "react-router-dom";
@@ -87,7 +87,6 @@ const BackToLogin = styled.button`
   font-size: 14px;
   cursor: pointer;
   text-decoration: none;
-  margin-top: 16px;
   
   &:hover {
     text-decoration: underline;
@@ -130,14 +129,14 @@ const RequestPasswordRecovery: React.FC = () => {
 
       <RecoveryCard>
         <Logo>
-          <LogoText>{t("password_recovery.title")}</LogoText>
-          <Subtitle>{t("password_recovery.subtitle")}</Subtitle>
+          <LogoText>{t("password_recovery.title") || "Documentin"}</LogoText>
+          <Subtitle>{t("password_recovery.subtitle") || "Recupere o acesso à sua conta"}</Subtitle>
         </Logo>
 
         <Form onSubmit={handleSubmit}>
           <StyledInput
             type="email"
-            placeholder={t("password_recovery.email_placeholder")}
+            placeholder={t("password_recovery.email_placeholder") || "Digite seu e-mail"}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
@@ -148,12 +147,15 @@ const RequestPasswordRecovery: React.FC = () => {
             type="submit"
             disabled={loading || !email.trim()}
           >
-            {loading ? t("password_recovery.sending") : t("password_recovery.send_button")}
+            {loading 
+              ? (t("password_recovery.sending") || "Enviando...") 
+              : (t("password_recovery.send_button") || "Enviar link de recuperação")
+            }
           </RecoveryButton>
 
           <div style={{ textAlign: "center" }}>
             <BackToLogin onClick={() => navigate("/login")}>
-              {t("password_recovery.back_to_login")}
+              {t("password_recovery.back_to_login") || "Fazer login"}
             </BackToLogin>
           </div>
         </Form>

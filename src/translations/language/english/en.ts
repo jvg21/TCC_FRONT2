@@ -336,8 +336,32 @@ export const enTranslations = {
     send_button: "Send token",
     sending: "Sending...",
     back_to_login: "Sign in",
-    remembered_password: "Remembered your password?"
+    remembered_password: "Remembered your password?",
+    request_new_code: "Request new code"
   },
+
+  reset_password: {
+    title: "Documentin",
+    subtitle: "Reset your password",
+    new_password_placeholder: "New password",
+    confirm_password_placeholder: "Confirm new password",
+    updating: "Updating...",
+    update_password: "Update Password",
+    back_to_login: "Back to Login",
+    password_strength: {
+      very_weak: "Very weak password",
+      weak: "Weak password",
+      moderate: "Moderate password",
+      strong: "Strong password",
+      very_strong: "Very strong password"
+    },
+    password_match: {
+      match: "Passwords match",
+      no_match: "Passwords don't match"
+    }
+  },
+
+
 
   // Dashboard
   dashboard: {
