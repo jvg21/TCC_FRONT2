@@ -16,7 +16,6 @@ import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
 import { ActionButtons } from "../../components/lib/ActionButtons";
-import { DocumentViewer } from "./DocumentViewer";
 import { MarkdownEditorPage } from "../markdown-editor/MarkdownEditorPage";
 import { useUser } from "../user/useUser";
 import { useFolder } from "../folder/useFolder";
@@ -332,10 +331,11 @@ const DocumentPage: React.FC = () => {
     }
   };
 
-  const handleSaveContent = () => {
+   const handleSaveContent = (newContent: string) => {
     if (contentSaveCallback) {
-      contentSaveCallback(editingContent);
+      contentSaveCallback(newContent);
     }
+    editorModal.close();
   };
 
   const handleTabChange = (tabId: string) => {
@@ -713,20 +713,6 @@ const DocumentPage: React.FC = () => {
         />
       </Modal>
 
-      <Modal
-        isOpen={viewModal.isOpen}
-        onClose={viewModal.close}
-        title={t("documents.view_document")}
-      >
-        {viewing && (
-          <DocumentViewer
-            title={viewing.Title || t("documents.untitled_document")}
-            content={viewing.Content || ""}
-            onEdit={handleEditFromViewer}
-            onClose={viewModal.close}
-          />
-        )}
-      </Modal>
 
       <Modal
         isOpen={editorModal.isOpen}
