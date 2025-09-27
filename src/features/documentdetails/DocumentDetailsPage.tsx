@@ -356,8 +356,7 @@ const DocumentDetailsPage: React.FC = () => {
               <ValidatorActions>
                 <ValidatorNote
                   placeholder={
-                    t("documents.document_details.validation.add_note") ||
-                    "Adicione uma observação (opcional)..."
+                    t("documents.document_details.validation.add_note")
                   }
                   value={validatorNote}
                   onChange={(e) => setValidatorNote(e.target.value)}

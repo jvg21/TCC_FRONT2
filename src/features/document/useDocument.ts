@@ -354,7 +354,7 @@ const getDocumentToEdit = async () => {
       if (isValid === true) {
         status = 1
       }
-      if (!isValid === false) {
+      if (isValid === false) {
         status = 2
       }
 
