@@ -5,10 +5,12 @@ import { Select } from "../../components/common/Select";
 import { Button } from "../../components/common/Button";
 import { useTranslation } from "react-i18next";
 import { useFolder } from "../folder/useFolder";
+import { useTemplate } from "../templates/useTemplate";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
 import { FiEdit } from "react-icons/fi";
 import styled from "styled-components";
+import { notificationActions } from "../notifications/useNotification";
 
 const ContentPreview = styled.div`
   border: 1px solid rgba(0,0,0,0.08);
@@ -33,6 +35,19 @@ const EditorButton = styled(Button)`
   gap: 8px;
 `;
 
+const TemplateInfo = styled.div`
+  background: #e3f2fd;
+  border: 1px solid #2196f3;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #1565c0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
 interface DocumentFormProps {
     initial?: Partial<Document>;
     onSave: (data: Partial<Document>) => void;
@@ -49,15 +64,20 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     const [Title, setTitle] = useState(initial.Title ?? "");
     const [Content, setContent] = useState(initial.Content ?? "");
     const [FolderId, setFolderId] = useState(initial.FolderId?.toString() ?? "");
+    const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+    const [appliedTemplate, setAppliedTemplate] = useState<string>("");
     const { t } = useTranslation();
     
     // Integração com hooks
     const { activeFolder } = useFolder();
+    const { activeTemplate } = useTemplate();
 
     useEffect(() => {
         setTitle(initial.Title ?? "");
         setContent(initial.Content ?? "");
         setFolderId(initial.FolderId?.toString() ?? "");
+        setSelectedTemplateId("");
+        setAppliedTemplate("");
     }, [initial.Title, initial.Content, initial.UserId, initial.FolderId]);
 
     const validateFields = () => {
@@ -77,7 +97,27 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
             Content, 
             FolderId: parseInt(FolderId) 
         });
+    };
+
+    const handleTemplateSelection = (templateId: string) => {
+        setSelectedTemplateId(templateId);
         
+        if (templateId) {
+            const selectedTemplate = activeTemplate.find(template => 
+                template.TemplateId.toString() === templateId
+            );
+            
+            if (selectedTemplate) {
+                setContent(selectedTemplate.Content);
+                setAppliedTemplate(selectedTemplate.Name);
+                notificationActions.showNotification(
+                    t("documents.template_applied") || "Template aplicado com sucesso!", 
+                    'success'
+                );
+            }
+        } else {
+            setAppliedTemplate("");
+        }
     };
 
     const handleEditContent = () => {
@@ -93,7 +133,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
             <Row>
                 <Col>
                     <Input 
-                        label={t("documents.title_field")} 
+                        label={t("documents.title_field") || "Título"} 
                         maxLength={50} 
                         minLength={3} 
                         required 
@@ -102,16 +142,40 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
                     />
                 </Col>
             </Row>
+
+            <Row>
+                <Col>
+                    <Select 
+                        label={t("documents.template") || "Template"} 
+                        value={selectedTemplateId} 
+                        onChange={(e) => handleTemplateSelection(e.target.value)}
+                        options={[
+                            { value: "", label: t("documents.select_template") || "Selecionar template (opcional)" },
+                            ...activeTemplate.map(template => ({
+                                value: template.TemplateId.toString(),
+                                label: template.Name
+                            }))
+                        ]} 
+                    />
+                </Col>
+            </Row>
             
             <Row>
                 <Col>
                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: '#333' }}>
-                        {t("documents.content")} *
+                        {t("documents.content") || "Conteúdo"} *
                     </label>
+                    
+                    {appliedTemplate && (
+                        <TemplateInfo>
+                            ✅ {t("documents.template_applied_from") || "Conteúdo aplicado do template"}: <strong>{appliedTemplate}</strong>
+                        </TemplateInfo>
+                    )}
+                    
                     <ContentPreview>
                         {Content ? 
                             `${Content.substring(0, 100)}${Content.length > 100 ? '...' : ''}` : 
-                            t('documents.no_content')
+                            t('documents.no_content') || 'Clique em "Editar Conteúdo" para adicionar texto'
                         }
                     </ContentPreview>
                     <EditorButton 
@@ -119,7 +183,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
                         onClick={handleEditContent}
                     >
                         <FiEdit />
-                       { t("documents.edit_content")}
+                        {t("documents.edit_content") || "Editar Conteúdo"}
                     </EditorButton>
                 </Col>
             </Row>
@@ -127,11 +191,11 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
             <Row>
                 <Col>
                     <Select 
-                        label={t("documents.folder")} 
+                        label={t("documents.folder") || "Pasta"} 
                         value={FolderId} 
                         onChange={(e) => setFolderId(e.target.value)}
                         options={[
-                            { value: "", label:(t("documents.select_folder")) },
+                            { value: "", label: t("documents.select_folder") || "Selecionar pasta" },
                             ...activeFolder.map(folder => ({
                                 value: folder.FolderId.toString(),
                                 label: folder.Name
@@ -143,10 +207,10 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                 <Button variant="ghost" type="button" onClick={onCancel}>
-                    {t("actions.cancel")}
+                    {t("actions.cancel") || "Cancelar"}
                 </Button>
                 <Button type="submit" disabled={!canSave}>
-                    {t("actions.save")}
+                    {t("actions.save") || "Salvar"}
                 </Button>
             </div>
         </form>

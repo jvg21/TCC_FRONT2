@@ -189,9 +189,12 @@ export const useDocument = () => {
 
   const update = async (id: number, updates: Partial<Document>) => {
     try {
+
+      console.log('Atualizando documento ID:', id, 'com dados:', updates);
+
       const camelCasePayload = {
         documentId: id,
-        ...transformPayloadToCamelCase(updates)
+        ...updates
       };
 
       const response = await fetch(`${apiUrl}/Document/UpdateDocument`, {
