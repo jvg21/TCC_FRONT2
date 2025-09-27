@@ -53,7 +53,7 @@ const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
-  const { GetDocumentValidationById, update, updateValidationStatus } = useDocument();
+  const { GetDocumentValidationById, update, updateValidationStatus,transformSingleApiData } = useDocument();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
@@ -91,8 +91,9 @@ const DocumentDetailsPage: React.FC = () => {
       hasLoadedRef.current = true;
       try {
         const response = await GetDocumentValidationById(Number(id));
+        console.log('Resposta da API:', response);
         if (response && !response.erro) {
-          setDocument(response.objeto.document);
+          setDocument(transformSingleApiData(response.objeto.document));
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status);
         } else {
@@ -111,8 +112,8 @@ const DocumentDetailsPage: React.FC = () => {
 
   // Carregar comentários quando o documento for carregado
   useEffect(() => {
-    if (document?.documentId) {
-      getCommentsByDocumentId(document.documentId);
+    if (document?.DocumentId) {
+      getCommentsByDocumentId(document.DocumentId);
     }
   }, [document?.documentId]);
 
@@ -124,7 +125,7 @@ const DocumentDetailsPage: React.FC = () => {
     if (!document) return;
 
     try {
-      await update(document.documentId, {
+      await update(document.DocumentId, {
         ...document,
         content: documentContent,
       });
@@ -133,7 +134,6 @@ const DocumentDetailsPage: React.FC = () => {
         'success'
       );
     } catch (error) {
-      console.error('Erro ao salvar documento:', error);
       notificationActions.showError(
         t("messages.error.generic") || 'Erro ao salvar documento'
       );
@@ -146,7 +146,7 @@ const DocumentDetailsPage: React.FC = () => {
     try {
       await createComment({
         Content: newComment,
-        DocumentId: document.documentId,
+        DocumentId: document.DocumentId,
         UserId: user!.UserId,
       });
       setNewComment('');
@@ -164,18 +164,18 @@ const DocumentDetailsPage: React.FC = () => {
 
     try {
       setValidationStatus(isValid);
-      await updateValidationStatus(document.documentId, isValid);
+      await updateValidationStatus(document.DocumentId, isValid);
 
       if (isValid) {
         await createComment({
           Content: `✅ ${t("documents.document_details.validation.approve") || "Documento aprovado"} ${t("documents.document_details.created_by") || "por"} ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
-          DocumentId: document.documentId,
+          DocumentId: document.DocumentId,
           UserId: user!.UserId
         });
       } else {
         await createComment({
           Content: `❌ ${t("documents.document_details.validation.reject") || "Documento rejeitado"} ${t("documents.document_details.created_by") || "por"} ${user?.Name}: ${validatorNote}`,
-          DocumentId: document.documentId,
+          DocumentId: document.DocumentId,
           UserId: user!.UserId
         });
       }
@@ -240,8 +240,8 @@ const DocumentDetailsPage: React.FC = () => {
   }
 
   // Buscar informações do criador e pasta seguindo o padrão do projeto
-  const creator = activeUser.find(u => u.UserId === document.userId);
-  const folder = activeFolder.find(f => f.FolderId === document.folderId);
+  const creator = activeUser.find(u => u.UserId === document.UserId);
+  const folder = activeFolder.find(f => f.FolderId === document.FolderId);
 
   return (
     <PageLayout
@@ -264,7 +264,7 @@ const DocumentDetailsPage: React.FC = () => {
         <LeftColumn>
           <DocumentCard>
             <DocumentHeader>
-              <DocumentTitle>{document.title}</DocumentTitle>
+              <DocumentTitle>{document.Title}</DocumentTitle>
             </DocumentHeader>
 
             <DocumentMeta>
@@ -305,7 +305,7 @@ const DocumentDetailsPage: React.FC = () => {
                     {t("documents.document_details.created_at") || "Criado em"}
                   </div>
                   <MetaValue>
-                    {formatDate(document.createdAt)}
+                    {formatDate(document.CreatedAt)}
                   </MetaValue>
                 </div>
               </MetaItem>
@@ -319,7 +319,7 @@ const DocumentDetailsPage: React.FC = () => {
                     {t("documents.document_details.updated_at") || "Atualizado em"}
                   </div>
                   <MetaValue>
-                    {formatDate(document.updatedAt)}
+                    {formatDate(document.UpdatedAt)}
                   </MetaValue>
                 </div>
               </MetaItem>
@@ -381,7 +381,7 @@ const DocumentDetailsPage: React.FC = () => {
 
           {/* Seção de Tags */}
           {document?.documentId && (
-            <DocumentTags documentId={document.documentId} />
+            <DocumentTags documentId={document.DocumentId} />
           )}
 
           {/* Seção de Comentários */}

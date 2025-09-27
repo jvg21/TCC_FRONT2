@@ -190,12 +190,13 @@ export const useDocument = () => {
   const update = async (id: number, updates: Partial<Document>) => {
     try {
 
-      console.log('Atualizando documento ID:', id, 'com dados:', updates);
+      // consolelog('Atualizando documento ID:', id, 'com dados:', updates);
 
       const camelCasePayload = {
         documentId: id,
-        ...updates
+        ...transformPayloadToCamelCase(updates)
       };
+      // console.log('Payload de atualização:', camelCasePayload);
 
       const response = await fetch(`${apiUrl}/Document/UpdateDocument`, {
         method: "PUT",
@@ -435,6 +436,7 @@ const getDocumentToEdit = async () => {
     softDelete,
     getById,
     getValidationsByDocumentId,
-    updateValidationStatus
+    updateValidationStatus,
+    transformSingleApiData
   } as const;
 };
