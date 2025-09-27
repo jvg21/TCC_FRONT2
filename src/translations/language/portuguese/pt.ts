@@ -589,5 +589,30 @@ export const ptTranslations = {
     folders: "Pastas",
     documents: "Documentos",
     created_on: "Criado em"
-  }
+  },
+
+  integrations: {
+    title: "Integrações",
+    openai: {
+      title: "Configurar OpenAI",
+      subtitle: "Configure sua API Key da OpenAI para funcionalidades de IA",
+      card_title: "Integração OpenAI",
+      card_description: "Configure sua API Key da OpenAI para habilitar funcionalidades de IA no sistema. Suas chaves são armazenadas de forma segura e criptografada.",
+      api_key_label: "OpenAI API Key",
+      api_key_placeholder: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      api_key_help: "Sua API Key da OpenAI (começa com \"sk-\"). Você pode encontrá-la em",
+      api_key_help_link: "platform.openai.com/api-keys",
+      clear_button: "Limpar",
+      configure_button: "Configurar",
+      configuring_button: "Configurando...",
+      success_message: "API Key da OpenAI configurada com sucesso! A integração está ativa.",
+      error_message: "Erro ao configurar API Key da OpenAI. Verifique se a chave está correta.",
+      validation_error: "Por favor, insira uma API Key válida."
+    }
+  },
+  ai: {
+    summarySuccess: "Resumo gerado com sucesso!",
+    configAddSuccess: "Configuração OpenAI adicionada com sucesso!",
+    configUpdateSuccess: "Configuração OpenAI atualizada com sucesso!"
+  },
 };
