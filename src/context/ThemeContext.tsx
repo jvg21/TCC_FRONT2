@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { ThemeProvider } from "styled-components";
 import { light, dark, type Theme } from "../styles/theme";
 
@@ -11,9 +11,26 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export const ThemeProviderWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [themeName, setThemeName] = useState<"light" | "dark">("light");
-  const toggleTheme = () => setThemeName((t) => (t === "light" ? "dark" : "light"));
+
+  const [themeName, setThemeName] = useState<"light" | "dark">(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return (savedTheme as "light" | "dark") || "light";
+  });
+
+  const toggleTheme = () => {
+    setThemeName((currentTheme) => {
+      const newTheme = currentTheme === "light" ? "dark" : "light";
+      localStorage.setItem('theme', newTheme);
+      return newTheme;
+    });
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', themeName);
+  }, [themeName]);
+
   const theme = themeName === "light" ? light : dark;
+  
   return (
     <ThemeContext.Provider value={{ themeName, toggleTheme, theme }}>
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
