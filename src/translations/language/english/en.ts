@@ -231,6 +231,12 @@ export const enTranslations = {
     no_content: "No content added",
     edit_content: "Edit Content",
     select_folder: "Select folder",
+    template_placeholder: "Select template",
+    apply_template: "Apply Template",
+    template: "Template",
+    template_applied_from: "Content applied from template",
+    select_template: "Select template (optional)",
+    template_applied: "Template applied successfully!",
 
     filters: {
       hide: "Hide",

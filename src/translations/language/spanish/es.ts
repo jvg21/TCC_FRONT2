@@ -231,6 +231,12 @@ export const esTranslations = {
     no_content: "Sin contenido agregado",
     edit_content: "Editar Contenido",
     select_folder: "Seleccionar carpeta",
+    template_placeholder: "Seleccionar plantilla",
+    apply_template: "Aplicar Plantilla",
+    template: "Plantilla",
+    template_applied_from: "Contenido aplicado de la plantilla",
+    select_template: "Seleccionar plantilla (opcional)",
+    template_applied: "¡Plantilla aplicada con éxito!",
 
     filters: {
       hide: "Ocultar",

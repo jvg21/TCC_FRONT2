@@ -235,6 +235,12 @@ export const ptTranslations = {
     no_content: "Nenhum conteúdo adicionado",
     edit_content: "Editar Conteúdo",
     select_folder: "Selecionar pasta",
+    template_placeholder: "Selecionar template",
+    apply_template: "Aplicar Template",
+    template: "Template",
+    template_applied_from: "Conteúdo aplicado do template",
+    select_template: "Selecionar template (opcional)",
+    template_applied: "Template aplicado com sucesso!",
 
     filters: {
       hide: "Ocultar",
