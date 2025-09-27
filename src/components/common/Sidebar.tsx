@@ -398,7 +398,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2 && profile > 0 },
     { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile === 2 && profile > 0 },
     { path: "/document", label: t("navigation.documents"), icon: FiFile, show: profile >=2  },
-    { path: "/templates", label: t("navigation.templates"), icon: FiClipboard, show: profile >=2  },  // MUDANÇA: era FiFile
+    { path: "/templates", label: t("navigation.templates"), icon: FiClipboard, show: profile ===1  }, 
   ];
 
   const toggleSidebar = () => {

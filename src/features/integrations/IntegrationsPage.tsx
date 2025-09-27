@@ -3,7 +3,13 @@ import styled from "styled-components";
 import { FiKey, FiSend, FiCheck, FiAlertCircle } from "react-icons/fi";
 import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
+
 import { useTranslation } from "react-i18next";
+
+import { useAI } from "../ai/useAI";
+import { notificationActions } from "../notifications/useNotification";
+import { t } from "i18next";
+
 
 // Styled Components
 const IntegrationCard = styled.div`
@@ -108,7 +114,7 @@ const ButtonContainer = styled.div`
   }
 `;
 
-const SubmitButton = styled(Button)<{ $loading?: boolean }>`
+const SubmitButton = styled(Button) <{ $loading?: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -146,35 +152,31 @@ const IntegrationsPage: React.FC = () => {
   const [apiKey, setApiKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
   const { t } = useTranslation();
+
+  const { addOpenAIConfig } = useAI()
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!apiKey.trim()) {
-      setStatus({
-        type: 'error',
-        message: t('integrations.openai.validation_error')
-      });
+
+      notificationActions.showError(t('ai.invalidApiKey'));
+
       return;
     }
-
     setLoading(true);
     setStatus(null);
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setStatus({
-        type: 'success',
-        message: t('integrations.openai.success_message')
-      });
-      
+
+      // await new Promise(resolve => setTimeout(resolve, 2000
+      const response = await addOpenAIConfig(apiKey);
+      notificationActions.showNotification(t('ai.configSuccess'), 'success');
+
     } catch (error) {
-      setStatus({
-        type: 'error',
-        message: t('integrations.openai.error_message')
-      });
+      notificationActions.showError(t('ai.configUpdateError'));
     } finally {
       setLoading(false);
     }
@@ -186,12 +188,14 @@ const IntegrationsPage: React.FC = () => {
   };
 
   return (
+
     <PageLayout 
       title={t('integrations.openai.title')}
       actions={
         <div>
           <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
             {t('integrations.openai.subtitle')}
+
           </p>
         </div>
       }
@@ -204,7 +208,9 @@ const IntegrationsPage: React.FC = () => {
           <HeaderInfo>
             <CardTitle>{t('integrations.openai.card_title')}</CardTitle>
             <CardDescription>
+
               {t('integrations.openai.card_description')}
+
             </CardDescription>
           </HeaderInfo>
         </CardHeader>
@@ -223,35 +229,41 @@ const IntegrationsPage: React.FC = () => {
               />
             </InputGroup>
             <HelpText>
+
               {t('integrations.openai.api_key_help')}{' '}
               <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" 
                  style={{ color: '#10a37f', textDecoration: 'none' }}>
                 {t('integrations.openai.api_key_help_link')}
+
               </a>
             </HelpText>
           </FormSection>
 
           <ButtonContainer>
-            <Button 
-              type="button" 
-              variant="ghost" 
+
+            <Button
+              type="button"
+              variant="primary"
+
               onClick={handleClear}
               disabled={loading || !apiKey}
             >
               {t('integrations.openai.clear_button')}
             </Button>
+
             
             <SubmitButton 
               type="submit" 
               variant="primary"
+
               $loading={loading}
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <div style={{ 
-                    width: '16px', 
-                    height: '16px', 
+                  <div style={{
+                    width: '16px',
+                    height: '16px',
                     border: '2px solid transparent',
                     borderTop: '2px solid currentColor',
                     borderRadius: '50%',
