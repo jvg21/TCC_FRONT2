@@ -13,6 +13,8 @@ import {
   FiMenu,
   FiX,
   FiChevronRight,
+  FiLink2,  // ÍCONE PARA INTEGRAÇÕES
+  FiClipboard,  // NOVO ÍCONE PARA TEMPLATES
 } from 'react-icons/fi';
 import { useAuthContext } from '../../context/AuthContext';
 import { useTypedTranslation } from '../../context/LanguageContext';
@@ -163,65 +165,55 @@ const NavItem = styled(Link)<{
   font-size: 14px;
   transition: all 0.2s ease;
   position: relative;
-  justify-content: ${({ $isCollapsed }) =>
-    $isCollapsed ? 'center' : 'flex-start'};
-  width: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
-  height: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
-
+  justify-content: ${({ $isCollapsed }) => ($isCollapsed ? 'center' : 'flex-start')};
+  margin-bottom: 4px;
+  
   svg {
-    flex-shrink: 0;
     width: 20px;
     height: 20px;
-    display: block;
-    ${({ $isCollapsed }) => $isCollapsed && `
-      margin: 0;
-      transform: translateZ(0);
-    `}
+    flex-shrink: 0;
   }
-
+  
   span {
     opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
-    visibility: ${({ $isCollapsed }) => ($isCollapsed ? 'hidden' : 'visible')};
-    transform: ${({ $isCollapsed }) =>
-    $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease;
     white-space: nowrap;
-    width: ${({ $isCollapsed }) => ($isCollapsed ? '0' : 'auto')};
-    overflow: hidden;
   }
-
+  
   &:hover {
-    background: ${({ theme }) => theme.colors.primary}15;
+    background: ${({ theme }) => theme.colors.primary}10;
     color: ${({ theme }) => theme.colors.primary};
   }
-
-  ${({ $isCollapsed }) => $isCollapsed && `
-    &:hover {
-      &::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        left: calc(100% + 8px);
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        white-space: nowrap;
-        z-index: 1000;
-        pointer-events: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      }
+  
+  &[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 12px;
+    padding: 8px 12px;
+    background: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) => theme.colors.background};
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: ${({ $isCollapsed }) => ($isCollapsed ? 1 : 0)};
+    visibility: ${({ $isCollapsed }) => ($isCollapsed ? 'visible' : 'hidden')};
+    transition: all 0.2s ease;
+    
+    @media (max-width: 768px) {
+      display: none;
     }
-  `}
+  }
 `;
 
 const DropdownContainer = styled.div`
-  position: relative;
+  margin-bottom: 4px;
 `;
 
-const DropdownTrigger = styled.div<{
+const DropdownTrigger = styled.button<{
   $isActive: boolean;
   $isCollapsed: boolean;
   $isOpen: boolean;
@@ -232,80 +224,71 @@ const DropdownTrigger = styled.div<{
   padding: ${({ $isCollapsed }) => ($isCollapsed ? '12px' : '12px 16px')};
   margin: ${({ $isCollapsed }) => ($isCollapsed ? '0 6px' : '0')};
   border-radius: 12px;
-  color: ${({ theme, $isActive }) =>
-    $isActive ? theme.colors.primary : theme.colors.muted};
+  border: none;
   background: ${({ theme, $isActive }) =>
     $isActive ? theme.colors.primary + '15' : 'transparent'};
+  color: ${({ theme, $isActive }) =>
+    $isActive ? theme.colors.primary : theme.colors.muted};
   font-weight: ${({ $isActive }) => ($isActive ? '600' : '500')};
   font-size: 14px;
   transition: all 0.2s ease;
-  position: relative;
-  justify-content: ${({ $isCollapsed }) =>
-    $isCollapsed ? 'center' : 'flex-start'};
-  width: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
-  height: ${({ $isCollapsed }) => ($isCollapsed ? '56px' : 'auto')};
   cursor: pointer;
-
+  width: 100%;
+  justify-content: ${({ $isCollapsed }) => ($isCollapsed ? 'center' : 'space-between')};
+  position: relative;
+  
   svg {
-    flex-shrink: 0;
     width: 20px;
     height: 20px;
-    display: block;
-    ${({ $isCollapsed }) => $isCollapsed && `
-      margin: 0;
-      transform: translateZ(0);
-    `}
+    flex-shrink: 0;
   }
-
+  
   span {
     opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
-    visibility: ${({ $isCollapsed }) => ($isCollapsed ? 'hidden' : 'visible')};
-    transform: ${({ $isCollapsed }) =>
-    $isCollapsed ? 'translateX(-10px)' : 'translateX(0)'};
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease;
     white-space: nowrap;
-    width: ${({ $isCollapsed }) => ($isCollapsed ? '0' : 'auto')};
-    overflow: hidden;
   }
-
+  
   &:hover {
-    background: ${({ theme }) => theme.colors.primary}15;
+    background: ${({ theme }) => theme.colors.primary}10;
     color: ${({ theme }) => theme.colors.primary};
   }
-
-  ${({ $isCollapsed }) => $isCollapsed && `
-    &:hover {
-      &::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        left: calc(100% + 8px);
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        white-space: nowrap;
-        z-index: 1000;
-        pointer-events: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      }
+  
+  &[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 12px;
+    padding: 8px 12px;
+    background: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) => theme.colors.background};
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: ${({ $isCollapsed }) => ($isCollapsed ? 1 : 0)};
+    visibility: ${({ $isCollapsed }) => ($isCollapsed ? 'visible' : 'hidden')};
+    transition: all 0.2s ease;
+    
+    @media (max-width: 768px) {
+      display: none;
     }
-  `}
+  }
 `;
 
 const ChevronIcon = styled.div<{ $isCollapsed: boolean; $isOpen: boolean }>`
-  transform: ${({ $isCollapsed, $isOpen }) =>
-    $isCollapsed ? 'translateX(10px)' :
-      $isOpen ? 'rotate(90deg)' : 'rotate(0deg)'};
+  margin-left: auto;
+  opacity: ${({ $isCollapsed }) => ($isCollapsed ? 0 : 1)};
+  transform: ${({ $isOpen }) => ($isOpen ? 'rotate(90deg)' : 'rotate(0deg)')};
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: ${({ $isCollapsed }) => ($isCollapsed ? '0' : '14px')};
-  height: 14px;
-  overflow: hidden;
+  
+  svg {
+    width: ${({ $isCollapsed }) => ($isCollapsed ? '0' : '14px')};
+    height: 14px;
+    overflow: hidden;
+  }
 `;
 
 const DropdownContent = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
@@ -393,7 +376,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
 
-      
       if (mobile && !document.body.hasAttribute('data-sidebar-initialized')) {
         setIsCollapsed(true);
         document.body.setAttribute('data-sidebar-initialized', 'true');
@@ -405,14 +387,9 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  
   const isIntegrationsActive = location.pathname.startsWith('/integrations');
   const isOpenAIActive = location.pathname === '/integrations/openai';
-
-  
   const isFoldersActive = location.pathname === '/folder' || location.pathname === '/CascadeView';
-
-  
   const isTasksActive = location.pathname === '/task' || location.pathname === '/TaskBoardPage' || location.pathname === '/TaskDashboard';
 
   const navigationItems = [
@@ -421,7 +398,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2 && profile > 0 },
     { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile === 2 && profile > 0 },
     { path: "/document", label: t("navigation.documents"), icon: FiFile, show: profile >=2  },
-    { path: "/templates", label: t("navigation.templates"), icon: FiFile, show: profile === 1  },
+    { path: "/templates", label: t("navigation.templates"), icon: FiClipboard, show: profile >=2  },  // MUDANÇA: era FiFile
   ];
 
   const toggleSidebar = () => {
@@ -482,7 +459,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     }
   };
 
-
   useEffect(() => {
     if (isIntegrationsActive && !isCollapsed) {
       setIntegrationsOpen(true);
@@ -495,7 +471,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     }
   }, [isFoldersActive, isCollapsed]);
 
-  
   useEffect(() => {
     if (isTasksActive && !isCollapsed) {
       setTasksOpen(true);
@@ -529,7 +504,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
         <Navigation>
           <NavGroup>
-            {}
+            {/* Itens de navegação principais */}
             {navigationItems
               .filter(item => item.show)
               .map(({ path, label, icon: Icon }) => (
@@ -546,9 +521,47 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                 </NavItem>
               ))}
 
-            {}
+            {/* Pastas - com dropdown */}
             {profile === 2 && profile > 0 && (isCollapsed ? (
-              <IntegrationsNavItem
+              <NavItem
+                to="/folder"
+                $isActive={isFoldersActive}
+                $isCollapsed={isCollapsed}
+                onClick={handleNavItemClick}
+                data-tooltip={t("navigation.folders")}
+              >
+                <FiFolderPlus />
+                <span>{t("navigation.folders")}</span>
+              </NavItem>
+            ) : (
+              <DropdownContainer>
+                <DropdownTrigger
+                  $isActive={isFoldersActive}
+                  $isCollapsed={isCollapsed}
+                  $isOpen={foldersOpen}
+                  onClick={handleFoldersClick}
+                  data-tooltip={t("navigation.folders")}
+                >
+                  <FiFolderPlus />
+                  <span>{t("navigation.folders")}</span>
+                  <ChevronIcon $isCollapsed={isCollapsed} $isOpen={foldersOpen}>
+                    <FiChevronRight />
+                  </ChevronIcon>
+                </DropdownTrigger>
+                <DropdownContent $isOpen={foldersOpen} $isCollapsed={isCollapsed}>
+                  <DropdownItem to="/folder" $isActive={location.pathname === '/folder'}>
+                    {t("navigation.folders")}
+                  </DropdownItem>
+                  <DropdownItem to="/CascadeView" $isActive={location.pathname === '/CascadeView'}>
+                    {t("navigation.cascadeview")}
+                  </DropdownItem>
+                </DropdownContent>
+              </DropdownContainer>
+            ))}
+
+            {/* Tarefas - com dropdown */}
+            {profile === 2 && profile > 0 && (isCollapsed ? (
+              <NavItem
                 to="/task"
                 $isActive={isTasksActive}
                 $isCollapsed={isCollapsed}
@@ -557,7 +570,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               >
                 <FiCheckSquare />
                 <span>{t("navigation.tasks")}</span>
-              </IntegrationsNavItem>
+              </NavItem>
             ) : (
               <DropdownContainer>
                 <DropdownTrigger
@@ -587,47 +600,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               </DropdownContainer>
             ))}
 
-            {}
-            {profile === 2 && profile > 0 && (
-              isCollapsed ? (
-                <IntegrationsNavItem
-                  to="/folder"
-                  $isActive={isFoldersActive}
-                  $isCollapsed={isCollapsed}
-                  onClick={handleNavItemClick}
-                  data-tooltip={t("navigation.folders")}
-                >
-                  <FiFolderPlus />
-                  <span>{t("navigation.folders")}</span>
-                </IntegrationsNavItem>
-              ) : (
-                <DropdownContainer>
-                  <DropdownTrigger
-                    $isActive={isFoldersActive}
-                    $isCollapsed={isCollapsed}
-                    $isOpen={foldersOpen}
-                    onClick={handleFoldersClick}
-                    data-tooltip={t("navigation.folders")}
-                  >
-                    <FiFolderPlus />
-                    <span>{t("navigation.folders")}</span>
-                    <ChevronIcon $isCollapsed={isCollapsed} $isOpen={foldersOpen}>
-                      <FiChevronRight />
-                    </ChevronIcon>
-                  </DropdownTrigger>
-                  <DropdownContent $isOpen={foldersOpen} $isCollapsed={isCollapsed}>
-                    <DropdownItem to="/folder" $isActive={location.pathname === '/folder'}>
-                      {t("navigation.folders")}
-                    </DropdownItem>
-                    <DropdownItem to="/CascadeView" $isActive={location.pathname === '/CascadeView'}>
-                      {t("navigation.cascadeview")}
-                    </DropdownItem>
-                  </DropdownContent>
-                </DropdownContainer>
-              )
-            )}
-
-            {}
+            {/* Integrações - com dropdown */}
             {profile === 2 && profile > 0 && (isCollapsed ? (
               <IntegrationsNavItem
                 to="/integrations/openai"
@@ -636,7 +609,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                 onClick={handleNavItemClick}
                 data-tooltip={t("navigation.integrations")}
               >
-                <FiSettings />
+                <FiLink2 />  {/* MUDANÇA: era FiSettings */}
                 <span>{t("navigation.integrations")}</span>
               </IntegrationsNavItem>
             ) : (
@@ -648,7 +621,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                   onClick={handleIntegrationsClick}
                   data-tooltip={t("navigation.integrations")}
                 >
-                  <FiSettings />
+                  <FiLink2 />  {/* MUDANÇA: era FiSettings */}
                   <span>{t("navigation.integrations")}</span>
                   <ChevronIcon $isCollapsed={isCollapsed} $isOpen={integrationsOpen}>
                     <FiChevronRight />
