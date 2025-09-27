@@ -456,7 +456,7 @@ const DocumentPage: React.FC = () => {
         {/* Filtro de Tag */}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
-            {t("documents.filters.tag") || "Tag"}
+            {t("documents.filters.tag")}
           </label>
           <select
             value={tagFilter || ""}
@@ -469,7 +469,7 @@ const DocumentPage: React.FC = () => {
               fontSize: '14px'
             }}
           >
-            <option value="">{t("documents.filters.all_tags") || "Todas as tags"}</option>
+            <option value="">{t("documents.filters.all_tags")}</option>
             {activeTag.map(tag => (
               <option key={tag.TagId} value={tag.TagId}>
                 {tag.Name}
@@ -511,7 +511,6 @@ const DocumentPage: React.FC = () => {
     </div>
   );
 
-  // Definir as abas com seus respectivos conteúdos
   const tabs = [
     {
       id: "geral",
@@ -526,7 +525,6 @@ const DocumentPage: React.FC = () => {
             description={t("documents.tabs.general_alert_description")}
           />
           
-          {/* Barra de pesquisa com botão de filtros */}
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
             <FilterBar
               columns={columns}

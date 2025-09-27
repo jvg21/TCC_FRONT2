@@ -119,7 +119,7 @@ export const useUser = () => {
     }
   };
 
-  const create = async (payload: Omit<User, "UserId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "CompanyId">) => {
+  const create = async (payload: Omit<User, "UserId" | "CreatedAt" | "UpdatedAt" | "IsActive" >) => {
     try {
       const camelCasePayload = transformPayloadToCamelCase(payload);
 

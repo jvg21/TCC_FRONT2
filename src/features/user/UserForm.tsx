@@ -14,7 +14,7 @@ type Props = {
   initial?: Partial<User>;
   isEditing?: boolean;
   onCancel: () => void;
-  onSave: (data: Omit<User, "UserId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "PreferredLanguage" | "PreferredTheme" | "LastLoginAt" | "CompanyId"> & Partial<User>) => void;
+  onSave: (data: Omit<User, "UserId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "PreferredLanguage" | "PreferredTheme" | "LastLoginAt" > & Partial<User>) => void;
 };
 
 export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onCancel, onSave }) => {
@@ -23,7 +23,8 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
   const [Password, setPassword] = useState(initial.Password ?? "");
   const [Profile, setProfile] = useState(initial.Profile ?? 0);
   const { t } = useTranslation();
-  const { user } = useAuthContext();
+  const { user } = useAuthContext(); 
+  const isDev = user?.Profile === 1;
 
   useEffect(() => {
     setName(initial.Name ?? "");
@@ -84,7 +85,10 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
           { value: "false", label: t("status.disabled") },
           { value: "true", label: t("status.enabled") },
         ]} /></Col>
+
       </Row> */}
+
+
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
         <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
