@@ -99,7 +99,7 @@ export const useAI = () => {
       if (data.erro) {
         // Se não existe configuração, não mostrar erro
         if (data.mensagem !== "configNotFound") {
-          notificationActions.showError(data.mensagem);
+          // notificationActions.showError(data.mensagem);
         }
         setOpenAIConfig(null);
         return null;

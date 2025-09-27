@@ -94,12 +94,12 @@ const DocumentDetailsPage: React.FC = () => {
         if (response && !response.erro) {
           setDocument(response.objeto.document);
           setDocumentContent(response.objeto.document.content || '');
-          setValidationStatus(response.objeto.status ?? response.objeto.document.isValid);
+          setValidationStatus(response.objeto.status);
         } else {
-          setError(t("messages.error.generic") || 'Erro ao carregar documento');
+          setError(t("messages.error.generic") );
         }
       } catch (err) {
-        setError(t("messages.error.generic") || 'Erro ao carregar documento');
+        setError(t("messages.error.generic") );
         console.error(err);
       } finally {
         setLoading(false);
@@ -207,10 +207,10 @@ const DocumentDetailsPage: React.FC = () => {
 
   // Função para obter status de validação traduzido
   const getValidationStatusText = () => {
-    if (validationStatus === null) {
+    if (validationStatus === 0) {
       return `⏳ ${t("documents.document_details.validation.pending") || "Pendente"}`;
     }
-    if (validationStatus) {
+    if (validationStatus === 1) {
       return `✅ ${t("status.completed") || "Aprovado"}`;
     }
     return `❌ ${t("documents.document_details.validation.reject") || "Rejeitado"}`;
@@ -343,8 +343,8 @@ const DocumentDetailsPage: React.FC = () => {
             <ValidationStatus>
               <StatusBadge
                 status={
-                  validationStatus === null ? 'pending'
-                    : validationStatus ? 'approved'
+                  validationStatus === 0 ? 'pending'
+                    : validationStatus === 1 ? 'approved'
                       : 'rejected'
                 }
               >
@@ -352,7 +352,7 @@ const DocumentDetailsPage: React.FC = () => {
               </StatusBadge>
             </ValidationStatus>
 
-            {validationStatus === null && (
+            {validationStatus === 0 && (
               <ValidatorActions>
                 <ValidatorNote
                   placeholder={
@@ -373,7 +373,7 @@ const DocumentDetailsPage: React.FC = () => {
                     onClick={() => handleValidation(false)}
                     style={{ flex: 1, background: '#dc3545' }}
                   >
-                    ❌ {t("documents.document_details.validation.reject") || "Rejeitar"}
+                    ❌ {t("documents.document_details.validation.reject")}
                   </Button>
                 </div>
               </ValidatorActions>
