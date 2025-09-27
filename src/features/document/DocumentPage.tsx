@@ -22,8 +22,9 @@ import { useFolder } from "../folder/useFolder";
 import { useNavigate } from "react-router-dom";
 import { TabContainer } from "../../components/common/TabContainer";
 import { useTag } from "../tag/useTag";
+import { useThemeContext } from "../../context/ThemeContext";
 
-// Componente para renderizar tags de forma assíncrona
+
 const DocumentTagsCell: React.FC<{ documentId: number }> = ({ documentId }) => {
   const [tags, setTags] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -346,26 +347,41 @@ const DocumentPage: React.FC = () => {
 
   // Componente InfoAlert
   const InfoAlert = ({ type, title, description }: { type: string; title: string; description: string }) => {
-    const colors = {
-      info: { bg: '#e7f3ff', border: '#2196F3', icon: 'ℹ️' },
-      success: { bg: '#e8f5e9', border: '#4CAF50', icon: '✅' },
-      warning: { bg: '#fff3e0', border: '#FF9800', icon: '⚠️' },
-    };
-    const color = colors[type as keyof typeof colors] || colors.info;
-
-    return (
-      <div style={{
-        background: color.bg,
-        border: `1px solid ${color.border}`,
-        borderRadius: '8px',
-        padding: '12px',
-        marginBottom: '16px',
-        fontSize: '14px'
-      }}>
-        {color.icon} <strong>{title}:</strong> {description}
-      </div>
-    );
+  const { theme } = useThemeContext();
+  
+  const colors = {
+    info: { 
+      bg: `${theme.colors.primary}15`, 
+      border: theme.colors.primary, 
+      icon: 'ℹ️' 
+    },
+    success: { 
+      bg: '#e8f5e9', 
+      border: '#4CAF50', 
+      icon: '✅' 
+    },
+    warning: { 
+      bg: '#fff3e0', 
+      border: '#FF9800', 
+      icon: '⚠️' 
+    },
   };
+  const color = colors[type as keyof typeof colors] || colors.info;
+
+  return (
+    <div style={{
+      background: color.bg,
+      border: `1px solid ${color.border}`,
+      borderRadius: '8px',
+      padding: '12px',
+      marginBottom: '16px',
+      fontSize: '14px',
+      color: theme.colors.text
+    }}>
+      {color.icon} <strong>{title}:</strong> {description}
+    </div>
+  );
+};
 
   // Componente EmptyState
   const EmptyState = ({ icon, title, description }: { icon: string; title: string; description: string }) => (

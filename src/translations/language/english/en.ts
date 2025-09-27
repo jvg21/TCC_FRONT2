@@ -578,7 +578,32 @@ export const enTranslations = {
     folders: "Folders",
     documents: "Documents",
     created_on: "Created on"
-  }
+  },
+
+  integrations: {
+    title: "Integrations",
+    openai: {
+      title: "Configure OpenAI",
+      subtitle: "Configure your OpenAI API Key for AI functionalities",
+      card_title: "OpenAI Integration",
+      card_description: "Configure your OpenAI API Key to enable AI functionalities in the system. Your keys are stored securely and encrypted.",
+      api_key_label: "OpenAI API Key",
+      api_key_placeholder: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      api_key_help: "Your OpenAI API Key (starts with \"sk-\"). You can find it at",
+      api_key_help_link: "platform.openai.com/api-keys",
+      clear_button: "Clear",
+      configure_button: "Configure",
+      configuring_button: "Configuring...",
+      success_message: "OpenAI API Key configured successfully! Integration is active.",
+      error_message: "Error configuring OpenAI API Key. Please verify the key is correct.",
+      validation_error: "Please enter a valid API Key."
+    }
+  },
+  ai: {
+    summarySuccess: "Summary generated successfully!",
+    configAddSuccess: "OpenAI configuration added successfully!",
+    configUpdateSuccess: "OpenAI configuration updated successfully!"
+  },
 
 }
 

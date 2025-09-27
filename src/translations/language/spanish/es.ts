@@ -601,5 +601,31 @@ export const esTranslations = {
       delete: "¿Está seguro de que desea eliminar este elemento?",
       unsaved_changes: "Tiene cambios no guardados. ¿Desea continuar?"
     }
+  },
+
+  integrations: {
+    title: "Integraciones",
+    openai: {
+      title: "Configurar OpenAI",
+      subtitle: "Configure su API Key de OpenAI para funcionalidades de IA",
+      card_title: "Integración OpenAI",
+      card_description: "Configure su API Key de OpenAI para habilitar funcionalidades de IA en el sistema. Sus claves se almacenan de forma segura y encriptada.",
+      api_key_label: "OpenAI API Key",
+      api_key_placeholder: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      api_key_help: "Su API Key de OpenAI (comienza con \"sk-\"). Puede encontrarla en",
+      api_key_help_link: "platform.openai.com/api-keys",
+      clear_button: "Limpiar",
+      configure_button: "Configurar",
+      configuring_button: "Configurando...",
+      success_message: "¡API Key de OpenAI configurada exitosamente! La integración está activa.",
+      error_message: "Error al configurar API Key de OpenAI. Verifique que la clave sea correcta.",
+      validation_error: "Por favor, ingrese una API Key válida."
+    }
+  },
+
+  ai: {
+    summarySuccess: "¡Resumen generado exitosamente!",
+    configAddSuccess: "¡Configuración OpenAI agregada exitosamente!",
+    configUpdateSuccess: "¡Configuración OpenAI actualizada exitosamente!"
   }
 };
