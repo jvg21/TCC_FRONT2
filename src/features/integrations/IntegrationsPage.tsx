@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { FiKey, FiSend, FiCheck, FiAlertCircle } from "react-icons/fi";
 import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
+import { useAI } from "../ai/useAI";
+import { notificationActions } from "../notifications/useNotification";
+import { t } from "i18next";
 
 
 // Styled Components
@@ -108,7 +111,7 @@ const ButtonContainer = styled.div`
   }
 `;
 
-const SubmitButton = styled(Button)<{ $loading?: boolean }>`
+const SubmitButton = styled(Button) <{ $loading?: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -146,34 +149,24 @@ const IntegrationsPage: React.FC = () => {
   const [apiKey, setApiKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const { addOpenAIConfig } = useAI()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!apiKey.trim()) {
-      setStatus({
-        type: 'error',
-        message: 'Por favor, insira uma API Key válida.'
-      });
+      notificationActions.showError(t('ai.invalidApiKey'));
       return;
     }
-
     setLoading(true);
     setStatus(null);
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setStatus({
-        type: 'success',
-        message: 'API Key da OpenAI configurada com sucesso! A integração está ativa.'
-      });
-      
+      // await new Promise(resolve => setTimeout(resolve, 2000
+      const response = await addOpenAIConfig(apiKey);
+      notificationActions.showNotification(t('ai.configSuccess'), 'success');
+
     } catch (error) {
-      setStatus({
-        type: 'error',
-        message: 'Erro ao configurar API Key da OpenAI. Verifique se a chave está correta.'
-      });
+      notificationActions.showError(t('ai.configUpdateError'));
     } finally {
       setLoading(false);
     }
@@ -185,12 +178,11 @@ const IntegrationsPage: React.FC = () => {
   };
 
   return (
-    <PageLayout 
+    <PageLayout
       title="Configurar OpenAI"
       actions={
         <div>
           <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
-            Configure sua API Key da OpenAI para funcionalidades de IA
           </p>
         </div>
       }
@@ -203,7 +195,7 @@ const IntegrationsPage: React.FC = () => {
           <HeaderInfo>
             <CardTitle>OpenAI Integration</CardTitle>
             <CardDescription>
-              Configure sua API Key da OpenAI para habilitar funcionalidades de IA no sistema. 
+              Configure sua API Key da OpenAI para habilitar funcionalidades de IA no sistema.
               Suas chaves são armazenadas de forma segura e criptografada.
             </CardDescription>
           </HeaderInfo>
@@ -224,33 +216,33 @@ const IntegrationsPage: React.FC = () => {
             </InputGroup>
             <HelpText>
               Sua API Key da OpenAI (começa com "sk-"). Você pode encontrá-la em{' '}
-              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" 
-                 style={{ color: '#10a37f', textDecoration: 'none' }}>
+              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer"
+                style={{ color: '#10a37f', textDecoration: 'none' }}>
                 platform.openai.com/api-keys
               </a>
             </HelpText>
           </FormSection>
 
           <ButtonContainer>
-            <Button 
-              type="button" 
-              variant="primary" 
+            <Button
+              type="button"
+              variant="primary"
               onClick={handleClear}
               disabled={loading || !apiKey}
             >
               Limpar
             </Button>
-            
-            <SubmitButton 
-              type="submit" 
+
+            <SubmitButton
+              type="submit"
               $loading={loading}
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <div style={{ 
-                    width: '16px', 
-                    height: '16px', 
+                  <div style={{
+                    width: '16px',
+                    height: '16px',
                     border: '2px solid transparent',
                     borderTop: '2px solid currentColor',
                     borderRadius: '50%',
