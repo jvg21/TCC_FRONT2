@@ -120,6 +120,8 @@ const DocumentPage: React.FC = () => {
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { updateValidationStatus } = useDocument();
+  const { theme } = useThemeContext();
+
 
   const navigate = useNavigate();
 
@@ -347,7 +349,6 @@ const DocumentPage: React.FC = () => {
 
   // Componente InfoAlert
   const InfoAlert = ({ type, title, description }: { type: string; title: string; description: string }) => {
-  const { theme } = useThemeContext();
   
   const colors = {
     info: { 
@@ -356,15 +357,15 @@ const DocumentPage: React.FC = () => {
       icon: 'ℹ️' 
     },
     success: { 
-      bg: '#e8f5e9', 
-      border: '#4CAF50', 
+      bg: theme.colors.primary === '#4f46e5' ? '#065f4615' : '#e8f5e9', 
+      border: theme.colors.primary === '#4f46e5' ? '#065f46' : '#4CAF50', 
       icon: '✅' 
     },
     warning: { 
-      bg: '#fff3e0', 
-      border: '#FF9800', 
+      bg: theme.colors.primary === '#4f46e5' ? '#92400e15' : '#fff3cd', 
+      border: theme.colors.primary === '#4f46e5' ? '#92400e' : '#ffc107', 
       icon: '⚠️' 
-    },
+    }
   };
   const color = colors[type as keyof typeof colors] || colors.info;
 
@@ -399,7 +400,7 @@ const DocumentPage: React.FC = () => {
   // Componente de Filtros Avançados
   const AdvancedFilters = () => (
     <div style={{
-      background: '#f8f9fa',
+      background:`${theme.colors.primary}15`,
       border: '1px solid #dee2e6',
       borderRadius: '8px',
       padding: '16px',
