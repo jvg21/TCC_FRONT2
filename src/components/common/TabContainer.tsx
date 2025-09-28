@@ -1,4 +1,3 @@
-// src/components/common/TabContainer.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -9,8 +8,8 @@ const TabsContainer = styled.div`
 
 const TabsList = styled.div`
   display: flex;
-  border-bottom: 1px solid #e9ecef;
-  background: white;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.muted}30;
+  background: ${({ theme }) => theme.colors.surface};
   border-radius: 8px 8px 0 0;
   overflow-x: auto;
   
@@ -19,11 +18,11 @@ const TabsList = styled.div`
   }
   
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: ${({ theme }) => theme.colors.background};
   }
   
   &::-webkit-scrollbar-thumb {
-    background: #ccc;
+    background: ${({ theme }) => theme.colors.muted};
     border-radius: 2px;
   }
   
@@ -36,24 +35,24 @@ const TabsList = styled.div`
 const TabButton = styled.button<{ $active: boolean }>`
   padding: 12px 20px;
   border: none;
-  background: ${({ $active }) => $active ? '#007bff' : 'transparent'};
-  color: ${({ $active }) => $active ? 'white' : '#6c757d'};
+  background: ${({ $active, theme }) => $active ? theme.colors.primary : 'transparent'};
+  color: ${({ $active, theme }) => $active ? 'white' : theme.colors.muted};
   font-weight: ${({ $active }) => $active ? '600' : '400'};
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
   min-width: fit-content;
-  border-bottom: ${({ $active }) => $active ? '2px solid #007bff' : '2px solid transparent'};
+  border-bottom: ${({ $active, theme }) => $active ? `2px solid ${theme.colors.primary}` : '2px solid transparent'};
 
   &:hover {
-    background: ${({ $active }) => $active ? '#0056b3' : '#f8f9fa'};
-    color: ${({ $active }) => $active ? 'white' : '#495057'};
+    background: ${({ $active, theme }) => $active ? theme.colors.primary : `${theme.colors.muted}20`};
+    color: ${({ $active, theme }) => $active ? 'white' : theme.colors.text};
   }
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 2px ${({ theme }) => `${theme.colors.primary}40`};
   }
 
   @media (max-width: 768px) {
@@ -65,14 +64,14 @@ const TabButton = styled.button<{ $active: boolean }>`
 `;
 
 const TabContent = styled.div`
-  background: white;
+  background: ${({ theme }) => theme.colors.surface};
   border-radius: 0 0 8px 8px;
   min-height: 200px;
 `;
 
 const Badge = styled.span<{ $active: boolean }>`
   margin-left: 8px;
-  background: ${({ $active }) => $active ? 'rgba(255,255,255,0.3)' : '#dc3545'};
+  background: ${({ $active, theme }) => $active ? 'rgba(255,255,255,0.3)' : theme.colors.danger};
   color: white;
   padding: 2px 6px;
   border-radius: 10px;
@@ -87,8 +86,8 @@ interface Tab {
   id: string;
   label: string;
   content: React.ReactNode;
-  badge?: number; // Para mostrar contadores
-  icon?: React.ReactNode; // Para ícones opcionais
+  badge?: number; 
+  icon?: React.ReactNode; 
 }
 
 interface TabContainerProps {

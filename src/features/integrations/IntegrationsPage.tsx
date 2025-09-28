@@ -3,6 +3,9 @@ import styled from "styled-components";
 import { FiKey, FiSend, FiCheck, FiAlertCircle } from "react-icons/fi";
 import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
+
+import { useTranslation } from "react-i18next";
+
 import { useAI } from "../ai/useAI";
 import { notificationActions } from "../notifications/useNotification";
 import { t } from "i18next";
@@ -135,13 +138,13 @@ const StatusMessage = styled.div<{ $type: 'success' | 'error' }>`
   margin-top: 16px;
   
   ${({ $type, theme }) => $type === 'success' ? `
-    background: ${theme.colors.success}15;
-    color: ${theme.colors.success};
-    border: 1px solid ${theme.colors.success}30;
+    background: ${theme.colors.success || '#4CAF50'}15;
+    color: ${theme.colors.success || '#4CAF50'};
+    border: 1px solid ${theme.colors.success || '#4CAF50'}30;
   ` : `
-    background: ${theme.colors.error}15;
-    color: ${theme.colors.error};
-    border: 1px solid ${theme.colors.error}30;
+    background: ${theme.colors.danger || '#f44336'}15;
+    color: ${theme.colors.danger || '#f44336'};
+    border: 1px solid ${theme.colors.danger || '#f44336'}30;
   `}
 `;
 
@@ -149,18 +152,25 @@ const IntegrationsPage: React.FC = () => {
   const [apiKey, setApiKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const { t } = useTranslation();
+
   const { addOpenAIConfig } = useAI()
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!apiKey.trim()) {
+
       notificationActions.showError(t('ai.invalidApiKey'));
+
       return;
     }
     setLoading(true);
     setStatus(null);
     try {
+
       // await new Promise(resolve => setTimeout(resolve, 2000
       const response = await addOpenAIConfig(apiKey);
       notificationActions.showNotification(t('ai.configSuccess'), 'success');
@@ -178,11 +188,14 @@ const IntegrationsPage: React.FC = () => {
   };
 
   return (
-    <PageLayout
-      title="Configurar OpenAI"
+
+    <PageLayout 
+      title={t('integrations.openai.title')}
       actions={
         <div>
           <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
+            {t('integrations.openai.subtitle')}
+
           </p>
         </div>
       }
@@ -193,48 +206,56 @@ const IntegrationsPage: React.FC = () => {
             🤖
           </IconContainer>
           <HeaderInfo>
-            <CardTitle>OpenAI Integration</CardTitle>
+            <CardTitle>{t('integrations.openai.card_title')}</CardTitle>
             <CardDescription>
-              Configure sua API Key da OpenAI para habilitar funcionalidades de IA no sistema.
-              Suas chaves são armazenadas de forma segura e criptografada.
+
+              {t('integrations.openai.card_description')}
+
             </CardDescription>
           </HeaderInfo>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
           <FormSection>
-            <Label htmlFor="apiKey">OpenAI API Key</Label>
+            <Label htmlFor="apiKey">{t('integrations.openai.api_key_label')}</Label>
             <InputGroup>
               <Input
                 id="apiKey"
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                placeholder={t('integrations.openai.api_key_placeholder')}
                 disabled={loading}
               />
             </InputGroup>
             <HelpText>
-              Sua API Key da OpenAI (começa com "sk-"). Você pode encontrá-la em{' '}
-              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer"
-                style={{ color: '#10a37f', textDecoration: 'none' }}>
-                platform.openai.com/api-keys
+
+              {t('integrations.openai.api_key_help')}{' '}
+              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" 
+                 style={{ color: '#10a37f', textDecoration: 'none' }}>
+                {t('integrations.openai.api_key_help_link')}
+
               </a>
             </HelpText>
           </FormSection>
 
           <ButtonContainer>
+
             <Button
               type="button"
               variant="primary"
+
               onClick={handleClear}
               disabled={loading || !apiKey}
             >
-              Limpar
+              {t('integrations.openai.clear_button')}
             </Button>
 
-            <SubmitButton
-              type="submit"
+            
+            <SubmitButton 
+              type="submit" 
+              variant="primary"
+
               $loading={loading}
               disabled={loading}
             >
@@ -248,12 +269,12 @@ const IntegrationsPage: React.FC = () => {
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite'
                   }} />
-                  Configurando...
+                  {t('integrations.openai.configuring_button')}
                 </>
               ) : (
                 <>
                   <FiSend size={16} />
-                  Configurar
+                  {t('integrations.openai.configure_button')}
                 </>
               )}
             </SubmitButton>
