@@ -190,11 +190,11 @@ const DocumentDetailsPage: React.FC = () => {
     if (documentContent) {
       const summaryText = await generateSummary(Number(id));
       console.log(summaryText);
-      setSummary(summaryText.Content || '');
+      setSummary(summaryText.content || '');
       showResume.open();
     } else {
       notificationActions.showError(
-        t("messages.error.validation") || 'O conteúdo do documento está vazio.'
+        t("messages.error.validation") 
       );
     }
   };
