@@ -1,7 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-
+import { useNavigate } from 'react-router-dom';
+import { FiFolder, FiFile, FiChevronRight, FiChevronDown, FiPlus, FiFilter, FiChevronUp } from 'react-icons/fi';
+import PageLayout from '../../components/common/PageLayout';
+import { Button } from '../../components/common/Button';
+import { useFolder } from './useFolder';
+import { useDocument } from '../document/useDocument';
 
 interface Document {
   DocumentId: number;
@@ -14,6 +19,7 @@ interface Document {
   UpdatedAt: string;
   isValid?: boolean | null;
 }
+
 interface Folder {
   FolderId: number;
   Name: string;
@@ -69,6 +75,7 @@ const FilterHeader = styled.div`
   justify-content: space-between;
   margin-bottom: 16px;
   cursor: pointer;
+  color: ${props => props.theme.colors.text};
   
   @media (max-width: 768px) {
     margin-bottom: 12px;
@@ -80,6 +87,7 @@ const FilterHeader = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
+    color: ${props => props.theme.colors.text};
   }
 `;
 
@@ -90,9 +98,11 @@ const FilterToggle = styled.button`
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
+  color: ${props => props.theme.colors.text};
+  transition: all 0.2s ease;
   
   &:hover {
-    background: ${props => props.theme.colors.backgroundSecondary || '#f8f9fa'};
+    background: ${props => props.theme.colors.hover || 'rgba(255, 255, 255, 0.05)'};
   }
   
   @media (max-width: 768px) {
@@ -115,14 +125,22 @@ const SearchInput = styled.input`
   margin-bottom: 12px;
   font-size: 14px;
   box-sizing: border-box;
+  background: ${props => props.theme.colors.background};
+  color: ${props => props.theme.colors.text};
+  transition: all 0.2s ease;
+  
+  &::placeholder {
+    color: ${props => props.theme.colors.textSecondary || 'rgba(255, 255, 255, 0.5)'};
+  }
   
   &:focus {
     outline: none;
     border-color: ${props => props.theme.colors.primary};
+    background: ${props => props.theme.colors.backgroundSecondary || props.theme.colors.background};
   }
   
   @media (max-width: 480px) {
-    font-size: 16px; /* Prevent zoom on iOS */
+    font-size: 16px;
     padding: 10px 12px;
   }
 `;
@@ -152,9 +170,17 @@ const FilterOption = styled.label`
   padding: 4px 0;
   cursor: pointer;
   font-size: 13px;
+  color: ${props => props.theme.colors.text};
+  transition: all 0.2s ease;
   
   input {
     margin: 0;
+    cursor: pointer;
+    accent-color: ${props => props.theme.colors.primary};
+  }
+  
+  &:hover {
+    color: ${props => props.theme.colors.primary};
   }
   
   @media (max-width: 768px) {
@@ -216,80 +242,46 @@ const NodeHeader = styled.div<{ $isFolder: boolean; $isSelected?: boolean }>`
   cursor: pointer;
   transition: all 0.2s ease;
   border: ${props => props.$isSelected ? `2px solid ${props.theme.colors.primary}` : '1px solid transparent'};
-  background: ${props => props.$isSelected ? props.theme.colors.primaryLight : 'transparent'};
-  min-height: 40px;
+  background: ${props => props.$isSelected ? `${props.theme.colors.primary}15` : 'transparent'};
+  color: ${props => props.theme.colors.text};
   
   &:hover {
-    background: ${props => props.theme.colors.backgroundSecondary || '#f8f9fa'};
-    transform: translateX(2px);
+    background: ${props => props.theme.colors.hover || props.theme.colors.backgroundSecondary || 'rgba(255, 255, 255, 0.05)'};
   }
-  
-  ${props => !props.$isFolder && `
-    &:hover {
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-  `}
   
   @media (max-width: 768px) {
-    padding: 10px 12px;
-    gap: 10px;
-    min-height: 44px;
-    
-    &:hover {
-      transform: none;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    padding: 12px 8px;
-    gap: 8px;
-    min-height: 48px;
-    flex-wrap: wrap;
+    padding: 10px;
+    gap: 6px;
   }
 `;
 
-const NodeIcon = styled.div`
+const NodeIcon = styled.span`
   display: flex;
   align-items: center;
-  color: ${props => props.theme.colors.textSecondary};
   flex-shrink: 0;
-  
-  @media (max-width: 480px) {
-    svg {
-      width: 18px;
-      height: 18px;
-    }
-  }
 `;
 
 const NodeTitle = styled.span<{ $isFolder: boolean }>`
-  font-weight: ${props => props.$isFolder ? '500' : '400'};
-  color: ${props => props.$isFolder ? props.theme.colors.text : props.theme.colors.textSecondary};
-  font-size: 14px;
   flex: 1;
-  word-break: break-word;
-  line-height: 1.3;
+  font-weight: ${props => props.$isFolder ? '500' : '400'};
+  font-size: ${props => props.$isFolder ? '14px' : '13px'};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: ${props => props.theme.colors.text};
   
   @media (max-width: 768px) {
-    font-size: 15px;
-    min-width: 0; /* Allow flex shrinking */
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 14px;
-    flex-basis: 100%;
-    margin-top: 2px;
+    font-size: ${props => props.$isFolder ? '15px' : '14px'};
   }
 `;
 
 const NodeMeta = styled.div`
   display: flex;
+  align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: ${props => props.theme.colors.textSecondary};
+  color: ${props => props.theme.colors.textSecondary || props.theme.colors.text};
   flex-shrink: 0;
-  align-items: center;
-  flex-wrap: wrap;
   
   @media (max-width: 768px) {
     gap: 6px;
@@ -297,164 +289,116 @@ const NodeMeta = styled.div`
   }
   
   @media (max-width: 480px) {
-    flex-basis: 100%;
-    gap: 4px;
-    margin-top: 4px;
-    justify-content: flex-start;
+    display: none;
   }
 `;
 
 const StatusBadge = styled.span<{ $status: 'active' | 'inactive' | 'valid' | 'invalid' | 'pending' }>`
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
   font-size: 11px;
   font-weight: 500;
   white-space: nowrap;
   
   ${props => {
+    const isDark = props.theme.mode === 'dark';
+    
     switch (props.$status) {
-      case 'active': return `background: #e7f5e7; color: #2e7a2e;`;
-      case 'inactive': return `background: #f5e7e7; color: #7a2e2e;`;
-      case 'valid': return `background: #e7f5e7; color: #2e7a2e;`;
-      case 'invalid': return `background: #f5e7e7; color: #7a2e2e;`;
-      case 'pending': return `background: #fff3cd; color: #856404;`;
-      default: return `background: #f8f9fa; color: #6c757d;`;
+      case 'active':
+        return isDark ? `
+          background: rgba(40, 167, 69, 0.2);
+          color: #4ade80;
+          border: 1px solid rgba(40, 167, 69, 0.3);
+        ` : `
+          background: #d4edda;
+          color: #155724;
+        `;
+      case 'inactive':
+        return isDark ? `
+          background: rgba(220, 53, 69, 0.2);
+          color: #f87171;
+          border: 1px solid rgba(220, 53, 69, 0.3);
+        ` : `
+          background: #f8d7da;
+          color: #721c24;
+        `;
+      case 'valid':
+        return isDark ? `
+          background: rgba(23, 162, 184, 0.2);
+          color: #22d3ee;
+          border: 1px solid rgba(23, 162, 184, 0.3);
+        ` : `
+          background: #d1ecf1;
+          color: #0c5460;
+        `;
+      case 'invalid':
+        return isDark ? `
+          background: rgba(220, 53, 69, 0.2);
+          color: #f87171;
+          border: 1px solid rgba(220, 53, 69, 0.3);
+        ` : `
+          background: #f8d7da;
+          color: #721c24;
+        `;
+      case 'pending':
+        return isDark ? `
+          background: rgba(255, 193, 7, 0.2);
+          color: #fbbf24;
+          border: 1px solid rgba(255, 193, 7, 0.3);
+        ` : `
+          background: #fff3cd;
+          color: #856404;
+        `;
+      default:
+        return '';
     }
   }}
   
   @media (max-width: 768px) {
-    padding: 3px 8px;
+    padding: 3px 6px;
     font-size: 10px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 2px 6px;
-    font-size: 9px;
-  }
-`;
-
-const EmptyState = styled.div`
-  text-align: center;
-  padding: 40px;
-  color: ${props => props.theme.colors.textSecondary};
-  
-  .icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-  }
-  
-  h3 {
-    margin: 0 0 8px 0;
-    color: ${props => props.theme.colors.text};
-    font-size: 18px;
-  }
-  
-  p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.4;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 30px 20px;
-    
-    .icon {
-      font-size: 40px;
-      margin-bottom: 12px;
-    }
-    
-    h3 {
-      font-size: 16px;
-    }
-    
-    p {
-      font-size: 13px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    padding: 20px 10px;
-    
-    .icon {
-      font-size: 36px;
-      margin-bottom: 8px;
-    }
-    
-    h3 {
-      font-size: 15px;
-    }
-    
-    p {
-      font-size: 12px;
-    }
   }
 `;
 
 const StatsBar = styled.div`
-  padding: 8px 16px;
-  margin-bottom: 12px;
-  background: #f8f9fa;
-  border-radius: 4px;
-  font-size: 13px;
-  color: #6c757d;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: ${props => props.theme.colors.backgroundSecondary || 'rgba(255, 255, 255, 0.03)'};
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: ${props => props.theme.colors.text};
+  border: 1px solid ${props => props.theme.colors.border};
   
-  @media (max-width: 768px) {
-    padding: 10px 12px;
-    font-size: 12px;
-    flex-direction: column;
+  span {
+    display: flex;
+    align-items: center;
     gap: 4px;
-    text-align: center;
   }
   
-  @media (max-width: 480px) {
-    padding: 8px 10px;
-    font-size: 11px;
-    margin-bottom: 8px;
-    border-radius: 6px;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+    padding: 10px;
   }
 `;
 
 const QuickSearch = styled.div`
-  position: sticky;
-  top: 0;
-  background: ${props => props.theme.colors.background};
-  padding: 12px;
-  border-bottom: 1px solid ${props => props.theme.colors.border};
-  margin: -16px -16px 16px -16px;
-  z-index: 10;
+  margin-bottom: 12px;
   
   @media (min-width: 769px) {
     display: none;
   }
-  
-  @media (max-width: 768px) {
-    margin: -12px -12px 12px -12px;
-  }
-  
-  @media (max-width: 480px) {
-    margin: -8px -8px 8px -8px;
-    padding: 8px;
-  }
 `;
-
-
-import { useFolder } from '../folder/useFolder';
-import { useDocument } from '../document/useDocument';
-import { FiFolder, FiFile, FiChevronRight, FiChevronDown, FiPlus, FiSearch, FiFilter, FiChevronUp } from 'react-icons/fi';
-import PageLayout from '../../components/common/PageLayout';
-import { Button } from '../../components/common/Button';
-
 
 export const CascadeView: React.FC = () => {
   const { t } = useTranslation();
-  
+  const navigate = useNavigate();
   
   const { activeFolder, deactiveFolder } = useFolder();
   const { activeDocument, deactiveDocument } = useDocument();
-  
   
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set([1, 2]));
@@ -469,7 +413,6 @@ export const CascadeView: React.FC = () => {
     showInvalid: true,
   });
 
-  
   const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
@@ -486,7 +429,6 @@ export const CascadeView: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -504,7 +446,6 @@ export const CascadeView: React.FC = () => {
     loadData();
   }, [t]);
 
-  
   const expandAllFolders = () => {
     const allFolderIds = new Set<number>();
     const addFolderIds = (folders: any[]) => {
@@ -519,12 +460,10 @@ export const CascadeView: React.FC = () => {
     setExpandedFolders(allFolderIds);
   };
 
-  
   const collapseAllFolders = () => {
     setExpandedFolders(new Set());
   };
 
-  
   const toggleFolder = (folderId: number) => {
     setExpandedFolders(prev => {
       const newSet = new Set(prev);
@@ -537,33 +476,39 @@ export const CascadeView: React.FC = () => {
     });
   };
 
-  
+  // ✅ CORREÇÃO APLICADA: Filtro de documentos corrigido
   const buildTree = useMemo(() => {
     const tree: any[] = [];
     const folderMap = new Map();
     
-    
     const allFolders = filters.showInactive ? [...activeFolder, ...deactiveFolder] : activeFolder;
     const allDocuments = filters.showInactive ? [...activeDocument, ...deactiveDocument] : activeDocument;
-    
     
     const filteredFolders = allFolders.filter(folder => 
       folder.Name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     
-    
-    const filteredDocuments = allDocuments.filter(doc => 
-      doc.Title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      ((filters.showValidated && doc.isValid === true) ||
-       (filters.showPending && doc.isValid === null) ||
-       (filters.showInvalid && doc.isValid === false))
-    );
-    
+    // ✅ CORREÇÃO: Tratamento de documentos sem validação definida
+    const filteredDocuments = allDocuments.filter(doc => {
+      // Primeiro verifica se o título corresponde à busca
+      if (!doc.Title.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      
+      // Se o documento não tem validação definida (undefined), considera como pendente
+      const validationStatus = doc.isValid === undefined ? null : doc.isValid;
+      
+      // Aplica os filtros de validação
+      return (
+        (filters.showValidated && validationStatus === true) ||
+        (filters.showPending && validationStatus === null) ||
+        (filters.showInvalid && validationStatus === false)
+      );
+    });
     
     filteredFolders.forEach(folder => {
       folderMap.set(folder.FolderId, { ...folder, children: [], documents: [] });
     });
-    
     
     filteredDocuments.forEach(doc => {
       const folder = folderMap.get(doc.FolderId);
@@ -571,7 +516,6 @@ export const CascadeView: React.FC = () => {
         folder.documents.push(doc);
       }
     });
-    
     
     folderMap.forEach(folder => {
       if (folder.ParentFolderId === null) {
@@ -587,7 +531,30 @@ export const CascadeView: React.FC = () => {
     return tree;
   }, [activeFolder, deactiveFolder, activeDocument, deactiveDocument, searchTerm, filters]);
 
-  
+  // ✅ NOVO: Auto-expandir todas as pastas ao carregar
+  useEffect(() => {
+    const collectFolderIds = (nodes: any[]): number[] => {
+      const ids: number[] = [];
+      
+      nodes.forEach(node => {
+        if (node.FolderId) {
+          ids.push(node.FolderId);
+        }
+        if (node.children && node.children.length > 0) {
+          ids.push(...collectFolderIds(node.children));
+        }
+      });
+      
+      return ids;
+    };
+    
+    // Expande todas as pastas quando a árvore for construída
+    if (buildTree.length > 0) {
+      const allFolderIds = collectFolderIds(buildTree);
+      setExpandedFolders(new Set(allFolderIds));
+    }
+  }, [buildTree]);
+
   const renderTreeNode = (node: any, level: number = 0): React.ReactNode => {
     const isFolder = 'FolderId' in node && 'Name' in node;
     
@@ -624,17 +591,13 @@ export const CascadeView: React.FC = () => {
           
           {isExpanded && (
             <>
-              {}
               {node.children && node.children.map((child: any) => renderTreeNode(child, level + 1))}
-              
-              {}
               {node.documents && node.documents.map((doc: Document) => renderTreeNode(doc, level + 1))}
             </>
           )}
         </React.Fragment>
       );
     } else {
-      
       const isSelected = selectedNode?.type === 'document' && selectedNode?.id === node.DocumentId;
       
       return (
@@ -642,11 +605,13 @@ export const CascadeView: React.FC = () => {
           <NodeHeader 
             $isFolder={false}
             $isSelected={isSelected}
-            onClick={() => setSelectedNode({ type: 'document', id: node.DocumentId })}
-            onDoubleClick={() => {
-              
-              window.location.href = `/document/${node.DocumentId}`;
+            onClick={() => {
+              setSelectedNode({ type: 'document', id: node.DocumentId });
+              // ✅ NAVEGAÇÃO ADICIONADA: Redireciona para a página do documento
+              navigate(`/document/${node.DocumentId}`);
             }}
+            style={{ cursor: 'pointer' }}
+            title="Clique para abrir o documento"
           >
             <NodeIcon style={{ width: '16px' }} />
             <NodeIcon>
@@ -704,7 +669,6 @@ export const CascadeView: React.FC = () => {
       }
     >
       <CascadeContainer>
-        {}
         <FilterPanel $isCollapsed={filtersCollapsed}>
           <FilterHeader onClick={() => setFiltersCollapsed(!filtersCollapsed)}>
             <h3>
@@ -766,9 +730,7 @@ export const CascadeView: React.FC = () => {
           </FilterContent>
         </FilterPanel>
 
-        {}
         <TreeContainer>
-          {}
           {isMobile && (
             <QuickSearch>
               <SearchInput
@@ -780,7 +742,6 @@ export const CascadeView: React.FC = () => {
             </QuickSearch>
           )}
           
-          {}
           {isMobile && buildTree.length > 0 && (
             <div style={{ 
               display: 'flex', 
@@ -805,14 +766,13 @@ export const CascadeView: React.FC = () => {
             </div>
           )}
           
-          
-            <div>
-              <StatsBar>
-                <span>📁 {t("cascadeview.folders")}: {buildTree.length}</span>
-                <span>📄 {t("cascadeview.documents")}: {buildTree.reduce((acc, folder) => acc + (folder.documents?.length || 0), 0)}</span>
-              </StatsBar>
-              {buildTree.map(node => renderTreeNode(node))}
-            </div>
+          <div>
+            <StatsBar>
+              <span>📁 {t("cascadeview.folders")}: {buildTree.length}</span>
+              <span>📄 {t("cascadeview.documents")}: {buildTree.reduce((acc, folder) => acc + (folder.documents?.length || 0), 0)}</span>
+            </StatsBar>
+            {buildTree.map(node => renderTreeNode(node))}
+          </div>
         </TreeContainer>
       </CascadeContainer>
     </PageLayout>
