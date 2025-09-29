@@ -1,365 +1,103 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import PageLayout from "../../components/common/PageLayout";
-import { useTypedTranslation } from "../../context/LanguageContext";
+import { FiUsers, FiFile, FiCheckSquare, FiTrendingUp } from "react-icons/fi";
+
 import { useAuthContext } from "../../context/AuthContext";
-import { 
-  FiUsers, 
-  FiFile, 
-  FiCheckSquare, 
-  FiTrendingUp
-} from "react-icons/fi";
+
+import { useUser } from "../user/useUser";
+import { useDocument } from "../document/useDocument";
+import { useTask } from "../task/useTask";
+import { useTypedTranslation } from "../../context/LanguageContext";
+import PageLayout from "../../components/common/PageLayout";
 
 const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+  padding: 24px;
 `;
 
 const WelcomeSection = styled.div`
-  background: linear-gradient(135deg, 
-    ${({ theme }) => theme.colors.primary}15, 
-    ${({ theme }) => theme.colors.primary}05
-  );
-  border-radius: 16px;
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}15 0%, ${({ theme }) => theme.colors.primary}05 100%);
+  border-radius: 12px;
   padding: 32px;
   border: 1px solid ${({ theme }) => theme.colors.primary}20;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 200px;
-    height: 200px;
-    background: ${({ theme }) => theme.colors.primary}10;
-    border-radius: 50%;
-    transform: translate(50%, -50%);
-  }
 `;
 
 const WelcomeContent = styled.div`
-  position: relative;
-  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
-const WelcomeTitle = styled.h2`
+const WelcomeTitle = styled.h1`
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 600;
   color: ${({ theme }) => theme.colors.text};
-  margin: 0 0 8px 0;
+  margin: 0;
 `;
 
 const WelcomeSubtitle = styled.p`
   font-size: 16px;
-  color: ${({ theme }) => theme.colors.muted};
-  margin: 0 0 16px 0;
-`;
-
-const QuickStats = styled.div`
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
-const QuickStatItem = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  padding: 16px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 160px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-
-  @media (max-width: 768px) {
-    min-width: auto;
-  }
-`;
-
-const QuickStatIcon = styled.div<{ color: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: ${({ color }) => color}15;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ color }) => color};
-`;
-
-const QuickStatInfo = styled.div``;
-
-const QuickStatValue = styled.div`
-  font-size: 20px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.text};
-`;
-
-const QuickStatLabel = styled.div`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.muted};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-`;
-
-const MainContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin: 0;
 `;
 
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
-  margin-bottom: 24px;
 `;
 
 const StatCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: 16px;
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 12px;
   padding: 24px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
   cursor: pointer;
+  transition: all 0.2s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  }
-
-  &:active {
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px ${({ theme }) => theme.colors.primary}15;
+    border-color: ${({ theme }) => theme.colors.primary}40;
   }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const StatCardHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
 `;
 
 const StatCardIcon = styled.div<{ bgColor: string; color: string }>`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 10px;
   background: ${({ bgColor }) => bgColor};
+  color: ${({ color }) => color};
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ color }) => color};
   margin-bottom: 16px;
 `;
 
 const StatCardTitle = styled.h3`
   font-size: 14px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.muted};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textSecondary};
   margin: 0 0 8px 0;
 `;
 
 const StatCardValue = styled.div`
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
-  margin-bottom: 8px;
+  margin: 0 0 8px 0;
 `;
 
 const StatCardChange = styled.div<{ positive: boolean }>`
   font-size: 14px;
-  font-weight: 600;
-  color: ${({ positive }) => positive ? '#22c55e' : '#ef4444'};
+  font-weight: 500;
+  color: ${({ positive, theme }) => positive ? '#22c55e' : '#ef4444'};
   display: flex;
   align-items: center;
   gap: 4px;
-`;
-
-const Sidebar = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  max-width: 400px;
-  margin: 0 auto;
-`;
-
-const ActivityCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-`;
-
-const ActivityHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-`;
-
-const ActivityIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: ${({ theme }) => theme.colors.primary}15;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const ActivityTitle = styled.h3`
-  font-size: 18px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
-  margin: 0;
-`;
-
-const ActivityList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const ActivityItem = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid rgba(0, 0, 0, 0.04);
-`;
-
-const ActivityItemIcon = styled.div<{ bgColor: string; color: string }>`
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: ${({ bgColor }) => bgColor};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ color }) => color};
-  flex-shrink: 0;
-`;
-
-const ActivityItemContent = styled.div`
-  flex: 1;
-`;
-
-const ActivityItemTitle = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
-  margin-bottom: 4px;
-`;
-
-const ActivityItemDesc = styled.div`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.muted};
-`;
-
-const ActivityItemTime = styled.div`
-  font-size: 11px;
-  color: ${({ theme }) => theme.colors.muted};
-  margin-top: 4px;
-`;
-
-const ChartCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  grid-column: span 2;
-
-  @media (max-width: 1200px) {
-    grid-column: span 1;
-  }
-`;
-
-const ChartHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-`;
-
-const ChartTitle = styled.h3`
-  font-size: 18px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
-  margin: 0;
-`;
-
-const ChartPeriod = styled.select`
-  padding: 8px 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  background: ${({ theme }) => theme.colors.background};
-  color: ${({ theme }) => theme.colors.text};
-  font-size: 14px;
-`;
-
-const SimpleChart = styled.div`
-  height: 200px;
-  background: linear-gradient(135deg, 
-    ${({ theme }) => theme.colors.primary}15, 
-    ${({ theme }) => theme.colors.primary}05
-  );
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.colors.muted};
-  font-size: 14px;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    right: 10%;
-    height: 60%;
-    background: ${({ theme }) => theme.colors.primary}30;
-    border-radius: 8px 8px 0 0;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 30%;
-    right: 30%;
-    height: 40%;
-    background: ${({ theme }) => theme.colors.primary}50;
-    border-radius: 8px 8px 0 0;
-  }
 `;
 
 const DashboardPage: React.FC = () => {
@@ -375,22 +113,42 @@ const DashboardPage: React.FC = () => {
     pendingTasks: 0,
   });
 
+  // Hooks para buscar dados do banco
+  const { get: getUsers, activeUser } = useUser();
+  const { get: getDocuments, activeDocument } = useDocument();
+  const { get: getTasks, activeTask } = useTask();
+
   useEffect(() => {
-    // Simular carregamento de estatísticas
     const loadStats = async () => {
-      // Aqui você faria as chamadas para sua API
-      setStats({
-        totalUsers: 24,
-        totalCompanies: 5,
-        totalDocuments: 142,
-        totalTasks: 89,
-        completedTasks: 67,
-        pendingTasks: 22,
-      });
+      try {
+        // Buscar dados reais do banco de dados
+        await Promise.all([
+          getUsers(),
+          getDocuments(),
+          getTasks()
+        ]);
+      } catch (error) {
+        console.error("Erro ao carregar estatísticas:", error);
+      }
     };
 
     loadStats();
   }, []);
+
+  // Calcular estatísticas baseadas nos dados reais
+  useEffect(() => {
+    const completedTasks = activeTask.filter(task => task.Status === 4).length;
+    const pendingTasks = activeTask.filter(task => task.Status === 1).length;
+
+    setStats({
+      totalUsers: activeUser.length,
+      totalCompanies: 0, // Manter em 0 ou adicionar useCompanies se necessário
+      totalDocuments: activeDocument.length,
+      totalTasks: activeTask.length,
+      completedTasks: completedTasks,
+      pendingTasks: pendingTasks,
+    });
+  }, [activeUser, activeDocument, activeTask]);
 
   // Função de saudação usando traduções - seguindo padrão identificado
   const getGreeting = () => {
