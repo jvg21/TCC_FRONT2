@@ -14,7 +14,9 @@ export const ptTranslations = {
     openai: "OpenAI",
     tasksBoardPage: "Painel de Tarefas",
     tasksDashboard: "Dashboard de Tarefas",
-    cascadeview: "Visualização em Cascata"
+    taskdashboard: "Dashboard de Tarefas",
+    cascadeview: "Visualização em Cascata",
+    taskboard: "Quadro de Tarefas",
   },
 
   // Ações gerais
@@ -91,7 +93,8 @@ export const ptTranslations = {
     passwordRequirements: "A senha deve ter pelo menos 6 caracteres, incluindo maiúscula, minúscula e número",
     createSucess: "Usuário criado com sucesso!",
     updateSucess: "Usuário atualizado com sucesso!",
-    createError: "Erro ao criar usuário"
+    createError: "Erro ao criar usuário",
+    no_select: "Selecione um usuário",
   },
 
   // Grupos
@@ -540,6 +543,7 @@ export const ptTranslations = {
     copy: "Copiar",
     preview: "Visualizar",
     create_template: "Criar Template",
+    change_view: "Alterar Visualização",
 
   },
 

@@ -14,7 +14,9 @@ export const enTranslations = {
     openai: "OpenAI",
     tasksBoardPage: "Tasks Board",
     tasksDashboard: "Tasks Dashboard",
-    cascadeview: "Cascade View"
+    taskdashboard: "Tasks Dashboard",
+    cascadeview: "Cascade View",
+    taskboard: "Task Board",
 
   },
 
@@ -92,7 +94,8 @@ export const enTranslations = {
     passwordRequirements: "Password must have at least 6 characters, including uppercase, lowercase and number",
     createSucess: "User created successfully!",
     updateSucess: "User updated successfully!",
-    createError: "Error creating user"
+    createError: "Error creating user",
+    no_select: "Select a user",
   },
 
   // Groups
@@ -118,7 +121,9 @@ export const enTranslations = {
     select_folder: "Select Folder",
     folders_in_group: "Folders in Group",
     no_folders_in_group: "No folders in group",
-    hide_group_folders: "Hide Group Folders"
+    hide_group_folders: "Hide Group Folders",
+    manage_group_users: "Manage Group Users",
+    group_user_management: "Group User Management",
   },
 
   // Folders
@@ -530,7 +535,7 @@ export const enTranslations = {
     copy: "Copy",
     preview: "Preview",
     create_template: "Create Template",
-    change_view: "Change View"
+    change_view: "Change View",
   },
 
   cascadeview: {

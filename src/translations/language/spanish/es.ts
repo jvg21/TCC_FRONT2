@@ -14,7 +14,9 @@ export const esTranslations = {
     openai: "OpenAI",
     tasksBoardPage: "Panel de Tareas",
     tasksDashboard: "Panel de Tareas",
-    cascadeview: "Vista en Cascada"
+    taskdashboard: "Panel de Tareas",
+    cascadeview: "Vista en Cascada",
+    taskboard: "Tablero de Tareas",
   },
 
   // Acciones generales
@@ -91,7 +93,8 @@ export const esTranslations = {
     passwordRequirements: "La contraseña debe tener al menos 6 caracteres, incluyendo mayúscula, minúscula y número",
     createSucess: "¡Usuario creado exitosamente!",
     updateSucess: "¡Usuario actualizado exitosamente!",
-    createError: "Error al crear usuario"
+    createError: "Error al crear usuario",
+    no_select: "Seleccione un usuario",
   },
 
   // Grupos
@@ -117,7 +120,9 @@ export const esTranslations = {
     select_folder: "Seleccionar Carpeta",
     folders_in_group: "Carpetas en Grupo",
     no_folders_in_group: "Ninguna carpeta en el grupo",
-    hide_group_folders: "Ocultar Carpetas del Grupo"
+    hide_group_folders: "Ocultar Carpetas del Grupo",
+    manage_group_users: "Gestionar Usuarios del Grupo",
+    group_user_management: "Gestión de Usuarios del Grupo",
   },
 
   // Carpetas
@@ -349,7 +354,7 @@ export const esTranslations = {
     copy: "Copiar",
     preview: "Vista previa",
     create_template: "Crear Plantilla",
-    change_view: "Cambiar Vista"
+    change_view: "Cambiar Vista",
   },
 
   // Vista en Cascada
