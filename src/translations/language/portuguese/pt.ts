@@ -163,6 +163,9 @@ export const ptTranslations = {
     addSuccess: "Tag adicionada com sucesso!",
     removeSuccess: "Tag removida com sucesso!",
     createNew: "Criar nova tag:",
+    addDocumentSuccess: "Tag adicionada ao documento com sucesso!",
+    createSuccess: "Criado com Sucesso",
+    createAddSuccess: "Tag Criada com Sucesso"
   },
 
   // Tarefas

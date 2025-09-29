@@ -163,6 +163,9 @@ export const enTranslations = {
     addSuccess: "Tag added successfully!",
     removeSuccess: "Tag removed successfully!",
     createNew: "Create new tag:",
+    addDocumentSuccess: "Tag added to document successfully!",
+    createSuccess: "Create Success",
+    createAddSuccess: "Create Add Success"
   },
 
   // Tasks

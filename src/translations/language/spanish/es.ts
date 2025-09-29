@@ -162,6 +162,10 @@ export const esTranslations = {
     addSuccess: "¡Etiqueta agregada con éxito!",
     removeSuccess: "¡Etiqueta eliminada con éxito!",
     createNew: "Crear nueva etiqueta:",
+    addDocumentSuccess: "¡Etiqueta agregada al documento con éxito!",
+    createSuccess: "Creado Exitosamente",
+    createAddSuccess: "Etiqueta Creada Exitosamente",
+    
   },
 
   // Tareas
