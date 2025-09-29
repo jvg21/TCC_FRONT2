@@ -41,7 +41,7 @@ const FolderPage: React.FC = () => {
         render: (row) => {
           if (!row.ParentFolderId) return t("folders.no_parent_folder");
           const parentFolder = Folder.find(f => f.FolderId === row.ParentFolderId);
-          return parentFolder ? parentFolder.Name :' row.ParentFolderId.toString()';
+          return parentFolder ? parentFolder.Name :'-';
         }
       },
       {
