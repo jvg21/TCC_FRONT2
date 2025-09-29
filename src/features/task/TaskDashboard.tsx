@@ -513,7 +513,7 @@ const TaskDashboard: React.FC = () => {
               </StatProgress>
 
               <StatItem>
-                <StatLabel>{t("tasks.completed") || "Completed"}</StatLabel>
+                <StatLabel>{t("tasks.completed_tasks") || "Completed"}</StatLabel>
                 <StatValue>{taskStats.completed} / {taskStats.total}</StatValue>
               </StatItem>
               <StatProgress>
@@ -521,7 +521,7 @@ const TaskDashboard: React.FC = () => {
               </StatProgress>
 
               <StatItem>
-                <StatLabel>{t("tasks.in_progress") || "In Progress"}</StatLabel>
+                <StatLabel>{t("tasks.in_progress_tasks") || "In Progress"}</StatLabel>
                 <StatValue>{taskStats.inProgress} / {taskStats.total}</StatValue>
               </StatItem>
               <StatProgress>
@@ -529,7 +529,7 @@ const TaskDashboard: React.FC = () => {
               </StatProgress>
 
               <StatItem>
-                <StatLabel>{t("tasks.pending") || "Pending"}</StatLabel>
+                <StatLabel>{t("tasks.pending_tasks") || "Pending"}</StatLabel>
                 <StatValue>{taskStats.pending} / {taskStats.total}</StatValue>
               </StatItem>
               <StatProgress>
