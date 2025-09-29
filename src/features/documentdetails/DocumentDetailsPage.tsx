@@ -10,6 +10,10 @@ import { useComment } from '../comment/useComment';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 import { MarkdownEditor } from '../../components/markdownEditor/MarkdownEditor';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
+import { saveAs } from 'file-saver';
 import { notificationActions } from '../notifications/useNotification';
 import {
   CommentAuthor,
@@ -201,6 +205,113 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
+  // ADICIONAR APÓS handleGenerateSummary:
+
+  // Exportar como PDF
+  const handleExportPDF = async () => {
+    if (!document) return;
+
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const margin = 15;
+      let yPosition = margin;
+
+      // Título
+      pdf.setFontSize(18);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(document.Title, margin, yPosition);
+      yPosition += 10;
+
+      // Metadados
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Criado por: ${creator?.Name || 'N/A'}`, margin, yPosition);
+      yPosition += 6;
+      pdf.text(`Pasta: ${folder?.Name || 'N/A'}`, margin, yPosition);
+      yPosition += 6;
+      pdf.text(`Data de criação: ${formatDate(document.CreatedAt)}`, margin, yPosition);
+      yPosition += 10;
+
+      // Conteúdo
+      pdf.setFontSize(12);
+      const lines = pdf.splitTextToSize(documentContent, pageWidth - 2 * margin);
+      pdf.text(lines, margin, yPosition);
+
+      pdf.save(`${document.Title}.pdf`);
+      notificationActions.showNotification('PDF exportado com sucesso!','success');
+    } catch (error) {
+      console.error('Erro ao exportar PDF:', error);
+      notificationActions.showError('Erro ao exportar PDF');
+    }
+  };
+
+  // Exportar como DOCX
+  const handleExportDOCX = async () => {
+    if (!document) return;
+
+    try {
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              text: document.Title,
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Criado por: ${creator?.Name || 'N/A'}`,
+                  break: 1,
+                }),
+                new TextRun({
+                  text: `Pasta: ${folder?.Name || 'N/A'}`,
+                  break: 1,
+                }),
+                new TextRun({
+                  text: `Data de criação: ${formatDate(document.CreatedAt)}`,
+                  break: 2,
+                }),
+              ],
+            }),
+            new Paragraph({
+              text: documentContent,
+            }),
+          ],
+        }],
+      });
+
+      const blob = await Packer.toBlob(doc);
+      saveAs(blob, `${document.Title}.docx`);
+      notificationActions.showNotification('DOCX exportado com sucesso!', 'success');
+    } catch (error) {
+      console.error('Erro ao exportar DOCX:', error);
+      notificationActions.showError('Erro ao exportar DOCX');
+    }
+  };
+
+  // Exportar como Markdown
+  const handleExportMarkdown = () => {
+    if (!document) return;
+
+    try {
+      let markdown = `# ${document.Title}\n\n`;
+      markdown += `**Criado por:** ${creator?.Name || 'N/A'}\n`;
+      markdown += `**Pasta:** ${folder?.Name || 'N/A'}\n`;
+      markdown += `**Data de criação:** ${formatDate(document.CreatedAt)}\n\n`;
+      markdown += `---\n\n`;
+      markdown += documentContent;
+
+      const blob = new Blob([markdown], { type: 'text/markdown' });
+      saveAs(blob, `${document.Title}.md`);
+      notificationActions.showNotification('Markdown exportado com sucesso!', 'success');
+    } catch (error) {
+      console.error('Erro ao exportar Markdown:', error);
+      notificationActions.showError('Erro ao exportar Markdown');
+    }
+  };
+
   // Função para formatar data seguindo o padrão do projeto
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
@@ -253,6 +364,17 @@ const DocumentDetailsPage: React.FC = () => {
           <Button variant="ghost" onClick={handleBack}>
             <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
+          
+          <Button onClick={handleExportPDF} variant="primary">
+            📄 PDF
+          </Button>
+          <Button onClick={handleExportDOCX} variant="primary">
+            📝 DOCX
+          </Button>
+          <Button onClick={handleExportMarkdown} variant="primary">
+            ⬇️ MD
+          </Button>
+          
           <Button onClick={handleGenerateSummary}>
             <FiEdit /> {t("documents.document_details.generate_summary") || "Gerar Resumo"}
           </Button>
