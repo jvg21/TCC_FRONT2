@@ -118,7 +118,7 @@ const uploadImages = async (files: File[]): Promise<string[]> => {
       }
 
       const result = await response.json();
-      return result.data || result.url || '';
+      return result.objeto?.url || '';
     } catch (error) {
       console.error('Erro no upload:', error);
       return '';
@@ -148,17 +148,20 @@ const plugins = [
             input.type = 'file';
             input.accept = 'image/*';
             input.multiple = true;
-            
+
             input.onchange = async (e: any) => {
               const files = Array.from(e.target.files || []);
               if (files.length === 0) return;
 
+              // Guardar posição inicial
+              const startPos = ctx.editor.getCursor();
+
               // Mostrar loading
-              const loadingText = files.length === 1 
-                ? '![Carregando imagem...]()' 
+              const loadingText = files.length === 1
+                ? '![Carregando imagem...]()'
                 : files.map((_, i) => `![Carregando imagem ${i + 1}...]()`).join('\n');
-              
-              ctx.editor.replaceRange(loadingText, ctx.editor.getCursor());
+
+              ctx.editor.replaceRange(loadingText, startPos);
 
               try {
                 const urls = await uploadImages(files as File[]);
@@ -166,18 +169,30 @@ const plugins = [
                   .filter(url => url)
                   .map((url, i) => `![Imagem ${i + 1}](${url})`)
                   .join('\n');
-                
+
+                // Calcular posição final baseada no texto de loading inserido
+                const endPos = {
+                  line: startPos.line + (loadingText.split('\n').length - 1),
+                  ch: startPos.line + loadingText.split('\n').length - 1 === startPos.line
+                    ? startPos.ch + loadingText.length
+                    : loadingText.split('\n').pop()?.length || 0
+                };
+
                 // Substituir o texto de loading pelas imagens
-                const start = ctx.editor.getCursor();
-                const end = { line: start.line + files.length - 1, ch: loadingText.split('\n').pop()?.length || 0 };
-                ctx.editor.replaceRange(imageMarkdown, start, end);
+                ctx.editor.replaceRange(imageMarkdown, startPos, endPos);
               } catch (error) {
                 console.error('Erro no upload:', error);
-                // Remover texto de loading em caso de erro
-                ctx.editor.replaceRange('<!-- Erro no upload das imagens -->', ctx.editor.getCursor());
+                // Calcular posição para remover o loading em caso de erro
+                const endPos = {
+                  line: startPos.line + (loadingText.split('\n').length - 1),
+                  ch: startPos.line + loadingText.split('\n').length - 1 === startPos.line
+                    ? startPos.ch + loadingText.length
+                    : loadingText.split('\n').pop()?.length || 0
+                };
+                ctx.editor.replaceRange('<!-- Erro no upload das imagens -->', startPos, endPos);
               }
             };
-            
+
             input.click();
           }
         }

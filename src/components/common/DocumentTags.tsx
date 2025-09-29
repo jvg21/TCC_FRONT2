@@ -11,16 +11,17 @@ import {
 } from '../../components/common/Components';
 import { useTag } from '../../features/tag/useTag';
 import { notificationActions } from '../../features/notifications/useNotification';
+import { t } from 'i18next';
 
 interface DocumentTagsProps {
   documentId: number;
 }
 
 export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
-  const { 
-    activeTag, 
-    getTagsByDocument, 
-    addDocumentToTag, 
+  const {
+    activeTag,
+    getTagsByDocument,
+    addDocumentToTag,
     removeDocumentFromTag,
     create: createTag,
   } = useTag();
@@ -37,7 +38,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
 
   const loadDocumentTags = async () => {
     if (!documentId) return;
-    
+
     setLoadingTags(true);
     try {
       const response = await getTagsByDocument(documentId);
@@ -58,7 +59,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
       await loadDocumentTags();
       setTagInput('');
       setShowSuggestions(false);
-      notificationActions.showNotification('Tag adicionada com sucesso!', 'success');
+      notificationActions.showNotification(t('tag.addSuccess'), 'success');
     } catch (error) {
       console.error('Erro ao adicionar tag:', error);
     }
@@ -67,14 +68,14 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
   // Criar nova tag
   const handleCreateTag = async () => {
     if (!tagInput.trim()) return;
-    
+
     try {
       const response = await createTag({ Name: tagInput.trim() });
       if (response && !response.erro && response.objeto) {
         await loadDocumentTags();
         setTagInput('');
         setShowSuggestions(false);
-        notificationActions.showNotification('Nova tag criada e adicionada!', 'success');
+        notificationActions.showNotification(t('tag.createAddSuccess'), 'success');
       }
     } catch (error) {
       console.error('Erro ao criar tag:', error);
@@ -87,7 +88,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
     try {
       await removeDocumentFromTag(documentId, tagId);
       await loadDocumentTags();
-      notificationActions.showNotification('Tag removida com sucesso!', 'success');
+      notificationActions.showNotification(t('tag.removeSuccess'), 'success');
     } catch (error) {
       console.error('Erro ao remover tag:', error);
     }
@@ -111,17 +112,17 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
     <TagsSection>
       <TagsTitle>
         <FiTag />
-        Tags do Documento
+        {t('tags.title')}
       </TagsTitle>
 
       <TagsList>
         {loadingTags ? (
           <div style={{ width: '100%', textAlign: 'center', padding: '20px', color: '#666' }}>
-            Carregando tags...
+            {t('tags.loading')}
           </div>
         ) : documentTags.length === 0 ? (
           <EmptyTags>
-            Nenhuma tag adicionada ainda. Adicione tags para organizar melhor este documento!
+            {t('tags.noTags')}
           </EmptyTags>
         ) : (
           documentTags.map((tag) => (
@@ -148,7 +149,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
           }}
           onFocus={() => setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-          placeholder="Digite para buscar ou criar uma tag..."
+          placeholder={t('tags.inputPlaceholder')}
           style={{
             flex: 1,
             padding: '8px 12px',
@@ -157,7 +158,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
             fontSize: '14px'
           }}
         />
-        
+
         {showSuggestions && tagInput && (
           <div style={{
             position: 'absolute',
@@ -191,7 +192,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
                 </div>
               ))
             ) : null}
-            
+
             {!exactMatch && tagInput.trim() && (
               <div
                 onClick={handleCreateTag}
@@ -205,7 +206,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
                 onMouseEnter={(e) => e.currentTarget.style.background = '#f0f8ff'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
               >
-                + Criar nova tag "{tagInput}"
+                "{t('tag.createNew') +' '+ tagInput}"
               </div>
             )}
           </div>

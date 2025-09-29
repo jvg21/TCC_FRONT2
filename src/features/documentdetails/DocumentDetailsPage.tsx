@@ -380,7 +380,7 @@ const DocumentDetailsPage: React.FC = () => {
           </ValidationSection>
 
           {/* Seção de Tags */}
-          {document?.documentId && (
+          {document?.DocumentId && (
             <DocumentTags documentId={document.DocumentId} />
           )}
 
