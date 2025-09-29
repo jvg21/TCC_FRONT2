@@ -149,6 +149,16 @@ export const enTranslations = {
     name_placeholder: "Enter folder name"
   },
 
+  tags: {
+    title: "Tags",
+    noTags: "No tags added",
+    inputPlaceholder: "Add tag...",
+    loading: "Loading tags...",
+    addSuccess: "Tag added successfully!",
+    removeSuccess: "Tag removed successfully!",
+    createNew: "Create new tag:",
+  },
+
   // Tasks
   tasks: {
     title: "Task List",

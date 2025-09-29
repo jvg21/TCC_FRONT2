@@ -150,6 +150,16 @@ export const ptTranslations = {
 
   },
 
+  tags: {
+    title: "Tags",
+    noTags: "Nenhuma tag adicionada",
+    inputPlaceholder: "Adicionar tag...",
+    loading: "Carregando tags...",
+    addSuccess: "Tag adicionada com sucesso!",
+    removeSuccess: "Tag removida com sucesso!",
+    createNew: "Criar nova tag:",
+  },
+
   // Tarefas
   tasks: {
     title: "Lista de Tarefas",

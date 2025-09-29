@@ -127,7 +127,8 @@ export const esTranslations = {
     updateSuccess: "¡Grupo actualizado con éxito!",
     updateStatusSuccess: "¡Estado del grupo cambiado con éxito!",
     addUserSuccess: "¡Usuario agregado al grupo con éxito!",
-    createSuccess: "¡Grupo creado con éxito!"
+    createSuccess: "¡Grupo creado con éxito!",
+
   },
 
   // Carpetas
@@ -145,7 +146,22 @@ export const esTranslations = {
     validator: "Validador",
     no_parent_folder: "Sin carpeta principal",
     name_placeholder: "Ingrese el nombre de la carpeta",
-    select_validator: "Seleccionar Validador"
+    select_validator: "Seleccionar Validador",
+    manage_folders: "Gerenciar Pastas",
+    select_folder: "Selecionar Pasta",
+    folders_in_group: "Pastas no Grupo",
+    no_folders_in_group: "Nenhuma pasta no grupo",
+    hide_group_folders: "Ocultar Pastas do Grupo"
+  },
+
+  tags: {
+    title: "Etiquetas",
+    noTags: "Ninguna etiqueta agregada",
+    inputPlaceholder: "Agregar etiqueta...",
+    loading: "Cargando etiquetas...",
+    addSuccess: "¡Etiqueta agregada con éxito!",
+    removeSuccess: "¡Etiqueta eliminada con éxito!",
+    createNew: "Crear nueva etiqueta:",
   },
 
   // Tareas
@@ -260,6 +276,7 @@ export const esTranslations = {
       advanced_filters: "Filtros avanzados"
     },
 
+
     tabs: {
       general: "General",
       my_documents: "Mis Documentos",
@@ -312,6 +329,7 @@ export const esTranslations = {
         validated_by: "Validado por",
         add_note: "Agregue una nota sobre la validación (opcional para aprobación, obligatoria para rechazo)"
       },
+
       comments: {
         title: "Comentarios",
         placeholder: "Escriba su comentario...",
@@ -334,6 +352,7 @@ export const esTranslations = {
         validation_failed: "Error al validar documento",
         comment_failed: "Error al agregar comentario",
       },
+
     }
   },
 
