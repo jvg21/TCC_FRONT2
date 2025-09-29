@@ -348,8 +348,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const navigationItems = [
   { path: "/", label: t("navigation.home"), icon: FiHome, show: true },
   { path: "/companies", label: t("navigation.companies"), icon: FiBriefcase, show: profile === 1 },
-  { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2 && profile > 0 },
-  { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile === 2 && profile > 0 },
+  { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2  },
+  { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile >= 2  },
   { path: "/document", label: t("navigation.documents"), icon: FiFile, show: profile >= 2 },
   { path: "/templates", label: t("navigation.templates"), icon: FiClipboard, show: profile === 1 },
 ];
@@ -472,7 +472,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                 </NavItem>
               ))}
 
-            {profile === 2 && profile > 0 && (isCollapsed ? (
+            {profile >= 2 && profile > 0 && (isCollapsed ? (
               <NavItem
                 to="/folder"
                 $isActive={isFoldersActive}
@@ -509,7 +509,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               </DropdownContainer>
             ))}
 
-            {profile === 2 && profile > 0 && (isCollapsed ? (
+            {profile >= 2 && profile > 0 && (isCollapsed ? (
               <NavItem
                 to="/task"
                 $isActive={isTasksActive}
@@ -549,7 +549,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               </DropdownContainer>
             ))}
 
-            {profile >= 2 && (
+            {profile === 2 && (
               isCollapsed ? (
                 <NavItem
                   to="/integrations"
