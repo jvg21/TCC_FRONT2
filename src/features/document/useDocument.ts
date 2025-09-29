@@ -284,7 +284,7 @@ export const useDocument = () => {
   };
   const getDocumentValidatorByValidator = async () => {
   try {
-    console.log("🔍 Buscando documentos para validação...");
+    // console.log("🔍 Buscando documentos para validação...");
     const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationByValidator`, {
       method: "GET",
       headers: {
@@ -294,7 +294,7 @@ export const useDocument = () => {
     });
 
     const data: ApiResponse = await response.json();
-    console.log("📋 Resposta da API (validator):", data);
+    // console.log("📋 Resposta da API (validator):", data);
 
     if (data.erro) {
       notificationActions.showError(data.mensagem);
@@ -306,7 +306,7 @@ export const useDocument = () => {
       ? data.objeto.map(mapApiDocumentToFrontend)
       : [];
     
-    console.log("✅ Documentos para validação mapeados:", documents);
+    // console.log("✅ Documentos para validação mapeados:", documents);
     setUserValidatorDocuments(documents);
     return data;
 
@@ -319,7 +319,7 @@ export const useDocument = () => {
 
 const getDocumentToEdit = async () => {
   try {
-    console.log("🔍 Buscando documentos para edição...");
+    // console.log("🔍 Buscando documentos para edição...");
     const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationToEdit`, {
       method: "GET",
       headers: {
@@ -329,7 +329,7 @@ const getDocumentToEdit = async () => {
     });
 
     const data: ApiResponse = await response.json();
-    console.log("📋 Resposta da API (edit):", data);
+    // console.log("📋 Resposta da API (edit):", data);
 
     if (data.erro) {
       notificationActions.showError(data.mensagem);
@@ -341,7 +341,7 @@ const getDocumentToEdit = async () => {
       ? data.objeto.map(mapApiDocumentToFrontend)
       : [];
     
-    console.log("✅ Documentos para edição mapeados:", documents);
+    // console.log("✅ Documentos para edição mapeados:", documents);
     setUserDocuments(documents);
     return data;
 
@@ -412,7 +412,7 @@ const getDocumentToEdit = async () => {
           await get(); // Documentos gerais
           await getDocumentToEdit(); // Documentos para edição
           await getDocumentValidatorByValidator(); // Documentos para validação
-          console.log("✅ Todos os dados foram carregados");
+          // console.log("✅ Todos os dados foram carregados");
         } catch (error) {
           console.error("❌ Erro ao carregar dados:", error);
         }
