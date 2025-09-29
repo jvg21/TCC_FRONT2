@@ -702,7 +702,7 @@ const DocumentPage: React.FC = () => {
     <PageLayout
       title={t("documents.title")}
       actions={
-        <Button disabled={!userProfile} onClick={handleAdd}>
+        <Button onClick={handleAdd}>
           <FiPlus />&nbsp;{t("documents.add_document")}
         </Button>
       }
