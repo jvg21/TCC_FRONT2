@@ -269,7 +269,6 @@ const NodeMeta = styled.div`
     display: none;
   }
 `;
-
 const StatusBadge = styled.span<{ $status: 'active' | 'inactive' | 'valid' | 'invalid' | 'pending' }>`
   padding: 2px 8px;
   border-radius: 12px;
