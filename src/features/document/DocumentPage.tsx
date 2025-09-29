@@ -225,22 +225,54 @@ const DocumentPage: React.FC = () => {
       }
     ];
 
-    if (userProfile) {
+    if (true) {
       baseCols.push({
         key: "actions",
         header: t("actions.actions"),
-        render: (row) => (
-          <div style={{ display: 'flex', gap: '4px' }}>
-            <Button
-              variant="ghost"
-              onClick={() => onView(row)}
-              title={t("documents.view_document")}
-            >
-              <FiEye />
-            </Button>
-            <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
-          </div>
-        )
+        render: (row) => {
+          // Verificar se o usuário pode editar este documento
+          const canEdit = () => {
+            // Usuários nível 1 e 2 podem editar tudo
+            if (user && (user.Profile === 1 || user.Profile === 2)) {
+              return true;
+            }
+
+            // Usuários nível 3 podem editar se:
+            if (user && user.Profile === 3) {
+              // 1. Criaram o documento
+              if (row.UserId === user.UserId) {
+                return true;
+              }
+
+              // 2. São validadores da pasta do documento
+              const folder = activeFolder.find((f) => f.FolderId === row.FolderId);
+              if (folder && folder.ValidatorId === user.UserId) {
+                return true;
+              }
+            }
+
+            return false;
+          };
+
+          return (
+            <div style={{ display: 'flex', gap: '4px' }}>
+
+              {canEdit() && (
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => onView(row)}
+                    title={t("documents.view_document")}
+                  >
+                    <FiEye />
+                  </Button>
+                  <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
+                </>
+
+              )}
+            </div>
+          );
+        }
       });
     }
     return baseCols;
@@ -334,7 +366,7 @@ const DocumentPage: React.FC = () => {
     }
   };
 
-   const handleSaveContent = (newContent: string) => {
+  const handleSaveContent = (newContent: string) => {
     if (contentSaveCallback) {
       contentSaveCallback(newContent);
     }
@@ -349,40 +381,40 @@ const DocumentPage: React.FC = () => {
 
   // Componente InfoAlert
   const InfoAlert = ({ type, title, description }: { type: string; title: string; description: string }) => {
-  
-  const colors = {
-    info: { 
-      bg: `${theme.colors.primary}15`, 
-      border: theme.colors.primary, 
-      icon: 'ℹ️' 
-    },
-    success: { 
-      bg: theme.colors.primary === '#4f46e5' ? '#065f4615' : '#e8f5e9', 
-      border: theme.colors.primary === '#4f46e5' ? '#065f46' : '#4CAF50', 
-      icon: '✅' 
-    },
-    warning: { 
-      bg: theme.colors.primary === '#4f46e5' ? '#92400e15' : '#fff3cd', 
-      border: theme.colors.primary === '#4f46e5' ? '#92400e' : '#ffc107', 
-      icon: '⚠️' 
-    }
-  };
-  const color = colors[type as keyof typeof colors] || colors.info;
 
-  return (
-    <div style={{
-      background: color.bg,
-      border: `1px solid ${color.border}`,
-      borderRadius: '8px',
-      padding: '12px',
-      marginBottom: '16px',
-      fontSize: '14px',
-      color: theme.colors.text
-    }}>
-      {color.icon} <strong>{title}:</strong> {description}
-    </div>
-  );
-};
+    const colors = {
+      info: {
+        bg: `${theme.colors.primary}15`,
+        border: theme.colors.primary,
+        icon: 'ℹ️'
+      },
+      success: {
+        bg: theme.colors.primary === '#4f46e5' ? '#065f4615' : '#e8f5e9',
+        border: theme.colors.primary === '#4f46e5' ? '#065f46' : '#4CAF50',
+        icon: '✅'
+      },
+      warning: {
+        bg: theme.colors.primary === '#4f46e5' ? '#92400e15' : '#fff3cd',
+        border: theme.colors.primary === '#4f46e5' ? '#92400e' : '#ffc107',
+        icon: '⚠️'
+      }
+    };
+    const color = colors[type as keyof typeof colors] || colors.info;
+
+    return (
+      <div style={{
+        background: color.bg,
+        border: `1px solid ${color.border}`,
+        borderRadius: '8px',
+        padding: '12px',
+        marginBottom: '16px',
+        fontSize: '14px',
+        color: theme.colors.text
+      }}>
+        {color.icon} <strong>{title}:</strong> {description}
+      </div>
+    );
+  };
 
   // Componente EmptyState
   const EmptyState = ({ icon, title, description }: { icon: string; title: string; description: string }) => (
@@ -400,7 +432,7 @@ const DocumentPage: React.FC = () => {
   // Componente de Filtros Avançados
   const AdvancedFilters = () => (
     <div style={{
-      background:`${theme.colors.primary}15`,
+      background: `${theme.colors.primary}15`,
       border: '1px solid #dee2e6',
       borderRadius: '8px',
       padding: '16px',
@@ -494,9 +526,9 @@ const DocumentPage: React.FC = () => {
             ))}
           </select>
           {tagFilter && (
-            <div style={{ 
-              fontSize: '12px', 
-              color: '#666', 
+            <div style={{
+              fontSize: '12px',
+              color: '#666',
               marginTop: '4px',
               display: 'flex',
               alignItems: 'center',
@@ -541,7 +573,7 @@ const DocumentPage: React.FC = () => {
             title={t("documents.tabs.general_alert_title")}
             description={t("documents.tabs.general_alert_description")}
           />
-          
+
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
             <FilterBar
               columns={columns}
@@ -560,7 +592,7 @@ const DocumentPage: React.FC = () => {
 
           {/* Filtros Avançados */}
           <AdvancedFilters />
-          
+
           {userProfile && (
             <div style={{ marginBottom: '16px' }}>
               <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
@@ -582,7 +614,7 @@ const DocumentPage: React.FC = () => {
             title={t("documents.tabs.my_documents_alert_title")}
             description={t("documents.tabs.my_documents_alert_description")}
           />
-          
+
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
             <FilterBar
               columns={columns}
@@ -599,7 +631,7 @@ const DocumentPage: React.FC = () => {
           </div>
 
           <AdvancedFilters />
-          
+
           {getMyDocuments().length === 0 ? (
             <EmptyState
               icon="📄"
@@ -624,7 +656,7 @@ const DocumentPage: React.FC = () => {
             title={t("documents.tabs.to_edit_alert_title")}
             description={t("documents.tabs.to_edit_alert_description")}
           />
-          
+
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
             <FilterBar
               columns={columns}
@@ -641,7 +673,7 @@ const DocumentPage: React.FC = () => {
           </div>
 
           <AdvancedFilters />
-          
+
           {userDocuments.length === 0 ? (
             <EmptyState
               icon="✅"
@@ -666,7 +698,7 @@ const DocumentPage: React.FC = () => {
             title={t("documents.tabs.validations_alert_title")}
             description={t("documents.tabs.validations_alert_description")}
           />
-          
+
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
             <FilterBar
               columns={columns}
@@ -683,7 +715,7 @@ const DocumentPage: React.FC = () => {
           </div>
 
           <AdvancedFilters />
-          
+
           {userValidatorDocuments.length === 0 ? (
             <EmptyState
               icon="🎉"
@@ -741,7 +773,7 @@ const DocumentPage: React.FC = () => {
         />
       </Modal>
 
- 
+
     </PageLayout>
   );
 };
