@@ -186,6 +186,7 @@ const DocumentDetailsPage: React.FC = () => {
       //   });
       // }
       setValidatorNote('');
+      setValidationStatus(isValid ? 1 : 2);
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
       setValidationStatus(document?.isValid ?? null);
