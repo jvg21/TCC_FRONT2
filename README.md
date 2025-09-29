@@ -1,69 +1,108 @@
-# React + TypeScript + Vite
+## 📋 **PASSO A PASSO: Como Adicionar um Campo em Document**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### **1️⃣ Atualizar a Interface TypeScript (Types)**
+**Arquivo:** `src/features/document/types.ts`
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```typescript
+export interface Document {
+  DocumentId: number;
+  Title: string;
+  Content: string;
+  FolderId: number | null;
+  UserId: number;
+  CreatedAt: string;
+  UpdatedAt: string;
+  IsActive: boolean;
+  
+  // ⬇️ ADICIONAR NOVO CAMPO AQUI
+  NovoCAMPO?: string|null;  // Exemplo: Author?: string;
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### **2️⃣ Atualizar Transformações da API**
+**Arquivo:** `src/features/document/useDocument.ts`
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
+**A) Função `transformApiDataToPascalCase`:**
+
+const transformApiDataToPascalCase = (apiData: any[]): Document[] => {
+  return apiData.map(item => ({
+    DocumentId: item.documentId,
+    Title: item.title,
+    Content: item.content,
+    FolderId: item.folderId,
+    UserId: item.userId,
+    CreatedAt: item.createdAt,
+    UpdatedAt: item.updatedAt,
+    IsActive: item.isActive,
+    // ⬇️ ADICIONAR AQUI
+    NovoCAMPO: item.novoCAMPO,
+  }));
+};
+```
+
+**B) Função `transformPayloadToCamelCase`:**
+```typescript
+const transformPayloadToCamelCase = (payload: any) => {
+  return {
+    title: payload.Title,
+    content: payload.Content,
+    folderId: payload.FolderId || null,
+    userId: user?.UserId,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isActive: true,
+    // ⬇️ ADICIONAR AQUI
+    novoCAMPO: payload.NovoCAMPO,
+  };
+};
+```
+
+---
+
+### **3️⃣ Atualizar Formulário de Criação/Edição**
+**Arquivo:** `src/features/document/DocumentForm.tsx` (ou similar)
+
+
+
+// Adicionar state para o novo campo
+const [novoCAMPO, setNovoCAMPO] = useState("");
+
+// Adicionar input no formulário
+<input
+  type="text"
+  value={novoCAMPO}
+  onChange={(e) => setNovoCAMPO(e.target.value)}
+  placeholder="Novo Campo"
+/>
+
+// Incluir o novo campo ao salvar
+
+handleSubmit ->
+
+ onSave({ 
+            Title, 
+            Content, 
+            FolderId: parseInt(FolderId) 
+            NovoCAMPO: novoCAMPO 
+         });
+```
+
+
+
+### **5️⃣ Atualizar Colunas da Tabela **
+**Arquivo:** Onde estão as colunas da tabela (possivelmente `DocummentPage.tsx`)
+
+
+Columns ->
+
+
+      {
+        key: "NovoCAMPO",  // Exemplo: Author
+        header: "Novo Campo", // Exemplo: "Author"
+        render: (row) => (
+          <span>{row.NovoCAMPO || "N/A"}</span> // Exemplo: {row.Author || "N/A"}
+        )
       },
-      // other options...
-    },
-  },
-])
 ```

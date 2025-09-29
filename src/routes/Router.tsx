@@ -52,9 +52,9 @@ export const AppRoutes = () => {
 
             {/* Nova rota de integrações - acessível para todos os usuários logados */}
             <Route path="/integrations/openai" element={
-                <ProtectedRoutes>
+                <AdmRoutes>
                     <IntegrationsPage />
-                </ProtectedRoutes>
+                </AdmRoutes>
             } />
 
             <Route path="/companies" element={
@@ -70,27 +70,27 @@ export const AppRoutes = () => {
             } />
 
             <Route path="/group" element={
-                <AdmRoutes>
+                <ProtectedRoutes>
                     <GroupPage />
-                </AdmRoutes>
+                </ProtectedRoutes>
             } />
 
             <Route path="/folder" element={
-                <AdmRoutes>
+                <ProtectedRoutes>
                     <FolderPage />
-                </AdmRoutes>
+                </ProtectedRoutes>
             } />
 
             <Route path="/task" element={
-                <AdmRoutes>
+                <ProtectedRoutes>
                     <TaskPage />
-                </AdmRoutes>
+                </ProtectedRoutes>
             } />
 
             <Route path="/document" element={
-                <AdmRoutes>
+                <ProtectedRoutes>
                     <DocumentPage />
-                </AdmRoutes>
+                </ProtectedRoutes>
             } />
 
             <Route path="/templates" element={
@@ -100,27 +100,27 @@ export const AppRoutes = () => {
             } />
 
             <Route path="/document/details/:id" element={
-                <AdmRoutes>
+                <ProtectedRoutes>
                     <DocumentDetailsPage />
-                </AdmRoutes>
+                </ProtectedRoutes>
             } />
 
             <Route path="/TaskBoardPage" element={
-                <AdmRoutes>
+                <ProtectedRoutes>
                     <TaskBoardPage />
-                </AdmRoutes>
+                </ProtectedRoutes>
             } />
 
             <Route path="/TaskDashboard" element={
-                <AdmRoutes>
+                <ProtectedRoutes>
                     <TaskDashboard />
-                </AdmRoutes>
+                </ProtectedRoutes>
             } />
 
             <Route path="/CascadeView" element={
-                <AdmRoutes>
+                <ProtectedRoutes>
                     <CascadeView />
-                </AdmRoutes>
+                </ProtectedRoutes>
             } />
 
 
