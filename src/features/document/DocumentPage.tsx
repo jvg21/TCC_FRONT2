@@ -258,16 +258,16 @@ const DocumentPage: React.FC = () => {
             <div style={{ display: 'flex', gap: '4px' }}>
               <>
                 <Button
-                    variant="ghost"
-                    onClick={() => onView(row)}
-                    title={t("documents.view_document")}
-                  >
-                    <FiEye />
-                  </Button>
+                  variant="ghost"
+                  onClick={() => onView(row)}
+                  title={t("documents.view_document")}
+                >
+                  <FiEye />
+                </Button>
               </>
               {canEdit() && (
                 <>
-                
+
                   <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
                 </>
 
@@ -350,13 +350,16 @@ const DocumentPage: React.FC = () => {
     try {
       if (editing) {
         await update(editing.DocumentId, payload);
+        await updateValidationStatus(editing.DocumentId, null, "");
       } else {
         await create(payload);
       }
-      await updateValidationStatus(payload.DocumentId, null, "");
-      modal.close();
+      console.log(payload);
+
     } catch (error) {
       console.error("Erro ao salvar documento:", error);
+    } finally {
+      modal.close();
     }
   };
 
