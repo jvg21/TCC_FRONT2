@@ -123,6 +123,11 @@ export const esTranslations = {
     hide_group_folders: "Ocultar Carpetas del Grupo",
     manage_group_users: "Gestionar Usuarios del Grupo",
     group_user_management: "Gestión de Usuarios del Grupo",
+    removeUserSuccess: "¡Usuario removido del grupo con éxito!",
+    updateSuccess: "¡Grupo actualizado con éxito!",
+    updateStatusSuccess: "¡Estado del grupo cambiado con éxito!",
+    addUserSuccess: "¡Usuario agregado al grupo con éxito!",
+    createSuccess: "¡Grupo creado con éxito!"
   },
 
   // Carpetas

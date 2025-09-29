@@ -122,7 +122,12 @@ export const ptTranslations = {
     select_folder: "Selecionar Pasta",
     folders_in_group: "Pastas no Grupo",
     no_folders_in_group: "Nenhuma pasta no grupo",
-    hide_group_folders: "Ocultar Pastas do Grupo"
+    hide_group_folders: "Ocultar Pastas do Grupo",
+    removeUserSuccess: "Usuário removido do grupo com sucesso!",
+    updateSuccess: "Grupo atualizado com sucesso!",
+    updateStatusSuccess: "Status do grupo alterado com sucesso!",
+    addUserSuccess: "Usuário adicionado ao grupo com sucesso!",
+    createSuccess: "Grupo criado com sucesso!"
   },
 
   // Pastas

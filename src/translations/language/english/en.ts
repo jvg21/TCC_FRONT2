@@ -124,6 +124,11 @@ export const enTranslations = {
     hide_group_folders: "Hide Group Folders",
     manage_group_users: "Manage Group Users",
     group_user_management: "Group User Management",
+    removeUserSuccess: "User removed from group successfully!",
+    updateSuccess: "Group updated successfully!",
+    updateStatusSuccess: "Group status changed successfully!",
+    addUserSuccess: "User added to group successfully!",
+    createSuccess: "Group created successfully!"
   },
 
   // Folders
