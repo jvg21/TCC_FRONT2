@@ -170,7 +170,7 @@ const DocumentDetailsPage: React.FC = () => {
 
     try {
       setValidationStatus(isValid);
-      await updateValidationStatus(document.DocumentId, isValid);
+      await updateValidationStatus(document.DocumentId, isValid, validatorNote);
 
       // if (isValid) {
       //   await createComment({
