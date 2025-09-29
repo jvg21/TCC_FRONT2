@@ -256,16 +256,18 @@ const DocumentPage: React.FC = () => {
 
           return (
             <div style={{ display: 'flex', gap: '4px' }}>
-
-              {canEdit() && (
-                <>
-                  <Button
+              <>
+                <Button
                     variant="ghost"
                     onClick={() => onView(row)}
                     title={t("documents.view_document")}
                   >
                     <FiEye />
                   </Button>
+              </>
+              {canEdit() && (
+                <>
+                
                   <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
                 </>
 
