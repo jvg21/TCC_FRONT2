@@ -146,6 +146,11 @@ export const ptTranslations = {
     name_placeholder: "Digite o nome da pasta",
     no_parent_folder: "Sem Pasta Pai",
     select_validator: "Selecionar Validador",
+    manage_folders: "Gerenciar Pastas",
+    hide_group_folders: "Ocultar Pastas do Grupo",
+    select_folder: "Selecionar Pastas",
+    folders_in_group: "Pastas em Grupo",
+    no_folders_in_group: "Nenhuma Pasta no Grupo"
 
 
   },

@@ -146,7 +146,13 @@ export const enTranslations = {
     validator: "Validator",
     no_parent_folder: "No Parent Folder",
     select_validator: "Select Validator",
-    name_placeholder: "Enter folder name"
+    name_placeholder: "Enter folder name",
+    manage_folders: "Manage Folders",
+    hide_group_folders: "Hide Group Folders",
+    select_folder: "Select Folder",
+    folders_in_group: "Folders in Group",
+    no_folders_in_group: "No Folders in Group"
+
   },
 
   tags: {

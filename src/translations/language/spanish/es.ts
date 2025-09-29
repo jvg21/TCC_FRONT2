@@ -147,11 +147,11 @@ export const esTranslations = {
     no_parent_folder: "Sin carpeta principal",
     name_placeholder: "Ingrese el nombre de la carpeta",
     select_validator: "Seleccionar Validador",
-    manage_folders: "Gerenciar Pastas",
-    select_folder: "Selecionar Pasta",
-    folders_in_group: "Pastas no Grupo",
-    no_folders_in_group: "Nenhuma pasta no grupo",
-    hide_group_folders: "Ocultar Pastas do Grupo"
+    manage_folders: "Administrar Carpetas",
+    select_folder: "Seleccionar Carpeta",
+    folders_in_group: "Carpetas En El Grupo",
+    no_folders_in_group: "No Hay Carpetas En El Grupo",
+    hide_group_folders: "Ocultar Carpetas de Grupo"
   },
 
   tags: {
