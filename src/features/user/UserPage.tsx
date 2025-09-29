@@ -111,6 +111,9 @@ const UserPage: React.FC = () => {
 
   const handleSave = (payload: any) => {
     if (editing) {
+      if (isDev && selectedCompanyId) {
+        payload.CompanyId = selectedCompanyId;
+      }
       update(editing.UserId, payload);
     } else {
       if (isDev && selectedCompanyId) {
@@ -120,7 +123,6 @@ const UserPage: React.FC = () => {
     }
     modal.close();
   };
-
   const handleDelete = (id: number) => {
     softDelete(id);
   };
@@ -129,7 +131,7 @@ const UserPage: React.FC = () => {
 
   return (
     <PageLayout title={t("users.title")} actions={
-      <Button disabled={isDev?!selectedCompanyId:!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("users.add_user")}</Button>
+      <Button disabled={isDev ? !selectedCompanyId : !userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("users.add_user")}</Button>
     }>
       <FilterBar
         columns={columns}
