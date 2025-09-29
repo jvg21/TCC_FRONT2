@@ -139,6 +139,11 @@ const DocumentDetailsPage: React.FC = () => {
         t("documents.updateSuccess") || 'Documento atualizado com sucesso!',
         'success'
       );
+
+      await updateValidationStatus(document.DocumentId, null, validatorNote);
+      setValidationStatus(0);
+
+
     } catch (error) {
       notificationActions.showError(
         t("messages.error.generic") || 'Erro ao salvar documento'
@@ -185,7 +190,7 @@ const DocumentDetailsPage: React.FC = () => {
       //     UserId: user!.UserId
       //   });
       // }
-      setValidatorNote('');
+      setValidatorNote(validatorNote);
       setValidationStatus(isValid ? 1 : 2);
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
@@ -240,7 +245,7 @@ const DocumentDetailsPage: React.FC = () => {
       pdf.text(lines, margin, yPosition);
 
       pdf.save(`${document.Title}.pdf`);
-      notificationActions.showNotification('PDF exportado com sucesso!','success');
+      notificationActions.showNotification('PDF exportado com sucesso!', 'success');
     } catch (error) {
       console.error('Erro ao exportar PDF:', error);
       notificationActions.showError('Erro ao exportar PDF');
@@ -365,7 +370,7 @@ const DocumentDetailsPage: React.FC = () => {
           <Button variant="ghost" onClick={handleBack}>
             <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
-          
+
           <Button onClick={handleExportPDF} variant="primary">
             📄 PDF
           </Button>
@@ -375,7 +380,7 @@ const DocumentDetailsPage: React.FC = () => {
           <Button onClick={handleExportMarkdown} variant="primary">
             ⬇️ MD
           </Button>
-          
+
           <Button onClick={handleGenerateSummary}>
             <FiEdit /> {t("documents.document_details.generate_summary") || "Gerar Resumo"}
           </Button>
@@ -476,7 +481,7 @@ const DocumentDetailsPage: React.FC = () => {
                     <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
                       {getValidationStatusText(validationStatus as number)}
                     </StatusBadge>
-                     <div style={{ display: 'flex', gap: '16px', marginTop:'4px' }}></div>
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}></div>
 
                     {/*campo de texo com o validatorNote readonluy*/}
                     {validatorNote && (
