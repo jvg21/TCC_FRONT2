@@ -170,7 +170,7 @@ const DocumentDetailsPage: React.FC = () => {
 
     try {
       setValidationStatus(isValid);
-      await updateValidationStatus(document.DocumentId, isValid);
+      await updateValidationStatus(document.DocumentId, isValid, validatorNote);
 
       // if (isValid) {
       //   await createComment({
@@ -186,6 +186,7 @@ const DocumentDetailsPage: React.FC = () => {
       //   });
       // }
       setValidatorNote('');
+      setValidationStatus(isValid ? 1 : 2);
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
       setValidationStatus(document?.isValid ?? null);
