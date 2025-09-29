@@ -59,7 +59,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
       await loadDocumentTags();
       setTagInput('');
       setShowSuggestions(false);
-      notificationActions.showNotification(t('tag.addSuccess'), 'success');
+      notificationActions.showNotification(t('tags.addSuccess'), 'success');
     } catch (error) {
       console.error('Erro ao adicionar tag:', error);
     }
@@ -75,7 +75,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
         await loadDocumentTags();
         setTagInput('');
         setShowSuggestions(false);
-        notificationActions.showNotification(t('tag.createAddSuccess'), 'success');
+        notificationActions.showNotification(t('tags.createAddSuccess'), 'success');
       }
     } catch (error) {
       console.error('Erro ao criar tag:', error);
@@ -88,7 +88,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
     try {
       await removeDocumentFromTag(documentId, tagId);
       await loadDocumentTags();
-      notificationActions.showNotification(t('tag.removeSuccess'), 'success');
+      notificationActions.showNotification(t('tags.removeSuccess'), 'success');
     } catch (error) {
       console.error('Erro ao remover tag:', error);
     }
@@ -206,7 +206,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
                 onMouseEnter={(e) => e.currentTarget.style.background = '#f0f8ff'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
               >
-                "{t('tag.createNew') +' '+ tagInput}"
+                "{t('tags.createNew') +' '+ tagInput}"
               </div>
             )}
           </div>
