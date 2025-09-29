@@ -295,6 +295,10 @@ export const enTranslations = {
         pending: "Pending Validation",
         approve: "Approve",
         reject: "Reject",
+        rejected: "Rejected",
+        approved: "Approved",
+        reject_reason: "Reason for rejection",
+        validated_by: "Validated by",
         add_note: "Add a note about validation (optional for approval, mandatory for rejection)"
       },
       comments: {

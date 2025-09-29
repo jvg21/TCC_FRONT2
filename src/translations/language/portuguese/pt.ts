@@ -307,6 +307,10 @@ export const ptTranslations = {
         pending: "Pendente de Validação",
         approve: "Aprovar",
         reject: "Rejeitar",
+        rejected: "Rejeitado",
+        approved: "Aprovado",
+        reject_reason: "Motivo da rejeição",
+        validated_by: "Validado por",
         add_note: "Adicione uma nota sobre a validação (opcional para aprovação, obrigatória para rejeição)"
       },
       comments: {

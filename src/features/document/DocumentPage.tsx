@@ -112,7 +112,7 @@ const DocumentPage: React.FC = () => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [tagFilteredDocIds, setTagFilteredDocIds] = useState<number[]>([]);
 
-  console.log(userDocuments, userValidatorDocuments);
+  // console.log(userDocuments, userValidatorDocuments);
 
   const { t } = useTranslation();
   const { userProfile, user } = useAuthContext();

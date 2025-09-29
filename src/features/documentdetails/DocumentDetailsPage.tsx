@@ -53,7 +53,7 @@ const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
-  const { GetDocumentValidationById, update, updateValidationStatus,transformSingleApiData } = useDocument();
+  const { GetDocumentValidationById, update, updateValidationStatus, transformSingleApiData } = useDocument();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
@@ -91,16 +91,18 @@ const DocumentDetailsPage: React.FC = () => {
       hasLoadedRef.current = true;
       try {
         const response = await GetDocumentValidationById(Number(id));
-        console.log('Resposta da API:', response);
+        // console.log('Resposta da API:', response);
         if (response && !response.erro) {
           setDocument(transformSingleApiData(response.objeto.document));
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status);
+          setValidatorNote(response.objeto.comment || '');
+          console.log('Documento carregado:', response.objeto);
         } else {
-          setError(t("messages.error.generic") );
+          setError(t("messages.error.generic"));
         }
       } catch (err) {
-        setError(t("messages.error.generic") );
+        setError(t("messages.error.generic"));
         console.error(err);
       } finally {
         setLoading(false);
@@ -166,19 +168,19 @@ const DocumentDetailsPage: React.FC = () => {
       setValidationStatus(isValid);
       await updateValidationStatus(document.DocumentId, isValid);
 
-      if (isValid) {
-        await createComment({
-          Content: `✅ ${t("documents.document_details.validation.approve") || "Documento aprovado"} ${t("documents.document_details.created_by") || "por"} ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
-          DocumentId: document.DocumentId,
-          UserId: user!.UserId
-        });
-      } else {
-        await createComment({
-          Content: `❌ ${t("documents.document_details.validation.reject") || "Documento rejeitado"} ${t("documents.document_details.created_by") || "por"} ${user?.Name}: ${validatorNote}`,
-          DocumentId: document.DocumentId,
-          UserId: user!.UserId
-        });
-      }
+      // if (isValid) {
+      //   await createComment({
+      //     Content: `✅ ${t("documents.document_details.validation.approve")} ${t("documents.document_details.validated_by") || "por"} ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
+      //     DocumentId: document.DocumentId,
+      //     UserId: user!.UserId
+      //   });
+      // } else {
+      //   await createComment({
+      //     Content: `❌ ${t("documents.document_details.validation.reject") } ${t("documents.document_details.validated_by") || "por"} ${user?.Name}: ${validatorNote}`,
+      //     DocumentId: document.DocumentId,
+      //     UserId: user!.UserId
+      //   });
+      // }
       setValidatorNote('');
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
@@ -189,12 +191,12 @@ const DocumentDetailsPage: React.FC = () => {
   const handleGenerateSummary = async () => {
     if (documentContent) {
       const summaryText = await generateSummary(Number(id));
-      console.log(summaryText);
+      // console.log(summaryText);
       setSummary(summaryText.content || '');
       showResume.open();
     } else {
       notificationActions.showError(
-        t("messages.error.validation") 
+        t("messages.error.validation")
       );
     }
   };
@@ -206,14 +208,14 @@ const DocumentDetailsPage: React.FC = () => {
   };
 
   // Função para obter status de validação traduzido
-  const getValidationStatusText = () => {
-    if (validationStatus === 0) {
+  const getValidationStatusText = (status: number) => {
+    if (status === 0) {
       return `⏳ ${t("documents.document_details.validation.pending") || "Pendente"}`;
     }
-    if (validationStatus === 1) {
-      return `✅ ${t("status.completed") || "Aprovado"}`;
+    if (status === 1) {
+      return `✅ ${t("documents.document_details.validation.approved") || "Aprovado"}`;
     }
-    return `❌ ${t("documents.document_details.validation.reject") || "Rejeitado"}`;
+    return `❌ ${t("documents.document_details.validation.rejected") || "Rejeitado"}`;
   };
 
   if (loading || loadingComments) {
@@ -340,17 +342,33 @@ const DocumentDetailsPage: React.FC = () => {
             <ValidationTitle>
               {t("documents.document_details.validation.title") || "Status de Validação"}
             </ValidationTitle>
-            <ValidationStatus>
-              <StatusBadge
-                status={
-                  validationStatus === 0 ? 'pending'
-                    : validationStatus === 1 ? 'approved'
-                      : 'rejected'
-                }
-              >
-                {getValidationStatusText()}
-              </StatusBadge>
-            </ValidationStatus>
+
+
+            {
+              validationStatus !== 0 &&
+              (
+                <ValidatorActions>
+
+                  <ValidationStatus>
+                    <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
+                      {getValidationStatusText(validationStatus as number)}
+                    </StatusBadge>
+                     <div style={{ display: 'flex', gap: '16px', marginTop:'4px' }}></div>
+
+                    {/*campo de texo com o validatorNote readonluy*/}
+                    {validatorNote && (
+                      <ValidatorNote
+                        value={validatorNote}
+                        readOnly
+                      />
+
+                    )
+                    }
+                  </ValidationStatus>
+                </ValidatorActions>
+              )
+            }
+
 
             {validationStatus === 0 && (
               <ValidatorActions>
@@ -448,7 +466,7 @@ const DocumentDetailsPage: React.FC = () => {
           onCancel={showResume.close}
         />
       </Modal>
-    </PageLayout>
+    </PageLayout >
   );
 };
 
