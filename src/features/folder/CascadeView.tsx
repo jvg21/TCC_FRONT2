@@ -7,7 +7,11 @@ import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 import { useFolder } from './useFolder';
 import { useDocument } from '../document/useDocument';
-
+import { useModal } from '../../hooks/useModal';
+import { Modal } from '../../components/common/Modal';
+import { FolderForm } from './FolderForm';
+import { DocumentForm } from '../document/DocumentForm';
+import { MarkdownEditorPage } from '../markdown-editor/MarkdownEditorPage';
 
 const CascadeContainer = styled.div`
   display: flex;
@@ -39,11 +43,6 @@ const FilterPanel = styled.div<{ $isCollapsed?: boolean }>`
     overflow: hidden;
     padding: ${props => props.$isCollapsed ? '12px' : '16px'};
   }
-  
-  @media (max-width: 480px) {
-    padding: 12px;
-    border-radius: 6px;
-  }
 `;
 
 const FilterHeader = styled.div`
@@ -53,10 +52,6 @@ const FilterHeader = styled.div`
   margin-bottom: 16px;
   cursor: pointer;
   color: ${props => props.theme.colors.text};
-  
-  @media (max-width: 768px) {
-    margin-bottom: 12px;
-  }
   
   h3 {
     margin: 0;
@@ -76,7 +71,6 @@ const FilterToggle = styled.button`
   padding: 4px;
   border-radius: 4px;
   color: ${props => props.theme.colors.text};
-  transition: all 0.2s ease;
   
   &:hover {
     background: ${props => props.theme.colors.hover || 'rgba(255, 255, 255, 0.05)'};
@@ -94,83 +88,45 @@ const FilterContent = styled.div<{ $isCollapsed?: boolean }>`
   }
 `;
 
+const FilterGroup = styled.div`
+  margin-bottom: 20px;
+  
+  h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: ${props => props.theme.colors.text};
+  }
+`;
+
 const SearchInput = styled.input`
   width: 100%;
   padding: 8px 12px;
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 4px;
-  margin-bottom: 12px;
   font-size: 14px;
-  box-sizing: border-box;
   background: ${props => props.theme.colors.background};
   color: ${props => props.theme.colors.text};
-  transition: all 0.2s ease;
-  
-  &::placeholder {
-    color: ${props => props.theme.colors.textSecondary || 'rgba(255, 255, 255, 0.5)'};
-  }
   
   &:focus {
     outline: none;
     border-color: ${props => props.theme.colors.primary};
-    background: ${props => props.theme.colors.backgroundSecondary || props.theme.colors.background};
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 16px;
-    padding: 10px 12px;
   }
 `;
 
-const FilterSection = styled.div`
-  margin-bottom: 16px;
-  
-  h4 {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    color: ${props => props.theme.colors.text};
-  }
-  
-  @media (max-width: 768px) {
-    margin-bottom: 12px;
-    
-    h4 {
-      font-size: 13px;
-    }
-  }
-`;
-
-const FilterOption = styled.label`
+const CheckboxLabel = styled.label`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 0;
+  margin-bottom: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   color: ${props => props.theme.colors.text};
-  transition: all 0.2s ease;
   
-  input {
-    margin: 0;
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
     cursor: pointer;
-    accent-color: ${props => props.theme.colors.primary};
-  }
-  
-  &:hover {
-    color: ${props => props.theme.colors.primary};
-  }
-  
-  @media (max-width: 768px) {
-    padding: 6px 0;
-    font-size: 14px;
-  }
-  
-  @media (max-width: 480px) {
-    gap: 12px;
-    
-    input {
-      transform: scale(1.2);
-    }
   }
 `;
 
@@ -181,75 +137,39 @@ const TreeContainer = styled.div`
   border-radius: 8px;
   padding: 16px;
   overflow-y: auto;
-  overflow-x: hidden;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    min-height: 400px;
-    padding: 12px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 8px;
-    border-radius: 6px;
-    min-height: 350px;
-  }
+  max-height: calc(100vh - 160px);
 `;
 
-const TreeNode = styled.div<{ $level: number; $isExpanded?: boolean }>`
-  margin-left: ${props => Math.min(props.$level * 20, 100)}px;
-  margin-bottom: 4px;
-  
-  @media (max-width: 768px) {
-    margin-left: ${props => Math.min(props.$level * 15, 60)}px;
-    margin-bottom: 2px;
-  }
-  
-  @media (max-width: 480px) {
-    margin-left: ${props => Math.min(props.$level * 12, 48)}px;
-  }
+const TreeNode = styled.div<{ $level: number }>`
+  margin-left: ${props => props.$level * 20}px;
 `;
 
-const NodeHeader = styled.div<{ $isFolder: boolean; $isSelected?: boolean }>`
+const NodeHeader = styled.div<{ $isFolder: boolean; $isSelected: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 8px;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: ${props => props.$isSelected ? `2px solid ${props.theme.colors.primary}` : '1px solid transparent'};
-  background: ${props => props.$isSelected ? `${props.theme.colors.primary}15` : 'transparent'};
-  color: ${props => props.theme.colors.text};
+  background: ${props => props.$isSelected ? props.theme.colors.primaryLight || 'rgba(59, 130, 246, 0.1)' : 'transparent'};
   
   &:hover {
-    background: ${props => props.theme.colors.hover || props.theme.colors.backgroundSecondary || 'rgba(255, 255, 255, 0.05)'};
-  }
-  
-  @media (max-width: 768px) {
-    padding: 10px;
-    gap: 6px;
+    background: ${props => props.theme.colors.hover || 'rgba(255, 255, 255, 0.05)'};
   }
 `;
 
-const NodeIcon = styled.span`
+const NodeIcon = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 `;
 
 const NodeTitle = styled.span<{ $isFolder: boolean }>`
   flex: 1;
+  font-size: 14px;
   font-weight: ${props => props.$isFolder ? '500' : '400'};
-  font-size: ${props => props.$isFolder ? '14px' : '13px'};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   color: ${props => props.theme.colors.text};
-  
-  @media (max-width: 768px) {
-    font-size: ${props => props.$isFolder ? '15px' : '14px'};
-  }
 `;
 
 const NodeMeta = styled.div`
@@ -257,83 +177,31 @@ const NodeMeta = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: ${props => props.theme.colors.textSecondary || props.theme.colors.text};
-  flex-shrink: 0;
-  
-  @media (max-width: 768px) {
-    gap: 6px;
-    font-size: 11px;
-  }
-  
-  @media (max-width: 480px) {
-    display: none;
-  }
+  color: ${props => props.theme.colors.textSecondary};
 `;
+
 const StatusBadge = styled.span<{ $status: 'active' | 'inactive' | 'valid' | 'invalid' | 'pending' }>`
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
-  white-space: nowrap;
   
   ${props => {
-    const isDark = props.theme.mode === 'dark';
-
     switch (props.$status) {
       case 'active':
-        return isDark ? `
-          background: rgba(40, 167, 69, 0.2);
-          color: #4ade80;
-          border: 1px solid rgba(40, 167, 69, 0.3);
-        ` : `
-          background: #d4edda;
-          color: #155724;
-        `;
+        return 'background: #d4edda; color: #155724;';
       case 'inactive':
-        return isDark ? `
-          background: rgba(220, 53, 69, 0.2);
-          color: #f87171;
-          border: 1px solid rgba(220, 53, 69, 0.3);
-        ` : `
-          background: #f8d7da;
-          color: #721c24;
-        `;
+        return 'background: #e2e3e5; color: #383d41;';
       case 'valid':
-        return isDark ? `
-          background: rgba(23, 162, 184, 0.2);
-          color: #22d3ee;
-          border: 1px solid rgba(23, 162, 184, 0.3);
-        ` : `
-          background: #d1ecf1;
-          color: #0c5460;
-        `;
+        return 'background: #d1ecf1; color: #0c5460;';
       case 'invalid':
-        return isDark ? `
-          background: rgba(220, 53, 69, 0.2);
-          color: #f87171;
-          border: 1px solid rgba(220, 53, 69, 0.3);
-        ` : `
-          background: #f8d7da;
-          color: #721c24;
-        `;
+        return 'background: #f8d7da; color: #721c24;';
       case 'pending':
-        return isDark ? `
-          background: rgba(255, 193, 7, 0.2);
-          color: #fbbf24;
-          border: 1px solid rgba(255, 193, 7, 0.3);
-        ` : `
-          background: #fff3cd;
-          color: #856404;
-        `;
+        return 'background: #fff3cd; color: #856404;';
       default:
         return '';
     }
   }}
-  
-  @media (max-width: 768px) {
-    padding: 3px 6px;
-    font-size: 10px;
-  }
 `;
 
 const StatsBar = styled.div`
@@ -346,42 +214,19 @@ const StatsBar = styled.div`
   font-size: 14px;
   color: ${props => props.theme.colors.text};
   border: 1px solid ${props => props.theme.colors.border};
-  
-  span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 8px;
-    font-size: 13px;
-    padding: 10px;
-  }
-`;
-
-const QuickSearch = styled.div`
-  margin-bottom: 12px;
-  
-  @media (min-width: 769px) {
-    display: none;
-  }
 `;
 
 export const CascadeView: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { activeFolder, deactiveFolder } = useFolder();
-  const { activeDocument, deactiveDocument } = useDocument();
+  const { activeFolder, deactiveFolder, create: createFolder } = useFolder();
+  const { activeDocument, deactiveDocument, create: createDocument } = useDocument();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set([1, 2]));
+  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
   const [selectedNode, setSelectedNode] = useState<{ type: 'folder' | 'document'; id: number } | null>(null);
   const [filtersCollapsed, setFiltersCollapsed] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     showInactive: false,
     showValidated: true,
@@ -391,54 +236,28 @@ export const CascadeView: React.FC = () => {
 
   const [isMobile, setIsMobile] = useState(false);
 
+  // Modais
+  const folderModal = useModal();
+  const documentModal = useModal();
+  const editorModal = useModal();
+
+  // Estados de edição
+  const [editingFolder, setEditingFolder] = useState<any>(null);
+  const [editingDocument, setEditingDocument] = useState<any>(null);
+  const [editingContent, setEditingContent] = useState<string>("");
+  const [contentSaveCallback, setContentSaveCallback] = useState<((content: string) => void) | null>(null);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
-
       if (window.innerWidth <= 768) {
         setFiltersCollapsed(true);
       }
     };
-
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        await new Promise(resolve => setTimeout(resolve, 100));
-      } catch (err) {
-        setError(err instanceof Error ? err.message : t('loading.error'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, [t]);
-
-  const expandAllFolders = () => {
-    const allFolderIds = new Set<number>();
-    const addFolderIds = (folders: any[]) => {
-      folders.forEach(folder => {
-        allFolderIds.add(folder.FolderId);
-        if (folder.children) {
-          addFolderIds(folder.children);
-        }
-      });
-    };
-    addFolderIds(buildTree);
-    setExpandedFolders(allFolderIds);
-  };
-
-  const collapseAllFolders = () => {
-    setExpandedFolders(new Set());
-  };
 
   const toggleFolder = (folderId: number) => {
     setExpandedFolders(prev => {
@@ -452,7 +271,6 @@ export const CascadeView: React.FC = () => {
     });
   };
 
-  // ✅ CORREÇÃO APLICADA: Filtro de documentos corrigido
   const buildTree = useMemo(() => {
     const tree: any[] = [];
     const folderMap = new Map();
@@ -464,17 +282,13 @@ export const CascadeView: React.FC = () => {
       folder.Name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // ✅ CORREÇÃO: Tratamento de documentos sem validação definida
     const filteredDocuments = allDocuments.filter(doc => {
-      // Primeiro verifica se o título corresponde à busca
       if (!doc.Title.toLowerCase().includes(searchTerm.toLowerCase())) {
         return false;
       }
 
-      // Se o documento não tem validação definida (undefined), considera como pendente
       const validationStatus = doc.isValid === undefined ? null : doc.isValid;
 
-      // Aplica os filtros de validação
       return (
         (filters.showValidated && validationStatus === true) ||
         (filters.showPending && validationStatus === null) ||
@@ -501,7 +315,6 @@ export const CascadeView: React.FC = () => {
         if (parent) {
           parent.children.push(folder);
         } else {
-          // Se o pai não existe no folderMap (usuário sem acesso ao pai), trata como raiz
           tree.push(folder);
         }
       }
@@ -510,27 +323,21 @@ export const CascadeView: React.FC = () => {
     return tree;
   }, [activeFolder, deactiveFolder, activeDocument, deactiveDocument, searchTerm, filters]);
 
-  // ✅ NOVO: Auto-expandir todas as pastas ao carregar
   useEffect(() => {
-    const collectFolderIds = (nodes: any[]): number[] => {
-      const ids: number[] = [];
-
-      nodes.forEach(node => {
-        if (node.FolderId) {
-          ids.push(node.FolderId);
-        }
-        if (node.children && node.children.length > 0) {
-          ids.push(...collectFolderIds(node.children));
-        }
-      });
-
-      return ids;
-    };
-
-    // Expande todas as pastas quando a árvore for construída
     if (buildTree.length > 0) {
-      const allFolderIds = collectFolderIds(buildTree);
-      setExpandedFolders(new Set(allFolderIds));
+      const collectFolderIds = (nodes: any[]): number[] => {
+        const ids: number[] = [];
+        nodes.forEach(node => {
+          if (node.FolderId) {
+            ids.push(node.FolderId);
+            if (node.children?.length > 0) {
+              ids.push(...collectFolderIds(node.children));
+            }
+          }
+        });
+        return ids;
+      };
+      setExpandedFolders(new Set(collectFolderIds(buildTree)));
     }
   }, [buildTree]);
 
@@ -570,8 +377,8 @@ export const CascadeView: React.FC = () => {
 
           {isExpanded && (
             <>
-              {node.children && node.children.map((child: any) => renderTreeNode(child, level + 1))}
-              {node.documents && node.documents.map((doc: Document) => renderTreeNode(doc, level + 1))}
+              {node.children?.map((child: any) => renderTreeNode(child, level + 1))}
+              {node.documents?.map((doc: any) => renderTreeNode(doc, level + 1))}
             </>
           )}
         </React.Fragment>
@@ -586,11 +393,8 @@ export const CascadeView: React.FC = () => {
             $isSelected={isSelected}
             onClick={() => {
               setSelectedNode({ type: 'document', id: node.DocumentId });
-              // ✅ NAVEGAÇÃO ADICIONADA: Redireciona para a página do documento
               navigate(`/document/${node.DocumentId}`);
             }}
-            style={{ cursor: 'pointer' }}
-            title="Clique para abrir o documento"
           >
             <NodeIcon style={{ width: '16px' }} />
             <NodeIcon>
@@ -601,22 +405,54 @@ export const CascadeView: React.FC = () => {
               <StatusBadge $status={node.IsActive ? 'active' : 'inactive'}>
                 {node.IsActive ? t("cascadeview.active") : t("cascadeview.inactive")}
               </StatusBadge>
-              {node.isValid !== undefined && (
-                <StatusBadge $status={
-                  node.isValid === true ? 'valid' :
-                    node.isValid === false ? 'invalid' : 'pending'
-                }>
-                  {node.isValid === true ? t("cascadeview.valid") :
-                    node.isValid === false ? t("cascadeview.invalid") : t("cascadeview.pending")}
-                </StatusBadge>
-              )}
-              <span title={`${t("cascadeview.created_on")} ${new Date(node.CreatedAt).toLocaleDateString()}`}>
-                {new Date(node.CreatedAt).toLocaleDateString()}
-              </span>
             </NodeMeta>
           </NodeHeader>
         </TreeNode>
       );
+    }
+  };
+
+  // Handlers para pasta
+  const handleAddFolder = () => {
+    setEditingFolder(null);
+    folderModal.open();
+  };
+
+  const handleSaveFolder = async (payload: any) => {
+    try {
+      await createFolder(payload);
+      folderModal.close();
+    } catch (error) {
+      console.error("Erro ao criar pasta:", error);
+    }
+  };
+
+  // Handlers para documento
+  const handleAddDocument = () => {
+    setEditingDocument(null);
+    setEditingContent("");
+    documentModal.open();
+  };
+
+  const handleEditContentFromForm = (currentContent: string, onContentSaved: (newContent: string) => void) => {
+    setEditingContent(currentContent);
+    setContentSaveCallback(() => onContentSaved);
+    editorModal.open();
+  };
+
+  const handleSaveContent = (newContent: string) => {
+    if (contentSaveCallback) {
+      contentSaveCallback(newContent);
+    }
+    editorModal.close();
+  };
+
+  const handleSaveDocument = async (payload: any) => {
+    try {
+      await createDocument(payload);
+      documentModal.close();
+    } catch (error) {
+      console.error("Erro ao criar documento:", error);
     }
   };
 
@@ -627,6 +463,7 @@ export const CascadeView: React.FC = () => {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <Button
             variant="primary"
+            onClick={handleAddFolder}
             style={{
               minWidth: 'auto',
               padding: isMobile ? '8px' : '8px 16px'
@@ -636,6 +473,7 @@ export const CascadeView: React.FC = () => {
             {!isMobile && <span style={{ marginLeft: '4px' }}>{t("cascadeview.new_folder")}</span>}
           </Button>
           <Button
+            onClick={handleAddDocument}
             style={{
               minWidth: 'auto',
               padding: isMobile ? '8px' : '8px 16px'
@@ -655,105 +493,120 @@ export const CascadeView: React.FC = () => {
               {t("cascadeview.filters")}
             </h3>
             <FilterToggle>
-              {filtersCollapsed ? <FiChevronDown size={16} /> : <FiChevronUp size={16} />}
+              {filtersCollapsed ? <FiChevronDown size={18} /> : <FiChevronUp size={18} />}
             </FilterToggle>
           </FilterHeader>
 
           <FilterContent $isCollapsed={filtersCollapsed}>
-            <SearchInput
-              type="text"
-              placeholder={t("cascadeview.search_placeholder")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <FilterGroup>
+              <SearchInput
+                type="text"
+                placeholder={t("cascadeview.search_placeholder")}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </FilterGroup>
 
-            <FilterSection>
+            <FilterGroup>
               <h4>{t("cascadeview.status")}</h4>
-              <FilterOption>
+              <CheckboxLabel>
                 <input
                   type="checkbox"
                   checked={filters.showInactive}
-                  onChange={(e) => setFilters(prev => ({ ...prev, showInactive: e.target.checked }))}
+                  onChange={(e) => setFilters({ ...filters, showInactive: e.target.checked })}
                 />
                 {t("cascadeview.show_inactive")}
-              </FilterOption>
-            </FilterSection>
+              </CheckboxLabel>
+            </FilterGroup>
 
-            <FilterSection>
+            <FilterGroup>
               <h4>{t("cascadeview.document_validation")}</h4>
-              <FilterOption>
+              <CheckboxLabel>
                 <input
                   type="checkbox"
                   checked={filters.showValidated}
-                  onChange={(e) => setFilters(prev => ({ ...prev, showValidated: e.target.checked }))}
+                  onChange={(e) => setFilters({ ...filters, showValidated: e.target.checked })}
                 />
                 {t("cascadeview.valid_documents")}
-              </FilterOption>
-              <FilterOption>
+              </CheckboxLabel>
+              <CheckboxLabel>
                 <input
                   type="checkbox"
                   checked={filters.showPending}
-                  onChange={(e) => setFilters(prev => ({ ...prev, showPending: e.target.checked }))}
+                  onChange={(e) => setFilters({ ...filters, showPending: e.target.checked })}
                 />
                 {t("cascadeview.pending_validation")}
-              </FilterOption>
-              <FilterOption>
+              </CheckboxLabel>
+              <CheckboxLabel>
                 <input
                   type="checkbox"
                   checked={filters.showInvalid}
-                  onChange={(e) => setFilters(prev => ({ ...prev, showInvalid: e.target.checked }))}
+                  onChange={(e) => setFilters({ ...filters, showInvalid: e.target.checked })}
                 />
                 {t("cascadeview.invalid_documents")}
-              </FilterOption>
-            </FilterSection>
+              </CheckboxLabel>
+            </FilterGroup>
           </FilterContent>
         </FilterPanel>
 
         <TreeContainer>
-          {isMobile && (
-            <QuickSearch>
-              <SearchInput
-                type="text"
-                placeholder={t("cascadeview.quick_search")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </QuickSearch>
-          )}
+          <StatsBar>
+            <span>
+              <FiFolder size={16} />
+              {activeFolder.length} {t("cascadeview.folders")}
+            </span>
+            <span>
+              <FiFile size={16} />
+              {activeDocument.length} {t("cascadeview.documents")}
+            </span>
+          </StatsBar>
 
-          {isMobile && buildTree.length > 0 && (
-            <div style={{
-              display: 'flex',
-              gap: '8px',
-              marginBottom: '12px',
-              justifyContent: 'center'
-            }}>
-              <Button
-                variant="primary"
-                onClick={expandAllFolders}
-                style={{ fontSize: '12px', padding: '6px 12px' }}
-              >
-                {t("cascadeview.expand_all")}
-              </Button>
-              <Button
-                variant="primary"
-                onClick={collapseAllFolders}
-                style={{ fontSize: '12px', padding: '6px 12px' }}
-              >
-                {t("cascadeview.collapse_all")}
-              </Button>
+          {buildTree.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
+              {t("cascadeview.no_folders")}
             </div>
+          ) : (
+            buildTree.map(node => renderTreeNode(node, 0))
           )}
-
-          <div>
-            <StatsBar>
-              <span>📁 {t("cascadeview.folders")}: {buildTree.length}</span>
-              <span>📄 {t("cascadeview.documents")}: {buildTree.reduce((acc, folder) => acc + (folder.documents?.length || 0), 0)}</span>
-            </StatsBar>
-            {buildTree.map(node => renderTreeNode(node))}
-          </div>
         </TreeContainer>
       </CascadeContainer>
+
+      <Modal 
+        isOpen={folderModal.isOpen} 
+        onClose={folderModal.close} 
+        title={t("folders.add_folder")}
+      >
+        <FolderForm 
+          initial={editingFolder ?? undefined} 
+          onCancel={folderModal.close} 
+          onSave={handleSaveFolder} 
+        />
+      </Modal>
+
+      <Modal 
+        isOpen={documentModal.isOpen} 
+        onClose={documentModal.close} 
+        title={t("documents.add_document")}
+      >
+        <DocumentForm 
+          initial={editingDocument ?? undefined} 
+          onCancel={documentModal.close} 
+          onSave={handleSaveDocument}
+          onEditContent={handleEditContentFromForm}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={editorModal.isOpen}
+        onClose={editorModal.close}
+        title={t("documents.markdown_editor")}
+      >
+        <MarkdownEditorPage
+          initialContent={editingContent}
+          onSave={handleSaveContent}
+          onCancel={editorModal.close}
+        />
+      </Modal>
     </PageLayout>
   );
 };
