@@ -517,14 +517,9 @@ const SettingsPage: React.FC = () => {
   return (
     <PageLayout
       title={t("settings.title")}
-      actions={
-        <Button variant="ghost" onClick={() => navigate(-1)}>
-          {t("actions.back")}
-        </Button>
-      }
     >
       <SettingsContainer>
-        {/* Informações do Usuário */}
+        {}
         <SettingsCard>
           <SettingsSection>
             <SectionHeader>
