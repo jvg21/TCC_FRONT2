@@ -1,4 +1,3 @@
-// src/features/document/DocumentPage.tsx
 import React, { useState, useEffect } from "react";
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
@@ -99,7 +98,6 @@ const DocumentPage: React.FC = () => {
   const [query, setQuery] = useState("");
   const [activeTabId, setActiveTabId] = useState("geral");
 
-  // Estados para filtros avançados
   const [dateFilter, setDateFilter] = useState<{
     startDate: string;
     endDate: string;
@@ -111,9 +109,6 @@ const DocumentPage: React.FC = () => {
   const [tagFilter, setTagFilter] = useState<number | null>(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [tagFilteredDocIds, setTagFilteredDocIds] = useState<number[]>([]);
-
-  // console.log(userDocuments, userValidatorDocuments);
-
   const { t } = useTranslation();
   const { userProfile, user } = useAuthContext();
   const { getTagsByDocument, getDocumentsByTag, activeTag } = useTag();
@@ -125,14 +120,13 @@ const DocumentPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // useEffect para carregar documentos quando uma tag é selecionada
   useEffect(() => {
     const loadDocumentsByTag = async () => {
       if (tagFilter) {
         try {
           const response = await getDocumentsByTag(tagFilter);
           if (response && !response.erro && response.objeto) {
-            // Extrair os IDs dos documentos
+            
             const docIds = response.objeto.map((item: any) => item.documentId);
             setTagFilteredDocIds(docIds);
           }
