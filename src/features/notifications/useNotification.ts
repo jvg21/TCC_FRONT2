@@ -26,7 +26,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       notifications: [...state.notifications, { id, message, type }]
     }));
     
-    // Auto-hide notification after 5 seconds
+    
     setTimeout(() => {
       get().hideNotification(id);
     }, 5000);
@@ -43,7 +43,6 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   }
 }));
 
-// Versão melhorada para acesso fora de componentes React
 export const notificationActions = {
   showNotification: (message: string, type: NotificationType) => {
     useNotificationStore.getState().showNotification(message, type);
