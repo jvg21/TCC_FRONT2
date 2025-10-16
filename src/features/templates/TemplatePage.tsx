@@ -25,7 +25,6 @@ const TemplatePage: React.FC = () => {
   const Templates = searchStatus === 1 ? activeTemplate : searchStatus === 2 ? deactiveTemplate : [...activeTemplate, ...deactiveTemplate];
   const [editing, setEditing] = useState<Template | null>(null);
   const [query, setQuery] = useState("");
-
   const modal = useModal();
   const { t } = useTypedTranslation();
   const { userProfile } = useAuthContext();
