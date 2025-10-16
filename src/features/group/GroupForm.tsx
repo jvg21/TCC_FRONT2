@@ -22,16 +22,12 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
   const [Description, setDescription] = useState(initial.Description ?? "");
   const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
   const { t } = useTranslation();
-
-  // Estados para gerenciamento de usuários
   const { activeUser } = useUser();
   const { getUsersByGroup, addUserToGroup, removeUserFromGroup, getFoldersByGroup } = useGroup();
   const [groupUsers, setGroupUsers] = useState<any[]>([]);
   const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [showUserSection, setShowUserSection] = useState(false);
-
-  // Estados para gerenciamento de pastas
   const { activeFolder, addFolderXGroup, deleteFolderXGroup, getListFolderXGroupByFolder } = useFolder();
   const [groupFolders, setGroupFolders] = useState<any[]>([]);
   const [availableFolders, setAvailableFolders] = useState<any[]>([]);
@@ -57,7 +53,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
   }, [initial?.GroupId, showFolderSection]);
 
   useEffect(() => {
-    // Filtrar usuários disponíveis (não estão no grupo)
+    
     const usersNotInGroup = activeUser.filter(user =>
       !groupUsers.some(groupUser => groupUser.UserId === user.UserId)
     );
