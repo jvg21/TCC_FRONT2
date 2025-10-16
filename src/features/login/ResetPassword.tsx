@@ -181,7 +181,7 @@ const ResetPassword: React.FC = () => {
   const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0;
   const isFormValid = passwordStrength === 100 && passwordsMatch;
 
-  // Função para obter texto de força da senha traduzido
+  
   const getPasswordStrengthText = () => {
     const strengthTexts = {
       pt: {
@@ -217,7 +217,7 @@ const ResetPassword: React.FC = () => {
     return texts.veryStrong;
   };
 
-  // Função para obter texto de confirmação de senha traduzido
+  
   const getPasswordMatchText = () => {
     const matchTexts = {
       pt: { match: "Senhas conferem", noMatch: "Senhas não conferem" },
