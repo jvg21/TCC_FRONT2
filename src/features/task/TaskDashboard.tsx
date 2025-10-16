@@ -505,7 +505,7 @@ const TaskDashboard: React.FC = () => {
             </DeadlinesList>
           </UpcomingDeadlines>
 
-          {/* Estatísticas das Tarefas */}
+          {}
           <TaskStatistics>
             <SectionHeader>
               <SectionTitle>{t("tasks.task_statistics") || "Task Statistics"}</SectionTitle>
@@ -548,7 +548,7 @@ const TaskDashboard: React.FC = () => {
         </BottomSection>
       </DashboardContainer>
 
-      {/* Modal seguindo exatamente o padrão do TaskPage existente */}
+      {}
       <Modal 
         isOpen={modal.isOpen} 
         onClose={modal.close} 
