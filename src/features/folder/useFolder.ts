@@ -73,7 +73,6 @@ export const useFolder = () => {
     Documents: item.documents || []
   });
 
-  // Na função transformPayloadToCamelCase, adicionar o UserId do usuário logado
   const transformPayloadToCamelCase = (payload: Partial<Folder>) => ({
     name: payload.Name,
     parentFolderId: payload.ParentFolderId || null,
@@ -205,7 +204,7 @@ export const useFolder = () => {
     }
   };
 
-  // Adicionar ao final do hook, antes do return
+  
   const addFolderXGroup = async (folderId: number, groupId: number) => {
     try {
       const payload = {
