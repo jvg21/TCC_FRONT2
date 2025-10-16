@@ -52,6 +52,70 @@ import { DocumentTags } from '../../components/common/DocumentTags';
 import { useModal } from '../../hooks/useModal';
 import { Modal } from '../../components/common/Modal';
 import { MarkdownEditorPage } from '../markdown-editor/MarkdownEditorPage';
+import styled from 'styled-components';
+
+/* ===== Responsivo da barra de ações e dropdowns ===== */
+const ActionsBar = styled.div`
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+    & > * {
+      width: 100%;
+    }
+    button, a {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+`;
+
+const DropdownContainer = styled.div`
+  position: relative;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  min-width: 180px;
+  padding: 4px 0;
+
+  @media (max-width: 768px) {
+    position: static;
+    width: 100%;
+    min-width: unset;
+    box-shadow: none;
+  }
+`;
+
+const DropdownItemButton = styled.button`
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+`;
 
 const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -86,34 +150,27 @@ const DocumentDetailsPage: React.FC = () => {
   const [showExportDropdown, setShowExportDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  // ▼▼ ADIÇÃO: estado e ref do DROPDOWN de "Gerar Resumo"
   const [showSummaryDropdown, setShowSummaryDropdown] = useState(false);
   const summaryDropdownRef = useRef<HTMLDivElement | null>(null);
-  // ▲▲ ADIÇÃO
 
   useEffect(() => {
-  
-  const doc = typeof window !== 'undefined' ? window.document : null;
-  if (!doc) return;
+    const doc = typeof window !== 'undefined' ? window.document : null;
+    if (!doc) return;
 
-  const handleClickOutside = (event: MouseEvent) => {
-    // fecha export
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-      setShowExportDropdown(false);
-    }
-    // ▼▼ ADIÇÃO: fecha summary
-    if (summaryDropdownRef.current && !summaryDropdownRef.current.contains(event.target as Node)) {
-      setShowSummaryDropdown(false);
-    }
-    // ▲▲ ADIÇÃO
-  };
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowExportDropdown(false);
+      }
+      if (summaryDropdownRef.current && !summaryDropdownRef.current.contains(event.target as Node)) {
+        setShowSummaryDropdown(false);
+      }
+    };
 
-  doc.addEventListener('mousedown', handleClickOutside);
-  return () => {
-    doc.removeEventListener('mousedown', handleClickOutside);
-  };
-}, []);
-
+    doc.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      doc.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const loadDocument = async () => {
@@ -127,7 +184,6 @@ const DocumentDetailsPage: React.FC = () => {
       hasLoadedRef.current = true;
       try {
         const response = await GetDocumentValidationById(Number(id));
-        // console.log('Resposta da API:', response);
         if (response && !response.erro) {
           setDocument(transformSingleApiData(response.objeto.document));
           setDocumentContent(response.objeto.document.content || '');
@@ -148,7 +204,6 @@ const DocumentDetailsPage: React.FC = () => {
     loadDocument();
   }, [id, t]);
 
-  // Carregar comentários quando o documento for carregado
   useEffect(() => {
     if (document?.DocumentId) {
       getCommentsByDocumentId(document.DocumentId);
@@ -174,8 +229,6 @@ const DocumentDetailsPage: React.FC = () => {
 
       await updateValidationStatus(document.DocumentId, null, validatorNote);
       setValidationStatus(0);
-
-
     } catch (error) {
       notificationActions.showError(
         t("messages.error.generic") || 'Erro ao salvar documento'
@@ -208,20 +261,6 @@ const DocumentDetailsPage: React.FC = () => {
     try {
       setValidationStatus(isValid);
       await updateValidationStatus(document.DocumentId, isValid, validatorNote);
-
-      // if (isValid) {
-      //   await createComment({
-      //     Content: `✅ ${t("documents.document_details.validation.approve")} ${t("documents.document_details.validated_by") || "por"} ${user?.Name}${validatorNote ? `: ${validatorNote}` : ''}`,
-      //     DocumentId: document.DocumentId,
-      //     UserId: user!.UserId
-      //   });
-      // } else {
-      //   await createComment({
-      //     Content: `❌ ${t("documents.document_details.validation.reject") } ${t("documents.document_details.validated_by") || "por"} ${user?.Name}: ${validatorNote}`,
-      //     DocumentId: document.DocumentId,
-      //     UserId: user!.UserId
-      //   });
-      // }
       setValidatorNote(validatorNote);
       setValidationStatus(isValid ? 1 : 2);
     } catch (error) {
@@ -230,22 +269,17 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  // ▼▼ ALTERADO: aceita um "mode" (futuro uso). Por enquanto, chama a mesma função.
+  // aceita "mode" para tipos futuros (padrão, curto, bullet, etc.)
   const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
     if (documentContent) {
       const summaryText = await generateSummary(Number(id));
-      // console.log(summaryText, mode);
       setSummary(summaryText.Content || '');
       showResume.open();
     } else {
-      notificationActions.showError(
-        t("messages.error.validation")
-      );
+      notificationActions.showError(t("messages.error.validation"));
     }
   };
-  // ▲▲ ALTERADO
 
-  // Exportar como PDF
   const handleExportPDF = async () => {
     if (!document) return;
 
@@ -255,13 +289,11 @@ const DocumentDetailsPage: React.FC = () => {
       const margin = 15;
       let yPosition = margin;
 
-      // Título
       pdf.setFontSize(18);
       pdf.setFont('helvetica', 'bold');
       pdf.text(document.Title, margin, yPosition);
       yPosition += 10;
 
-      // Metadados
       pdf.setFontSize(10);
       pdf.setFont('helvetica', 'normal');
       pdf.text(`Criado por: ${creator?.Name || 'N/A'}`, margin, yPosition);
@@ -271,7 +303,6 @@ const DocumentDetailsPage: React.FC = () => {
       pdf.text(`Data de criação: ${formatDate(document.CreatedAt)}`, margin, yPosition);
       yPosition += 10;
 
-      // Conteúdo
       pdf.setFontSize(12);
       const lines = pdf.splitTextToSize(documentContent, pageWidth - 2 * margin);
       pdf.text(lines, margin, yPosition);
@@ -284,7 +315,6 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  // Exportar como DOCX
   const handleExportDOCX = async () => {
     if (!document) return;
 
@@ -329,7 +359,6 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  // Exportar como Markdown
   const handleExportMarkdown = () => {
     if (!document) return;
 
@@ -350,13 +379,11 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  // Função para formatar data seguindo o padrão do projeto
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('pt-BR');
   };
 
-  // Função para obter status de validação traduzido
   const getValidationStatusText = (status: number) => {
     if (status === 0) {
       return `⏳ ${t("documents.document_details.validation.pending") || "Pendente"}`;
@@ -390,7 +417,6 @@ const DocumentDetailsPage: React.FC = () => {
     );
   }
 
-  // Buscar informações do criador e pasta seguindo o padrão do projeto
   const creator = activeUser.find(u => u.UserId === document.UserId);
   const folder = activeFolder.find(f => f.FolderId === document.FolderId);
 
@@ -398,13 +424,13 @@ const DocumentDetailsPage: React.FC = () => {
     <PageLayout
       title={t("documents.document_details.title") || "Detalhes do Documento"}
       actions={
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <ActionsBar>
           <Button variant="ghost" onClick={handleBack}>
             <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
 
-          {/* dropdown simples com os 3 itens de exportação */}
-          <div style={{ position: 'relative' }} ref={dropdownRef}>
+          {/* Exportar - dropdown */}
+          <DropdownContainer ref={dropdownRef}>
             <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
               <FiDownload style={{ marginRight: 6 }} />
               Exportar
@@ -412,80 +438,22 @@ const DocumentDetailsPage: React.FC = () => {
             </Button>
 
             {showExportDropdown && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '110%',
-                  right: 0,
-                  background: '#fff',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  zIndex: 10,
-                  width: '160px',
-                  padding: '4px 0',
-                }}
-              >
-                <button
-                  onClick={() => {
-                    handleExportPDF();
-                    setShowExportDropdown(false);
-                  }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 12px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
-                >
+              <DropdownMenu>
+                <DropdownItemButton onClick={() => { handleExportPDF(); setShowExportDropdown(false); }}>
                   📄 Exportar PDF
-                </button>
-                <button
-                  onClick={() => {
-                    handleExportDOCX();
-                    setShowExportDropdown(false);
-                  }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 12px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
-                >
+                </DropdownItemButton>
+                <DropdownItemButton onClick={() => { handleExportDOCX(); setShowExportDropdown(false); }}>
                   📝 Exportar DOCX
-                </button>
-                <button
-                  onClick={() => {
-                    handleExportMarkdown();
-                    setShowExportDropdown(false);
-                  }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 12px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
-                >
+                </DropdownItemButton>
+                <DropdownItemButton onClick={() => { handleExportMarkdown(); setShowExportDropdown(false); }}>
                   ⬇️ Exportar MD
-                </button>
-              </div>
+                </DropdownItemButton>
+              </DropdownMenu>
             )}
-          </div>
+          </DropdownContainer>
 
-          {/* ▼▼ ADIÇÃO: DROPDOWN do botão "Gerar Resumo" */}
-          <div style={{ position: 'relative' }} ref={summaryDropdownRef}>
+          {/* Gerar Resumo - dropdown */}
+          <DropdownContainer ref={summaryDropdownRef}>
             <Button onClick={() => setShowSummaryDropdown(!showSummaryDropdown)}>
               <FiEdit style={{ marginRight: 6 }} />
               {t("documents.document_details.generate_summary") || "Gerar Resumo"}
@@ -493,85 +461,24 @@ const DocumentDetailsPage: React.FC = () => {
             </Button>
 
             {showSummaryDropdown && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '110%',
-                  right: 0,
-                  background: '#fff',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  zIndex: 10,
-                  width: '220px',
-                  padding: '4px 0',
-                }}
-              >
-                <button
-                  onClick={() => {
-                    handleGenerateSummary('default');
-                    setShowSummaryDropdown(false);
-                  }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 12px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
-                >
+              <DropdownMenu>
+                <DropdownItemButton onClick={() => { handleGenerateSummary('default'); setShowSummaryDropdown(false); }}>
                   ✨ Resumo padrão
-                </button>
-
-                <button
-                  onClick={() => {
-                    handleGenerateSummary('curto');
-                    setShowSummaryDropdown(false);
-                  }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 12px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
-                >
+                </DropdownItemButton>
+                <DropdownItemButton onClick={() => { handleGenerateSummary('curto'); setShowSummaryDropdown(false); }}>
                   ⚡ Resumo curto (TL;DR)
-                </button>
-
-                <button
-                  onClick={() => {
-                    handleGenerateSummary('bullet');
-                    setShowSummaryDropdown(false);
-                  }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 12px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
-                >
+                </DropdownItemButton>
+                <DropdownItemButton onClick={() => { handleGenerateSummary('bullet'); setShowSummaryDropdown(false); }}>
                   •• Resumo em tópicos
-                </button>
-              </div>
+                </DropdownItemButton>
+              </DropdownMenu>
             )}
-          </div>
-          {/* ▲▲ ADIÇÃO */}
+          </DropdownContainer>
 
           <Button onClick={handleSaveDocument}>
             <FiEdit /> {t("documents.document_details.save_changes") || "Salvar Alterações"}
           </Button>
-        </div>
+        </ActionsBar>
       }
     >
       <DetailsContainer>
@@ -655,39 +562,28 @@ const DocumentDetailsPage: React.FC = () => {
               {t("documents.document_details.validation.title") || "Status de Validação"}
             </ValidationTitle>
 
+            {validationStatus !== 0 && (
+              <ValidatorActions>
+                <ValidationStatus>
+                  <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
+                    {getValidationStatusText(validationStatus as number)}
+                  </StatusBadge>
+                  <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}></div>
 
-            {
-              validationStatus !== 0 &&
-              (
-                <ValidatorActions>
-
-                  <ValidationStatus>
-                    <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
-                      {getValidationStatusText(validationStatus as number)}
-                    </StatusBadge>
-                    <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}></div>
-
-                    {/*campo de texo com o validatorNote readonluy*/}
-                    {validatorNote && (
-                      <ValidatorNote
-                        value={validatorNote}
-                        readOnly
-                      />
-
-                    )
-                    }
-                  </ValidationStatus>
-                </ValidatorActions>
-              )
-            }
-
+                  {validatorNote && (
+                    <ValidatorNote
+                      value={validatorNote}
+                      readOnly
+                    />
+                  )}
+                </ValidationStatus>
+              </ValidatorActions>
+            )}
 
             {validationStatus === 0 && (
               <ValidatorActions>
                 <ValidatorNote
-                  placeholder={
-                    t("documents.document_details.validation.add_note")
-                  }
+                  placeholder={t("documents.document_details.validation.add_note")}
                   value={validatorNote}
                   onChange={(e) => setValidatorNote(e.target.value)}
                 />
@@ -783,3 +679,5 @@ const DocumentDetailsPage: React.FC = () => {
 };
 
 export default DocumentDetailsPage;
+
+
