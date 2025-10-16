@@ -1,4 +1,3 @@
-// src/features/templates/useTemplate.ts
 import { useState, useEffect } from "react";
 import { useAuthContext } from "../../context/AuthContext";
 import { notificationActions } from "../notifications/useNotification";
