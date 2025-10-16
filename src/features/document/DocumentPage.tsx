@@ -378,7 +378,7 @@ const DocumentPage: React.FC = () => {
 
   const columns = Columns(handleEdit, handleToggleStatus, handleView, handleEditContent);
 
-  // Componente InfoAlert
+  
   const InfoAlert = ({ type, title, description }: { type: string; title: string; description: string }) => {
 
     const colors = {
@@ -415,7 +415,6 @@ const DocumentPage: React.FC = () => {
     );
   };
 
-  // Componente EmptyState
   const EmptyState = ({ icon, title, description }: { icon: string; title: string; description: string }) => (
     <div style={{
       textAlign: 'center',
@@ -428,7 +427,6 @@ const DocumentPage: React.FC = () => {
     </div>
   );
 
-  // Componente de Filtros Avançados
   const AdvancedFilters = () => (
     <div style={{
       background: `${theme.colors.primary}15`,
@@ -443,7 +441,7 @@ const DocumentPage: React.FC = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
         gap: '16px'
       }}>
-        {/* Filtro de Data */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
             {t("documents.filters.date_range") || "Período"}
