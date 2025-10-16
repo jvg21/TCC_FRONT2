@@ -429,7 +429,7 @@ const DocumentDetailsPage: React.FC = () => {
             <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
 
-          {/* Exportar - dropdown */}
+          {}
           <DropdownContainer ref={dropdownRef}>
             <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
               <FiDownload style={{ marginRight: 6 }} />
@@ -452,7 +452,7 @@ const DocumentDetailsPage: React.FC = () => {
             )}
           </DropdownContainer>
 
-          {/* Gerar Resumo - dropdown */}
+          {}
           <DropdownContainer ref={summaryDropdownRef}>
             <Button onClick={() => setShowSummaryDropdown(!showSummaryDropdown)}>
               <FiEdit style={{ marginRight: 6 }} />
@@ -605,12 +605,12 @@ const DocumentDetailsPage: React.FC = () => {
             )}
           </ValidationSection>
 
-          {/* Seção de Tags */}
+          {}
           {document?.DocumentId && (
             <DocumentTags documentId={document.DocumentId} />
           )}
 
-          {/* Seção de Comentários */}
+          {}
           <CommentsSection>
             <CommentsTitle>
               <FiMessageSquare />
@@ -662,7 +662,7 @@ const DocumentDetailsPage: React.FC = () => {
         </RightColumn>
       </DetailsContainer>
 
-      {/* Modal para resumo */}
+      {}
       <Modal
         isOpen={showResume.isOpen}
         onClose={showResume.close}
