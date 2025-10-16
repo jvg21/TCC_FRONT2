@@ -83,19 +83,29 @@ const DocumentDetailsPage: React.FC = () => {
 
   const hasLoadedRef = useRef(false);
 
-  
   const [showExportDropdown, setShowExportDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
- useEffect(() => {
+  // ▼▼ ADIÇÃO: estado e ref do DROPDOWN de "Gerar Resumo"
+  const [showSummaryDropdown, setShowSummaryDropdown] = useState(false);
+  const summaryDropdownRef = useRef<HTMLDivElement | null>(null);
+  // ▲▲ ADIÇÃO
+
+  useEffect(() => {
   
   const doc = typeof window !== 'undefined' ? window.document : null;
   if (!doc) return;
 
   const handleClickOutside = (event: MouseEvent) => {
+    // fecha export
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
       setShowExportDropdown(false);
     }
+    // ▼▼ ADIÇÃO: fecha summary
+    if (summaryDropdownRef.current && !summaryDropdownRef.current.contains(event.target as Node)) {
+      setShowSummaryDropdown(false);
+    }
+    // ▲▲ ADIÇÃO
   };
 
   doc.addEventListener('mousedown', handleClickOutside);
@@ -220,10 +230,11 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  const handleGenerateSummary = async () => {
+  // ▼▼ ALTERADO: aceita um "mode" (futuro uso). Por enquanto, chama a mesma função.
+  const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
     if (documentContent) {
       const summaryText = await generateSummary(Number(id));
-      // console.log(summaryText);
+      // console.log(summaryText, mode);
       setSummary(summaryText.Content || '');
       showResume.open();
     } else {
@@ -232,8 +243,7 @@ const DocumentDetailsPage: React.FC = () => {
       );
     }
   };
-
-  // ADICIONAR APÓS handleGenerateSummary:
+  // ▲▲ ALTERADO
 
   // Exportar como PDF
   const handleExportPDF = async () => {
@@ -474,9 +484,90 @@ const DocumentDetailsPage: React.FC = () => {
             )}
           </div>
 
-          <Button onClick={handleGenerateSummary}>
-            <FiEdit /> {t("documents.document_details.generate_summary") || "Gerar Resumo"}
-          </Button>
+          {/* ▼▼ ADIÇÃO: DROPDOWN do botão "Gerar Resumo" */}
+          <div style={{ position: 'relative' }} ref={summaryDropdownRef}>
+            <Button onClick={() => setShowSummaryDropdown(!showSummaryDropdown)}>
+              <FiEdit style={{ marginRight: 6 }} />
+              {t("documents.document_details.generate_summary") || "Gerar Resumo"}
+              <FiChevronDown style={{ marginLeft: 6 }} />
+            </Button>
+
+            {showSummaryDropdown && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '110%',
+                  right: 0,
+                  background: '#fff',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                  zIndex: 10,
+                  width: '220px',
+                  padding: '4px 0',
+                }}
+              >
+                <button
+                  onClick={() => {
+                    handleGenerateSummary('default');
+                    setShowSummaryDropdown(false);
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '8px 12px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  ✨ Resumo padrão
+                </button>
+
+                <button
+                  onClick={() => {
+                    handleGenerateSummary('curto');
+                    setShowSummaryDropdown(false);
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '8px 12px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  ⚡ Resumo curto (TL;DR)
+                </button>
+
+                <button
+                  onClick={() => {
+                    handleGenerateSummary('bullet');
+                    setShowSummaryDropdown(false);
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '8px 12px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  •• Resumo em tópicos
+                </button>
+              </div>
+            )}
+          </div>
+          {/* ▲▲ ADIÇÃO */}
+
           <Button onClick={handleSaveDocument}>
             <FiEdit /> {t("documents.document_details.save_changes") || "Salvar Alterações"}
           </Button>
