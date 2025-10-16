@@ -306,20 +306,20 @@ const TaskBoardPage: React.FC = () => {
     return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
   };
 
-  // Função para obter iniciais seguindo o padrão do projeto
+  
   const getUserInitials = (userId?: number) => {
     const user = activeUser.find(u => u.UserId === userId);
     if (!user) return "?";
     return user.Name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  // Função para obter label da prioridade seguindo o padrão do projeto
+  
   const getPriorityLabel = (priority?: number) => {
     const priorityObj = getTaskPriority(t).find(p => p.value === priority?.toString());
     return priorityObj ? priorityObj.label : t("tasks.priorityTask.low");
   };
 
-  // Handlers seguindo o mesmo padrão do TaskPage existente
+  
   const handleAdd = (status?: number) => {
     setEditing(null);
     setSelectedStatus(status || 1);
@@ -335,7 +335,7 @@ const TaskBoardPage: React.FC = () => {
     if (editing) {
       update(editing.TaskId, payload);
     } else {
-      // Se está criando uma nova tarefa, define o status baseado na coluna selecionada
+      
       const taskData = { ...payload, Status: selectedStatus };
       create(taskData);
     }
@@ -446,7 +446,7 @@ const TaskBoardPage: React.FC = () => {
         })}
       </BoardContainer>
 
-      {/* Modal seguindo exatamente o padrão do TaskPage existente */}
+      {}
       <Modal 
         isOpen={modal.isOpen} 
         onClose={modal.close} 
