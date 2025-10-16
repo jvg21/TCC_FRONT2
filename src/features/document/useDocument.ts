@@ -158,7 +158,6 @@ export const useDocument = () => {
   const create = async (payload: Omit<Document, "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId">) => {
     try {
       const camelCasePayload = transformPayloadToCamelCase(payload);
-      // console.log('Payload enviado:', camelCasePayload);
 
       const response = await fetch(`${apiUrl}/Document/AddDocument`, {
         method: 'POST',
@@ -189,8 +188,6 @@ export const useDocument = () => {
 
   const update = async (id: number, updates: Partial<Document>) => {
     try {
-
-      // consolelog('Atualizando documento ID:', id, 'com dados:', updates);
 
       const camelCasePayload = {
         documentId: id,
