@@ -406,8 +406,7 @@ const getDocumentToEdit = async () => {
         try {
           await get(); 
           await getDocumentToEdit(); 
-          await getDocumentValidatorByValidator(); // Documentos para validação
-          // console.log("✅ Todos os dados foram carregados");
+          await getDocumentValidatorByValidator(); 
         } catch (error) {
           console.error("❌ Erro ao carregar dados:", error);
         }
