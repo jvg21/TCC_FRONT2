@@ -54,7 +54,7 @@ import { Modal } from '../../components/common/Modal';
 import { MarkdownEditorPage } from '../markdown-editor/MarkdownEditorPage';
 import styled from 'styled-components';
 
-/* ===== Responsivo da barra de ações e dropdowns ===== */
+
 const ActionsBar = styled.div`
   display: flex;
   gap: 8px;
@@ -126,7 +126,6 @@ const DocumentDetailsPage: React.FC = () => {
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
   const showResume = useModal();
-
   const [document, setDocument] = useState<any>(null);
   const [summary, setSummary] = useState('');
   const [newComment, setNewComment] = useState('');
@@ -269,7 +268,6 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  // aceita "mode" para tipos futuros (padrão, curto, bullet, etc.)
   const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
     if (documentContent) {
       const summaryText = await generateSummary(Number(id));
