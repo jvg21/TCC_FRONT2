@@ -10,7 +10,11 @@ import {
   FiCpu,
   FiDownload,
   FiTrendingUp,
-  FiAlertCircle
+  FiAlertCircle,
+  FiCalendar,
+  FiFilter,
+  FiPieChart,
+  FiBarChart2
 } from 'react-icons/fi';
 
 // Styled Components
@@ -35,6 +39,226 @@ const PageSubtitle = styled.p`
   margin: 0;
   font-size: 16px;
   color: rgba(255, 255, 255, 0.9);
+`;
+
+// Novos componentes para filtro de tempo
+const FilterSection = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+
+const FilterLabel = styled.label`
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const FilterSelect = styled.select`
+  padding: 10px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2d3748;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #667eea;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+`;
+
+const FilterInput = styled.input`
+  padding: 10px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2d3748;
+  background: white;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #667eea;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+`;
+
+const ApplyFilterButton = styled.button`
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+`;
+
+// Componentes para gráficos
+const ChartsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ChartCard = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+`;
+
+const ChartTitle = styled.h3`
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const PieChartContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  position: relative;
+`;
+
+const PieChart = styled.div`
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #667eea 0deg 216deg,
+    #48bb78 216deg 288deg,
+    #f56565 288deg 324deg,
+    #ed8936 324deg 360deg
+  );
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+  }
+`;
+
+const PieLegend = styled.div`
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const LegendItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+`;
+
+const LegendColor = styled.div<{ color: string }>`
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: ${props => props.color};
+`;
+
+const LegendLabel = styled.span`
+  color: #4a5568;
+  font-weight: 500;
+`;
+
+const LegendValue = styled.span`
+  color: #2d3748;
+  font-weight: 700;
+`;
+
+const LineChartContainer = styled.div`
+  height: 300px;
+  position: relative;
+`;
+
+const LineChartSvg = styled.svg`
+  width: 100%;
+  height: 100%;
+`;
+
+const ChartAxis = styled.line`
+  stroke: #e2e8f0;
+  stroke-width: 2;
+`;
+
+const ChartLine = styled.polyline`
+  fill: none;
+  stroke: url(#lineGradient);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+`;
+
+const ChartPoint = styled.circle`
+  fill: #667eea;
+  stroke: white;
+  stroke-width: 3;
+  cursor: pointer;
+  transition: r 0.2s ease;
+
+  &:hover {
+    r: 8;
+  }
+`;
+
+const ChartLabel = styled.text`
+  fill: #718096;
+  font-size: 12px;
+  font-weight: 600;
 `;
 
 const ReportsGrid = styled.div`
@@ -315,6 +539,9 @@ const EmptyIcon = styled.div`
 // Componente Principal
 const ReportsPage: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
+  const [timeFilter, setTimeFilter] = useState<string>('all');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
   // Dados simulados (substitua com dados reais da API)
   const documentsData = {
@@ -404,9 +631,31 @@ const ReportsPage: React.FC = () => {
     estimatedCost: 'R$ 247,89'
   };
 
+  // Novos dados para os gráficos
+  const documentsOverTime = [
+    { month: 'Jan', value: 98 },
+    { month: 'Fev', value: 112 },
+    { month: 'Mar', value: 135 },
+    { month: 'Abr', value: 156 },
+    { month: 'Mai', value: 178 },
+    { month: 'Jun', value: 142 }
+  ];
+
+  const validationStatusData = {
+    approved: 745,
+    rejected: 89,
+    returned: 58,
+    pending: 306
+  };
+
   const handleDownloadReport = () => {
     alert('Download do relatório iniciado!');
     // Implementar lógica de download aqui
+  };
+
+  const handleApplyFilter = () => {
+    console.log('Filtro aplicado:', { timeFilter, startDate, endDate });
+    // Implementar lógica de filtragem aqui
   };
 
   const maxCount = Math.max(...documentsData.byPeriod.map(d => d.count));
@@ -417,6 +666,46 @@ const ReportsPage: React.FC = () => {
         <PageTitle>📊 Relatórios e Análises</PageTitle>
         <PageSubtitle>Visualize insights e métricas do sistema Documentin</PageSubtitle>
       </PageHeader>
+
+      {/* Filtro de Tempo */}
+      <FilterSection>
+        <FilterLabel>
+          <FiCalendar /> Período:
+        </FilterLabel>
+        <FilterSelect 
+          value={timeFilter} 
+          onChange={(e) => setTimeFilter(e.target.value)}
+        >
+          <option value="all">Todos os períodos</option>
+          <option value="today">Hoje</option>
+          <option value="week">Última semana</option>
+          <option value="month">Último mês</option>
+          <option value="quarter">Último trimestre</option>
+          <option value="year">Último ano</option>
+          <option value="custom">Personalizado</option>
+        </FilterSelect>
+
+        {timeFilter === 'custom' && (
+          <>
+            <FilterLabel>De:</FilterLabel>
+            <FilterInput 
+              type="date" 
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <FilterLabel>Até:</FilterLabel>
+            <FilterInput 
+              type="date" 
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </>
+        )}
+
+        <ApplyFilterButton onClick={handleApplyFilter}>
+          <FiFilter /> Aplicar Filtro
+        </ApplyFilterButton>
+      </FilterSection>
 
       {/* Cards de Resumo */}
       <ReportsGrid>
@@ -490,19 +779,104 @@ const ReportsPage: React.FC = () => {
           <CardHeader>
             <CardIcon><FiCpu /></CardIcon>
           </CardHeader>
-          <CardTitle>IA (OpenAI)</CardTitle>
+          <CardTitle>IA</CardTitle>
           <CardValue>{aiData.totalRequests}</CardValue>
           <CardDescription>
-            {aiData.totalTokens.toLocaleString()} tokens utilizados
+            Requisições processadas
           </CardDescription>
         </ReportCard>
       </ReportsGrid>
+
+      {/* Gráficos Adicionais */}
+      <ChartsGrid>
+        {/* Gráfico de Pizza - Status de Validações */}
+        <ChartCard>
+          <ChartTitle>
+            <FiPieChart /> Distribuição de Validações
+          </ChartTitle>
+          <PieChartContainer>
+            <PieChart />
+            <PieLegend>
+              <LegendItem>
+                <LegendColor color="#667eea" />
+                <LegendLabel>Aprovadas:</LegendLabel>
+                <LegendValue>{validationStatusData.approved}</LegendValue>
+              </LegendItem>
+              <LegendItem>
+                <LegendColor color="#48bb78" />
+                <LegendLabel>Rejeitadas:</LegendLabel>
+                <LegendValue>{validationStatusData.rejected}</LegendValue>
+              </LegendItem>
+              <LegendItem>
+                <LegendColor color="#f56565" />
+                <LegendLabel>Devolvidas:</LegendLabel>
+                <LegendValue>{validationStatusData.returned}</LegendValue>
+              </LegendItem>
+              <LegendItem>
+                <LegendColor color="#ed8936" />
+                <LegendLabel>Pendentes:</LegendLabel>
+                <LegendValue>{validationStatusData.pending}</LegendValue>
+              </LegendItem>
+            </PieLegend>
+          </PieChartContainer>
+        </ChartCard>
+
+        {/* Gráfico de Linha - Documentos ao Longo do Tempo */}
+        <ChartCard>
+          <ChartTitle>
+            <FiBarChart2 /> Evolução de Documentos
+          </ChartTitle>
+          <LineChartContainer>
+            <LineChartSvg viewBox="0 0 600 300" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#667eea" />
+                  <stop offset="100%" stopColor="#764ba2" />
+                </linearGradient>
+              </defs>
+              
+              {/* Eixos */}
+              <ChartAxis x1="50" y1="250" x2="550" y2="250" />
+              <ChartAxis x1="50" y1="50" x2="50" y2="250" />
+              
+              {/* Linha do gráfico */}
+              <ChartLine
+                points={documentsOverTime.map((d, i) => 
+                  `${50 + (i * 85)},${250 - (d.value * 1.1)}`
+                ).join(' ')}
+              />
+              
+              {/* Pontos */}
+              {documentsOverTime.map((d, i) => (
+                <ChartPoint
+                  key={i}
+                  cx={50 + (i * 85)}
+                  cy={250 - (d.value * 1.1)}
+                  r="6"
+                />
+              ))}
+              
+              {/* Labels */}
+              {documentsOverTime.map((d, i) => (
+                <ChartLabel
+                  key={i}
+                  x={50 + (i * 85)}
+                  y="270"
+                  textAnchor="middle"
+                >
+                  {d.month}
+                </ChartLabel>
+              ))}
+            </LineChartSvg>
+          </LineChartContainer>
+        </ChartCard>
+      </ChartsGrid>
 
       {/* Relatório de Documentos */}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiFileText /> Análise de Documentos
+            <FiFileText /> Análise Detalhada de Documentos
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> Exportar Relatório
@@ -513,9 +887,6 @@ const ReportsPage: React.FC = () => {
           <StatItem>
             <StatLabel>Total de Documentos</StatLabel>
             <StatValue>{documentsData.total}</StatValue>
-            <ProgressBar>
-              <ProgressFill percentage={100} />
-            </ProgressBar>
           </StatItem>
           <StatItem>
             <StatLabel>Documentos Ativos</StatLabel>
@@ -528,7 +899,7 @@ const ReportsPage: React.FC = () => {
             </ProgressBar>
           </StatItem>
           <StatItem>
-            <StatLabel>Validados</StatLabel>
+            <StatLabel>Documentos Validados</StatLabel>
             <StatValue>{documentsData.validated}</StatValue>
             <ProgressBar>
               <ProgressFill 
@@ -538,7 +909,7 @@ const ReportsPage: React.FC = () => {
             </ProgressBar>
           </StatItem>
           <StatItem>
-            <StatLabel>Pendentes</StatLabel>
+            <StatLabel>Aguardando Validação</StatLabel>
             <StatValue>{documentsData.pending}</StatValue>
             <ProgressBar>
               <ProgressFill 
@@ -550,7 +921,9 @@ const ReportsPage: React.FC = () => {
         </StatsGrid>
 
         <ChartContainer>
-          <h3 style={{ margin: '0 0 20px 0', color: '#2d3748' }}>Documentos Criados por Mês</h3>
+          <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>
+            Documentos Criados por Período
+          </h3>
           <BarChart>
             {documentsData.byPeriod.map((item, index) => (
               <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -568,7 +941,7 @@ const ReportsPage: React.FC = () => {
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiCheckCircle /> Análise de Validações
+            <FiCheckCircle /> Relatório de Validações
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> Exportar Relatório
@@ -577,19 +950,12 @@ const ReportsPage: React.FC = () => {
 
         <StatsGrid>
           <StatItem>
+            <StatLabel>Total de Validações</StatLabel>
+            <StatValue>{validationsData.total}</StatValue>
+          </StatItem>
+          <StatItem>
             <StatLabel>Taxa de Aprovação</StatLabel>
             <StatValue>{validationsData.approvalRate}%</StatValue>
-            <ProgressBar>
-              <ProgressFill percentage={validationsData.approvalRate} color="#48bb78" />
-            </ProgressBar>
-          </StatItem>
-          <StatItem>
-            <StatLabel>Aprovados</StatLabel>
-            <StatValue>{validationsData.approved}</StatValue>
-          </StatItem>
-          <StatItem>
-            <StatLabel>Rejeitados</StatLabel>
-            <StatValue>{validationsData.rejected}</StatValue>
           </StatItem>
           <StatItem>
             <StatLabel>Tempo Médio</StatLabel>
@@ -605,7 +971,7 @@ const ReportsPage: React.FC = () => {
             <tr>
               <Th>Validador</Th>
               <Th>Validações</Th>
-              <Th>Desempenho</Th>
+              <Th>Participação</Th>
             </tr>
           </thead>
           <tbody>
@@ -616,7 +982,7 @@ const ReportsPage: React.FC = () => {
                 <Td>
                   <ProgressBar>
                     <ProgressFill 
-                      percentage={(validator.count / validationsData.topValidators[0].count) * 100} 
+                      percentage={(validator.count / validationsData.total) * 100} 
                       color="#667eea"
                     />
                   </ProgressBar>
@@ -625,23 +991,63 @@ const ReportsPage: React.FC = () => {
             ))}
           </tbody>
         </Table>
+
+        <ChartContainer>
+          <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>
+            Distribuição de Status
+          </h3>
+          <StatsGrid>
+            <StatItem>
+              <StatLabel>Aprovadas</StatLabel>
+              <StatValue>{validationsData.approved}</StatValue>
+              <ProgressBar>
+                <ProgressFill 
+                  percentage={(validationsData.approved / validationsData.total) * 100} 
+                  color="#48bb78"
+                />
+              </ProgressBar>
+            </StatItem>
+            <StatItem>
+              <StatLabel>Rejeitadas</StatLabel>
+              <StatValue>{validationsData.rejected}</StatValue>
+              <ProgressBar>
+                <ProgressFill 
+                  percentage={(validationsData.rejected / validationsData.total) * 100} 
+                  color="#f56565"
+                />
+              </ProgressBar>
+            </StatItem>
+            <StatItem>
+              <StatLabel>Devolvidas</StatLabel>
+              <StatValue>{validationsData.returned}</StatValue>
+              <ProgressBar>
+                <ProgressFill 
+                  percentage={(validationsData.returned / validationsData.total) * 100} 
+                  color="#ed8936"
+                />
+              </ProgressBar>
+            </StatItem>
+          </StatsGrid>
+        </ChartContainer>
       </DetailedSection>
 
       {/* Relatório de Versões */}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiClock /> Histórico de Versões
+            <FiClock /> Controle de Versões
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> Exportar Relatório
           </DownloadButton>
         </SectionHeader>
 
-        <StatItem>
-          <StatLabel>Total de Versões Criadas</StatLabel>
-          <StatValue>{versionsData.total}</StatValue>
-        </StatItem>
+        <StatsGrid>
+          <StatItem>
+            <StatLabel>Total de Versões</StatLabel>
+            <StatValue>{versionsData.total}</StatValue>
+          </StatItem>
+        </StatsGrid>
 
         <h3 style={{ marginTop: '32px', marginBottom: '16px', color: '#2d3748' }}>
           Documentos Mais Editados
@@ -650,7 +1056,7 @@ const ReportsPage: React.FC = () => {
           <thead>
             <tr>
               <Th>Documento</Th>
-              <Th>Nº de Versões</Th>
+              <Th>Versões</Th>
               <Th>Atividade</Th>
             </tr>
           </thead>
@@ -663,7 +1069,7 @@ const ReportsPage: React.FC = () => {
                   <ProgressBar>
                     <ProgressFill 
                       percentage={(doc.versions / versionsData.mostEdited[0].versions) * 100} 
-                      color="#764ba2"
+                      color="#667eea"
                     />
                   </ProgressBar>
                 </Td>
@@ -684,13 +1090,15 @@ const ReportsPage: React.FC = () => {
           </DownloadButton>
         </SectionHeader>
 
-        <StatItem>
-          <StatLabel>Total de Tags</StatLabel>
-          <StatValue>{tagsData.total}</StatValue>
-        </StatItem>
+        <StatsGrid>
+          <StatItem>
+            <StatLabel>Total de Tags</StatLabel>
+            <StatValue>{tagsData.total}</StatValue>
+          </StatItem>
+        </StatsGrid>
 
-        <h3 style={{ marginTop: '32px', marginBottom: '8px', color: '#2d3748' }}>
-          Tags Mais Utilizadas
+        <h3 style={{ marginTop: '32px', marginBottom: '16px', color: '#2d3748' }}>
+          Nuvem de Tags
         </h3>
         <TagCloud>
           {tagsData.topTags.map((tag, index) => (
@@ -714,31 +1122,23 @@ const ReportsPage: React.FC = () => {
 
         <StatsGrid>
           <StatItem>
+            <StatLabel>Total de Tarefas</StatLabel>
+            <StatValue>{tasksData.total}</StatValue>
+          </StatItem>
+          <StatItem>
             <StatLabel>Taxa de Conclusão</StatLabel>
             <StatValue>{tasksData.completionRate}%</StatValue>
-            <ProgressBar>
-              <ProgressFill percentage={tasksData.completionRate} color="#48bb78" />
-            </ProgressBar>
           </StatItem>
           <StatItem>
-            <StatLabel>Concluídas</StatLabel>
-            <StatValue>{tasksData.completed}</StatValue>
-          </StatItem>
-          <StatItem>
-            <StatLabel>Pendentes</StatLabel>
-            <StatValue>{tasksData.pending}</StatValue>
-          </StatItem>
-          <StatItem>
-            <StatLabel>
-              <FiAlertCircle style={{ display: 'inline', marginRight: '4px' }} />
-              Atrasadas
-            </StatLabel>
+            <StatLabel>Tarefas Atrasadas</StatLabel>
             <StatValue style={{ color: '#f56565' }}>{tasksData.overdue}</StatValue>
           </StatItem>
         </StatsGrid>
 
         <ChartContainer>
-          <h3 style={{ margin: '0 0 20px 0', color: '#2d3748' }}>Tarefas por Prioridade</h3>
+          <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>
+            Distribuição por Prioridade
+          </h3>
           <StatsGrid>
             <StatItem>
               <StatLabel>Alta Prioridade</StatLabel>
