@@ -61,7 +61,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
   }, [activeUser, groupUsers]);
 
   useEffect(() => {
-    // Filtrar pastas disponíveis (não estão no grupo)
+    
     const foldersNotInGroup = activeFolder.filter(folder =>
       !groupFolders.some(groupFolder => groupFolder.FolderId === folder.FolderId)
     );
@@ -172,7 +172,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
 
       <Row>
         <Col>
-          {/* ⇩⇩⇩ ÚNICA MUDANÇA: Descrição virou textarea */}
+          {}
           <label style={{ display: "block", marginBottom: 6, fontWeight: 500 }}>
             {t("groups.description")}
           </label>
@@ -193,7 +193,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
             }}
             placeholder=""
           />
-          {/* ⇧⇧⇧ FIM DA MUDANÇA */}
+          {}
         </Col>
       </Row>
 
