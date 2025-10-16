@@ -173,14 +173,31 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
           />
         </Col>
       </Row>
+
       <Row>
         <Col>
-          <Input
-            label={t("groups.description")}
+          {/* ⇩⇩⇩ ÚNICA MUDANÇA: Descrição virou textarea */}
+          <label style={{ display: "block", marginBottom: 6, fontWeight: 500 }}>
+            {t("groups.description")}
+          </label>
+          <textarea
             required
             value={Description}
             onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            style={{
+              width: "100%",
+              padding: "10px 12px",
+              borderRadius: 8,
+              border: "1px solid #ddd",
+              fontSize: 14,
+              resize: "vertical",
+              fontFamily: "inherit",
+              outline: "none",
+            }}
+            placeholder=""
           />
+          {/* ⇧⇧⇧ FIM DA MUDANÇA */}
         </Col>
       </Row>
 
