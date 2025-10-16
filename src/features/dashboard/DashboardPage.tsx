@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FiUsers, FiFile, FiCheckSquare, FiTrendingUp } from "react-icons/fi";
-
 import { useAuthContext } from "../../context/AuthContext";
-
 import { useUser } from "../user/useUser";
 import { useDocument } from "../document/useDocument";
 import { useTask } from "../task/useTask";
@@ -206,7 +204,7 @@ const DashboardPage: React.FC = () => {
   return (
     <PageLayout title={t("dashboard.title") || "Dashboard"}>
       <DashboardContainer>
-        {/* Welcome Section */}
+        {}
         <WelcomeSection>
           <WelcomeContent>
             <WelcomeTitle>
@@ -218,7 +216,7 @@ const DashboardPage: React.FC = () => {
           </WelcomeContent>
         </WelcomeSection>
 
-        {/* Stats Grid */}
+        {}
         <StatsGrid>
           {statCards.map((stat, index) => {
             const Icon = stat.icon;
