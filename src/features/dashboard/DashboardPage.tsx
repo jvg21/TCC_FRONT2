@@ -113,7 +113,7 @@ const DashboardPage: React.FC = () => {
     pendingTasks: 0,
   });
 
-  // Hooks para buscar dados do banco
+  
   const { get: getUsers, activeUser } = useUser();
   const { get: getDocuments, activeDocument } = useDocument();
   const { get: getTasks, activeTask } = useTask();
@@ -121,7 +121,7 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        // Buscar dados reais do banco de dados
+        
         await Promise.all([
           getUsers(),
           getDocuments(),
@@ -135,14 +135,14 @@ const DashboardPage: React.FC = () => {
     loadStats();
   }, []);
 
-  // Calcular estatísticas baseadas nos dados reais
+  
   useEffect(() => {
     const completedTasks = activeTask.filter(task => task.Status === 4).length;
     const pendingTasks = activeTask.filter(task => task.Status === 1).length;
 
     setStats({
       totalUsers: activeUser.length,
-      totalCompanies: 0, // Manter em 0 ou adicionar useCompanies se necessário
+      totalCompanies: 0, 
       totalDocuments: activeDocument.length,
       totalTasks: activeTask.length,
       completedTasks: completedTasks,
