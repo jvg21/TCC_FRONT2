@@ -17,6 +17,7 @@ export const enTranslations = {
     taskdashboard: "Tasks Dashboard",
     cascadeview: "Cascade View",
     taskboard: "Task Board",
+    reports: "Reports"
 
   },
 

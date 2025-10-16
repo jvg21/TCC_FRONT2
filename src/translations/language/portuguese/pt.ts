@@ -17,6 +17,7 @@ export const ptTranslations = {
     taskdashboard: "Dashboard de Tarefas",
     cascadeview: "Visualização em Cascata",
     taskboard: "Quadro de Tarefas",
+    reports: "Relatórios"
   },
 
   // Ações gerais
