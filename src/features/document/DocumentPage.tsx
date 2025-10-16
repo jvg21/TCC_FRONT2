@@ -474,7 +474,7 @@ const DocumentPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Filtro de Autor */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
             {t("documents.filters.author") || "Autor"}
@@ -499,7 +499,7 @@ const DocumentPage: React.FC = () => {
           </select>
         </div>
 
-        {/* Filtro de Tag */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
             {t("documents.filters.tag")}
@@ -541,7 +541,7 @@ const DocumentPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Botão para limpar filtros */}
+      {}
       <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           variant="ghost"
@@ -587,7 +587,7 @@ const DocumentPage: React.FC = () => {
             </Button>
           </div>
 
-          {/* Filtros Avançados */}
+          {}
           <AdvancedFilters />
 
           {userProfile && (
