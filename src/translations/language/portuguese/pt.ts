@@ -333,6 +333,18 @@ export const ptTranslations = {
       folder: "Pasta",
       created_at: "Criado em",
       updated_at: "Atualizado em",
+      export: {
+        button: "Exportar",
+        pdf: "Exportar PDF",
+        docx: "Exportar DOCX",
+        markdown: "Exportar MD",
+      },
+      version_history: {
+        button: "Versões do Documento",
+        today: "Hoje",
+        current_version: "Versão Atual",
+        title: "Histórico de Versões"
+      },
       validation: {
         title: "Validação do Documento",
         pending: "Pendente de Validação",

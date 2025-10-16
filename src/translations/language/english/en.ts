@@ -328,6 +328,19 @@ export const enTranslations = {
       tags: "Tags",
       no_tags: "No tags added",
       content: "Content",
+      version_history: {
+        button: "Document Versions",
+        today: "Today",
+        current_version: "Current Version",
+        title: "Version History"
+      },
+
+      export: {
+        button: "Export",
+        pdf: "Export PDF",
+        docx: "Export DOCX",
+        markdown: "Export MD"
+      },
       validation: {
         title: "Document Validation",
         pending: "Pending Validation",
