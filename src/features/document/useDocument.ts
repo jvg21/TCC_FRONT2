@@ -193,7 +193,6 @@ export const useDocument = () => {
         documentId: id,
         ...transformPayloadToCamelCase(updates)
       };
-      // console.log('Payload de atualização:', camelCasePayload);
 
       const response = await fetch(`${apiUrl}/Document/UpdateDocument`, {
         method: "PUT",
@@ -281,7 +280,7 @@ export const useDocument = () => {
   };
   const getDocumentValidatorByValidator = async () => {
   try {
-    // console.log("🔍 Buscando documentos para validação...");
+    
     const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationByValidator`, {
       method: "GET",
       headers: {
@@ -291,14 +290,14 @@ export const useDocument = () => {
     });
 
     const data: ApiResponse = await response.json();
-    // console.log("📋 Resposta da API (validator):", data);
+    
 
     if (data.erro) {
       notificationActions.showError(data.mensagem);
       throw new Error(data.mensagem);
     }
 
-    // Mapear dados da API para o formato do frontend
+    
     const documents = Array.isArray(data.objeto) 
       ? data.objeto.map(mapApiDocumentToFrontend)
       : [];
