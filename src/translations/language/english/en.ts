@@ -670,5 +670,117 @@ export const enTranslations = {
     configUpdateSuccess: "OpenAI configuration updated successfully!"
   },
 
+  // Reports
+reports: {
+  title: "Reports and Analytics",
+  subtitle: "View insights and metrics from the Documentin system",
+  
+  // Filters
+  filters: {
+    period: "Period",
+    all_periods: "All periods",
+    today: "Today",
+    last_week: "Last week",
+    last_month: "Last month",
+    last_quarter: "Last quarter",
+    last_year: "Last year",
+    custom: "Custom",
+    from: "From",
+    to: "To",
+    apply_filter: "Apply Filter"
+  },
+
+  // Cards
+  cards: {
+    documents: "Documents",
+    validations: "Validations",
+    versions: "Versions",
+    tags: "Tags",
+    tasks: "Tasks",
+    groups: "Groups",
+    ai: "AI",
+    active: "active",
+    validated: "validated",
+    approval_rate: "Approval rate",
+    complete_history: "Complete edit history",
+    active_system: "Active categorization system",
+    completed: "completed",
+    overdue: "overdue",
+    total_members: "total members",
+    processed_requests: "Processed requests"
+  },
+
+  // Charts
+  charts: {
+    validation_distribution: "Validation Distribution",
+    document_evolution: "Document Evolution",
+    approved: "Approved",
+    rejected: "Rejected",
+    returned: "Returned",
+    pending: "Pending"
+  },
+
+  // Detailed Sections
+  sections: {
+    detailed_analysis: "Detailed Document Analysis",
+    validation_report: "Validation Report",
+    version_control: "Version Control",
+    tags_analysis: "Tags Analysis",
+    tasks_analysis: "Tasks Analysis",
+    groups_analysis: "Groups Analysis",
+    ai_usage: "AI Usage Analysis",
+    export_report: "Export Report",
+    
+    documents_created_period: "Documents Created by Period",
+    total_documents: "Total Documents",
+    active_documents: "Active Documents",
+    validated_documents: "Validated Documents",
+    awaiting_validation: "Awaiting Validation",
+    
+    total_validations: "Total Validations",
+    approval_rate: "Approval Rate",
+    average_time: "Average Time",
+    top_validators: "Top Validators",
+    validator: "Validator",
+    validations: "Validations",
+    participation: "Participation",
+    status_distribution: "Status Distribution",
+    
+    total_versions: "Total Versions",
+    most_edited: "Most Edited Documents",
+    document: "Document",
+    versions: "Versions",
+    activity: "Activity",
+    
+    total_tags: "Total Tags",
+    tag_cloud: "Tag Cloud",
+    
+    total_tasks: "Total Tasks",
+    completion_rate: "Completion Rate",
+    overdue_tasks: "Overdue Tasks",
+    priority_distribution: "Priority Distribution",
+    high_priority: "High Priority",
+    medium_priority: "Medium Priority",
+    low_priority: "Low Priority",
+    
+    total_groups: "Total Groups",
+    total_members: "Total Members",
+    average_per_group: "Average per Group",
+    most_populous: "Most Populous Groups",
+    group: "Group",
+    members: "Members",
+    distribution: "Distribution",
+    
+    total_requests: "Total Requests",
+    tokens_used: "Tokens Used",
+    average_per_request: "Average per Request",
+    estimated_cost: "Estimated Cost",
+    top_users: "Top Users by Requests",
+    user: "User",
+    requests: "Requests",
+    usage: "Usage"
+  }
+},
+
 }
 

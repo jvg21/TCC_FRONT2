@@ -689,5 +689,117 @@ export const esTranslations = {
     summarySuccess: "¡Resumen generado exitosamente!",
     configAddSuccess: "¡Configuración OpenAI agregada exitosamente!",
     configUpdateSuccess: "¡Configuración OpenAI actualizada exitosamente!"
+  },
+
+  // Informes
+reports: {
+  title: "Informes y Análisis",
+  subtitle: "Visualice conocimientos y métricas del sistema Documentin",
+  
+  // Filtros
+  filters: {
+    period: "Período",
+    all_periods: "Todos los períodos",
+    today: "Hoy",
+    last_week: "Última semana",
+    last_month: "Último mes",
+    last_quarter: "Último trimestre",
+    last_year: "Último año",
+    custom: "Personalizado",
+    from: "Desde",
+    to: "Hasta",
+    apply_filter: "Aplicar Filtro"
+  },
+
+  // Tarjetas
+  cards: {
+    documents: "Documentos",
+    validations: "Validaciones",
+    versions: "Versiones",
+    tags: "Etiquetas",
+    tasks: "Tareas",
+    groups: "Grupos",
+    ai: "IA",
+    active: "activos",
+    validated: "validados",
+    approval_rate: "Tasa de aprobación",
+    complete_history: "Historial completo de ediciones",
+    active_system: "Sistema de categorización activo",
+    completed: "completadas",
+    overdue: "atrasadas",
+    total_members: "miembros en total",
+    processed_requests: "Solicitudes procesadas"
+  },
+
+  // Gráficos
+  charts: {
+    validation_distribution: "Distribución de Validaciones",
+    document_evolution: "Evolución de Documentos",
+    approved: "Aprobadas",
+    rejected: "Rechazadas",
+    returned: "Devueltas",
+    pending: "Pendientes"
+  },
+
+  // Secciones Detalladas
+  sections: {
+    detailed_analysis: "Análisis Detallado de Documentos",
+    validation_report: "Informe de Validaciones",
+    version_control: "Control de Versiones",
+    tags_analysis: "Análisis de Etiquetas",
+    tasks_analysis: "Análisis de Tareas",
+    groups_analysis: "Análisis de Grupos",
+    ai_usage: "Análisis de Uso de IA",
+    export_report: "Exportar Informe",
+    
+    documents_created_period: "Documentos Creados por Período",
+    total_documents: "Total de Documentos",
+    active_documents: "Documentos Activos",
+    validated_documents: "Documentos Validados",
+    awaiting_validation: "Esperando Validación",
+    
+    total_validations: "Total de Validaciones",
+    approval_rate: "Tasa de Aprobación",
+    average_time: "Tiempo Promedio",
+    top_validators: "Principales Validadores",
+    validator: "Validador",
+    validations: "Validaciones",
+    participation: "Participación",
+    status_distribution: "Distribución de Estado",
+    
+    total_versions: "Total de Versiones",
+    most_edited: "Documentos Más Editados",
+    document: "Documento",
+    versions: "Versiones",
+    activity: "Actividad",
+    
+    total_tags: "Total de Etiquetas",
+    tag_cloud: "Nube de Etiquetas",
+    
+    total_tasks: "Total de Tareas",
+    completion_rate: "Tasa de Finalización",
+    overdue_tasks: "Tareas Atrasadas",
+    priority_distribution: "Distribución por Prioridad",
+    high_priority: "Alta Prioridad",
+    medium_priority: "Prioridad Media",
+    low_priority: "Baja Prioridad",
+    
+    total_groups: "Total de Grupos",
+    total_members: "Total de Miembros",
+    average_per_group: "Promedio por Grupo",
+    most_populous: "Grupos Más Poblados",
+    group: "Grupo",
+    members: "Miembros",
+    distribution: "Distribución",
+    
+    total_requests: "Total de Solicitudes",
+    tokens_used: "Tokens Utilizados",
+    average_per_request: "Promedio por Solicitud",
+    estimated_cost: "Costo Estimado",
+    top_users: "Principales Usuarios por Solicitudes",
+    user: "Usuario",
+    requests: "Solicitudes",
+    usage: "Uso"
   }
+},
 };
