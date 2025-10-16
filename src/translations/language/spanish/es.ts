@@ -335,9 +335,9 @@ export const esTranslations = {
 
       export: {
         button: "Exportar",
-        pdf: "Exportar PDF",
-        docx: "Exportar DOCX",
-        markdown: "Exportar MD"
+        export_pdf: "Exportar PDF",
+        export_docx: "Exportar DOCX",
+        export_md: "Exportar MD"
       },
       validation: {
         title: "Validación del Documento",
