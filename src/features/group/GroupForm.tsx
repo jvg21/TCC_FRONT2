@@ -197,7 +197,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
         </Col>
       </Row>
 
-      {/* Seção de gerenciamento de usuários - apenas para grupos existentes */}
+      {}
       {initial?.GroupId && (
         <>
           <hr style={{ margin: "20px 0" }} />
@@ -215,7 +215,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
             <div>
               <h4 style={{ marginBottom: "12px" }}>{t("groups.manage_users")}</h4>
 
-              {/* Adicionar usuário */}
+              {}
               <div style={{ display: "flex", gap: "8px", marginBottom: "16px", alignItems: "end" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "500" }}>
@@ -250,7 +250,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
                 </Button>
               </div>
 
-              {/* Lista de usuários no grupo */}
+              {}
               <div>
                 <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                   {t("groups.users_in_group")} ({groupUsers.length})
@@ -288,7 +288,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
         </>
       )}
 
-      {/* Seção de gerenciamento de pastas - apenas para grupos existentes */}
+      {}
       {initial?.GroupId && (
         <>
           <hr style={{ margin: "20px 0" }} />
@@ -306,7 +306,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
             <div>
               <h4 style={{ marginBottom: "12px" }}>{t("folders.manage_folders")}</h4>
 
-              {/* Adicionar pasta */}
+              {}
               <div style={{ display: "flex", gap: "8px", marginBottom: "16px", alignItems: "end" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "500" }}>
@@ -341,7 +341,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
                 </Button>
               </div>
 
-              {/* Lista de pastas no grupo */}
+              {}
               <div>
                 <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                   {t("folders.folders_in_group")} ({groupFolders.length})
