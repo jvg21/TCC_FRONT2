@@ -225,6 +225,7 @@ export const enTranslations = {
     no_tasks_in_review: "No tasks in review",
     no_completed_tasks: "No completed tasks",
     empty_column: "This column is empty",
+    description_placeholder: "Describe the task...",
 
     statusTask: {
       todo: "To Do",

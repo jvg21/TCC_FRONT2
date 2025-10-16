@@ -225,6 +225,7 @@ export const ptTranslations = {
     no_tasks_in_review: "Nenhuma tarefa em revisão",
     no_completed_tasks: "Nenhuma tarefa concluída",
     empty_column: "Esta coluna está vazia",
+    description_placeholder: "Descreva a tarefa...",
 
     statusTask: {
       todo: "A Fazer",

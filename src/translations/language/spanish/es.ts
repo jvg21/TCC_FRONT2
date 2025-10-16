@@ -226,6 +226,7 @@ export const esTranslations = {
     no_tasks_in_review: "No hay tareas en revisión",
     no_completed_tasks: "No hay tareas completadas",
     empty_column: "Esta columna está vacía",
+    description_placeholder: "Describa la tarea...",
 
     statusTask: {
       todo: "To Do",
