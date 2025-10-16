@@ -554,7 +554,7 @@ const DocumentDetailsPage: React.FC = () => {
         </LeftColumn>
 
         <RightColumn>
-          {/* Seção de Validação */}
+          {}
           <ValidationSection>
             <ValidationTitle>
               {t("documents.document_details.validation.title") || "Status de Validação"}
