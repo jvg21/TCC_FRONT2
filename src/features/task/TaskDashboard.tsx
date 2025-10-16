@@ -346,7 +346,6 @@ const TaskDashboard: React.FC = () => {
     }, {} as Record<string, Task[]>);
   }, [activeTask, t]);
 
-  // Tarefas com deadline próximo (próximos 7 dias)
   const upcomingDeadlines = useMemo(() => {
     const now = new Date();
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -362,10 +361,9 @@ const TaskDashboard: React.FC = () => {
         const dateB = new Date(b.DueDate!);
         return dateA.getTime() - dateB.getTime();
       })
-      .slice(0, 5); // Mostrar apenas as 5 próximas
+      .slice(0, 5); 
   }, [activeTask]);
 
-  // Função para obter nome do usuário seguindo o padrão do projeto
   const getUserName = (userId?: number) => {
     const user = activeUser.find(u => u.UserId === userId);
     return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
