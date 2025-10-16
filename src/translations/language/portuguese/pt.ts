@@ -17,6 +17,7 @@ export const ptTranslations = {
     taskdashboard: "Dashboard de Tarefas",
     cascadeview: "Visualização em Cascata",
     taskboard: "Quadro de Tarefas",
+    reports: "Relatórios"
   },
 
   // Ações gerais
@@ -671,4 +672,116 @@ export const ptTranslations = {
     configAddSuccess: "Configuração OpenAI adicionada com sucesso!",
     configUpdateSuccess: "Configuração OpenAI atualizada com sucesso!"
   },
+
+  // Relatórios
+reports: {
+  title: "Relatórios e Análises",
+  subtitle: "Visualize insights e métricas do sistema Documentin",
+  
+  // Filtros
+  filters: {
+    period: "Período",
+    all_periods: "Todos os períodos",
+    today: "Hoje",
+    last_week: "Última semana",
+    last_month: "Último mês",
+    last_quarter: "Último trimestre",
+    last_year: "Último ano",
+    custom: "Personalizado",
+    from: "De",
+    to: "Até",
+    apply_filter: "Aplicar Filtro"
+  },
+
+  // Cards
+  cards: {
+    documents: "Documentos",
+    validations: "Validações",
+    versions: "Versões",
+    tags: "Tags",
+    tasks: "Tarefas",
+    groups: "Grupos",
+    ai: "IA",
+    active: "ativos",
+    validated: "validados",
+    approval_rate: "Taxa de aprovação",
+    complete_history: "Histórico completo de edições",
+    active_system: "Sistema de categorização ativo",
+    completed: "concluídas",
+    overdue: "atrasadas",
+    total_members: "membros no total",
+    processed_requests: "Requisições processadas"
+  },
+
+  // Gráficos
+  charts: {
+    validation_distribution: "Distribuição de Validações",
+    document_evolution: "Evolução de Documentos",
+    approved: "Aprovadas",
+    rejected: "Rejeitadas",
+    returned: "Devolvidas",
+    pending: "Pendentes"
+  },
+
+  // Seções Detalhadas
+  sections: {
+    detailed_analysis: "Análise Detalhada de Documentos",
+    validation_report: "Relatório de Validações",
+    version_control: "Controle de Versões",
+    tags_analysis: "Análise de Tags",
+    tasks_analysis: "Análise de Tarefas",
+    groups_analysis: "Análise de Grupos",
+    ai_usage: "Análise de Uso de IA",
+    export_report: "Exportar Relatório",
+    
+    documents_created_period: "Documentos Criados por Período",
+    total_documents: "Total de Documentos",
+    active_documents: "Documentos Ativos",
+    validated_documents: "Documentos Validados",
+    awaiting_validation: "Aguardando Validação",
+    
+    total_validations: "Total de Validações",
+    approval_rate: "Taxa de Aprovação",
+    average_time: "Tempo Médio",
+    top_validators: "Top Validadores",
+    validator: "Validador",
+    validations: "Validações",
+    participation: "Participação",
+    status_distribution: "Distribuição de Status",
+    
+    total_versions: "Total de Versões",
+    most_edited: "Documentos Mais Editados",
+    document: "Documento",
+    versions: "Versões",
+    activity: "Atividade",
+    
+    total_tags: "Total de Tags",
+    tag_cloud: "Nuvem de Tags",
+    
+    total_tasks: "Total de Tarefas",
+    completion_rate: "Taxa de Conclusão",
+    overdue_tasks: "Tarefas Atrasadas",
+    priority_distribution: "Distribuição por Prioridade",
+    high_priority: "Alta Prioridade",
+    medium_priority: "Média Prioridade",
+    low_priority: "Baixa Prioridade",
+    
+    total_groups: "Total de Grupos",
+    total_members: "Total de Membros",
+    average_per_group: "Média por Grupo",
+    most_populous: "Grupos Mais Populosos",
+    group: "Grupo",
+    members: "Membros",
+    distribution: "Distribuição",
+    
+    total_requests: "Total de Requisições",
+    tokens_used: "Tokens Utilizados",
+    average_per_request: "Média por Requisição",
+    estimated_cost: "Custo Estimado",
+    top_users: "Usuários com Mais Requisições",
+    user: "Usuário",
+    requests: "Requisições",
+    usage: "Uso"
+  }
+},
 };
