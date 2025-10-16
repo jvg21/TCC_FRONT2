@@ -22,10 +22,10 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   const [Phone, setPhone] = useState(initial.Phone ?? "");
   const [Adress, setAdress] = useState(initial.Adress ?? "");
   const [ZipCode, setZipCode] = useState(initial.ZipCode ?? "");
-  // const [IsActive, setIsActive] = useState(initial.IsActive ? 'true' : 'false');
+  
   const { t } = useTypedTranslation();
 
-  // Apenas inicializa os valores quando o objeto 'initial' muda
+  
   // Não reinicializa durante digitação
   useEffect(() => {
     setName(initial.Name ?? "");
