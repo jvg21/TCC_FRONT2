@@ -336,7 +336,7 @@ const getDocumentToEdit = async () => {
       ? data.objeto.map(mapApiDocumentToFrontend)
       : [];
     
-    // console.log("✅ Documentos para edição mapeados:", documents);
+    
     setUserDocuments(documents);
     return data;
 
@@ -379,7 +379,7 @@ const getDocumentToEdit = async () => {
         throw new Error(data.mensagem);
       }
 
-      // Atualizar o documento local com o novo status de validação
+      
       setDocument((s) => s.map((doc) =>
         doc.DocumentId === documentId
           ? { ...doc, isValid }
@@ -404,8 +404,8 @@ const getDocumentToEdit = async () => {
       console.log("🚀 Iniciando carregamento de dados...");
       const loadData = async () => {
         try {
-          await get(); // Documentos gerais
-          await getDocumentToEdit(); // Documentos para edição
+          await get(); 
+          await getDocumentToEdit(); 
           await getDocumentValidatorByValidator(); // Documentos para validação
           // console.log("✅ Todos os dados foram carregados");
         } catch (error) {
