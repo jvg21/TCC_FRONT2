@@ -73,16 +73,15 @@ const UserPage: React.FC = () => {
   const filteredUser = React.useMemo(() => {
     let filtered = User;
 
-    // Filtro por empresa (apenas para devs)
+    
     if (isDev) {
       if (!selectedCompanyId) {
-        return []; // Array vazio = sem registros
+        return []; 
       } else {
         filtered = filtered.filter(user => user.CompanyId === selectedCompanyId);
       }
     }
 
-    // Filtro por texto
     if (query) {
       const searchQuery = query.toLowerCase();
       filtered = filtered.filter(user => {
