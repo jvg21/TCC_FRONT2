@@ -199,7 +199,6 @@ export const useGroup = () => {
     }
   };
 
-  // Funções para gerenciamento de usuários
   const getUsersByGroup = async (groupId: number) => {
     try {
       const response = await fetch(`${apiUrl}/Group/GetListUserByGroup/${groupId}`, {
@@ -215,7 +214,6 @@ export const useGroup = () => {
         throw new Error(data.mensagem);
       }
 
-      // Transformar dados dos usuários do grupo
       return data.objeto.map((item: any) => ({
         UserId: item.userId,
         Name: item.name,
@@ -244,7 +242,6 @@ export const useGroup = () => {
         throw new Error(data.mensagem);
       }
 
-      // Transformar dados das pastas do grupo
       return data.objeto.map((item: any) => ({
         FolderId: item.folderId,
         Name: item.name,
