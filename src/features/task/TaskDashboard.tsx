@@ -16,7 +16,7 @@ import type { Task } from "../task/types";
 import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
 
-// Styled Components seguindo os padrões existentes do projeto
+
 const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -119,10 +119,10 @@ const StatusIndicator = styled.div<{ status: number }>`
   border-radius: 50%;
   background: ${({ status }) => {
     switch (status) {
-      case 1: return '#ef4444'; // To Do
-      case 2: return '#f59e0b'; // In Progress  
-      case 3: return '#3b82f6'; // In Review
-      case 4: return '#10b981'; // Done
+      case 1: return '#ef4444'; 
+      case 2: return '#f59e0b';   
+      case 3: return '#3b82f6'; 
+      case 4: return '#10b981'; 
       default: return '#6b7280';
     }
   }};
