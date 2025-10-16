@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FiUsers, FiFile, FiCheckSquare, FiTrendingUp } from "react-icons/fi";
-
 import { useAuthContext } from "../../context/AuthContext";
-
 import { useUser } from "../user/useUser";
 import { useDocument } from "../document/useDocument";
 import { useTask } from "../task/useTask";
@@ -113,7 +111,7 @@ const DashboardPage: React.FC = () => {
     pendingTasks: 0,
   });
 
-  // Hooks para buscar dados do banco
+  
   const { get: getUsers, activeUser } = useUser();
   const { get: getDocuments, activeDocument } = useDocument();
   const { get: getTasks, activeTask } = useTask();
@@ -121,7 +119,7 @@ const DashboardPage: React.FC = () => {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        // Buscar dados reais do banco de dados
+        
         await Promise.all([
           getUsers(),
           getDocuments(),
@@ -135,14 +133,14 @@ const DashboardPage: React.FC = () => {
     loadStats();
   }, []);
 
-  // Calcular estatísticas baseadas nos dados reais
+  
   useEffect(() => {
     const completedTasks = activeTask.filter(task => task.Status === 4).length;
     const pendingTasks = activeTask.filter(task => task.Status === 1).length;
 
     setStats({
       totalUsers: activeUser.length,
-      totalCompanies: 0, // Manter em 0 ou adicionar useCompanies se necessário
+      totalCompanies: 0, 
       totalDocuments: activeDocument.length,
       totalTasks: activeTask.length,
       completedTasks: completedTasks,
@@ -150,7 +148,6 @@ const DashboardPage: React.FC = () => {
     });
   }, [activeUser, activeDocument, activeTask]);
 
-  // Função de saudação usando traduções - seguindo padrão identificado
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return t("dashboard.greeting.good_morning") || "Bom dia";
@@ -158,7 +155,6 @@ const DashboardPage: React.FC = () => {
     return t("dashboard.greeting.good_evening") || "Boa noite";
   };
 
-  // Função de perfil usando traduções - seguindo padrão identificado
   const getProfileName = (profile: number) => {
     switch (profile) {
       case 1: return t("dashboard.profiles.administrator") || "Administrador";
@@ -172,7 +168,6 @@ const DashboardPage: React.FC = () => {
     navigate(route);
   };
 
-  // Array de estatísticas usando traduções - seguindo padrão identificado
   const statCards = [
     {
       title: t("dashboard.stats.total_users") || "Total de Usuários",
@@ -209,7 +204,7 @@ const DashboardPage: React.FC = () => {
   return (
     <PageLayout title={t("dashboard.title") || "Dashboard"}>
       <DashboardContainer>
-        {/* Welcome Section */}
+        {}
         <WelcomeSection>
           <WelcomeContent>
             <WelcomeTitle>
@@ -221,7 +216,7 @@ const DashboardPage: React.FC = () => {
           </WelcomeContent>
         </WelcomeSection>
 
-        {/* Stats Grid */}
+        {}
         <StatsGrid>
           {statCards.map((stat, index) => {
             const Icon = stat.icon;

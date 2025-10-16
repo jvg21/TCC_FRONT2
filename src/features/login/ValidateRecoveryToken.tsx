@@ -152,7 +152,7 @@ const ValidateRecoveryToken: React.FC = () => {
       await validateToken(email, token);
       navigate(`/reset-password?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`);
     } catch (error) {
-      // Erro já tratado pelo hook
+      
     } finally {
       setLoading(false);
     }
@@ -169,7 +169,7 @@ const ValidateRecoveryToken: React.FC = () => {
     navigate(`/request-password-recovery?email=${encodeURIComponent(email)}`);
   };
 
-  // Função para obter texto traduzido do link "Solicitar novo código"
+  
   const getRequestNewCodeText = () => {
     const currentLang = t("language") || 'pt';
     return t("token_reset.request_new_code") || 

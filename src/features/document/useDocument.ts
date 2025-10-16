@@ -158,7 +158,6 @@ export const useDocument = () => {
   const create = async (payload: Omit<Document, "CreatedAt" | "UpdatedAt" | "IsActive" | "UserId">) => {
     try {
       const camelCasePayload = transformPayloadToCamelCase(payload);
-      // console.log('Payload enviado:', camelCasePayload);
 
       const response = await fetch(`${apiUrl}/Document/AddDocument`, {
         method: 'POST',
@@ -190,13 +189,10 @@ export const useDocument = () => {
   const update = async (id: number, updates: Partial<Document>) => {
     try {
 
-      // consolelog('Atualizando documento ID:', id, 'com dados:', updates);
-
       const camelCasePayload = {
         documentId: id,
         ...transformPayloadToCamelCase(updates)
       };
-      // console.log('Payload de atualização:', camelCasePayload);
 
       const response = await fetch(`${apiUrl}/Document/UpdateDocument`, {
         method: "PUT",
@@ -284,7 +280,7 @@ export const useDocument = () => {
   };
   const getDocumentValidatorByValidator = async () => {
   try {
-    // console.log("🔍 Buscando documentos para validação...");
+    
     const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationByValidator`, {
       method: "GET",
       headers: {
@@ -294,19 +290,18 @@ export const useDocument = () => {
     });
 
     const data: ApiResponse = await response.json();
-    // console.log("📋 Resposta da API (validator):", data);
+    
 
     if (data.erro) {
       notificationActions.showError(data.mensagem);
       throw new Error(data.mensagem);
     }
 
-    // Mapear dados da API para o formato do frontend
+    
     const documents = Array.isArray(data.objeto) 
       ? data.objeto.map(mapApiDocumentToFrontend)
       : [];
     
-    // console.log("✅ Documentos para validação mapeados:", documents);
     setUserValidatorDocuments(documents);
     return data;
 
@@ -319,7 +314,7 @@ export const useDocument = () => {
 
 const getDocumentToEdit = async () => {
   try {
-    // console.log("🔍 Buscando documentos para edição...");
+    
     const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationToEdit`, {
       method: "GET",
       headers: {
@@ -329,19 +324,19 @@ const getDocumentToEdit = async () => {
     });
 
     const data: ApiResponse = await response.json();
-    // console.log("📋 Resposta da API (edit):", data);
+    
 
     if (data.erro) {
       notificationActions.showError(data.mensagem);
       throw new Error(data.mensagem);
     }
 
-    // Mapear dados da API para o formato do frontend
+    
     const documents = Array.isArray(data.objeto) 
       ? data.objeto.map(mapApiDocumentToFrontend)
       : [];
     
-    // console.log("✅ Documentos para edição mapeados:", documents);
+    
     setUserDocuments(documents);
     return data;
 
@@ -384,7 +379,7 @@ const getDocumentToEdit = async () => {
         throw new Error(data.mensagem);
       }
 
-      // Atualizar o documento local com o novo status de validação
+      
       setDocument((s) => s.map((doc) =>
         doc.DocumentId === documentId
           ? { ...doc, isValid }
@@ -409,10 +404,9 @@ const getDocumentToEdit = async () => {
       console.log("🚀 Iniciando carregamento de dados...");
       const loadData = async () => {
         try {
-          await get(); // Documentos gerais
-          await getDocumentToEdit(); // Documentos para edição
-          await getDocumentValidatorByValidator(); // Documentos para validação
-          // console.log("✅ Todos os dados foram carregados");
+          await get(); 
+          await getDocumentToEdit(); 
+          await getDocumentValidatorByValidator(); 
         } catch (error) {
           console.error("❌ Erro ao carregar dados:", error);
         }

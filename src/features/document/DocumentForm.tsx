@@ -67,8 +67,6 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
     const [appliedTemplate, setAppliedTemplate] = useState<string>("");
     const { t } = useTranslation();
-    
-    // Integração com hooks
     const { activeFolder } = useFolder();
     const { activeTemplate } = useTemplate();
 

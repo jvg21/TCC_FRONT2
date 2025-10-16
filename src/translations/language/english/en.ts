@@ -92,8 +92,8 @@ export const enTranslations = {
     last_login: "Last Login",
     password: "Password",
     passwordRequirements: "Password must have at least 6 characters, including uppercase, lowercase and number",
-    createSucess: "User created successfully!",
-    updateSucess: "User updated successfully!",
+    createSuccess: "User created successfully!",
+    updateSuccess: "User updated successfully!",
     createError: "Error creating user",
     no_select: "Select a user",
   },
@@ -151,7 +151,10 @@ export const enTranslations = {
     hide_group_folders: "Hide Group Folders",
     select_folder: "Select Folder",
     folders_in_group: "Folders in Group",
-    no_folders_in_group: "No Folders in Group"
+    no_folders_in_group: "No Folders in Group",
+    createSuccess: "Folder created successfully!",
+    updateSuccess: "Folder updated successfully!",
+    updateStatusSuccess: "Folder status changed successfully!"
 
   },
 
@@ -225,6 +228,7 @@ export const enTranslations = {
     no_tasks_in_review: "No tasks in review",
     no_completed_tasks: "No completed tasks",
     empty_column: "This column is empty",
+    description_placeholder: "Describe the task...",
 
     statusTask: {
       todo: "To Do",

@@ -17,7 +17,7 @@ import { dateUtils } from "../../utils/dateUtils";
 import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
 
-// Styled Components seguindo os padrões existentes do projeto
+
 const BoardContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -61,11 +61,11 @@ const StatusIndicator = styled.div<{ status: number }>`
   border-radius: 50%;
   background: ${({ status }) => {
     switch (status) {
-      case 1: return '#ef4444'; // To Do - vermelho
-      case 2: return '#f59e0b'; // In Progress - amarelo
-      case 3: return '#3b82f6'; // In Review - azul
-      case 4: return '#10b981'; // Done - verde
-      case 5: return '#6b7280'; // Canceled - cinza
+      case 1: return '#ef4444'; 
+      case 2: return '#f59e0b'; 
+      case 3: return '#3b82f6'; 
+      case 4: return '#10b981'; 
+      case 5: return '#6b7280'; 
       default: return '#6b7280';
     }
   }};
@@ -278,7 +278,7 @@ const EmptyIcon = styled.div`
 `;
 
 const TaskBoardPage: React.FC = () => {
-  // Seguindo exatamente o padrão utilizado no TaskPage existente
+  
   const { activeTask, create, update, softDelete } = useTask();
   const [editing, setEditing] = useState<Task | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number>(1);
@@ -289,7 +289,7 @@ const TaskBoardPage: React.FC = () => {
   const { userProfile } = useAuthContext();
   const { currentLanguage } = useLanguage();
 
-  // Utilizando a mesma lógica de filtro do projeto existente
+  
   const tasksByStatus = useMemo(() => {
     const statuses = getTaskStatus(t);
     return statuses.reduce((acc, status) => {
@@ -300,26 +300,26 @@ const TaskBoardPage: React.FC = () => {
     }, {} as Record<string, Task[]>);
   }, [activeTask, t]);
 
-  // Função para obter nome do usuário seguindo o padrão do projeto
+  
   const getUserName = (userId?: number) => {
     const user = activeUser.find(u => u.UserId === userId);
     return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
   };
 
-  // Função para obter iniciais seguindo o padrão do projeto
+  
   const getUserInitials = (userId?: number) => {
     const user = activeUser.find(u => u.UserId === userId);
     if (!user) return "?";
     return user.Name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  // Função para obter label da prioridade seguindo o padrão do projeto
+  
   const getPriorityLabel = (priority?: number) => {
     const priorityObj = getTaskPriority(t).find(p => p.value === priority?.toString());
     return priorityObj ? priorityObj.label : t("tasks.priorityTask.low");
   };
 
-  // Handlers seguindo o mesmo padrão do TaskPage existente
+  
   const handleAdd = (status?: number) => {
     setEditing(null);
     setSelectedStatus(status || 1);
@@ -335,7 +335,7 @@ const TaskBoardPage: React.FC = () => {
     if (editing) {
       update(editing.TaskId, payload);
     } else {
-      // Se está criando uma nova tarefa, define o status baseado na coluna selecionada
+      
       const taskData = { ...payload, Status: selectedStatus };
       create(taskData);
     }
@@ -446,7 +446,7 @@ const TaskBoardPage: React.FC = () => {
         })}
       </BoardContainer>
 
-      {/* Modal seguindo exatamente o padrão do TaskPage existente */}
+      {}
       <Modal 
         isOpen={modal.isOpen} 
         onClose={modal.close} 

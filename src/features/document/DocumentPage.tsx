@@ -1,4 +1,3 @@
-// src/features/document/DocumentPage.tsx
 import React, { useState, useEffect } from "react";
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
@@ -99,7 +98,6 @@ const DocumentPage: React.FC = () => {
   const [query, setQuery] = useState("");
   const [activeTabId, setActiveTabId] = useState("geral");
 
-  // Estados para filtros avançados
   const [dateFilter, setDateFilter] = useState<{
     startDate: string;
     endDate: string;
@@ -111,9 +109,6 @@ const DocumentPage: React.FC = () => {
   const [tagFilter, setTagFilter] = useState<number | null>(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [tagFilteredDocIds, setTagFilteredDocIds] = useState<number[]>([]);
-
-  // console.log(userDocuments, userValidatorDocuments);
-
   const { t } = useTranslation();
   const { userProfile, user } = useAuthContext();
   const { getTagsByDocument, getDocumentsByTag, activeTag } = useTag();
@@ -125,14 +120,13 @@ const DocumentPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // useEffect para carregar documentos quando uma tag é selecionada
   useEffect(() => {
     const loadDocumentsByTag = async () => {
       if (tagFilter) {
         try {
           const response = await getDocumentsByTag(tagFilter);
           if (response && !response.erro && response.objeto) {
-            // Extrair os IDs dos documentos
+            
             const docIds = response.objeto.map((item: any) => item.documentId);
             setTagFilteredDocIds(docIds);
           }
@@ -230,21 +224,21 @@ const DocumentPage: React.FC = () => {
         key: "actions",
         header: t("actions.actions"),
         render: (row) => {
-          // Verificar se o usuário pode editar este documento
+          
           const canEdit = () => {
-            // Usuários nível 1 e 2 podem editar tudo
+            
             if (user && (user.Profile === 1 || user.Profile === 2)) {
               return true;
             }
 
-            // Usuários nível 3 podem editar se:
+            
             if (user && user.Profile === 3) {
-              // 1. Criaram o documento
+              
               if (row.UserId === user.UserId) {
                 return true;
               }
 
-              // 2. São validadores da pasta do documento
+              
               const folder = activeFolder.find((f) => f.FolderId === row.FolderId);
               if (folder && folder.ValidatorId === user.UserId) {
                 return true;
@@ -280,11 +274,11 @@ const DocumentPage: React.FC = () => {
     return baseCols;
   };
 
-  // Função ATUALIZADA para filtrar documentos com múltiplos critérios
+  
   const getFilteredDocuments = (documents: Document[]) => {
     let filtered = [...documents];
 
-    // Filtro por texto
+    
     if (query) {
       const searchQuery = query.toLowerCase();
       filtered = filtered.filter(document => {
@@ -296,7 +290,7 @@ const DocumentPage: React.FC = () => {
       });
     }
 
-    // Filtro por data
+    
     if (dateFilter.startDate || dateFilter.endDate) {
       filtered = filtered.filter(document => {
         const docDate = new Date(document.CreatedAt);
@@ -314,23 +308,23 @@ const DocumentPage: React.FC = () => {
       });
     }
 
-    // Filtro por autor
+    
     if (authorFilter) {
       filtered = filtered.filter(document => document.UserId === authorFilter);
     }
 
-    // Filtro por tag - usando os IDs carregados do backend
+    
     if (tagFilter && tagFilteredDocIds.length > 0) {
       filtered = filtered.filter(document => tagFilteredDocIds.includes(document.DocumentId));
     } else if (tagFilter && tagFilteredDocIds.length === 0) {
-      // Se uma tag está selecionada mas não há documentos, retornar array vazio
+      
       filtered = [];
     }
 
     return filtered;
   };
 
-  // Função para obter documentos criados pelo usuário atual
+  
   const getMyDocuments = () => {
     if (!user) return [];
     return activeDocument.filter(doc => doc.UserId === user.UserId);
@@ -384,7 +378,7 @@ const DocumentPage: React.FC = () => {
 
   const columns = Columns(handleEdit, handleToggleStatus, handleView, handleEditContent);
 
-  // Componente InfoAlert
+  
   const InfoAlert = ({ type, title, description }: { type: string; title: string; description: string }) => {
 
     const colors = {
@@ -421,7 +415,6 @@ const DocumentPage: React.FC = () => {
     );
   };
 
-  // Componente EmptyState
   const EmptyState = ({ icon, title, description }: { icon: string; title: string; description: string }) => (
     <div style={{
       textAlign: 'center',
@@ -434,7 +427,6 @@ const DocumentPage: React.FC = () => {
     </div>
   );
 
-  // Componente de Filtros Avançados
   const AdvancedFilters = () => (
     <div style={{
       background: `${theme.colors.primary}15`,
@@ -449,7 +441,7 @@ const DocumentPage: React.FC = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
         gap: '16px'
       }}>
-        {/* Filtro de Data */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
             {t("documents.filters.date_range") || "Período"}
@@ -482,7 +474,7 @@ const DocumentPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Filtro de Autor */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
             {t("documents.filters.author") || "Autor"}
@@ -507,7 +499,7 @@ const DocumentPage: React.FC = () => {
           </select>
         </div>
 
-        {/* Filtro de Tag */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
             {t("documents.filters.tag")}
@@ -549,7 +541,7 @@ const DocumentPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Botão para limpar filtros */}
+      {}
       <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           variant="ghost"
@@ -595,7 +587,7 @@ const DocumentPage: React.FC = () => {
             </Button>
           </div>
 
-          {/* Filtros Avançados */}
+          {}
           <AdvancedFilters />
 
           {userProfile && (
@@ -744,14 +736,14 @@ const DocumentPage: React.FC = () => {
         </Button>
       }
     >
-      {/* Sistema de Abas */}
+      {}
       <TabContainer
         tabs={tabs}
         defaultTab="geral"
         onTabChange={handleTabChange}
       />
 
-      {/* Modais existentes */}
+      {}
       <Modal
         isOpen={modal.isOpen}
         onClose={modal.close}

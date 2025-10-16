@@ -1,11 +1,13 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { FiClock, FiCheckSquare, FiTrendingUp, FiPlus, FiUsers } from "react-icons/fi";
 import { Button } from "../../components/common/Button";
 import PageLayout from "../../components/common/PageLayout";
 import { useTask } from "../task/useTask";
 import { useTranslation } from "react-i18next";
-
+import { useModal } from "../../hooks/useModal";
+import { Modal } from "../../components/common/Modal";
+import { TaskForm } from "./TaskForm";
 import { useUser } from "../user/useUser";
 import { useAuthContext } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -14,7 +16,7 @@ import type { Task } from "../task/types";
 import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
 
-// Styled Components seguindo os padrões existentes do projeto
+
 const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -117,10 +119,10 @@ const StatusIndicator = styled.div<{ status: number }>`
   border-radius: 50%;
   background: ${({ status }) => {
     switch (status) {
-      case 1: return '#ef4444'; // To Do
-      case 2: return '#f59e0b'; // In Progress  
-      case 3: return '#3b82f6'; // In Review
-      case 4: return '#10b981'; // Done
+      case 1: return '#ef4444'; 
+      case 2: return '#f59e0b';   
+      case 3: return '#3b82f6'; 
+      case 4: return '#10b981'; 
       default: return '#6b7280';
     }
   }};
@@ -185,10 +187,10 @@ const PriorityDot = styled.div<{ priority: number }>`
   border-radius: 50%;
   background: ${({ priority }) => {
     switch (priority) {
-      case 1: return '#22c55e'; // Low
-      case 2: return '#f59e0b'; // Medium
-      case 3: return '#f97316'; // High
-      case 4: return '#ef4444'; // Urgent
+      case 1: return '#22c55e'; 
+      case 2: return '#f59e0b'; 
+      case 3: return '#f97316'; 
+      case 4: return '#ef4444'; 
       default: return '#6b7280';
     }
   }};
@@ -304,16 +306,16 @@ const StatProgressBar = styled.div<{ width: number; color: string }>`
   transition: width 0.3s ease;
 `;
 
-// Componente principal seguindo os padrões do projeto
 const TaskDashboard: React.FC = () => {
-  // Seguindo exatamente o padrão utilizado no TaskPage existente
-  const { activeTask } = useTask();
+  
+  const { activeTask, create, update } = useTask();
+  const [editing, setEditing] = useState<Task | null>(null);
+  const modal = useModal();
   const { t } = useTranslation();
   const { activeUser } = useUser();
   const { userProfile } = useAuthContext();
   const { currentLanguage } = useLanguage();
 
-  // Cálculo de estatísticas seguindo a mesma lógica do projeto
   const taskStats = useMemo(() => {
     const total = activeTask.length;
     const completed = activeTask.filter(task => task.Status === 4).length;
@@ -333,7 +335,7 @@ const TaskDashboard: React.FC = () => {
     };
   }, [activeTask]);
 
-  // Agrupamento por status seguindo o padrão existente
+  
   const tasksByStatus = useMemo(() => {
     const statuses = getTaskStatus(t);
     return statuses.reduce((acc, status) => {
@@ -344,7 +346,6 @@ const TaskDashboard: React.FC = () => {
     }, {} as Record<string, Task[]>);
   }, [activeTask, t]);
 
-  // Tarefas com deadline próximo (próximos 7 dias)
   const upcomingDeadlines = useMemo(() => {
     const now = new Date();
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -360,16 +361,14 @@ const TaskDashboard: React.FC = () => {
         const dateB = new Date(b.DueDate!);
         return dateA.getTime() - dateB.getTime();
       })
-      .slice(0, 5); // Mostrar apenas as 5 próximas
+      .slice(0, 5); 
   }, [activeTask]);
 
-  // Função para obter nome do usuário seguindo o padrão do projeto
   const getUserName = (userId?: number) => {
     const user = activeUser.find(u => u.UserId === userId);
     return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
   };
 
-  // Função para obter iniciais do usuário
   const getUserInitials = (userId?: number) => {
     const user = activeUser.find(u => u.UserId === userId);
     if (!user) return "?";
@@ -377,18 +376,27 @@ const TaskDashboard: React.FC = () => {
   };
 
   const handleAddTask = () => {
-    // Implementação seguiria o mesmo padrão do TaskPage existente
-    console.log("Adicionar tarefa");
+    setEditing(null);
+    modal.open();
   };
 
   const handleViewAllTasks = () => {
-    // Navegação para a página de tarefas
+    
     console.log("Ver todas as tarefas");
   };
 
   const handleTaskClick = (task: Task) => {
-    // Implementação seguiria o mesmo padrão do TaskPage existente
-    console.log("Editar tarefa:", task);
+    setEditing(task);
+    modal.open();
+  };
+
+  const handleSave = (payload: any) => {
+    if (editing) {
+      update(editing.TaskId, payload);
+    } else {
+      create(payload);
+    }
+    modal.close();
   };
 
   return (
@@ -404,7 +412,7 @@ const TaskDashboard: React.FC = () => {
       }
     >
       <DashboardContainer>
-        {/* Seção Principal - Kanban Board Resumido */}
+        {}
         <TopSection>
           <KanbanSection>
             <SectionHeader>
@@ -467,9 +475,9 @@ const TaskDashboard: React.FC = () => {
           </KanbanSection>
         </TopSection>
 
-        {/* Seção Inferior - Deadlines e Estatísticas */}
+        {}
         <BottomSection>
-          {/* Próximos Deadlines */}
+          {}
           <UpcomingDeadlines>
             <SectionHeader>
               <SectionTitle>{t("tasks.upcoming_deadlines") || "Upcoming Deadlines"}</SectionTitle>
@@ -497,7 +505,7 @@ const TaskDashboard: React.FC = () => {
             </DeadlinesList>
           </UpcomingDeadlines>
 
-          {/* Estatísticas das Tarefas */}
+          {}
           <TaskStatistics>
             <SectionHeader>
               <SectionTitle>{t("tasks.task_statistics") || "Task Statistics"}</SectionTitle>
@@ -539,6 +547,19 @@ const TaskDashboard: React.FC = () => {
           </TaskStatistics>
         </BottomSection>
       </DashboardContainer>
+
+      {}
+      <Modal 
+        isOpen={modal.isOpen} 
+        onClose={modal.close} 
+        title={editing ? t("tasks.edit_task") : t("tasks.add_task")}
+      >
+        <TaskForm 
+          initial={editing ?? undefined} 
+          onCancel={modal.close} 
+          onSave={handleSave} 
+        />
+      </Modal>
     </PageLayout>
   );
 };

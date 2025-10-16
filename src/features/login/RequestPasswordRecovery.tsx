@@ -115,7 +115,7 @@ const RequestPasswordRecovery: React.FC = () => {
       await requestPasswordRecovery(email);
       navigate(`/validate-recovery-token?email=${encodeURIComponent(email)}`);
     } catch (error) {
-      // Erro já tratado pelo hook
+      
     } finally {
       setLoading(false);
     }

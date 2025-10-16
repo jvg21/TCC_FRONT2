@@ -133,7 +133,6 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const { login } = useLogin();
   const navigate = useNavigate();
   const { t } = useTranslation();

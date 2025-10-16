@@ -45,13 +45,12 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
     const payload = {
       Name: Name.trim(),
       ParentFolderId: ParentFolderId ? parseInt(ParentFolderId) : null,
-      ValidatorId: ValidatorId ? parseInt(ValidatorId) : null // Corrigir aqui
+      ValidatorId: ValidatorId ? parseInt(ValidatorId) : null 
     };
 
     onSave(payload);
   };
 
-  // Prepara opções para pasta pai (exclui a pasta atual se estiver editando)
   const parentFolderOptions = [
     { value: "", label: t("folders.no_parent_folder") },
     ...activeFolder
@@ -63,9 +62,9 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
   ];
 
   const validatorOptions = [
-    { value: "", label: t("folders.select_validator") }, // Adicionar opção padrão
+    { value: "", label: t("folders.select_validator") }, 
     ...activeUser.map(user => ({
-      value: user.UserId.toString(), // Converter para string
+      value: user.UserId.toString(), 
       label: user.Name
     }))
   ]
@@ -102,7 +101,7 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
           <Select
             label={t("folders.validator")}
             value={ValidatorId}
-            onChange={(e) => setValidatorId(e.target.value)} // Remover parseInt aqui
+            onChange={(e) => setValidatorId(e.target.value)} 
             options={validatorOptions}
           />
         </Col>

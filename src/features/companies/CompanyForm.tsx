@@ -22,11 +22,9 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   const [Phone, setPhone] = useState(initial.Phone ?? "");
   const [Adress, setAdress] = useState(initial.Adress ?? "");
   const [ZipCode, setZipCode] = useState(initial.ZipCode ?? "");
-  // const [IsActive, setIsActive] = useState(initial.IsActive ? 'true' : 'false');
+  
   const { t } = useTypedTranslation();
 
-  // Apenas inicializa os valores quando o objeto 'initial' muda
-  // Não reinicializa durante digitação
   useEffect(() => {
     setName(initial.Name ?? "");
     setEmail(initial.Email ?? "");
@@ -34,8 +32,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     setTaxId(initial.TaxId ? regexPatterns.applyMask(initial.TaxId, "99.999.999/9999-99") : "");
     setPhone(initial.Phone ? regexPatterns.applyMask(initial.Phone, "+99 (99) 99999-9999") : "");
     setZipCode(initial.ZipCode ? regexPatterns.applyMask(initial.ZipCode, "99999-999") : "")
-    /// modificado para tratar IsActive como string -------------------------------------------
-    // setIsActive(initial.IsActive ? 'true' : 'false');
+ 
   }, [
     initial.Name,
     initial.TaxId,
@@ -46,7 +43,6 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     initial.IsActive
   ]);
 
-  // nova função para validar os campos -------------------------------------------
   const validateFields = () => {
     const isNameValid = Name.trim().length > 0;
     const isTaxIdValid = !!TaxId && regexPatterns.cnpj.test(TaxId);
@@ -63,20 +59,17 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     return isNameValid && isTaxIdValid && isEmailValid && isPhoneValid && isZipCodeValid;
   };
 
-  // aplica a nova função de validação no botão de salvar -------------------------------------------
   const canSave = validateFields();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
 
-    // const formattedIsActive = IsActive === "true";
-
-    onSave({ Name, TaxId, Email, Phone, Adress, ZipCode, /* IsActive: formattedIsActive */ });
+    onSave({ Name, TaxId, Email, Phone, Adress, ZipCode,  });
   };
 
   return (
-    //adicionar maxLength, minLength e required nos campos -------------------------------------------
+    
     <form onSubmit={handleSubmit}>
       <Row>
         <Col><Input label={t("companies.name")} maxLength={50} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>

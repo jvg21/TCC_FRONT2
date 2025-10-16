@@ -91,8 +91,8 @@ export const esTranslations = {
     last_login: "Último Acceso",
     password: "Contraseña",
     passwordRequirements: "La contraseña debe tener al menos 6 caracteres, incluyendo mayúscula, minúscula y número",
-    createSucess: "¡Usuario creado exitosamente!",
-    updateSucess: "¡Usuario actualizado exitosamente!",
+    createSuccess: "¡Usuario creado exitosamente!",
+    updateSuccess: "¡Usuario actualizado exitosamente!",
     createError: "Error al crear usuario",
     no_select: "Seleccione un usuario",
   },
@@ -151,7 +151,10 @@ export const esTranslations = {
     select_folder: "Seleccionar Carpeta",
     folders_in_group: "Carpetas En El Grupo",
     no_folders_in_group: "No Hay Carpetas En El Grupo",
-    hide_group_folders: "Ocultar Carpetas de Grupo"
+    hide_group_folders: "Ocultar Carpetas de Grupo",
+    createSuccess: "¡Carpeta creada con éxito!",
+    updateSuccess: "¡Carpeta actualizada con éxito!",
+    updateStatusSuccess: "¡Estado de la carpeta cambiado con éxito!"
   },
 
   tags: {
@@ -226,6 +229,7 @@ export const esTranslations = {
     no_tasks_in_review: "No hay tareas en revisión",
     no_completed_tasks: "No hay tareas completadas",
     empty_column: "Esta columna está vacía",
+    description_placeholder: "Describa la tarea...",
 
     statusTask: {
       todo: "To Do",

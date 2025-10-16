@@ -91,10 +91,11 @@ export const ptTranslations = {
     last_login: "Último Login",
     password: "Senha",
     passwordRequirements: "A senha deve ter pelo menos 6 caracteres, incluindo maiúscula, minúscula e número",
-    createSucess: "Usuário criado com sucesso!",
-    updateSucess: "Usuário atualizado com sucesso!",
+    createSuccess: "Usuário criado com sucesso!",
+    updateSuccess: "Usuário atualizado com sucesso!",
     createError: "Erro ao criar usuário",
     no_select: "Selecione um usuário",
+    updateStatusSuccess: "Status do usuário alterado com sucesso!",
   },
 
   // Grupos
@@ -150,7 +151,10 @@ export const ptTranslations = {
     hide_group_folders: "Ocultar Pastas do Grupo",
     select_folder: "Selecionar Pastas",
     folders_in_group: "Pastas em Grupo",
-    no_folders_in_group: "Nenhuma Pasta no Grupo"
+    no_folders_in_group: "Nenhuma Pasta no Grupo",
+    statusToggleSuccess: "Status da pasta alterado com sucesso!",
+    createSuccess: "Pasta criada com sucesso!",
+    updateSuccess: "Pasta atualizada com sucesso!"
 
 
   },
@@ -225,6 +229,7 @@ export const ptTranslations = {
     no_tasks_in_review: "Nenhuma tarefa em revisão",
     no_completed_tasks: "Nenhuma tarefa concluída",
     empty_column: "Esta coluna está vazia",
+    description_placeholder: "Descreva a tarefa...",
 
     statusTask: {
       todo: "A Fazer",
