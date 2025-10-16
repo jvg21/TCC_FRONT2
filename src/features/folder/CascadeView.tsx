@@ -425,7 +425,6 @@ export const CascadeView: React.FC = () => {
     }
   };
 
-  // Handlers para documento
   const handleAddDocument = () => {
     setEditingDocument(null);
     setEditingContent("");
