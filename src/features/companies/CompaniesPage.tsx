@@ -27,7 +27,7 @@ const CompaniesPage: React.FC = () => {
   const { t } = useTranslation();
   const { userProfile } = useAuthContext()
 
-  // adicionado o metodo render para as colunas -------------------------------------------
+  
   const Columns = (
     onEdit: (c: Company) => void,
     onToggleStatus: (id: number) => void
@@ -121,7 +121,7 @@ const CompaniesPage: React.FC = () => {
       }
       modal.close();
     } catch (error) {
-      // Error já é tratado no hook useCompanies
+      
       console.error("Erro ao salvar empresa:", error);
     }
   };
