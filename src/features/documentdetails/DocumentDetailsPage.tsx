@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../user/useUser';
 import { useFolder } from '../folder/useFolder';
 import { useAuthContext } from '../../context/AuthContext';
-import { FiArrowLeft, FiEdit, FiFolder, FiUser, FiCalendar, FiMessageSquare } from 'react-icons/fi';
+import { FiArrowLeft, FiEdit, FiFolder, FiUser, FiCalendar, FiMessageSquare, FiChevronDown, FiDownload } from 'react-icons/fi';
 import { useTypedTranslation } from '../../context/LanguageContext';
 import { useDocument } from '../document/useDocument';
 import { useComment } from '../comment/useComment';
@@ -82,6 +82,28 @@ const DocumentDetailsPage: React.FC = () => {
   const [documentContent, setDocumentContent] = useState('');
 
   const hasLoadedRef = useRef(false);
+
+  // adicionado: dropdown de exportação (somente para o dropdown)
+  const [showExportDropdown, setShowExportDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+ useEffect(() => {
+  
+  const doc = typeof window !== 'undefined' ? window.document : null;
+  if (!doc) return;
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setShowExportDropdown(false);
+    }
+  };
+
+  doc.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    doc.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
+
 
   useEffect(() => {
     const loadDocument = async () => {
@@ -202,7 +224,7 @@ const DocumentDetailsPage: React.FC = () => {
     if (documentContent) {
       const summaryText = await generateSummary(Number(id));
       // console.log(summaryText);
-      setSummary(summaryText.content || '');
+      setSummary(summaryText.Content || '');
       showResume.open();
     } else {
       notificationActions.showError(
@@ -371,15 +393,86 @@ const DocumentDetailsPage: React.FC = () => {
             <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
 
-          <Button onClick={handleExportPDF} variant="primary">
-            📄 PDF
-          </Button>
-          <Button onClick={handleExportDOCX} variant="primary">
-            📝 DOCX
-          </Button>
-          <Button onClick={handleExportMarkdown} variant="primary">
-            ⬇️ MD
-          </Button>
+          {/* dropdown simples com os 3 itens de exportação */}
+          <div style={{ position: 'relative' }} ref={dropdownRef}>
+            <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
+              <FiDownload style={{ marginRight: 6 }} />
+              Exportar
+              <FiChevronDown style={{ marginLeft: 6 }} />
+            </Button>
+
+            {showExportDropdown && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '110%',
+                  right: 0,
+                  background: '#fff',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                  zIndex: 10,
+                  width: '160px',
+                  padding: '4px 0',
+                }}
+              >
+                <button
+                  onClick={() => {
+                    handleExportPDF();
+                    setShowExportDropdown(false);
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '8px 12px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  📄 Exportar PDF
+                </button>
+                <button
+                  onClick={() => {
+                    handleExportDOCX();
+                    setShowExportDropdown(false);
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '8px 12px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  📝 Exportar DOCX
+                </button>
+                <button
+                  onClick={() => {
+                    handleExportMarkdown();
+                    setShowExportDropdown(false);
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '8px 12px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  ⬇️ Exportar MD
+                </button>
+              </div>
+            )}
+          </div>
 
           <Button onClick={handleGenerateSummary}>
             <FiEdit /> {t("documents.document_details.generate_summary") || "Gerar Resumo"}
