@@ -313,18 +313,18 @@ const DocumentPage: React.FC = () => {
       filtered = filtered.filter(document => document.UserId === authorFilter);
     }
 
-    // Filtro por tag - usando os IDs carregados do backend
+    
     if (tagFilter && tagFilteredDocIds.length > 0) {
       filtered = filtered.filter(document => tagFilteredDocIds.includes(document.DocumentId));
     } else if (tagFilter && tagFilteredDocIds.length === 0) {
-      // Se uma tag está selecionada mas não há documentos, retornar array vazio
+      
       filtered = [];
     }
 
     return filtered;
   };
 
-  // Função para obter documentos criados pelo usuário atual
+  
   const getMyDocuments = () => {
     if (!user) return [];
     return activeDocument.filter(doc => doc.UserId === user.UserId);
