@@ -369,7 +369,6 @@ const TaskDashboard: React.FC = () => {
     return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
   };
 
-  // Função para obter iniciais do usuário
   const getUserInitials = (userId?: number) => {
     const user = activeUser.find(u => u.UserId === userId);
     if (!user) return "?";
@@ -382,7 +381,7 @@ const TaskDashboard: React.FC = () => {
   };
 
   const handleViewAllTasks = () => {
-    // Navegação para a página de tarefas
+    
     console.log("Ver todas as tarefas");
   };
 
@@ -413,7 +412,7 @@ const TaskDashboard: React.FC = () => {
       }
     >
       <DashboardContainer>
-        {/* Seção Principal - Kanban Board Resumido */}
+        {}
         <TopSection>
           <KanbanSection>
             <SectionHeader>
@@ -476,9 +475,9 @@ const TaskDashboard: React.FC = () => {
           </KanbanSection>
         </TopSection>
 
-        {/* Seção Inferior - Deadlines e Estatísticas */}
+        {}
         <BottomSection>
-          {/* Próximos Deadlines */}
+          {}
           <UpcomingDeadlines>
             <SectionHeader>
               <SectionTitle>{t("tasks.upcoming_deadlines") || "Upcoming Deadlines"}</SectionTitle>
