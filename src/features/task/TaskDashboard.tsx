@@ -187,10 +187,10 @@ const PriorityDot = styled.div<{ priority: number }>`
   border-radius: 50%;
   background: ${({ priority }) => {
     switch (priority) {
-      case 1: return '#22c55e'; // Low
-      case 2: return '#f59e0b'; // Medium
-      case 3: return '#f97316'; // High
-      case 4: return '#ef4444'; // Urgent
+      case 1: return '#22c55e'; 
+      case 2: return '#f59e0b'; 
+      case 3: return '#f97316'; 
+      case 4: return '#ef4444'; 
       default: return '#6b7280';
     }
   }};
@@ -306,7 +306,7 @@ const StatProgressBar = styled.div<{ width: number; color: string }>`
   transition: width 0.3s ease;
 `;
 
-// Componente principal seguindo os padrões do projeto
+
 const TaskDashboard: React.FC = () => {
   // Seguindo exatamente o padrão utilizado no TaskPage existente
   const { activeTask, create, update } = useTask();
