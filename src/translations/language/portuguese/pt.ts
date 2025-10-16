@@ -91,10 +91,11 @@ export const ptTranslations = {
     last_login: "Último Login",
     password: "Senha",
     passwordRequirements: "A senha deve ter pelo menos 6 caracteres, incluindo maiúscula, minúscula e número",
-    createSucess: "Usuário criado com sucesso!",
-    updateSucess: "Usuário atualizado com sucesso!",
+    createSuccess: "Usuário criado com sucesso!",
+    updateSuccess: "Usuário atualizado com sucesso!",
     createError: "Erro ao criar usuário",
     no_select: "Selecione um usuário",
+    updateStatusSuccess: "Status do usuário alterado com sucesso!",
   },
 
   // Grupos
