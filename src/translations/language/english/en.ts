@@ -151,7 +151,10 @@ export const enTranslations = {
     hide_group_folders: "Hide Group Folders",
     select_folder: "Select Folder",
     folders_in_group: "Folders in Group",
-    no_folders_in_group: "No Folders in Group"
+    no_folders_in_group: "No Folders in Group",
+    createSuccess: "Folder created successfully!",
+    updateSuccess: "Folder updated successfully!",
+    updateStatusSuccess: "Folder status changed successfully!"
 
   },
 

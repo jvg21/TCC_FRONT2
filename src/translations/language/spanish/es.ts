@@ -151,7 +151,10 @@ export const esTranslations = {
     select_folder: "Seleccionar Carpeta",
     folders_in_group: "Carpetas En El Grupo",
     no_folders_in_group: "No Hay Carpetas En El Grupo",
-    hide_group_folders: "Ocultar Carpetas de Grupo"
+    hide_group_folders: "Ocultar Carpetas de Grupo",
+    createSuccess: "¡Carpeta creada con éxito!",
+    updateSuccess: "¡Carpeta actualizada con éxito!",
+    updateStatusSuccess: "¡Estado de la carpeta cambiado con éxito!"
   },
 
   tags: {
