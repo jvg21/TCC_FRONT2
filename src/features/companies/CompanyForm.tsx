@@ -43,7 +43,6 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     initial.IsActive
   ]);
 
-  // nova função para validar os campos -------------------------------------------
   const validateFields = () => {
     const isNameValid = Name.trim().length > 0;
     const isTaxIdValid = !!TaxId && regexPatterns.cnpj.test(TaxId);
@@ -60,16 +59,13 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     return isNameValid && isTaxIdValid && isEmailValid && isPhoneValid && isZipCodeValid;
   };
 
-  // aplica a nova função de validação no botão de salvar -------------------------------------------
   const canSave = validateFields();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
 
-    // const formattedIsActive = IsActive === "true";
-
-    onSave({ Name, TaxId, Email, Phone, Adress, ZipCode, /* IsActive: formattedIsActive */ });
+    onSave({ Name, TaxId, Email, Phone, Adress, ZipCode,  });
   };
 
   return (
