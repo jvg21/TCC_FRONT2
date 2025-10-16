@@ -21,6 +21,8 @@ import DocumentDetailsPage from "../features/documentdetails/DocumentDetailsPage
 import TaskBoardPage from "../features/task/TaskBoardPage"
 import TaskDashboard from "../features/task/TaskDashboard"
 import CascadeView from "../features/folder/CascadeView"
+import ReportsPage from "../features/reports/ReportsPage"
+
 
 export const AppRoutes = () => {
     return (
@@ -120,6 +122,12 @@ export const AppRoutes = () => {
             <Route path="/CascadeView" element={
                 <ProtectedRoutes>
                     <CascadeView />
+                </ProtectedRoutes>
+            } />
+
+            <Route path="/ReportsPage" element={
+                <ProtectedRoutes>
+                    <ReportsPage />
                 </ProtectedRoutes>
             } />
 

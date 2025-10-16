@@ -15,6 +15,7 @@ import {
   FiChevronRight,
   FiLink2,
   FiClipboard,
+  FiBarChart2,
 } from 'react-icons/fi';
 import { useAuthContext } from '../../context/AuthContext';
 import { useTypedTranslation } from '../../context/LanguageContext';
@@ -35,7 +36,7 @@ const Wrap = styled.aside<{ $isCollapsed: boolean }>`
   
   @media (max-width: 768px) {
     transform: ${({ $isCollapsed }) =>
-      $isCollapsed ? 'translateX(-100%)' : 'translateX(0)'};
+    $isCollapsed ? 'translateX(-100%)' : 'translateX(0)'};
     width: 260px;
   }
 `;
@@ -146,7 +147,7 @@ const NavGroup = styled.div<{ $isCollapsed?: boolean }>`
   }
 `;
 
-const NavItem = styled(Link)<{
+const NavItem = styled(Link) <{
   $isActive: boolean;
   $isCollapsed: boolean;
 }>`
@@ -175,9 +176,9 @@ const NavItem = styled(Link)<{
 
   span {
     ${({ $isCollapsed }) =>
-      $isCollapsed
-        ? `display: none;`
-        : `display: inline; opacity: 1; white-space: nowrap;`}
+    $isCollapsed
+      ? `display: none;`
+      : `display: inline; opacity: 1; white-space: nowrap;`}
     transition: opacity 0.3s ease;
   }
 
@@ -223,9 +224,9 @@ const DropdownTrigger = styled.button<{
 
   span {
     ${({ $isCollapsed }) =>
-      $isCollapsed
-        ? `display: none;`
-        : `display: inline; opacity: 1; white-space: nowrap;`}
+    $isCollapsed
+      ? `display: none;`
+      : `display: inline; opacity: 1; white-space: nowrap;`}
     transition: opacity 0.3s ease;
   }
 
@@ -259,7 +260,7 @@ const DropdownContent = styled.div<{ $isOpen: boolean; $isCollapsed: boolean }>`
   margin-top: 4px;
 `;
 
-const DropdownItem = styled(Link)<{ $isActive: boolean }>`
+const DropdownItem = styled(Link) <{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   padding: 8px 16px;
@@ -346,13 +347,13 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const isTasksActive = location.pathname === '/task' || location.pathname === '/TaskBoardPage' || location.pathname === '/TaskDashboard';
 
   const navigationItems = [
-  { path: "/", label: t("navigation.home"), icon: FiHome, show: true },
-  { path: "/companies", label: t("navigation.companies"), icon: FiBriefcase, show: profile === 1 },
-  { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2  },
-  { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile >= 2  },
-  { path: "/document", label: t("navigation.documents"), icon: FiFile, show: profile >= 2 },
-  { path: "/templates", label: t("navigation.templates"), icon: FiClipboard, show: profile === 1 },
-];
+    { path: "/", label: t("navigation.home"), icon: FiHome, show: true },
+    { path: "/companies", label: t("navigation.companies"), icon: FiBriefcase, show: profile === 1 },
+    { path: "/user", label: t("navigation.users"), icon: FiUsers, show: profile <= 2 },
+    { path: "/group", label: t("navigation.groups"), icon: FiGrid, show: profile >= 2 },
+    { path: "/document", label: t("navigation.documents"), icon: FiFile, show: profile >= 2 },
+    { path: "/templates", label: t("navigation.templates"), icon: FiClipboard, show: profile === 1 },
+  ];
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -584,6 +585,17 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                 </DropdownContainer>
               )
             )}
+
+            <NavItem to="/ReportsPage"
+
+              $isActive={location.pathname === '/ReportsPage'}
+              $isCollapsed={isCollapsed}
+              onClick={handleNavItemClick}
+              data-tooltip={t("navigation.reports")}
+            >
+              <FiBarChart2 />
+              <span>{t("navigation.reports")}</span>
+            </NavItem>
             <NavItem
               to="/settings"
               $isActive={location.pathname === '/settings'}
