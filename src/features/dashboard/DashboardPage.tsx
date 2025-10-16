@@ -150,7 +150,6 @@ const DashboardPage: React.FC = () => {
     });
   }, [activeUser, activeDocument, activeTask]);
 
-  // Função de saudação usando traduções - seguindo padrão identificado
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return t("dashboard.greeting.good_morning") || "Bom dia";
@@ -158,7 +157,6 @@ const DashboardPage: React.FC = () => {
     return t("dashboard.greeting.good_evening") || "Boa noite";
   };
 
-  // Função de perfil usando traduções - seguindo padrão identificado
   const getProfileName = (profile: number) => {
     switch (profile) {
       case 1: return t("dashboard.profiles.administrator") || "Administrador";
@@ -172,7 +170,6 @@ const DashboardPage: React.FC = () => {
     navigate(route);
   };
 
-  // Array de estatísticas usando traduções - seguindo padrão identificado
   const statCards = [
     {
       title: t("dashboard.stats.total_users") || "Total de Usuários",
