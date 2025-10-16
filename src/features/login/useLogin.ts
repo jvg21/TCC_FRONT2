@@ -24,8 +24,6 @@ export const useLogin = () => {
                 throw new Error(data.mensagem || 'Erro no login');
             }
 
-            // console.log('Token salvo no cookie');
-            // console.log('Verificando cookie imediatamente:', getCookie('authToken') ? 'OK' : 'FALHOU');
             setCookie('authToken', data.objeto.token);
             notificationActions.showNotification(data.mensagem || 'Login realizado com sucesso!', 'success');
             setIsAuthenticated(true);
