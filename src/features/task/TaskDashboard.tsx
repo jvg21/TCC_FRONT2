@@ -1,11 +1,13 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { FiClock, FiCheckSquare, FiTrendingUp, FiPlus, FiUsers } from "react-icons/fi";
 import { Button } from "../../components/common/Button";
 import PageLayout from "../../components/common/PageLayout";
 import { useTask } from "../task/useTask";
 import { useTranslation } from "react-i18next";
-
+import { useModal } from "../../hooks/useModal";
+import { Modal } from "../../components/common/Modal";
+import { TaskForm } from "./TaskForm";
 import { useUser } from "../user/useUser";
 import { useAuthContext } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -307,7 +309,9 @@ const StatProgressBar = styled.div<{ width: number; color: string }>`
 // Componente principal seguindo os padrões do projeto
 const TaskDashboard: React.FC = () => {
   // Seguindo exatamente o padrão utilizado no TaskPage existente
-  const { activeTask } = useTask();
+  const { activeTask, create, update } = useTask();
+  const [editing, setEditing] = useState<Task | null>(null);
+  const modal = useModal();
   const { t } = useTranslation();
   const { activeUser } = useUser();
   const { userProfile } = useAuthContext();
@@ -377,8 +381,8 @@ const TaskDashboard: React.FC = () => {
   };
 
   const handleAddTask = () => {
-    // Implementação seguiria o mesmo padrão do TaskPage existente
-    console.log("Adicionar tarefa");
+    setEditing(null);
+    modal.open();
   };
 
   const handleViewAllTasks = () => {
@@ -387,8 +391,17 @@ const TaskDashboard: React.FC = () => {
   };
 
   const handleTaskClick = (task: Task) => {
-    // Implementação seguiria o mesmo padrão do TaskPage existente
-    console.log("Editar tarefa:", task);
+    setEditing(task);
+    modal.open();
+  };
+
+  const handleSave = (payload: any) => {
+    if (editing) {
+      update(editing.TaskId, payload);
+    } else {
+      create(payload);
+    }
+    modal.close();
   };
 
   return (
@@ -539,6 +552,19 @@ const TaskDashboard: React.FC = () => {
           </TaskStatistics>
         </BottomSection>
       </DashboardContainer>
+
+      {/* Modal seguindo exatamente o padrão do TaskPage existente */}
+      <Modal 
+        isOpen={modal.isOpen} 
+        onClose={modal.close} 
+        title={editing ? t("tasks.edit_task") : t("tasks.add_task")}
+      >
+        <TaskForm 
+          initial={editing ?? undefined} 
+          onCancel={modal.close} 
+          onSave={handleSave} 
+        />
+      </Modal>
     </PageLayout>
   );
 };
