@@ -314,6 +314,8 @@ export const enTranslations = {
     updateSuccess: "Document updated successfully!",
     updateStatusSuccess: "Document status changed successfully!",
     deleteSuccess: "Document deleted successfully!",
+    generateSummarySuccess: "Summary generated successfully!",
+
     document_details: {
       title: "Document Details",
       back: "Back",
@@ -323,6 +325,9 @@ export const enTranslations = {
       folder: "Folder",
       created_at: "Created at",
       updated_at: "Updated at",
+      tags: "Tags",
+      no_tags: "No tags added",
+      content: "Content",
       validation: {
         title: "Document Validation",
         pending: "Pending Validation",
@@ -332,7 +337,10 @@ export const enTranslations = {
         approved: "Approved",
         reject_reason: "Reason for rejection",
         validated_by: "Validated by",
-        add_note: "Add a note about validation (optional for approval, mandatory for rejection)"
+        add_note: "Add a note about validation (optional for approval, mandatory for rejection)",
+        note_placeholder: "Write your note here...",
+        approve_success: "Document approved successfully!",
+        reject_success: "Document rejected successfully!"
       },
       comments: {
         title: "Comments",

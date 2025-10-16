@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../user/useUser';
 import { useFolder } from '../folder/useFolder';
 import { useAuthContext } from '../../context/AuthContext';
-import { FiArrowLeft, FiEdit, FiFolder, FiUser, FiCalendar, FiMessageSquare, FiChevronDown, FiDownload } from 'react-icons/fi';
+import { FiArrowLeft, FiEdit, FiFolder, FiUser, FiCalendar, FiMessageSquare, FiChevronDown, FiDownload, FiClock } from 'react-icons/fi';
 import { useTypedTranslation } from '../../context/LanguageContext';
 import { useDocument } from '../document/useDocument';
 import { useComment } from '../comment/useComment';
@@ -117,6 +117,109 @@ const DropdownItemButton = styled.button`
   }
 `;
 
+const VersionSidebar = styled.div<{ isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  right: ${props => props.isOpen ? '0' : '-400px'};
+  width: 400px;
+  height: 100vh;
+  background: white;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    right: ${props => props.isOpen ? '0' : '-100%'};
+  }
+`;
+
+const SidebarOverlay = styled.div<{ isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: ${props => props.isOpen ? 'block' : 'none'};
+  z-index: 999;
+`;
+
+const SidebarHeader = styled.div`
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f8f9fa;
+`;
+
+const SidebarTitle = styled.h2`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+`;
+
+const SidebarContent = styled.div`
+  padding: 16px;
+`;
+
+const VersionSection = styled.div`
+  margin-bottom: 24px;
+`;
+
+const SectionLabel = styled.div`
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 12px;
+  font-weight: 500;
+`;
+
+const VersionItem = styled.div`
+  padding: 16px;
+  border: 2px solid #1a73e8;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+`;
+
+const VersionDate = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
+`;
+
+const VersionBadge = styled.span`
+  display: inline-block;
+  padding: 2px 8px;
+  background: #e8f0fe;
+  color: #1a73e8;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-left: 8px;
+`;
+
+const VersionAuthor = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #5f6368;
+  font-size: 13px;
+  margin-top: 8px;
+`;
+
+const AuthorIndicator = styled.div`
+  width: 8px;
+  height: 8px;
+  background: #34a853;
+  border-radius: 50%;
+`;
+
 const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -143,6 +246,7 @@ const DocumentDetailsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [documentContent, setDocumentContent] = useState('');
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
 
   const hasLoadedRef = useRef(false);
 
@@ -427,7 +531,10 @@ const DocumentDetailsPage: React.FC = () => {
             <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
 
-          {}
+          <Button variant="ghost" onClick={() => setShowVersionHistory(true)}>
+            <FiClock /> {t("documents.document_details.version_history.button") || "Histórico"}
+          </Button>
+
           <DropdownContainer ref={dropdownRef}>
             <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
               <FiDownload style={{ marginRight: 6 }} />
@@ -450,7 +557,6 @@ const DocumentDetailsPage: React.FC = () => {
             )}
           </DropdownContainer>
 
-          {}
           <DropdownContainer ref={summaryDropdownRef}>
             <Button onClick={() => setShowSummaryDropdown(!showSummaryDropdown)}>
               <FiEdit style={{ marginRight: 6 }} />
@@ -554,7 +660,6 @@ const DocumentDetailsPage: React.FC = () => {
         </LeftColumn>
 
         <RightColumn>
-          {}
           <ValidationSection>
             <ValidationTitle>
               {t("documents.document_details.validation.title") || "Status de Validação"}
@@ -603,12 +708,10 @@ const DocumentDetailsPage: React.FC = () => {
             )}
           </ValidationSection>
 
-          {}
           {document?.DocumentId && (
             <DocumentTags documentId={document.DocumentId} />
           )}
 
-          {}
           <CommentsSection>
             <CommentsTitle>
               <FiMessageSquare />
@@ -660,7 +763,6 @@ const DocumentDetailsPage: React.FC = () => {
         </RightColumn>
       </DetailsContainer>
 
-      {}
       <Modal
         isOpen={showResume.isOpen}
         onClose={showResume.close}
@@ -672,10 +774,42 @@ const DocumentDetailsPage: React.FC = () => {
           onCancel={showResume.close}
         />
       </Modal>
-    </PageLayout >
+
+      <SidebarOverlay
+        isOpen={showVersionHistory}
+        onClick={() => setShowVersionHistory(false)}
+      />
+
+      <VersionSidebar isOpen={showVersionHistory}>
+  <SidebarHeader>
+    <SidebarTitle>
+      {t("documents.document_details.version_history.title") || "Histórico de versões"}
+    </SidebarTitle>
+  </SidebarHeader>
+  
+  <SidebarContent>
+    <SectionLabel>
+      {t("documents.document_details.version_history.today") || "Hoje"}
+    </SectionLabel>
+    
+    <VersionSection>
+      <VersionItem>
+        <VersionDate>
+          16 de outubro, 12:40
+          <VersionBadge>
+            {t("documents.document_details.version_history.current_version") || "Versão atual"}
+          </VersionBadge>
+        </VersionDate>
+        <VersionAuthor>
+          <AuthorIndicator />
+          {creator?.Name || t("messages.error.not_found") || 'Usuário'}
+        </VersionAuthor>
+      </VersionItem>
+    </VersionSection>
+  </SidebarContent>
+</VersionSidebar>
+    </PageLayout>
   );
 };
 
 export default DocumentDetailsPage;
-
-
