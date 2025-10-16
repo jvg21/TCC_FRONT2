@@ -736,14 +736,14 @@ const DocumentPage: React.FC = () => {
         </Button>
       }
     >
-      {/* Sistema de Abas */}
+      {}
       <TabContainer
         tabs={tabs}
         defaultTab="geral"
         onTabChange={handleTabChange}
       />
 
-      {/* Modais existentes */}
+      {}
       <Modal
         isOpen={modal.isOpen}
         onClose={modal.close}
