@@ -538,20 +538,20 @@ const DocumentDetailsPage: React.FC = () => {
           <DropdownContainer ref={dropdownRef}>
             <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
               <FiDownload style={{ marginRight: 6 }} />
-              Exportar
+              {t("documents.document_details.export.button") || "Exportar"}
               <FiChevronDown style={{ marginLeft: 6 }} />
             </Button>
 
             {showExportDropdown && (
               <DropdownMenu>
                 <DropdownItemButton onClick={() => { handleExportPDF(); setShowExportDropdown(false); }}>
-                  📄 Exportar PDF
+                  📄 {t("documents.document_details.export.export_pdf") || "Exportar PDF"}
                 </DropdownItemButton>
                 <DropdownItemButton onClick={() => { handleExportDOCX(); setShowExportDropdown(false); }}>
-                  📝 Exportar DOCX
+                  📝 {t("documents.document_details.export.export_docx") || "Exportar DOCX"}
                 </DropdownItemButton>
                 <DropdownItemButton onClick={() => { handleExportMarkdown(); setShowExportDropdown(false); }}>
-                  ⬇️ Exportar MD
+                  ⬇️ {t("documents.document_details.export.export_md") || "Exportar MD"}
                 </DropdownItemButton>
               </DropdownMenu>
             )}
@@ -781,33 +781,33 @@ const DocumentDetailsPage: React.FC = () => {
       />
 
       <VersionSidebar isOpen={showVersionHistory}>
-  <SidebarHeader>
-    <SidebarTitle>
-      {t("documents.document_details.version_history.title") || "Histórico de versões"}
-    </SidebarTitle>
-  </SidebarHeader>
-  
-  <SidebarContent>
-    <SectionLabel>
-      {t("documents.document_details.version_history.today") || "Hoje"}
-    </SectionLabel>
-    
-    <VersionSection>
-      <VersionItem>
-        <VersionDate>
-          16 de outubro, 12:40
-          <VersionBadge>
-            {t("documents.document_details.version_history.current_version") || "Versão atual"}
-          </VersionBadge>
-        </VersionDate>
-        <VersionAuthor>
-          <AuthorIndicator />
-          {creator?.Name || t("messages.error.not_found") || 'Usuário'}
-        </VersionAuthor>
-      </VersionItem>
-    </VersionSection>
-  </SidebarContent>
-</VersionSidebar>
+        <SidebarHeader>
+          <SidebarTitle>
+            {t("documents.document_details.version_history.title") || "Histórico de versões"}
+          </SidebarTitle>
+        </SidebarHeader>
+
+        <SidebarContent>
+          <SectionLabel>
+            {t("documents.document_details.version_history.today") || "Hoje"}
+          </SectionLabel>
+
+          <VersionSection>
+            <VersionItem>
+              <VersionDate>
+                16 de outubro, 12:40
+                <VersionBadge>
+                  {t("documents.document_details.version_history.current_version") || "Versão atual"}
+                </VersionBadge>
+              </VersionDate>
+              <VersionAuthor>
+                <AuthorIndicator />
+                {creator?.Name || t("messages.error.not_found") || 'Usuário'}
+              </VersionAuthor>
+            </VersionItem>
+          </VersionSection>
+        </SidebarContent>
+      </VersionSidebar>
     </PageLayout>
   );
 };
