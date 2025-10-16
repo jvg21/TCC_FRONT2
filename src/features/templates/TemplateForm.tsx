@@ -1,4 +1,3 @@
-// src/features/templates/TemplateForm.tsx
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Input } from "../../components/common/Input";
