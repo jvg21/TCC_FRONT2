@@ -237,12 +237,10 @@ export const CascadeView: React.FC = () => {
 
   const [isMobile, setIsMobile] = useState(false);
 
-  // Modais
+  
   const folderModal = useModal();
   const documentModal = useModal();
   const editorModal = useModal();
-
-  // Estados de edição
   const [editingFolder, setEditingFolder] = useState<any>(null);
   const [editingDocument, setEditingDocument] = useState<any>(null);
   const [editingContent, setEditingContent] = useState<string>("");
@@ -413,7 +411,6 @@ export const CascadeView: React.FC = () => {
     }
   };
 
-  // Handlers para pasta
   const handleAddFolder = () => {
     setEditingFolder(null);
     folderModal.open();
