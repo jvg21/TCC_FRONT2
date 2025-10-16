@@ -274,11 +274,11 @@ const DocumentPage: React.FC = () => {
     return baseCols;
   };
 
-  // Função ATUALIZADA para filtrar documentos com múltiplos critérios
+  
   const getFilteredDocuments = (documents: Document[]) => {
     let filtered = [...documents];
 
-    // Filtro por texto
+    
     if (query) {
       const searchQuery = query.toLowerCase();
       filtered = filtered.filter(document => {
@@ -290,7 +290,7 @@ const DocumentPage: React.FC = () => {
       });
     }
 
-    // Filtro por data
+    
     if (dateFilter.startDate || dateFilter.endDate) {
       filtered = filtered.filter(document => {
         const docDate = new Date(document.CreatedAt);
@@ -308,7 +308,7 @@ const DocumentPage: React.FC = () => {
       });
     }
 
-    // Filtro por autor
+    
     if (authorFilter) {
       filtered = filtered.filter(document => document.UserId === authorFilter);
     }
