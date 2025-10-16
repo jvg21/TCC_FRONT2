@@ -61,11 +61,11 @@ const StatusIndicator = styled.div<{ status: number }>`
   border-radius: 50%;
   background: ${({ status }) => {
     switch (status) {
-      case 1: return '#ef4444'; // To Do - vermelho
-      case 2: return '#f59e0b'; // In Progress - amarelo
-      case 3: return '#3b82f6'; // In Review - azul
-      case 4: return '#10b981'; // Done - verde
-      case 5: return '#6b7280'; // Canceled - cinza
+      case 1: return '#ef4444'; 
+      case 2: return '#f59e0b'; 
+      case 3: return '#3b82f6'; 
+      case 4: return '#10b981'; 
+      case 5: return '#6b7280'; 
       default: return '#6b7280';
     }
   }};
