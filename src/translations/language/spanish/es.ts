@@ -168,7 +168,7 @@ export const esTranslations = {
     addDocumentSuccess: "¡Etiqueta agregada al documento con éxito!",
     createSuccess: "Creado Exitosamente",
     createAddSuccess: "Etiqueta Creada Exitosamente",
-    
+
   },
 
   // Tareas
@@ -326,6 +326,19 @@ export const esTranslations = {
       folder: "Carpeta",
       created_at: "Creado en",
       updated_at: "Actualizado en",
+      version_history: {
+        button: "Versiones del Documento",
+        today: "Hoy",
+        current_version: "Versión Actual",
+        title: "Historial de Versiones"
+      },
+
+      export: {
+        button: "Exportar",
+        pdf: "Exportar PDF",
+        docx: "Exportar DOCX",
+        markdown: "Exportar MD"
+      },
       validation: {
         title: "Validación del Documento",
         pending: "Pendiente de Validación",
@@ -335,7 +348,8 @@ export const esTranslations = {
         approved: "Aprobado",
         reject_reason: "Motivo del rechazo",
         validated_by: "Validado por",
-        add_note: "Agregue una nota sobre la validación (opcional para aprobación, obligatoria para rechazo)"
+        add_note: "Agregue una nota sobre la validación (opcional para aprobación, obligatoria para rechazo)",
+
       },
 
       comments: {
