@@ -306,9 +306,8 @@ const StatProgressBar = styled.div<{ width: number; color: string }>`
   transition: width 0.3s ease;
 `;
 
-
 const TaskDashboard: React.FC = () => {
-  // Seguindo exatamente o padrão utilizado no TaskPage existente
+  
   const { activeTask, create, update } = useTask();
   const [editing, setEditing] = useState<Task | null>(null);
   const modal = useModal();
@@ -317,7 +316,6 @@ const TaskDashboard: React.FC = () => {
   const { userProfile } = useAuthContext();
   const { currentLanguage } = useLanguage();
 
-  // Cálculo de estatísticas seguindo a mesma lógica do projeto
   const taskStats = useMemo(() => {
     const total = activeTask.length;
     const completed = activeTask.filter(task => task.Status === 4).length;
@@ -337,7 +335,7 @@ const TaskDashboard: React.FC = () => {
     };
   }, [activeTask]);
 
-  // Agrupamento por status seguindo o padrão existente
+  
   const tasksByStatus = useMemo(() => {
     const statuses = getTaskStatus(t);
     return statuses.reduce((acc, status) => {
