@@ -12,7 +12,7 @@ import { DevRoutes } from "./DevRoutes"
 import { AdmRoutes } from "./AdmRoutes"
 import UserPage from "../features/user/UserPage"
 import SettingsPage from "../features/settings/SettingPage"
-import IntegrationsPage from "../features/integrations/IntegrationsPage" // Nova importação
+import IntegrationsPage from "../features/integrations/IntegrationsPage" 
 import ResetPassword from "../features/login/ResetPassword"
 import ValidateRecoveryToken from "../features/login/ValidateRecoveryToken"
 import RequestPasswordRecovery from "../features/login/RequestPasswordRecovery"
@@ -35,7 +35,7 @@ export const AppRoutes = () => {
             <Route path="/reset-password" element={<ResetPassword />} />
 
 
-            {/* PROTECTED ROUTES */}
+            {}
 
             <Route path="/" element={
                 <ProtectedRoutes>
@@ -50,7 +50,7 @@ export const AppRoutes = () => {
                 </ProtectedRoutes>
             } />
 
-            {/* Nova rota de integrações - acessível para todos os usuários logados */}
+            {}
             <Route path="/integrations/openai" element={
                 <AdmRoutes>
                     <IntegrationsPage />
