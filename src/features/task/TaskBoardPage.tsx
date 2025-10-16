@@ -278,7 +278,7 @@ const EmptyIcon = styled.div`
 `;
 
 const TaskBoardPage: React.FC = () => {
-  // Seguindo exatamente o padrão utilizado no TaskPage existente
+  
   const { activeTask, create, update, softDelete } = useTask();
   const [editing, setEditing] = useState<Task | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number>(1);
@@ -289,7 +289,7 @@ const TaskBoardPage: React.FC = () => {
   const { userProfile } = useAuthContext();
   const { currentLanguage } = useLanguage();
 
-  // Utilizando a mesma lógica de filtro do projeto existente
+  
   const tasksByStatus = useMemo(() => {
     const statuses = getTaskStatus(t);
     return statuses.reduce((acc, status) => {
@@ -300,7 +300,7 @@ const TaskBoardPage: React.FC = () => {
     }, {} as Record<string, Task[]>);
   }, [activeTask, t]);
 
-  // Função para obter nome do usuário seguindo o padrão do projeto
+  
   const getUserName = (userId?: number) => {
     const user = activeUser.find(u => u.UserId === userId);
     return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
