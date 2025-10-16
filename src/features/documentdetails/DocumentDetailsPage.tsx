@@ -83,7 +83,7 @@ const DocumentDetailsPage: React.FC = () => {
 
   const hasLoadedRef = useRef(false);
 
-  // adicionado: dropdown de exportação (somente para o dropdown)
+  
   const [showExportDropdown, setShowExportDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
