@@ -69,7 +69,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   };
 
   return (
-    //adicionar maxLength, minLength e required nos campos -------------------------------------------
+    
     <form onSubmit={handleSubmit}>
       <Row>
         <Col><Input label={t("companies.name")} maxLength={50} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
