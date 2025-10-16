@@ -17,7 +17,7 @@ import { dateUtils } from "../../utils/dateUtils";
 import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
 
-// Styled Components seguindo os padrões existentes do projeto
+
 const BoardContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
