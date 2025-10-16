@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { FiFolder, FiFile, FiChevronRight, FiChevronDown, FiPlus, FiFilter, FiChevronUp } from 'react-icons/fi';
+import { HiFolder, HiDocumentText } from 'react-icons/hi';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 import { useFolder } from './useFolder';
@@ -363,7 +364,7 @@ export const CascadeView: React.FC = () => {
                 {isExpanded ? <FiChevronDown size={16} /> : <FiChevronRight size={16} />}
               </NodeIcon>
               <NodeIcon>
-                <FiFolder size={16} color="#ffc107" />
+                <HiFolder size={16} color="#ff9800" style={{ filter: 'drop-shadow(0 0 2px rgba(255,152,0,0.5))' }} />
               </NodeIcon>
               <NodeTitle $isFolder={true}>{node.Name}</NodeTitle>
               <NodeMeta>
@@ -398,7 +399,7 @@ export const CascadeView: React.FC = () => {
           >
             <NodeIcon style={{ width: '16px' }} />
             <NodeIcon>
-              <FiFile size={16} color="#17a2b8" />
+              <HiDocumentText size={16} color="#2196f3" style={{ filter: 'drop-shadow(0 0 2px rgba(33,150,243,0.5))' }} />
             </NodeIcon>
             <NodeTitle $isFolder={false}>{node.Title}</NodeTitle>
             <NodeMeta>
@@ -552,11 +553,11 @@ export const CascadeView: React.FC = () => {
         <TreeContainer>
           <StatsBar>
             <span>
-              <FiFolder size={16} />
+              <HiFolder size={16}  color="#ff9800" />
               {activeFolder.length} {t("cascadeview.folders")}
             </span>
             <span>
-              <FiFile size={16} />
+              <HiDocumentText size={16} color="#2196f3"/>
               {activeDocument.length} {t("cascadeview.documents")}
             </span>
           </StatsBar>
