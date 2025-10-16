@@ -224,21 +224,21 @@ const DocumentPage: React.FC = () => {
         key: "actions",
         header: t("actions.actions"),
         render: (row) => {
-          // Verificar se o usuário pode editar este documento
+          
           const canEdit = () => {
-            // Usuários nível 1 e 2 podem editar tudo
+            
             if (user && (user.Profile === 1 || user.Profile === 2)) {
               return true;
             }
 
-            // Usuários nível 3 podem editar se:
+            
             if (user && user.Profile === 3) {
-              // 1. Criaram o documento
+              
               if (row.UserId === user.UserId) {
                 return true;
               }
 
-              // 2. São validadores da pasta do documento
+              
               const folder = activeFolder.find((f) => f.FolderId === row.FolderId);
               if (folder && folder.ValidatorId === user.UserId) {
                 return true;
