@@ -30,7 +30,7 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
     setName(initial.Name ?? "");
     setEmail(initial.Email ?? "");
     setPassword(initial.Password ?? "");
-    setProfile(initial.Profile ?? 3); // Mudança: padrão 3 (Employee) ao invés de 0
+    setProfile(initial.Profile ?? 3); 
   }, [initial.Name, initial.Email, initial.Profile]);
 
 
@@ -52,9 +52,9 @@ export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onC
 
   const userProfile = user?.Profile || 0;
   const profileOptions = profiles.filter(p => {
-    if (userProfile === 1) return true; // Admin vê todos
-    if (userProfile === 2) return p.value !== '1'; // Manager não vê admin
-    return p.value === '3'; // Employee só vê ele mesmo
+    if (userProfile === 1) return true; 
+    if (userProfile === 2) return p.value !== '1'; 
+    return p.value === '3'; 
   });
 
   return (
