@@ -231,7 +231,7 @@ const ResetPassword: React.FC = () => {
     return passwordsMatch ? texts.match : texts.noMatch;
   };
 
-  // Função para obter placeholders traduzidos
+  
   const getPlaceholders = () => {
     const placeholders = {
       pt: { newPassword: "Nova senha", confirmPassword: "Confirmar nova senha" },
@@ -243,7 +243,6 @@ const ResetPassword: React.FC = () => {
     return placeholders[currentLang as keyof typeof placeholders] || placeholders.pt;
   };
 
-  // Função para obter textos de botões traduzidos
   const getButtonTexts = () => {
     const buttonTexts = {
       pt: { updating: "Atualizando...", update: "Atualizar Senha", backToLogin: "Voltar ao Login" },
@@ -255,7 +254,6 @@ const ResetPassword: React.FC = () => {
     return buttonTexts[currentLang as keyof typeof buttonTexts] || buttonTexts.pt;
   };
 
-  // Função para obter subtítulo traduzido
   const getSubtitle = () => {
     const subtitles = {
       pt: "Redefina sua senha",
@@ -276,7 +274,7 @@ const ResetPassword: React.FC = () => {
       await updatePassword(email, token, newPassword);
       navigate("/login");
     } catch (error) {
-      // Erro já tratado pelo hook
+      
     } finally {
       setLoading(false);
     }
