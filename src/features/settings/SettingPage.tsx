@@ -546,7 +546,7 @@ const SettingsPage: React.FC = () => {
           </SettingsSection>
         </SettingsCard>
 
-        {/* Configurações de Aparência */}
+        {}
         <SettingsCard>
           <SettingsSection>
             <SectionHeader>
@@ -561,7 +561,7 @@ const SettingsPage: React.FC = () => {
               </div>
             </SectionHeader>
 
-            {/* Configuração de Tema */}
+            {}
             <SettingItem>
               <SettingInfo>
                 <SettingLabel>{t("settings.theme")}</SettingLabel>
@@ -589,7 +589,7 @@ const SettingsPage: React.FC = () => {
               </SettingControl>
             </SettingItem>
 
-            {/* Configuração de Idioma */}
+            {}
             <SettingItem>
               <SettingInfo>
                 <SettingLabel>{t("settings.language")}</SettingLabel>
@@ -610,7 +610,7 @@ const SettingsPage: React.FC = () => {
           </SettingsSection>
         </SettingsCard>
 
-        {/* Seção de Logout */}
+        {}
         <SettingsCard>
           <SettingsSection>
             <SectionHeader>
