@@ -25,8 +25,6 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
   
   const { t } = useTypedTranslation();
 
-  
-  // Não reinicializa durante digitação
   useEffect(() => {
     setName(initial.Name ?? "");
     setEmail(initial.Email ?? "");
@@ -34,8 +32,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, 
     setTaxId(initial.TaxId ? regexPatterns.applyMask(initial.TaxId, "99.999.999/9999-99") : "");
     setPhone(initial.Phone ? regexPatterns.applyMask(initial.Phone, "+99 (99) 99999-9999") : "");
     setZipCode(initial.ZipCode ? regexPatterns.applyMask(initial.ZipCode, "99999-999") : "")
-    /// modificado para tratar IsActive como string -------------------------------------------
-    // setIsActive(initial.IsActive ? 'true' : 'false');
+ 
   }, [
     initial.Name,
     initial.TaxId,
