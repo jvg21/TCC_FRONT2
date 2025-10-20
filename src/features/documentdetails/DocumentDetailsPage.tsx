@@ -247,6 +247,7 @@ const DocumentDetailsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [documentContent, setDocumentContent] = useState('');
   const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [loadingSummary, setLoadingSummary] = useState(false);
 
   const hasLoadedRef = useRef(false);
 
@@ -323,7 +324,7 @@ const DocumentDetailsPage: React.FC = () => {
     try {
       await update(document.DocumentId, {
         ...document,
-        content: documentContent,
+        Content: documentContent,
       });
       notificationActions.showNotification(
         t("documents.updateSuccess") || 'Documento atualizado com sucesso!',
@@ -373,12 +374,27 @@ const DocumentDetailsPage: React.FC = () => {
   };
 
   const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
-    if (documentContent) {
-      const summaryText = await generateSummary(Number(id));
-      setSummary(summaryText.Content || '');
-      showResume.open();
-    } else {
+    if (!documentContent) {
       notificationActions.showError(t("messages.error.validation"));
+      return;
+    }
+
+    setLoadingSummary(true);
+    setShowSummaryDropdown(false);
+
+    try {
+      const summaryText = await generateSummary(Number(id));
+      const summaryContent = summaryText.content || '';  // ✅ CORRIGIDO: content com c minúsculo
+      setSummary(summaryContent);
+
+      setTimeout(() => {
+        showResume.open();
+      }, 100);
+    } catch (error) {
+      console.error('Erro ao gerar resumo:', error);
+      notificationActions.showError(t("messages.error.generic") || 'Erro ao gerar resumo');
+    } finally {
+      setLoadingSummary(false);
     }
   };
 
@@ -558,21 +574,25 @@ const DocumentDetailsPage: React.FC = () => {
           </DropdownContainer>
 
           <DropdownContainer ref={summaryDropdownRef}>
-            <Button onClick={() => setShowSummaryDropdown(!showSummaryDropdown)}>
-              <FiEdit style={{ marginRight: 6 }} />
-              {t("documents.document_details.generate_summary") || "Gerar Resumo"}
-              <FiChevronDown style={{ marginLeft: 6 }} />
+            <Button
+              onClick={() => setShowSummaryDropdown(!showSummaryDropdown)}
+              disabled={loadingSummary}
+            >
+              {loadingSummary ? (
+                <>⏳ Gerando resumo...</>
+              ) : (
+                <>{t("documents.document_details.generate_summary") || "Gerar Resumo"} <FiChevronDown /></>
+              )}
             </Button>
-
-            {showSummaryDropdown && (
+            {showSummaryDropdown && !loadingSummary && (
               <DropdownMenu>
-                <DropdownItemButton onClick={() => { handleGenerateSummary('default'); setShowSummaryDropdown(false); }}>
+                <DropdownItemButton onClick={() => handleGenerateSummary('default')}>
                   ✨ Resumo padrão
                 </DropdownItemButton>
-                <DropdownItemButton onClick={() => { handleGenerateSummary('curto'); setShowSummaryDropdown(false); }}>
+                <DropdownItemButton onClick={() => handleGenerateSummary('curto')}>
                   ⚡ Resumo curto (TL;DR)
                 </DropdownItemButton>
-                <DropdownItemButton onClick={() => { handleGenerateSummary('bullet'); setShowSummaryDropdown(false); }}>
+                <DropdownItemButton onClick={() => handleGenerateSummary('bullet')}>
                   •• Resumo em tópicos
                 </DropdownItemButton>
               </DropdownMenu>
