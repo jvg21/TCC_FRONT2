@@ -224,7 +224,7 @@ const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
-  const { GetDocumentValidationById, update, updateValidationStatus, transformSingleApiData } = useDocument();
+  const { GetDocumentValidationById, update, updateValidationStatus, transformSingleApiData, getDocumentVersionsByDocumentId } = useDocument();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
@@ -232,6 +232,8 @@ const DocumentDetailsPage: React.FC = () => {
   const [document, setDocument] = useState<any>(null);
   const [summary, setSummary] = useState('');
   const [newComment, setNewComment] = useState('');
+  const [documentVersions, setDocumentVersions] = useState<any[]>([]);
+  const [loadingVersions, setLoadingVersions] = useState(false);
 
   const {
     comments,
@@ -432,6 +434,27 @@ const DocumentDetailsPage: React.FC = () => {
       notificationActions.showError('Erro ao exportar PDF');
     }
   };
+
+  // Adicionar função para carregar versões:
+  const loadDocumentVersions = async (docId: number) => {
+    setLoadingVersions(true);
+    try {
+      const response = await getDocumentVersionsByDocumentId(docId);
+      if (response && !response.erro) {
+        // Ordenar por data, mais recente primeiro
+        const sortedVersions = response.objeto.sort((a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setDocumentVersions(sortedVersions);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar versões:', error);
+      notificationActions.showError('Erro ao carregar histórico de versões');
+    } finally {
+      setLoadingVersions(false);
+    }
+  };
+
 
   const handleExportDOCX = async () => {
     if (!document) return;
