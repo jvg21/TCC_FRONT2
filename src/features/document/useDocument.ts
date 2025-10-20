@@ -37,7 +37,8 @@ export const useDocument = () => {
       userId: user?.UserId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      isActive: true
+      isActive: true,
+      embedding: payload.Embedding || null
     };
   };
 
@@ -50,7 +51,8 @@ export const useDocument = () => {
       UserId: item.userId,
       IsActive: item.isActive,
       CreatedAt: item.createdAt,
-      UpdatedAt: item.updatedAt
+      UpdatedAt: item.updatedAt,
+      Embedding: item.embedding || null
     }));
   };
 
@@ -63,7 +65,8 @@ export const useDocument = () => {
       UserId: item.userId,
       IsActive: item.isActive,
       CreatedAt: item.createdAt,
-      UpdatedAt: item.updatedAt
+      UpdatedAt: item.updatedAt,
+      Embedding: item.embedding || null
     };
   };
 
@@ -455,6 +458,31 @@ export const useDocument = () => {
     }
   };
 
+  const generateEmbedding = async (text: string): Promise<number[]> => {
+    try {
+      const response = await fetch(`${apiUrl}/Embedding/GetEmbedding`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(text) 
+      });
+
+      const data = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      // Retorna o array de floats (embedding)
+      return data.objeto;
+    } catch (error) {
+      console.error("Erro ao gerar embedding:", error);
+      throw error;
+    }
+  };
 
 
   useEffect(() => {
@@ -474,7 +502,6 @@ export const useDocument = () => {
     }
   }, [token]);
 
-  // E adicionar estas funções no return do hook:
   return {
     document,
     activeDocument,
@@ -482,6 +509,7 @@ export const useDocument = () => {
     userDocuments,
     userValidatorDocuments,
     GetDocumentValidationById,
+    generateEmbedding,
     query,
     setQuery,
     create,
@@ -491,7 +519,7 @@ export const useDocument = () => {
     getValidationsByDocumentId,
     updateValidationStatus,
     transformSingleApiData,
-    getDocumentVersionsByDocumentId, 
-    getDocumentVersionById             
+    getDocumentVersionsByDocumentId,
+    getDocumentVersionById
   } as const;
 };
