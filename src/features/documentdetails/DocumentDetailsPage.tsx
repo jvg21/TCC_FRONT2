@@ -11,7 +11,6 @@ import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';
 import { MarkdownEditor } from '../../components/markdownEditor/MarkdownEditor';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
 import { saveAs } from 'file-saver';
 import { notificationActions } from '../notifications/useNotification';
@@ -150,6 +149,9 @@ const SidebarHeader = styled.div`
   padding: 20px;
   border-bottom: 1px solid #e0e0e0;
   background: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const SidebarTitle = styled.h2`
@@ -157,6 +159,29 @@ const SidebarTitle = styled.h2`
   font-size: 18px;
   font-weight: 600;
   color: #333;
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 `;
 
 const SidebarContent = styled.div`
@@ -181,9 +206,17 @@ const VersionItem = styled.div`
   background: white;
   cursor: pointer;
   transition: all 0.2s;
+  margin-bottom: 12px;
 
   &:hover {
-    background: #f8f9fa;
+    background: #f0f7ff;
+    border-color: #0d47a1;
+    transform: translateX(-4px);
+    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+  }
+
+  &:active {
+    transform: translateX(-2px);
   }
 `;
 
@@ -313,8 +346,15 @@ const DocumentDetailsPage: React.FC = () => {
   useEffect(() => {
     if (document?.DocumentId) {
       getCommentsByDocumentId(document.DocumentId);
+      loadDocumentVersions(document.DocumentId);
     }
-  }, [document?.documentId]);
+  }, [document?.DocumentId]);
+
+  useEffect(() => {
+    if (showVersionHistory && document?.DocumentId && documentVersions.length === 0) {
+      loadDocumentVersions(document.DocumentId);
+    }
+  }, [showVersionHistory]);
 
   const handleBack = () => {
     navigate('/documents');
@@ -386,7 +426,7 @@ const DocumentDetailsPage: React.FC = () => {
 
     try {
       const summaryText = await generateSummary(Number(id));
-      const summaryContent = summaryText.content || '';  // ✅ CORRIGIDO: content com c minúsculo
+      const summaryContent = summaryText.content || '';
       setSummary(summaryContent);
 
       setTimeout(() => {
@@ -435,13 +475,11 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  // Adicionar função para carregar versões:
   const loadDocumentVersions = async (docId: number) => {
     setLoadingVersions(true);
     try {
       const response = await getDocumentVersionsByDocumentId(docId);
-      if (response && !response.erro) {
-        // Ordenar por data, mais recente primeiro
+      if (response && !response.erro && response.objeto) {
         const sortedVersions = response.objeto.sort((a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
@@ -449,12 +487,19 @@ const DocumentDetailsPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Erro ao carregar versões:', error);
-      notificationActions.showError('Erro ao carregar histórico de versões');
     } finally {
       setLoadingVersions(false);
     }
   };
 
+  const handleLoadVersion = (version: any) => {
+    setDocumentContent(version.content || '');
+    setShowVersionHistory(false);
+    notificationActions.showNotification(
+      `Versão de ${new Date(version.createdAt).toLocaleDateString('pt-BR')} carregada no editor`,
+      'success'
+    );
+  };
 
   const handleExportDOCX = async () => {
     if (!document) return;
@@ -637,58 +682,42 @@ const DocumentDetailsPage: React.FC = () => {
 
             <DocumentMeta>
               <MetaItem>
-                <MetaIcon>
-                  <FiUser />
-                </MetaIcon>
+                <MetaIcon><FiUser /></MetaIcon>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>
+                  <div style={{ fontSize: '12px', color: '#666' }}>
                     {t("documents.document_details.created_by") || "Criado por"}
                   </div>
-                  <MetaValue>
-                    {creator?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}
-                  </MetaValue>
+                  <MetaValue>{creator?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}</MetaValue>
                 </div>
               </MetaItem>
 
               <MetaItem>
-                <MetaIcon>
-                  <FiFolder />
-                </MetaIcon>
+                <MetaIcon><FiFolder /></MetaIcon>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>
+                  <div style={{ fontSize: '12px', color: '#666' }}>
                     {t("documents.document_details.folder") || "Pasta"}
                   </div>
-                  <MetaValue>
-                    {folder?.Name || t("messages.error.not_found") || 'Pasta não encontrada'}
-                  </MetaValue>
+                  <MetaValue>{folder?.Name || t("messages.error.not_found") || 'Pasta não encontrada'}</MetaValue>
                 </div>
               </MetaItem>
 
               <MetaItem>
-                <MetaIcon>
-                  <FiCalendar />
-                </MetaIcon>
+                <MetaIcon><FiCalendar /></MetaIcon>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>
+                  <div style={{ fontSize: '12px', color: '#666' }}>
                     {t("documents.document_details.created_at") || "Criado em"}
                   </div>
-                  <MetaValue>
-                    {formatDate(document.CreatedAt)}
-                  </MetaValue>
+                  <MetaValue>{formatDate(document.CreatedAt)}</MetaValue>
                 </div>
               </MetaItem>
 
               <MetaItem>
-                <MetaIcon>
-                  <FiCalendar />
-                </MetaIcon>
+                <MetaIcon><FiCalendar /></MetaIcon>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>
+                  <div style={{ fontSize: '12px', color: '#666' }}>
                     {t("documents.document_details.updated_at") || "Atualizado em"}
                   </div>
-                  <MetaValue>
-                    {formatDate(document.UpdatedAt)}
-                  </MetaValue>
+                  <MetaValue>{formatDate(document.UpdatedAt)}</MetaValue>
                 </div>
               </MetaItem>
             </DocumentMeta>
@@ -705,10 +734,10 @@ const DocumentDetailsPage: React.FC = () => {
         <RightColumn>
           <ValidationSection>
             <ValidationTitle>
-              {t("documents.document_details.validation.title") || "Status de Validação"}
+              {t("documents.document_details.validation.title") || "Validação do Documento"}
             </ValidationTitle>
 
-            {validationStatus !== 0 && (
+            {(validationStatus === 1 || validationStatus === 2) && (
               <ValidatorActions>
                 <ValidationStatus>
                   <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
@@ -828,27 +857,64 @@ const DocumentDetailsPage: React.FC = () => {
           <SidebarTitle>
             {t("documents.document_details.version_history.title") || "Histórico de versões"}
           </SidebarTitle>
+          <CloseButton onClick={() => setShowVersionHistory(false)}>
+            ✕
+          </CloseButton>
         </SidebarHeader>
 
         <SidebarContent>
-          <SectionLabel>
-            {t("documents.document_details.version_history.today") || "Hoje"}
-          </SectionLabel>
+          {loadingVersions ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+              Carregando versões...
+            </div>
+          ) : documentVersions.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+              Nenhuma versão encontrada
+            </div>
+          ) : (
+            <>
+              <SectionLabel>
+                {t("documents.document_details.version_history.today") || "Histórico"}
+              </SectionLabel>
 
-          <VersionSection>
-            <VersionItem>
-              <VersionDate>
-                16 de outubro, 12:40
-                <VersionBadge>
-                  {t("documents.document_details.version_history.current_version") || "Versão atual"}
-                </VersionBadge>
-              </VersionDate>
-              <VersionAuthor>
-                <AuthorIndicator />
-                {creator?.Name || t("messages.error.not_found") || 'Usuário'}
-              </VersionAuthor>
-            </VersionItem>
-          </VersionSection>
+              <VersionSection>
+                {documentVersions.map((version, index) => {
+                  const versionAuthor = activeUser.find(u => u.UserId === version.userId);
+                  const isCurrentVersion = index === 0;
+                  
+                  return (
+                    <VersionItem 
+                      key={version.documentVersionId || index}
+                      onClick={() => handleLoadVersion(version)}
+                    >
+                      <VersionDate>
+                        {new Date(version.createdAt).toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: 'long',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                        {isCurrentVersion && (
+                          <VersionBadge>
+                            {t("documents.document_details.version_history.current_version") || "Versão atual"}
+                          </VersionBadge>
+                        )}
+                      </VersionDate>
+                      <VersionAuthor>
+                        <AuthorIndicator />
+                        {versionAuthor?.Name || t("messages.error.not_found") || 'Usuário'}
+                      </VersionAuthor>
+                      {version.comment && (
+                        <div style={{ marginTop: '8px', fontSize: '13px', color: '#666' }}>
+                          {version.comment}
+                        </div>
+                      )}
+                    </VersionItem>
+                  );
+                })}
+              </VersionSection>
+            </>
+          )}
         </SidebarContent>
       </VersionSidebar>
     </PageLayout>
