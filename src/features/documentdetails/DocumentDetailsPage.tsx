@@ -414,7 +414,6 @@ const DocumentDetailsPage: React.FC = () => {
       setValidationStatus(document?.isValid ?? null);
     }
   };
-
   const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
     if (!documentContent) {
       notificationActions.showError(t("messages.error.validation"));
@@ -424,8 +423,23 @@ const DocumentDetailsPage: React.FC = () => {
     setLoadingSummary(true);
     setShowSummaryDropdown(false);
 
+    // Mapear o modo selecionado para o modelo da API
+    let modelType = 1; 
+
+    switch (mode) {
+      case 'default':
+        modelType = 1; // ResumoEstruturado
+        break;
+      case 'curto':
+        modelType = 3; // ResumoAnalitico
+        break;
+      case 'bullet':
+        modelType = 2; // ResumoComparativo
+        break;
+    }
+
     try {
-      const summaryText = await generateSummary(Number(id));
+      const summaryText = await generateSummary(Number(id), modelType);
       const summaryContent = summaryText.content || '';
       setSummary(summaryContent);
 
@@ -436,10 +450,10 @@ const DocumentDetailsPage: React.FC = () => {
       console.error('Erro ao gerar resumo:', error);
       notificationActions.showError(t("messages.error.generic") || 'Erro ao gerar resumo');
     } finally {
+      setSummary
       setLoadingSummary(false);
     }
   };
-
   const handleExportPDF = async () => {
     if (!document) return;
 
@@ -481,7 +495,7 @@ const DocumentDetailsPage: React.FC = () => {
       const response = await getDocumentVersionsByDocumentId(docId);
       if (response && !response.erro && response.objeto) {
         const sortedVersions = response.objeto.sort((a: any, b: any) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.CreatedAt).getTime() - new Date(a.CreatedAt).getTime()
         );
         setDocumentVersions(sortedVersions);
       }
@@ -655,13 +669,27 @@ const DocumentDetailsPage: React.FC = () => {
             {showSummaryDropdown && !loadingSummary && (
               <DropdownMenu>
                 <DropdownItemButton onClick={() => handleGenerateSummary('default')}>
-                  ✨ Resumo padrão
+                  <span style={{ marginRight: '8px' }}>📝</span>
+                  {t("documents.document_details.summary_types.structured") || "Resumo estruturado"}
+                  <span style={{ fontSize: '11px', display: 'block', marginTop: '2px', color: '#666' }}>
+                    {t("documents.document_details.summary_types.structured_desc") || "Tópicos organizados com hierarquia"}
+                  </span>
                 </DropdownItemButton>
-                <DropdownItemButton onClick={() => handleGenerateSummary('curto')}>
-                  ⚡ Resumo curto (TL;DR)
-                </DropdownItemButton>
+
                 <DropdownItemButton onClick={() => handleGenerateSummary('bullet')}>
-                  •• Resumo em tópicos
+                  <span style={{ marginRight: '8px' }}>🔍</span>
+                  {t("documents.document_details.summary_types.comparative") || "Resumo comparativo"}
+                  <span style={{ fontSize: '11px', display: 'block', marginTop: '2px', color: '#666' }}>
+                    {t("documents.document_details.summary_types.comparative_desc") || "Destaca pontos de contraste e semelhança"}
+                  </span>
+                </DropdownItemButton>
+
+                <DropdownItemButton onClick={() => handleGenerateSummary('curto')}>
+                  <span style={{ marginRight: '8px' }}>💡</span>
+                  {t("documents.document_details.summary_types.analytical") || "Resumo analítico"}
+                  <span style={{ fontSize: '11px', display: 'block', marginTop: '2px', color: '#666' }}>
+                    {t("documents.document_details.summary_types.analytical_desc") || "Ideias centrais e suas relações lógicas"}
+                  </span>
                 </DropdownItemButton>
               </DropdownMenu>
             )}
@@ -881,9 +909,9 @@ const DocumentDetailsPage: React.FC = () => {
                 {documentVersions.map((version, index) => {
                   const versionAuthor = activeUser.find(u => u.UserId === version.userId);
                   const isCurrentVersion = index === 0;
-                  
+
                   return (
-                    <VersionItem 
+                    <VersionItem
                       key={version.documentVersionId || index}
                       onClick={() => handleLoadVersion(version)}
                     >

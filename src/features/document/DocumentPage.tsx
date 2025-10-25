@@ -250,7 +250,7 @@ const DocumentPage: React.FC = () => {
 
           return (
             <div style={{ display: 'flex', gap: '4px' }}>
-              <>
+              {/* <>
                 <Button
                   variant="ghost"
                   onClick={() => onView(row)}
@@ -258,11 +258,11 @@ const DocumentPage: React.FC = () => {
                 >
                   <FiEye />
                 </Button>
-              </>
+              </> */}
               {canEdit() && (
                 <>
 
-                  <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
+                  <ActionButtons onEdit={() => onView(row)} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
                 </>
 
               )}
