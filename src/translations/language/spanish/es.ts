@@ -96,6 +96,7 @@ export const esTranslations = {
     updateSuccess: "¡Usuario actualizado exitosamente!",
     createError: "Error al crear usuario",
     no_select: "Seleccione un usuario",
+    updateStatusSuccess: "¡Estado del usuario cambiado con éxito!",
   },
 
   // Grupos

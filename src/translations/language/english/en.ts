@@ -97,6 +97,7 @@ export const enTranslations = {
     updateSuccess: "User updated successfully!",
     createError: "Error creating user",
     no_select: "Select a user",
+    updateStatusSuccess: "User status changed successfully!",
   },
 
   // Groups

@@ -783,5 +783,7 @@ reports: {
     requests: "Requisições",
     usage: "Uso"
   }
+
+  
 },
 };
