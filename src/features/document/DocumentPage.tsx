@@ -742,7 +742,7 @@ const handleRagSearch = async () => {
               variant="ghost"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             >
-              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") ) : (t("documents.filters.show") )}
             </Button>
           </div>
 
@@ -844,7 +844,7 @@ const handleRagSearch = async () => {
             ) : (
               <FiSearch />
             )}
-            {t("actions.find_similar") || "Find Similar"}
+            {t("actions.find_similar") }
           </RagSearchButton>
         </RagSearchControls>
 
