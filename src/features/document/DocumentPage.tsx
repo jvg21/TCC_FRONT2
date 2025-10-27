@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiSearch, FiX } from "react-icons/fi";
+import { FiPlus, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiSearch, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
