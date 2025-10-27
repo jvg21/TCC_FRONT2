@@ -467,7 +467,7 @@ export const useDocument = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(text) 
+        body: JSON.stringify(text)
       });
 
       const data = await response.json();
@@ -484,7 +484,47 @@ export const useDocument = () => {
       throw error;
     }
   };
+  // Função a ser adicionada ao hook useDocument.ts
 
+  const importDocument = async (file: File, folderId: number): Promise<any> => {
+    try {
+      // Criar um FormData para enviar o arquivo
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folderId', folderId.toString());
+
+      const response = await fetch(`${apiUrl}/Import/ImportDocument`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: formData
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      // Se a importação for bem sucedida, atualizamos a lista de documentos
+      if (data.objeto) {
+        const newDocument = transformSingleApiData(data.objeto);
+        setDocument((prevDocuments) => [...prevDocuments, newDocument]);
+      }
+
+      notificationActions.showNotification(
+        t('documents.importSuccess') || 'Documento importado com sucesso!',
+        'success'
+      );
+
+      return data;
+    } catch (err) {
+      console.error("❌ Erro ao importar documento:", err);
+      throw err;
+    }
+  };
 
   useEffect(() => {
     if (token) {
@@ -516,6 +556,7 @@ export const useDocument = () => {
     create,
     update,
     softDelete,
+    importDocument,
     getById,
     getValidationsByDocumentId,
     updateValidationStatus,
