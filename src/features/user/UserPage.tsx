@@ -47,8 +47,28 @@ const UserPage: React.FC = () => {
     return rows.slice(start, start + pageSize);
   };
 
+  const useIsNarrow = (breakpoint = 480) => {
+    const [isNarrow, setIsNarrow] = useState(false);
+    useEffect(() => {
+      const onResize = () => setIsNarrow(window.innerWidth < breakpoint);
+      onResize();
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }, [breakpoint]);
+    return isNarrow;
+  };
+
   const PaginationBar: React.FC<{ total: number }> = ({ total }) => {
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const isNarrow = useIsNarrow();
+
+    const canPrev = currentPage > 1;
+    const canNext = currentPage < totalPages;
+
+    const tt = (key: string, fallback: string) => {
+      const v = t(key) as unknown as string;
+      return v && v !== key ? v : fallback;
+    };
 
     useEffect(() => {
       if (currentPage > totalPages) {
@@ -58,34 +78,52 @@ const UserPage: React.FC = () => {
 
     if (total === 0) return null;
 
+    const containerStyle: React.CSSProperties = isNarrow
+      ? {
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gridTemplateRows: 'auto auto',
+          gap: 8,
+          alignItems: 'center',
+          paddingTop: 12,
+        }
+      : {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          paddingTop: 12,
+        };
+
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 12 }}>
-        <div style={{ fontSize: 14, color: '#666' }}>
-          {t("pagination.showing") || "Exibindo"} {(currentPage - 1) * pageSize + 1}
-          –{Math.min(currentPage * pageSize, total)} {t("pagination.of") || "de"} {total}
+      <div style={containerStyle}>
+        <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
+          {tt('pagination.showing', 'Mostrando')} {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, total)} {tt('pagination.of', 'de')} {total}
         </div>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <label style={{ fontSize: 14, color: '#666' }}>
-            {t("pagination.rows_per_page") || "Linhas por página"}:
-          </label>
+          <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
           <select
             value={pageSize}
-            onChange={(e) => { setPageSize(Number(e.target.value)); resetToFirstPage(); }}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              resetToFirstPage();
+            }}
             style={{ padding: '6px 8px', border: '1px solid #ced4da', borderRadius: 6 }}
           >
             {[5, 10, 20, 50, 100].map((n) => (
               <option key={n} value={n}>{n}</option>
             ))}
           </select>
+        </div>
 
-          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-            <FiChevronLeft /> {t("pagination.prev") || "Anterior"}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
+          <Button variant="ghost" aria-label={tt('pagination.prev', 'Anterior')} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={!canPrev}>
+            <FiChevronLeft /> {!isNarrow && tt('pagination.prev', 'Anterior')}
           </Button>
-          <div style={{ minWidth: 60, textAlign: 'center' }}>
-            {currentPage} / {totalPages}
-          </div>
-          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
-            {t("pagination.next") || "Próxima"} <FiChevronRight />
+          <div style={{ minWidth: 64, textAlign: 'center' }}>{currentPage} / {totalPages}</div>
+          <Button variant="ghost" aria-label={tt('pagination.next', 'Próxima')} onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={!canNext}>
+            {!isNarrow && tt('pagination.next', 'Próxima')} <FiChevronRight />
           </Button>
         </div>
       </div>
@@ -134,7 +172,6 @@ const UserPage: React.FC = () => {
   const filteredUser = React.useMemo(() => {
     let filtered = User;
 
-    // filtro por empresa para Dev: obrigatório selecionar uma empresa
     if (isDev) {
       if (!selectedCompanyId) {
         return [];
@@ -146,12 +183,7 @@ const UserPage: React.FC = () => {
     if (query) {
       const searchQuery = query.toLowerCase();
       filtered = filtered.filter(user => {
-        const searchableText = [
-          user.Name || "",
-          user.Profile || "",
-          user.Email || "",
-        ].join(" ").toLowerCase();
-
+        const searchableText = [user.Name || "", user.Profile || "", user.Email || ""].join(" ").toLowerCase();
         return searchableText.includes(searchQuery);
       });
     }
@@ -191,43 +223,25 @@ const UserPage: React.FC = () => {
   const columns = Columns(handleEdit, handleDelete);
 
   return (
-    <PageLayout title={t("users.title")} actions={
-      <Button disabled={isDev ? !selectedCompanyId : !userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("users.add_user")}</Button>
-    }>
-      <FilterBar
-        columns={columns}
-        value={query}
-        onChange={setQuery}
-        placeholder={t("users.search_users")}
-      />
-      {
-        userProfile &&
-        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
-      }
+    <PageLayout title={t("users.title")} actions={<Button disabled={isDev ? !selectedCompanyId : !userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("users.add_user")}</Button>}>
+      <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("users.search_users")} />
+      {userProfile && <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />}
+
       {isDev && (
         <div style={{ marginBottom: '16px' }}>
           <select
             value={selectedCompanyId || ""}
             onChange={(e) => setSelectedCompanyId(e.target.value ? Number(e.target.value) : null)}
-            style={{
-              padding: '8px 12px',
-              border: '1px solid #ffffff',
-              borderRadius: '4px',
-              fontSize: '14px',
-              minWidth: '200px'
-            }}
+            style={{ padding: '8px 12px', border: '1px solid #ffffff', borderRadius: '4px', fontSize: '14px', minWidth: '200px' }}
           >
             <option value="">{t("users.no_select")}</option>
             {activeCompanies.map(company => (
-              <option key={company.CompanyId} value={company.CompanyId}>
-                {company.Name}
-              </option>
+              <option key={company.CompanyId} value={company.CompanyId}>{company.Name}</option>
             ))}
           </select>
         </div>
       )}
 
-      {/* Tabela + Paginação */}
       {(() => {
         const total = filteredUser.length;
         const page = paginate(filteredUser);
@@ -247,3 +261,4 @@ const UserPage: React.FC = () => {
 };
 
 export default UserPage;
+
