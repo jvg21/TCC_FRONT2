@@ -48,8 +48,29 @@ const TaskPage: React.FC = () => {
     return rows.slice(start, start + pageSize);
   };
 
+  // hook de responsividade compartilhado
+  const useIsNarrow = (breakpoint = 480) => {
+    const [isNarrow, setIsNarrow] = useState(false);
+    useEffect(() => {
+      const onResize = () => setIsNarrow(window.innerWidth < breakpoint);
+      onResize();
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }, [breakpoint]);
+    return isNarrow;
+  };
+
   const PaginationBar: React.FC<{ total: number }> = ({ total }) => {
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const isNarrow = useIsNarrow();
+
+    const canPrev = currentPage > 1;
+    const canNext = currentPage < totalPages;
+
+    const tt = (key: string, fallback: string) => {
+      const v = t(key) as unknown as string;
+      return v && v !== key ? v : fallback;
+    };
 
     useEffect(() => {
       if (currentPage > totalPages) {
@@ -59,34 +80,50 @@ const TaskPage: React.FC = () => {
 
     if (total === 0) return null;
 
+    const containerStyle: React.CSSProperties = isNarrow
+      ? {
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gridTemplateRows: 'auto auto',
+          gap: 8,
+          alignItems: 'center',
+          paddingTop: 12,
+        }
+      : {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          paddingTop: 12,
+        };
+
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 12 }}>
-        <div style={{ fontSize: 14, color: '#666' }}>
-          {t("pagination.showing") || "Exibindo"} {(currentPage - 1) * pageSize + 1}
-          –{Math.min(currentPage * pageSize, total)} {t("pagination.of") || "de"} {total}
+      <div style={containerStyle}>
+        {/* Texto de faixa */}
+        <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
+          {tt('pagination.showing', 'Mostrando')} {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, total)} {tt('pagination.of', 'de')} {total}
         </div>
+
+        {/* Seletor de itens por página */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <label style={{ fontSize: 14, color: '#666' }}>
-            {t("pagination.rows_per_page") || "Linhas por página"}:
-          </label>
+          <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
           <select
             value={pageSize}
             onChange={(e) => { setPageSize(Number(e.target.value)); resetToFirstPage(); }}
             style={{ padding: '6px 8px', border: '1px solid #ced4da', borderRadius: 6 }}
           >
-            {[5, 10, 20, 50, 100].map((n) => (
-              <option key={n} value={n}>{n}</option>
-            ))}
+            {[5, 10, 20, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
           </select>
+        </div>
 
-          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-            <FiChevronLeft /> {t("pagination.prev") || "Anterior"}
+        {/* Navegação */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
+          <Button variant="ghost" aria-label={tt('pagination.prev', 'Anterior')} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={!canPrev}>
+            <FiChevronLeft /> {!isNarrow && tt('pagination.prev', 'Anterior')}
           </Button>
-          <div style={{ minWidth: 60, textAlign: 'center' }}>
-            {currentPage} / {totalPages}
-          </div>
-          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
-            {t("pagination.next") || "Próxima"} <FiChevronRight />
+          <div style={{ minWidth: 64, textAlign: 'center' }}>{currentPage} / {totalPages}</div>
+          <Button variant="ghost" aria-label={tt('pagination.next', 'Próxima')} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={!canNext}>
+            {!isNarrow && tt('pagination.next', 'Próxima')} <FiChevronRight />
           </Button>
         </div>
       </div>
@@ -98,52 +135,21 @@ const TaskPage: React.FC = () => {
     const baseCols: ColumnDef<Task>[] = [
       { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },
       { key: "Description", header: t("tasks.description"), render: (row) => row.Description || "-" },
-      {
-        key: "DueDate",
-        header: t("tasks.due_date"),
-        render: (row) => dateUtils.formatDateShort(row.DueDate, currentLanguage)
-      },
-      {
-        key: "Priority", header: t("tasks.priority"), render: (row) => {
-          const priorityObj = getTaskPriority(t).find(p => p.value === row.Priority?.toString());
-          return priorityObj ? priorityObj.label : "-";
-        }
-      },
-      {
-        key: "Status", header: t("tasks.status"), render: (row) => {
-        const statusObj = getTaskStatus(t).find(p => p.value === row.Status?.toString());
-          return statusObj ? statusObj.label : "-";
-        }
-      },
-      {
-        key: "AssigneeId", header: t("tasks.assignee"), render: (row) => {
-          const assignee = activeUser.filter((a) => a.UserId === row.AssigneeId)[0];
-          return assignee ? assignee.Name : "-";
-        }
-      },
-      {
-        key: "UserId", header: t("tasks.creator"), render: (row) => {
-          const creator = activeUser.filter((a) => a.UserId === row.UserId)[0];
-          return creator ? creator.Name : "-";
-        }
-      },
+      { key: "DueDate", header: t("tasks.due_date"), render: (row) => dateUtils.formatDateShort(row.DueDate, currentLanguage) },
+      { key: "Priority", header: t("tasks.priority"), render: (row) => { const priorityObj = getTaskPriority(t).find(p => p.value === row.Priority?.toString()); return priorityObj ? priorityObj.label : "-"; } },
+      { key: "Status", header: t("tasks.status"), render: (row) => { const statusObj = getTaskStatus(t).find(p => p.value === row.Status?.toString()); return statusObj ? statusObj.label : "-"; } },
+      { key: "AssigneeId", header: t("tasks.assignee"), render: (row) => { const assignee = activeUser.filter((a) => a.UserId === row.AssigneeId)[0]; return assignee ? assignee.Name : "-"; } },
+      { key: "UserId", header: t("tasks.creator"), render: (row) => { const creator = activeUser.filter((a) => a.UserId === row.UserId)[0]; return creator ? creator.Name : "-"; } },
     ];
 
     if (userProfile) {
-      baseCols.push({
-        key: "actions",
-        header: t("actions.actions"),
-        render: (row) => (
-          <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.TaskId} />
-        )
-      });
+      baseCols.push({ key: "actions", header: t("actions.actions"), render: (row) => (<ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.TaskId} />) });
     }
     return baseCols;
   };
 
   const filteredTask = React.useMemo(() => {
     if (!query) return Task;
-
     const searchQuery = query.toLowerCase();
     return Task.filter(task => {
       const searchableText = [
@@ -155,50 +161,22 @@ const TaskPage: React.FC = () => {
         String(task.AssigneeId || ""),
         String(task.UserId || ""),
       ].join(" ").toLowerCase();
-
       return searchableText.includes(searchQuery);
     });
   }, [Task, query]);
 
-  const handleAdd = () => {
-    setEditing(null);
-    modal.open();
-  };
-
-  const handleEdit = (c: Task) => {
-    setEditing(c);
-    modal.open();
-  };
-
-  const handleSave = (payload: any) => {
-    if (editing) {
-      update(editing.TaskId, payload);
-    } else {
-      create(payload);
-    }
-    modal.close();
-  };
-
-  const handleDelete = (id: number) => {
-    softDelete(id);
-  };
+  const handleAdd = () => { setEditing(null); modal.open(); };
+  const handleEdit = (c: Task) => { setEditing(c); modal.open(); };
+  const handleSave = (payload: any) => { if (editing) { update(editing.TaskId, payload); } else { create(payload); } modal.close(); };
+  const handleDelete = (id: number) => { softDelete(id); };
 
   const columns = Columns(handleEdit, handleDelete);
 
   return (
     <PageLayout title={t("tasks.title")} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("tasks.add_task")}</Button>}>
-      <FilterBar
-        columns={columns}
-        value={query}
-        onChange={setQuery}
-        placeholder={t("tasks.search_tasks")}
-      />
-      {
-        userProfile &&
-        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
-      }
+      <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("tasks.search_tasks")} />
+      {userProfile && <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />}
 
-      {/* Tabela + Paginação */}
       {(() => {
         const total = filteredTask.length;
         const page = paginate(filteredTask);
