@@ -120,7 +120,7 @@ const DocumentPage: React.FC = () => {
   const { updateValidationStatus } = useDocument();
   const { theme } = useThemeContext();
   const navigate = useNavigate();
-  const { generateEmbedding } = useAI();
+  const { generateEmbedding } = useDocument();
 
   //rag
   const [ragSearchQuery, setRagSearchQuery] = useState("");
@@ -784,7 +784,7 @@ const handleRagSearch = async () => {
               variant="ghost"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             >
-              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") ) : (t("documents.filters.show"))}
             </Button>
           </div>
 
@@ -823,18 +823,17 @@ const handleRagSearch = async () => {
       <RagSearchContainer>
         <RagSearchTitle>
           <FiSearch style={{ marginRight: '8px' }} />
-          {t("documents.semantic_search") || "Semantic Search"}
+          {t("documents.semantic_search") }
         </RagSearchTitle>
         <RagSearchDescription>
-          {t("documents.semantic_search_description") ||
-            "Find documents with similar content based on meaning rather than exact keyword matches."}
+          {t("documents.semantic_search_description")}
         </RagSearchDescription>
         <RagSearchControls>
           <RagSearchInput
             type="text"
             value={ragSearchQuery}
             onChange={(e) => setRagSearchQuery(e.target.value)}
-            placeholder={t("documents.search_by_meaning") || "Search documents by meaning..."}
+            placeholder={t("documents.search_by_meaning") }
           />
           <RagSearchButton
             onClick={handleRagSearch}
@@ -867,7 +866,7 @@ const handleRagSearch = async () => {
                   }}
                 >
                   <FiX />
-                  {t("actions.clear_results") || "Clear Results"}
+                  {t("actions.clear_results") }
                 </RagResultsClear>
               )}
             </RagResultsHeader>
@@ -883,7 +882,7 @@ const handleRagSearch = async () => {
                       <FiFileText style={{ marginRight: '8px' }} />
                       {doc.Title}
                       <RagResultScore>
-                        {t("documents.similarity") || "Similarity"}: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
+                        {t("documents.similarity") }: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
                       </RagResultScore>
                     </RagResultTitle>
                     <RagResultContent>
@@ -892,7 +891,7 @@ const handleRagSearch = async () => {
                         : doc.Content}
                     </RagResultContent>
                     <RagResultView>
-                      {t("documents.click_to_view") || "Click to view full document"}
+                      {t("documents.click_to_view") }
                     </RagResultView>
                   </RagResultItem>
                 ))}
