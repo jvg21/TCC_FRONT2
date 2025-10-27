@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { User } from "./types";
@@ -20,17 +20,78 @@ import { useCompanies } from "../companies/useCompanies";
 
 const UserPage: React.FC = () => {
   const { activeUser, deactiveUser, create, update, softDelete } = useUser();
-  const { activeCompanies } = useCompanies()
-  const [searchStatus, setSearchStatus] = useState<number>(1)
-  const User = searchStatus === 1 ? activeUser : searchStatus === 2 ? deactiveUser : [...activeUser, ...deactiveUser]
+  const { activeCompanies } = useCompanies();
+  const [searchStatus, setSearchStatus] = useState<number>(1);
+  const User = searchStatus === 1 ? activeUser : searchStatus === 2 ? deactiveUser : [...activeUser, ...deactiveUser];
   const [editing, setEditing] = useState<User | null>(null);
   const [query, setQuery] = useState("");
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
 
   const modal = useModal();
   const { t } = useTranslation();
-  const { userProfile, user } = useAuthContext()
+  const { userProfile, user } = useAuthContext();
   const isDev = user?.Profile === 1;
+
+  // ==== Paginação (adição) ====
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
+  const resetToFirstPage = () => setCurrentPage(1);
+
+  useEffect(() => {
+    resetToFirstPage();
+  }, [query, searchStatus, selectedCompanyId]);
+
+  const paginate = (rows: User[]) => {
+    const start = (currentPage - 1) * pageSize;
+    return rows.slice(start, start + pageSize);
+  };
+
+  const PaginationBar: React.FC<{ total: number }> = ({ total }) => {
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    useEffect(() => {
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages);
+      }
+    }, [totalPages]);
+
+    if (total === 0) return null;
+
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 12 }}>
+        <div style={{ fontSize: 14, color: '#666' }}>
+          {t("pagination.showing") || "Exibindo"} {(currentPage - 1) * pageSize + 1}
+          –{Math.min(currentPage * pageSize, total)} {t("pagination.of") || "de"} {total}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label style={{ fontSize: 14, color: '#666' }}>
+            {t("pagination.rows_per_page") || "Linhas por página"}:
+          </label>
+          <select
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); resetToFirstPage(); }}
+            style={{ padding: '6px 8px', border: '1px solid #ced4da', borderRadius: 6 }}
+          >
+            {[5, 10, 20, 50, 100].map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+
+          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+            <FiChevronLeft /> {t("pagination.prev") || "Anterior"}
+          </Button>
+          <div style={{ minWidth: 60, textAlign: 'center' }}>
+            {currentPage} / {totalPages}
+          </div>
+          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
+            {t("pagination.next") || "Próxima"} <FiChevronRight />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+  // ==== fim paginação ====
 
   const Columns = (onEdit: (c: User) => void, onToggleStatus: (id: number) => void): ColumnDef<User>[] => {
     const baseCols: ColumnDef<User>[] = [
@@ -55,7 +116,7 @@ const UserPage: React.FC = () => {
           const company = activeCompanies.find(c => c.CompanyId === row.CompanyId);
           return company ? company.Name : "-";
         }
-      })
+      });
     }
 
     if (userProfile) {
@@ -73,10 +134,10 @@ const UserPage: React.FC = () => {
   const filteredUser = React.useMemo(() => {
     let filtered = User;
 
-    
+    // filtro por empresa para Dev: obrigatório selecionar uma empresa
     if (isDev) {
       if (!selectedCompanyId) {
-        return []; 
+        return [];
       } else {
         filtered = filtered.filter(user => user.CompanyId === selectedCompanyId);
       }
@@ -122,6 +183,7 @@ const UserPage: React.FC = () => {
     }
     modal.close();
   };
+
   const handleDelete = (id: number) => {
     softDelete(id);
   };
@@ -164,7 +226,19 @@ const UserPage: React.FC = () => {
           </select>
         </div>
       )}
-      <DataTable columns={columns} data={filteredUser} />
+
+      {/* Tabela + Paginação */}
+      {(() => {
+        const total = filteredUser.length;
+        const page = paginate(filteredUser);
+        return (
+          <>
+            <DataTable columns={columns} data={page} />
+            <PaginationBar total={total} />
+          </>
+        );
+      })()}
+
       <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("users.edit_user") : t("users.add_user")}>
         <UserForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
       </Modal>
