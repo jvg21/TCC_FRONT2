@@ -16,7 +16,6 @@ import { SelectSelector } from "../../components/lib/StatusSelector";
 import { ActiveLabel } from "../../components/lib/ActiveLabel";
 import { ActionButtons } from "../../components/lib/ActionButtons";
 
-
 const GroupPage: React.FC = () => {
   const { activeGroup, deactiveGroup, create, update, softDelete } = useGroup();
   const [searchStatus, setSearchStatus] = useState<number>(1);
@@ -42,8 +41,29 @@ const GroupPage: React.FC = () => {
     return rows.slice(start, start + pageSize);
   };
 
+  const useIsNarrow = (breakpoint = 480) => {
+    const [isNarrow, setIsNarrow] = useState(false);
+    useEffect(() => {
+      const onResize = () => setIsNarrow(window.innerWidth < breakpoint);
+      onResize();
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }, [breakpoint]);
+    return isNarrow;
+  };
+
   const PaginationBar: React.FC<{ total: number }> = ({ total }) => {
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const isNarrow = useIsNarrow();
+
+    const canPrev = currentPage > 1;
+    const canNext = currentPage < totalPages;
+
+    // helper para fallback de i18n quando a key não existir
+    const tt = (key: string, fallback: string) => {
+      const v = t(key) as unknown as string;
+      return v && v !== key ? v : fallback;
+    };
 
     useEffect(() => {
       if (currentPage > totalPages) {
@@ -53,34 +73,68 @@ const GroupPage: React.FC = () => {
 
     if (total === 0) return null;
 
+    const containerStyle: React.CSSProperties = isNarrow
+      ? {
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gridTemplateRows: 'auto auto',
+          gap: 8,
+          alignItems: 'center',
+          paddingTop: 12,
+        }
+      : {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          paddingTop: 12,
+        };
+
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 12 }}>
-        <div style={{ fontSize: 14, color: '#666' }}>
-          {t("pagination.showing") || "Exibindo"} {(currentPage - 1) * pageSize + 1}
-          –{Math.min(currentPage * pageSize, total)} {t("pagination.of") || "de"} {total}
+      <div style={containerStyle}>
+        {/* Texto "Exibindo X–Y de Z" */}
+        <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
+          {tt('pagination.showing', 'Mostrando')} {(currentPage - 1) * pageSize + 1}
+          –{Math.min(currentPage * pageSize, total)} {tt('pagination.of', 'de')} {total}
         </div>
+
+        {/* Seletor de Linhas por página */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <label style={{ fontSize: 14, color: '#666' }}>
-            {t("pagination.rows_per_page") || "Linhas por página"}:
-          </label>
+          <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
           <select
             value={pageSize}
-            onChange={(e) => { setPageSize(Number(e.target.value)); resetToFirstPage(); }}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              resetToFirstPage();
+            }}
             style={{ padding: '6px 8px', border: '1px solid #ced4da', borderRadius: 6 }}
           >
             {[5, 10, 20, 50, 100].map((n) => (
               <option key={n} value={n}>{n}</option>
             ))}
           </select>
+        </div>
 
-          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-            <FiChevronLeft /> {t("pagination.prev") || "Anterior"}
+        {/* Navegação */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
+          <Button
+            variant="ghost"
+            aria-label={tt('pagination.prev', 'Anterior')}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={!canPrev}
+          >
+            <FiChevronLeft /> {!isNarrow && tt('pagination.prev', 'Anterior')}
           </Button>
-          <div style={{ minWidth: 60, textAlign: 'center' }}>
+          <div style={{ minWidth: 64, textAlign: 'center' }}>
             {currentPage} / {totalPages}
           </div>
-          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
-            {t("pagination.next") || "Próxima"} <FiChevronRight />
+          <Button
+            variant="ghost"
+            aria-label={tt('pagination.next', 'Próxima')}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={!canNext}
+          >
+            {!isNarrow && tt('pagination.next', 'Próxima')} <FiChevronRight />
           </Button>
         </div>
       </div>
@@ -110,17 +164,12 @@ const GroupPage: React.FC = () => {
     return baseCols;
   };
 
-
   const filteredGroup = React.useMemo(() => {
     if (!query) return Group;
 
     const searchQuery = query.toLowerCase();
     return Group.filter(group => {
-      const searchableText = [
-        group.Name || "",
-        group.Description || "",
-      ].join(" ").toLowerCase();
-
+      const searchableText = [group.Name || '', group.Description || ''].join(' ').toLowerCase();
       return searchableText.includes(searchQuery);
     });
   }, [Group, query]);
@@ -148,26 +197,17 @@ const GroupPage: React.FC = () => {
     try {
       await softDelete(id);
     } catch (error) {
-      console.error("Erro ao alterar status da folder:", error);
+      console.error('Erro ao alterar status do grupo:', error);
     }
   };
 
   const columns = Columns(handleEdit, handleToggleStatus);
 
   return (
-    <PageLayout title={t("groups.title")} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("groups.add_group")}</Button>}>
-      <FilterBar
-        columns={columns}
-        value={query}
-        onChange={setQuery}
-        placeholder={t("groups.search_groups")}
-      />
-      {
-        userProfile &&
-        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
-      }
+    <PageLayout title={t('groups.title')} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t('groups.add_group')}</Button>}>
+      <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t('groups.search_groups')} />
+      {userProfile && <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />}
 
-      {/* Tabela + Paginação */}
       {(() => {
         const total = filteredGroup.length;
         const page = paginate(filteredGroup);
@@ -179,7 +219,7 @@ const GroupPage: React.FC = () => {
         );
       })()}
 
-      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("groups.edit_group") : t("groups.add_group")}>
+      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t('groups.edit_group') : t('groups.add_group')}>
         <GroupForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
       </Modal>
     </PageLayout>
@@ -187,3 +227,7 @@ const GroupPage: React.FC = () => {
 };
 
 export default GroupPage;
+
+
+
+
