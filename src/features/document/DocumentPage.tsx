@@ -23,7 +23,6 @@ import { TabContainer } from "../../components/common/TabContainer";
 import { useTag } from "../tag/useTag";
 import { useThemeContext } from "../../context/ThemeContext";
 
-
 const DocumentTagsCell: React.FC<{ documentId: number }> = ({ documentId }) => {
   const [tags, setTags] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,13 +97,7 @@ const DocumentPage: React.FC = () => {
   const [query, setQuery] = useState("");
   const [activeTabId, setActiveTabId] = useState("geral");
 
-  const [dateFilter, setDateFilter] = useState<{
-    startDate: string;
-    endDate: string;
-  }>({
-    startDate: "",
-    endDate: ""
-  });
+  const [dateFilter, setDateFilter] = useState<{ startDate: string; endDate: string }>({ startDate: "", endDate: "" });
   const [authorFilter, setAuthorFilter] = useState<number | null>(null);
   const [tagFilter, setTagFilter] = useState<number | null>(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -135,8 +128,30 @@ const DocumentPage: React.FC = () => {
     return rows.slice(start, start + pageSize);
   };
 
+  // hook de responsividade para manter navegação sempre visível
+  const useIsNarrow = (breakpoint = 480) => {
+    const [isNarrow, setIsNarrow] = useState(false);
+    useEffect(() => {
+      const onResize = () => setIsNarrow(window.innerWidth < breakpoint);
+      onResize();
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }, [breakpoint]);
+    return isNarrow;
+  };
+
   const PaginationBar: React.FC<{ total: number }> = ({ total }) => {
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const isNarrow = useIsNarrow();
+
+    const canPrev = currentPage > 1;
+    const canNext = currentPage < totalPages;
+
+    // fallback i18n
+    const tt = (key: string, fallback: string) => {
+      const v = t(key) as unknown as string;
+      return v && v !== key ? v : fallback;
+    };
 
     // Garante que a página atual nunca ultrapasse o total de páginas ao mudar filtros/tamanho
     useEffect(() => {
@@ -147,16 +162,33 @@ const DocumentPage: React.FC = () => {
 
     if (total === 0) return null;
 
+    const containerStyle: React.CSSProperties = isNarrow
+      ? {
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gridTemplateRows: 'auto auto',
+          gap: 8,
+          alignItems: 'center',
+          paddingTop: 12,
+        }
+      : {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          paddingTop: 12,
+        };
+
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 12 }}>
-        <div style={{ fontSize: 14, color: '#666' }}>
-          {t("pagination.showing") || "Exibindo"} {(currentPage - 1) * pageSize + 1}
-          –{Math.min(currentPage * pageSize, total)} {t("pagination.of") || "de"} {total}
+      <div style={containerStyle}>
+        {/* Texto “Mostrando X–Y de Z” */}
+        <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
+          {tt('pagination.showing', 'Mostrando')} {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, total)} {tt('pagination.of', 'de')} {total}
         </div>
+
+        {/* Seletor de itens por página */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <label style={{ fontSize: 14, color: '#666' }}>
-            {t("pagination.rows_per_page") || "Linhas por página"}:
-          </label>
+          <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
           <select
             value={pageSize}
             onChange={(e) => { setPageSize(Number(e.target.value)); resetToFirstPage(); }}
@@ -166,15 +198,26 @@ const DocumentPage: React.FC = () => {
               <option key={n} value={n}>{n}</option>
             ))}
           </select>
+        </div>
 
-          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-            <FiChevronLeft /> {t("pagination.prev") || "Anterior"}
+        {/* Navegação */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
+          <Button
+            variant="ghost"
+            aria-label={tt('pagination.prev', 'Anterior')}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={!canPrev}
+          >
+            <FiChevronLeft /> {!isNarrow && tt('pagination.prev', 'Anterior')}
           </Button>
-          <div style={{ minWidth: 60, textAlign: 'center' }}>
-            {currentPage} / {totalPages}
-          </div>
-          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
-            {t("pagination.next") || "Próxima"} <FiChevronRight />
+          <div style={{ minWidth: 64, textAlign: 'center' }}>{currentPage} / {totalPages}</div>
+          <Button
+            variant="ghost"
+            aria-label={tt('pagination.next', 'Próxima')}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={!canNext}
+          >
+            {!isNarrow && tt('pagination.next', 'Próxima')} <FiChevronRight />
           </Button>
         </div>
       </div>
@@ -188,7 +231,6 @@ const DocumentPage: React.FC = () => {
         try {
           const response = await getDocumentsByTag(tagFilter);
           if (response && !response.erro && response.objeto) {
-            
             const docIds = response.objeto.map((item: any) => item.documentId);
             setTagFilteredDocIds(docIds);
           }
@@ -242,12 +284,7 @@ const DocumentPage: React.FC = () => {
         key: "Title",
         header: t("documents.title_field"),
         render: (row) => (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontWeight: '500'
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}>
             <FiFileText size={16} style={{ color: '#007bff' }} />
             {row.Title || t("documents.untitled_document")}
           </div>
@@ -286,47 +323,33 @@ const DocumentPage: React.FC = () => {
         key: "actions",
         header: t("actions.actions"),
         render: (row) => {
-          
           const canEdit = () => {
-            
             if (user && (user.Profile === 1 || user.Profile === 2)) {
               return true;
             }
-
-            
             if (user && user.Profile === 3) {
-              
               if (row.UserId === user.UserId) {
                 return true;
               }
-
-              
               const folder = activeFolder.find((f) => f.FolderId === row.FolderId);
               if (folder && folder.ValidatorId === user.UserId) {
                 return true;
               }
             }
-
             return false;
           };
 
           return (
             <div style={{ display: 'flex', gap: '4px' }}>
               <>
-                <Button
-                  variant="ghost"
-                  onClick={() => onView(row)}
-                  title={t("documents.view_document")}
-                >
+                <Button variant="ghost" onClick={() => onView(row)} title={t("documents.view_document")}>
                   <FiEye />
                 </Button>
               </>
               {canEdit() && (
                 <>
-
                   <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
                 </>
-
               )}
             </div>
           );
@@ -336,29 +359,22 @@ const DocumentPage: React.FC = () => {
     return baseCols;
   };
 
-  
   const getFilteredDocuments = (documents: Document[]) => {
     let filtered = [...documents];
 
-    
     if (query) {
       const searchQuery = query.toLowerCase();
       filtered = filtered.filter(document => {
-        const searchableText = [
-          document.Title || "",
-          document.Content || "",
-        ].join(" ").toLowerCase();
+        const searchableText = [document.Title || "", document.Content || ""].join(" ").toLowerCase();
         return searchableText.includes(searchQuery);
       });
     }
 
-    
     if (dateFilter.startDate || dateFilter.endDate) {
       filtered = filtered.filter(document => {
         const docDate = new Date(document.CreatedAt);
         const startDate = dateFilter.startDate ? new Date(dateFilter.startDate) : null;
         const endDate = dateFilter.endDate ? new Date(dateFilter.endDate) : null;
-
         if (startDate && endDate) {
           return docDate >= startDate && docDate <= endDate;
         } else if (startDate) {
@@ -370,38 +386,26 @@ const DocumentPage: React.FC = () => {
       });
     }
 
-    
     if (authorFilter) {
       filtered = filtered.filter(document => document.UserId === authorFilter);
     }
 
-    
     if (tagFilter && tagFilteredDocIds.length > 0) {
       filtered = filtered.filter(document => tagFilteredDocIds.includes(document.DocumentId));
     } else if (tagFilter && tagFilteredDocIds.length === 0) {
-      
       filtered = [];
     }
 
     return filtered;
   };
 
-  
   const getMyDocuments = () => {
     if (!user) return [];
     return activeDocument.filter(doc => doc.UserId === user.UserId);
   };
 
-  const handleAdd = () => {
-    setEditing(null);
-    modal.open();
-  };
-
-  const handleEdit = (c: Document) => {
-    setEditing(c);
-    modal.open();
-  };
-
+  const handleAdd = () => { setEditing(null); modal.open(); };
+  const handleEdit = (c: Document) => { setEditing(c); modal.open(); };
   const handleSave = async (payload: any) => {
     try {
       if (editing) {
@@ -410,8 +414,6 @@ const DocumentPage: React.FC = () => {
       } else {
         await create(payload);
       }
-      console.log(payload);
-
     } catch (error) {
       console.error("Erro ao salvar documento:", error);
     } finally {
@@ -440,49 +442,23 @@ const DocumentPage: React.FC = () => {
 
   const columns = Columns(handleEdit, handleToggleStatus, handleView, handleEditContent);
 
-  
   const InfoAlert = ({ type, title, description }: { type: string; title: string; description: string }) => {
-
     const colors = {
-      info: {
-        bg: `${theme.colors.primary}15`,
-        border: theme.colors.primary,
-        icon: 'ℹ️'
-      },
-      success: {
-        bg: theme.colors.primary === '#4f46e5' ? '#065f4615' : '#e8f5e9',
-        border: theme.colors.primary === '#4f46e5' ? '#065f46' : '#4CAF50',
-        icon: '✅'
-      },
-      warning: {
-        bg: theme.colors.primary === '#4f46e5' ? '#92400e15' : '#fff3cd',
-        border: theme.colors.primary === '#4f46e5' ? '#92400e' : '#ffc107',
-        icon: '⚠️'
-      }
-    };
-    const color = colors[type as keyof typeof colors] || colors.info;
+      info: { bg: `${theme.colors.primary}15`, border: theme.colors.primary, icon: 'ℹ️' },
+      success: { bg: theme.colors.primary === '#4f46e5' ? '#065f4615' : '#e8f5e9', border: theme.colors.primary === '#4f46e5' ? '#065f46' : '#4CAF50', icon: '✅' },
+      warning: { bg: theme.colors.primary === '#4f46e5' ? '#92400e15' : '#fff3cd', border: theme.colors.primary === '#4f46e5' ? '#92400e' : '#ffc107', icon: '⚠️' }
+    } as const;
+    const color = (colors as any)[type] || colors.info;
 
     return (
-      <div style={{
-        background: color.bg,
-        border: `1px solid ${color.border}`,
-        borderRadius: '8px',
-        padding: '12px',
-        marginBottom: '16px',
-        fontSize: '14px',
-        color: theme.colors.text
-      }}>
+      <div style={{ background: color.bg, border: `1px solid ${color.border}`, borderRadius: '8px', padding: '12px', marginBottom: '16px', fontSize: '14px', color: theme.colors.text }}>
         {color.icon} <strong>{title}:</strong> {description}
       </div>
     );
   };
 
   const EmptyState = ({ icon, title, description }: { icon: string; title: string; description: string }) => (
-    <div style={{
-      textAlign: 'center',
-      padding: '48px 16px',
-      color: '#666'
-    }}>
+    <div style={{ textAlign: 'center', padding: '48px 16px', color: '#666' }}>
       <div style={{ fontSize: '48px', marginBottom: '16px' }}>{icon}</div>
       <h3 style={{ marginBottom: '8px', color: '#333' }}>{title}</h3>
       <p style={{ color: '#666' }}>{description}</p>
@@ -490,129 +466,43 @@ const DocumentPage: React.FC = () => {
   );
 
   const AdvancedFilters = () => (
-    <div style={{
-      background: `${theme.colors.primary}15`,
-      border: '1px solid #dee2e6',
-      borderRadius: '8px',
-      padding: '16px',
-      marginBottom: '16px',
-      display: showAdvancedFilters ? 'block' : 'none'
-    }}>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '16px'
-      }}>
-        {}
+    <div style={{ background: `${theme.colors.primary}15`, border: '1px solid #dee2e6', borderRadius: '8px', padding: '16px', marginBottom: '16px', display: showAdvancedFilters ? 'block' : 'none' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+        {/* Período */}
         <div>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
-            {t("documents.filters.date_range") || "Período"}
-          </label>
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.date_range") || "Período"}</label>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="date"
-              value={dateFilter.startDate}
-              onChange={(e) => setDateFilter(prev => ({ ...prev, startDate: e.target.value }))}
-              style={{
-                flex: 1,
-                padding: '8px',
-                border: '1px solid #ced4da',
-                borderRadius: '4px',
-                fontSize: '14px'
-              }}
-            />
-            <input
-              type="date"
-              value={dateFilter.endDate}
-              onChange={(e) => setDateFilter(prev => ({ ...prev, endDate: e.target.value }))}
-              style={{
-                flex: 1,
-                padding: '8px',
-                border: '1px solid #ced4da',
-                borderRadius: '4px',
-                fontSize: '14px'
-              }}
-            />
+            <input type="date" value={dateFilter.startDate} onChange={(e) => setDateFilter(prev => ({ ...prev, startDate: e.target.value }))} style={{ flex: 1, padding: '8px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '14px' }} />
+            <input type="date" value={dateFilter.endDate} onChange={(e) => setDateFilter(prev => ({ ...prev, endDate: e.target.value }))} style={{ flex: 1, padding: '8px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '14px' }} />
           </div>
         </div>
 
-        {}
+        {/* Autor */}
         <div>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
-            {t("documents.filters.author") || "Autor"}
-          </label>
-          <select
-            value={authorFilter || ""}
-            onChange={(e) => setAuthorFilter(e.target.value ? Number(e.target.value) : null)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              border: '1px solid #ced4da',
-              borderRadius: '4px',
-              fontSize: '14px'
-            }}
-          >
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.author") || "Autor"}</label>
+          <select value={authorFilter || ""} onChange={(e) => setAuthorFilter(e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '14px' }}>
             <option value="">{t("documents.filters.all_authors") || "Todos os autores"}</option>
-            {activeUser.map(user => (
-              <option key={user.UserId} value={user.UserId}>
-                {user.Name}
-              </option>
-            ))}
+            {activeUser.map(user => (<option key={user.UserId} value={user.UserId}>{user.Name}</option>))}
           </select>
         </div>
 
-        {}
+        {/* Tag */}
         <div>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>
-            {t("documents.filters.tag")}
-          </label>
-          <select
-            value={tagFilter || ""}
-            onChange={(e) => setTagFilter(e.target.value ? Number(e.target.value) : null)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              border: '1px solid #ced4da',
-              borderRadius: '4px',
-              fontSize: '14px'
-            }}
-          >
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.tag")}</label>
+          <select value={tagFilter || ""} onChange={(e) => setTagFilter(e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '14px' }}>
             <option value="">{t("documents.filters.all_tags")}</option>
-            {activeTag.map(tag => (
-              <option key={tag.TagId} value={tag.TagId}>
-                {tag.Name}
-              </option>
-            ))}
+            {activeTag.map(tag => (<option key={tag.TagId} value={tag.TagId}>{tag.Name}</option>))}
           </select>
           {tagFilter && (
-            <div style={{
-              fontSize: '12px',
-              color: '#666',
-              marginTop: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              {tagFilteredDocIds.length === 0 ? (
-                <>⏳ Carregando documentos...</>
-              ) : (
-                <>✓ {tagFilteredDocIds.length} documento(s) encontrado(s)</>
-              )}
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {tagFilteredDocIds.length === 0 ? (<>⏳ Carregando documentos...</>) : (<>✓ {tagFilteredDocIds.length} documento(s) encontrado(s)</>)}
             </div>
           )}
         </div>
       </div>
 
-      {}
       <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setDateFilter({ startDate: "", endDate: "" });
-            setAuthorFilter(null);
-            setTagFilter(null);
-          }}
-        >
+        <Button variant="ghost" onClick={() => { setDateFilter({ startDate: "", endDate: "" }); setAuthorFilter(null); setTagFilter(null); }}>
           {t("documents.filters.clear_filters") || "Limpar filtros"}
         </Button>
       </div>
@@ -627,29 +517,15 @@ const DocumentPage: React.FC = () => {
       badge: Documents.length,
       content: (
         <div>
-          <InfoAlert
-            type="info"
-            title={t("documents.tabs.general_alert_title")}
-            description={t("documents.tabs.general_alert_description")}
-          />
+          <InfoAlert type="info" title={t("documents.tabs.general_alert_title")} description={t("documents.tabs.general_alert_description")} />
 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-            <FilterBar
-              columns={columns}
-              value={query}
-              onChange={setQuery}
-              placeholder={t("documents.search_documents")}
-            />
-            <Button
-              variant="ghost"
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              title={t("documents.filters.advanced_filters") || "Filtros avançados"}
-            >
+            <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("documents.search_documents")} />
+            <Button variant="ghost" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)} title={t("documents.filters.advanced_filters") || "Filtros avançados"}>
               <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
             </Button>
           </div>
 
-          {}
           <AdvancedFilters />
 
           {userProfile && (
@@ -677,23 +553,11 @@ const DocumentPage: React.FC = () => {
       badge: getMyDocuments().length,
       content: (
         <div>
-          <InfoAlert
-            type="success"
-            title={t("documents.tabs.my_documents_alert_title")}
-            description={t("documents.tabs.my_documents_alert_description")}
-          />
+          <InfoAlert type="success" title={t("documents.tabs.my_documents_alert_title")} description={t("documents.tabs.my_documents_alert_description")} />
 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-            <FilterBar
-              columns={columns}
-              value={query}
-              onChange={setQuery}
-              placeholder={t("documents.tabs.search_my_documents")}
-            />
-            <Button
-              variant="ghost"
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            >
+            <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("documents.tabs.search_my_documents")} />
+            <Button variant="ghost" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
               <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
             </Button>
           </div>
@@ -701,11 +565,7 @@ const DocumentPage: React.FC = () => {
           <AdvancedFilters />
 
           {getMyDocuments().length === 0 ? (
-            <EmptyState
-              icon="📄"
-              title={t("documents.tabs.no_documents_created_title")}
-              description={t("documents.tabs.no_documents_created_description")}
-            />
+            <EmptyState icon="📄" title={t("documents.tabs.no_documents_created_title")} description={t("documents.tabs.no_documents_created_description")} />
           ) : (
             (() => {
               const mine = getFilteredDocuments(getMyDocuments());
@@ -727,23 +587,11 @@ const DocumentPage: React.FC = () => {
       badge: userDocuments.length,
       content: (
         <div>
-          <InfoAlert
-            type="warning"
-            title={t("documents.tabs.to_edit_alert_title")}
-            description={t("documents.tabs.to_edit_alert_description")}
-          />
+          <InfoAlert type="warning" title={t("documents.tabs.to_edit_alert_title")} description={t("documents.tabs.to_edit_alert_description")} />
 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-            <FilterBar
-              columns={columns}
-              value={query}
-              onChange={setQuery}
-              placeholder={t("documents.tabs.search_to_edit")}
-            />
-            <Button
-              variant="ghost"
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            >
+            <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("documents.tabs.search_to_edit")} />
+            <Button variant="ghost" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
               <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
             </Button>
           </div>
@@ -751,11 +599,7 @@ const DocumentPage: React.FC = () => {
           <AdvancedFilters />
 
           {userDocuments.length === 0 ? (
-            <EmptyState
-              icon="✅"
-              title={t("documents.tabs.no_documents_to_edit_title")}
-              description={t("documents.tabs.no_documents_to_edit_description")}
-            />
+            <EmptyState icon="✅" title={t("documents.tabs.no_documents_to_edit_title")} description={t("documents.tabs.no_documents_to_edit_description")} />
           ) : (
             (() => {
               const toEdit = getFilteredDocuments(userDocuments);
@@ -777,23 +621,11 @@ const DocumentPage: React.FC = () => {
       badge: userValidatorDocuments.length,
       content: (
         <div>
-          <InfoAlert
-            type="info"
-            title={t("documents.tabs.validations_alert_title")}
-            description={t("documents.tabs.validations_alert_description")}
-          />
+          <InfoAlert type="info" title={t("documents.tabs.validations_alert_title")} description={t("documents.tabs.validations_alert_description")} />
 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-            <FilterBar
-              columns={columns}
-              value={query}
-              onChange={setQuery}
-              placeholder={t("documents.tabs.search_validations")}
-            />
-            <Button
-              variant="ghost"
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            >
+            <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("documents.tabs.search_validations")} />
+            <Button variant="ghost" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
               <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
             </Button>
           </div>
@@ -801,11 +633,7 @@ const DocumentPage: React.FC = () => {
           <AdvancedFilters />
 
           {userValidatorDocuments.length === 0 ? (
-            <EmptyState
-              icon="🎉"
-              title={t("documents.tabs.no_validations_pending_title")}
-              description={t("documents.tabs.no_validations_pending_description")}
-            />
+            <EmptyState icon="🎉" title={t("documents.tabs.no_validations_pending_title")} description={t("documents.tabs.no_validations_pending_description")} />
           ) : (
             (() => {
               const vals = getFilteredDocuments(userValidatorDocuments);
@@ -823,51 +651,19 @@ const DocumentPage: React.FC = () => {
   ];
 
   return (
-    <PageLayout
-      title={t("documents.title")}
-      actions={
-        <Button onClick={handleAdd}>
-          <FiPlus />&nbsp;{t("documents.add_document")}
-        </Button>
-      }
-    >
-      {}
-      <TabContainer
-        tabs={tabs}
-        defaultTab="geral"
-        onTabChange={handleTabChange}
-      />
+    <PageLayout title={t("documents.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("documents.add_document")}</Button>}>
+      <TabContainer tabs={tabs} defaultTab="geral" onTabChange={handleTabChange} />
 
-      {}
-      <Modal
-        isOpen={modal.isOpen}
-        onClose={modal.close}
-        title={editing ? t("documents.edit_document") : t("documents.add_document")}
-      >
-        <DocumentForm
-          initial={editing ?? undefined}
-          onCancel={modal.close}
-          onSave={handleSave}
-          onEditContent={handleEditContentFromForm}
-        />
+      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("documents.edit_document") : t("documents.add_document")}>
+        <DocumentForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} onEditContent={handleEditContentFromForm} />
       </Modal>
 
-
-      <Modal
-        isOpen={editorModal.isOpen}
-        onClose={editorModal.close}
-        title={t("documents.markdown_editor")}
-      >
-        <MarkdownEditorPage
-          initialContent={editingContent}
-          onSave={handleSaveContent}
-          onCancel={editorModal.close}
-        />
+      <Modal isOpen={editorModal.isOpen} onClose={editorModal.close} title={t("documents.markdown_editor")}>
+        <MarkdownEditorPage initialContent={editingContent} onSave={handleSaveContent} onCancel={editorModal.close} />
       </Modal>
-
-
     </PageLayout>
   );
 };
 
 export default DocumentPage;
+
