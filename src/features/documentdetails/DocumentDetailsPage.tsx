@@ -392,10 +392,7 @@ const DocumentDetailsPage: React.FC = () => {
         UserId: user!.UserId,
       });
       setNewComment('');
-      notificationActions.showNotification(
-        t("messages.success.created") || 'Comentário adicionado com sucesso!',
-        'success'
-      );
+      
     } catch (error) {
       console.error('Erro ao adicionar comentário:', error);
     }
