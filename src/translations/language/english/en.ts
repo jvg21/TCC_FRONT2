@@ -17,7 +17,8 @@ export const enTranslations = {
     taskdashboard: "Tasks Dashboard",
     cascadeview: "Cascade View",
     taskboard: "Task Board",
-    reports: "Reports"
+    reports: "Reports",
+    cancel: "Cancel",
 
   },
 
@@ -276,6 +277,11 @@ export const enTranslations = {
     template_applied_from: "Content applied from template",
     select_template: "Select template (optional)",
     template_applied: "Template applied successfully!",
+    add: "Add Document",
+    selectFolderPlaceholder: "Select a folder for the document",
+    import: "Import Document",
+    importSuccess: "Document imported successfully!",
+    importError: "Error importing document",
 
     filters: {
       hide: "Hide",

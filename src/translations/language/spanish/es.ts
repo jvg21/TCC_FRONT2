@@ -17,7 +17,8 @@ export const esTranslations = {
     taskdashboard: "Panel de Tareas",
     cascadeview: "Vista en Cascada",
     taskboard: "Tablero de Tareas",
-    reports: "Reportes"
+    reports: "Reportes",
+    cancel: "Cancelar"
   },
 
   // Acciones generales
@@ -276,6 +277,11 @@ export const esTranslations = {
     template_applied_from: "Contenido aplicado de la plantilla",
     select_template: "Seleccionar plantilla (opcional)",
     template_applied: "¡Plantilla aplicada con éxito!",
+    add: "Agregar Documento",
+    selectFolderPlaceholder: "Seleccione una carpeta para el documento",
+    import: "Importar Documento",
+    importSuccess: "¡Documento importado con éxito!",
+    importError: "Error al importar documento",
 
     filters: {
       hide: "Ocultar",

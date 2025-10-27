@@ -17,7 +17,8 @@ export const ptTranslations = {
     taskdashboard: "Dashboard de Tarefas",
     cascadeview: "Visualização em Cascata",
     taskboard: "Quadro de Tarefas",
-    reports: "Relatórios"
+    reports: "Relatórios",
+    cancel: "Cancelar",
   },
 
   // Ações gerais
@@ -284,6 +285,11 @@ export const ptTranslations = {
     similar_documents : "documentos similares",
     error_during_search : "Erro durante a busca",
     loading : "Carregando...",
+    add: "Adicionar Documento",
+    selectFolderPlaceholder: "Selecione uma pasta para o documento",
+    import: "Importar Documento",
+    importSuccess: "Documento importado com sucesso!",
+    importError: "Erro ao importar documento",
 
     filters: {
       hide: "Ocultar",
