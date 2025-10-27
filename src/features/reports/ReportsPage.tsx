@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
 import { 
   FiFileText, 
   FiCheckCircle, 
@@ -14,9 +15,380 @@ import {
   FiPieChart,
   FiBarChart2
 } from 'react-icons/fi';
-import { ApplyFilterButton, Bar, BarLabel, BarValue, CardDescription, CardHeader, CardIcon, CardTitle, CardValue, ChartAxis, ChartCard, ChartContainer, ChartLabel, ChartPoint, ChartsGrid, ChartTitle, DetailedSection, DownloadButton, FilterInput, FilterLabel, FilterSection, FilterSelect, LegendColor, LegendItem, LegendLabel, LegendValue, LineChartContainer, LineChartSvg, PageContainer, PageHeader, PageSubtitle, PageTitle, PieChartContainer, PieLegend, ProgressBar, ProgressFill, ReportCard, ReportsGrid, SectionHeader, SectionTitle, StatItem, StatLabel, StatsGrid, StatValue, Table, TagCloud, TagItem, Td, Th } from '../../components/common/reportsComponents';
-import { BarChart, ChartLine, PieChart } from 'lucide-react';
+import { 
+  ChartAxis, 
+  ChartLabel, 
+  ChartLine, 
+  ChartPoint, 
+  LineChartContainer, 
+  LineChartSvg, 
+  LegendColor, 
+  LegendItem, 
+  LegendLabel, 
+  LegendValue, 
+  ChartCard, 
+  ChartsGrid, 
+  ChartTitle, 
+  PieChartContainer, 
+  PieLegend
+} from '../../components/common/reportsComponents';
+import { BarChart, PieChart } from 'lucide-react';
 
+// Componentes estilizados com suporte a tema claro/escuro
+const PageContainer = styled.div`
+  padding: 24px;
+  min-height: 100vh;
+  background: ${({ theme }) => theme.colors.background};
+`;
+
+const PageHeader = styled.div`
+  margin-bottom: 32px;
+`;
+
+const PageTitle = styled.h1`
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const PageSubtitle = styled.p`
+  margin: 0;
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.mutedText || theme.colors.muted};
+`;
+
+const FilterSection = styled.div`
+  background: ${({ theme }) => theme.colors.surface || theme.colors.cardBackground};
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+
+const FilterLabel = styled.label`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const FilterSelect = styled.select`
+  padding: 10px 16px;
+  border: 2px solid ${({ theme }) => theme.colors.border || 'rgba(0, 0, 0, 0.06)'};
+  border-radius: 8px;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.text};
+  background: ${({ theme }) => theme.colors.inputBackground || theme.colors.background};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => `${theme.colors.primary}33`};
+  }
+`;
+
+const FilterInput = styled.input`
+  padding: 10px 16px;
+  border: 2px solid ${({ theme }) => theme.colors.border || 'rgba(0, 0, 0, 0.06)'};
+  border-radius: 8px;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.text};
+  background: ${({ theme }) => theme.colors.inputBackground || theme.colors.background};
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => `${theme.colors.primary}33`};
+  }
+`;
+
+const ApplyFilterButton = styled.button`
+  padding: 10px 24px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: ${({ theme }) => `${theme.colors.primary}dd`};
+  }
+`;
+
+const ReportsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+`;
+
+const ReportCard = styled.div`
+  background: ${({ theme }) => theme.colors.surface || theme.colors.cardBackground};
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const CardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+`;
+
+const CardIcon = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+`;
+
+const CardTitle = styled.h3`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const CardValue = styled.div`
+  font-size: 36px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+  margin: 16px 0;
+`;
+
+const CardDescription = styled.p`
+  margin: 0;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.mutedText || theme.colors.muted};
+  line-height: 1.5;
+`;
+
+const DetailedSection = styled.div`
+  background: ${({ theme }) => theme.colors.surface || theme.colors.cardBackground};
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.border || 'rgba(0, 0, 0, 0.06)'};
+`;
+
+const SectionTitle = styled.h2`
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const DownloadButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+`;
+
+const StatsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+`;
+
+const StatItem = styled.div`
+  padding: 16px;
+  background: ${({ theme }) => theme.colors.backgroundAlt || theme.colors.background};
+  border-radius: 12px;
+  border-left: 4px solid ${({ theme }) => theme.colors.primary};
+`;
+
+const StatLabel = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.mutedText || theme.colors.muted};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+`;
+
+const StatValue = styled.div`
+  font-size: 24px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const ProgressBar = styled.div`
+  width: 100%;
+  height: 8px;
+  background: ${({ theme }) => theme.colors.border || 'rgba(0, 0, 0, 0.06)'};
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 12px;
+`;
+
+const ProgressFill = styled.div<{ percentage: number; color?: string }>`
+  height: 100%;
+  width: ${props => props.percentage}%;
+  background: ${props => props.color || props.theme.colors.primary};
+  transition: width 0.3s ease;
+`;
+
+const ChartContainer = styled.div`
+  margin-top: 24px;
+  padding: 20px;
+  background: ${({ theme }) => theme.colors.backgroundAlt || theme.colors.background};
+  border-radius: 12px;
+`;
+
+const BarChartContainer = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 200px;
+  padding: 20px 0;
+`;
+
+const Bar = styled.div<{ height: number; color?: string }>`
+  flex: 1;
+  background: ${props => props.color || props.theme.colors.primary};
+  height: ${props => props.height}%;
+  border-radius: 8px 8px 0 0;
+  transition: height 0.3s ease;
+  position: relative;
+  min-height: 20px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const BarLabel = styled.div`
+  text-align: center;
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.mutedText || theme.colors.muted};
+  margin-top: 8px;
+  font-weight: 600;
+`;
+
+const BarValue = styled.div`
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text};
+  white-space: nowrap;
+`;
+
+const TagCloud = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+`;
+
+const TagItem = styled.div<{ size: number }>`
+  padding: ${props => 8 + props.size * 2}px ${props => 16 + props.size * 3}px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border-radius: 24px;
+  font-size: ${props => 12 + props.size * 2}px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+`;
+
+const Th = styled.th`
+  text-align: left;
+  padding: 12px;
+  background: ${({ theme }) => theme.colors.backgroundAlt || theme.colors.background};
+  color: ${({ theme }) => theme.colors.text};
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.border || 'rgba(0, 0, 0, 0.06)'};
+`;
+
+const Td = styled.td`
+  padding: 12px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border || 'rgba(0, 0, 0, 0.06)'};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: 14px;
+`;
+
+const SectionHeading = styled.h3`
+  margin-top: 32px;
+  margin-bottom: 16px;
+  color: ${({ theme }) => theme.colors.text};
+`;
 
 // Componente Principal
 const ReportsPage: React.FC = () => {
@@ -80,81 +452,76 @@ const ReportsPage: React.FC = () => {
 
   const tasksData = {
     total: 456,
-    completed: 289,
-    pending: 134,
-    overdue: 33,
-    completionRate: 63.4,
+    completed: 345,
+    overdue: 23,
+    completionRate: 75,
     byPriority: {
-      high: 67,
-      medium: 245,
-      low: 144
+      high: 78,
+      medium: 189,
+      low: 189
     }
   };
 
   const groupsData = {
-    total: 23,
-    members: 187,
-    avgMembersPerGroup: 8.1,
+    total: 15,
+    totalMembers: 134,
+    avgMembersPerGroup: 8.9,
     topGroups: [
-      { name: 'Desenvolvimento', members: 34 },
-      { name: 'Comercial', members: 28 },
-      { name: 'Financeiro', members: 19 }
+      { name: 'Financeiro', members: 23 },
+      { name: 'Desenvolvimento', members: 18 },
+      { name: 'Marketing', members: 15 },
+      { name: 'RH', members: 12 },
+      { name: 'Comercial', members: 10 }
     ]
   };
 
   const aiData = {
-    totalRequests: 2345,
-    totalTokens: 1234567,
-    avgTokensPerRequest: 526,
+    totalRequests: 1234,
+    totalTokens: 5678912,
+    avgTokensPerRequest: 4602,
+    estimatedCost: '$56.79',
     topUsers: [
-      { name: 'Ana Paula', requests: 234 },
-      { name: 'Carlos Eduardo', requests: 198 },
-      { name: 'Beatriz Lima', requests: 167 }
-    ],
-    estimatedCost: 'R$ 247,89'
+      { name: 'João Silva', requests: 234 },
+      { name: 'Maria Santos', requests: 198 },
+      { name: 'Pedro Costa', requests: 167 }
+    ]
   };
 
-  const documentsOverTime = [
-    { month: 'Jan', value: 98 },
-    { month: 'Fev', value: 112 },
-    { month: 'Mar', value: 135 },
-    { month: 'Abr', value: 156 },
-    { month: 'Mai', value: 178 },
-    { month: 'Jun', value: 142 }
-  ];
-
-  const validationStatusData = {
-    approved: 745,
-    rejected: 89,
-    returned: 58,
-    pending: 306
-  };
-
+  // Manipuladores de eventos
   const handleDownloadReport = () => {
-    alert(t('reports.sections.export_report'));
+    alert('Download de relatório em PDF iniciado');
   };
 
   const handleApplyFilter = () => {
-    console.log('Filtro aplicado:', { timeFilter, startDate, endDate });
+    alert(`Filtro aplicado: ${timeFilter}${timeFilter === 'custom' ? ` de ${startDate} a ${endDate}` : ''}`);
   };
 
-  const maxCount = Math.max(...documentsData.byPeriod.map(d => d.count));
+  // Helper para renderizar o relatório selecionado
+  const renderSelectedReport = () => {
+    // Implementação futura para relatórios detalhados específicos
+  };
 
   return (
     <PageContainer>
       <PageHeader>
-        <PageTitle>📊 {t('reports.title')}</PageTitle>
-        <PageSubtitle>{t('reports.subtitle')}</PageSubtitle>
+        <PageTitle>{t('reports.title') || "Relatórios e Análises"}</PageTitle>
+        <PageSubtitle>{t('reports.subtitle') || "Visualize insights e métricas do sistema Documentin"}</PageSubtitle>
       </PageHeader>
 
-      {/* Filtro de Tempo */}
+      {/* Filtros */}
       <FilterSection>
         <FilterLabel>
           <FiCalendar /> {t('reports.filters.period')}:
         </FilterLabel>
-        <FilterSelect
-          value={timeFilter} 
-          onChange={(e) => setTimeFilter(e.target.value)}
+        <FilterSelect 
+          value={timeFilter}
+          onChange={(e) => {
+            setTimeFilter(e.target.value);
+            if (e.target.value !== 'custom') {
+              setStartDate('');
+              setEndDate('');
+            }
+          }}
         >
           <option value="all">{t('reports.filters.all_periods')}</option>
           <option value="today">{t('reports.filters.today')}</option>
@@ -167,13 +534,17 @@ const ReportsPage: React.FC = () => {
 
         {timeFilter === 'custom' && (
           <>
-            <FilterLabel>{t('reports.filters.from')}:</FilterLabel>
+            <FilterLabel>
+              <FiCalendar /> {t('reports.filters.from')}:
+            </FilterLabel>
             <FilterInput 
               type="date" 
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
-            <FilterLabel>{t('reports.filters.to')}:</FilterLabel>
+            <FilterLabel>
+              <FiCalendar /> {t('reports.filters.to')}:
+            </FilterLabel>
             <FilterInput 
               type="date" 
               value={endDate}
@@ -251,7 +622,7 @@ const ReportsPage: React.FC = () => {
           <CardTitle>{t('reports.cards.groups')}</CardTitle>
           <CardValue>{groupsData.total}</CardValue>
           <CardDescription>
-            {groupsData.members} {t('reports.cards.total_members')}
+            {groupsData.totalMembers} {t('reports.cards.total_members')}
           </CardDescription>
         </ReportCard>
 
@@ -267,86 +638,11 @@ const ReportsPage: React.FC = () => {
         </ReportCard>
       </ReportsGrid>
 
-      {/* Gráficos */}
-      <ChartsGrid>
-        <ChartCard>
-          <ChartTitle>
-            <FiPieChart /> {t('reports.charts.validation_distribution')}
-          </ChartTitle>
-          <PieChartContainer>
-            <PieChart />
-            <PieLegend>
-              <LegendItem>
-                <LegendColor color="#667eea" />
-                <LegendLabel>{t('reports.charts.approved')}:</LegendLabel>
-                <LegendValue>{validationStatusData.approved}</LegendValue>
-              </LegendItem>
-              <LegendItem>
-                <LegendColor color="#48bb78" />
-                <LegendLabel>{t('reports.charts.rejected')}:</LegendLabel>
-                <LegendValue>{validationStatusData.rejected}</LegendValue>
-              </LegendItem>
-              <LegendItem>
-                <LegendColor color="#f56565" />
-                <LegendLabel>{t('reports.charts.returned')}:</LegendLabel>
-                <LegendValue>{validationStatusData.returned}</LegendValue>
-              </LegendItem>
-              <LegendItem>
-                <LegendColor color="#ed8936" />
-                <LegendLabel>{t('reports.charts.pending')}:</LegendLabel>
-                <LegendValue>{validationStatusData.pending}</LegendValue>
-              </LegendItem>
-            </PieLegend>
-          </PieChartContainer>
-        </ChartCard>
-
-        <ChartCard>
-          <ChartTitle>
-            <FiBarChart2 /> {t('reports.charts.document_evolution')}
-          </ChartTitle>
-          <LineChartContainer>
-            <LineChartSvg viewBox="0 0 600 300" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#667eea" />
-                  <stop offset="100%" stopColor="#764ba2" />
-                </linearGradient>
-              </defs>
-              <ChartAxis x1="50" y1="250" x2="550" y2="250" />
-              <ChartAxis x1="50" y1="50" x2="50" y2="250" />
-              <ChartLine
-                points={documentsOverTime.map((d, i) => 
-                  `${50 + (i * 85)},${250 - (d.value * 1.1)}`
-                ).join(' ')}
-              />
-              {documentsOverTime.map((d, i) => (
-                <ChartPoint
-                  key={i}
-                  cx={50 + (i * 85)}
-                  cy={250 - (d.value * 1.1)}
-                  r="6"
-                />
-              ))}
-              {documentsOverTime.map((d, i) => (
-                <ChartLabel
-                  key={i}
-                  x={50 + (i * 85)}
-                  y="270"
-                  textAnchor="middle"
-                >
-                  {d.month}
-                </ChartLabel>
-              ))}
-            </LineChartSvg>
-          </LineChartContainer>
-        </ChartCard>
-      </ChartsGrid>
-
       {/* Relatório de Documentos */}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiFileText /> {t('reports.sections.detailed_analysis')}
+            <FiFileText /> {t('reports.sections.document_stats')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
@@ -361,49 +657,33 @@ const ReportsPage: React.FC = () => {
           <StatItem>
             <StatLabel>{t('reports.sections.active_documents')}</StatLabel>
             <StatValue>{documentsData.active}</StatValue>
-            <ProgressBar>
-              <ProgressFill 
-                percentage={(documentsData.active / documentsData.total) * 100} 
-                color="#48bb78"
-              />
-            </ProgressBar>
           </StatItem>
           <StatItem>
             <StatLabel>{t('reports.sections.validated_documents')}</StatLabel>
             <StatValue>{documentsData.validated}</StatValue>
-            <ProgressBar>
-              <ProgressFill 
-                percentage={(documentsData.validated / documentsData.total) * 100} 
-                color="#667eea"
-              />
-            </ProgressBar>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.awaiting_validation')}</StatLabel>
+            <StatLabel>{t('reports.sections.pending_documents')}</StatLabel>
             <StatValue>{documentsData.pending}</StatValue>
-            <ProgressBar>
-              <ProgressFill 
-                percentage={(documentsData.pending / documentsData.total) * 100} 
-                color="#ed8936"
-              />
-            </ProgressBar>
           </StatItem>
         </StatsGrid>
 
         <ChartContainer>
-          <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>
-            {t('reports.sections.documents_created_period')}
-          </h3>
-          <BarChart>
+          <SectionHeading>
+            {t('reports.sections.documents_by_period')}
+          </SectionHeading>
+          <BarChartContainer>
             {documentsData.byPeriod.map((item, index) => (
-              <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Bar height={(item.count / maxCount) * 100}>
+              <div key={index} style={{ flex: '1' }}>
+                <Bar 
+                  height={(item.count / Math.max(...documentsData.byPeriod.map(i => i.count))) * 100}
+                >
                   <BarValue>{item.count}</BarValue>
                 </Bar>
                 <BarLabel>{item.month}</BarLabel>
               </div>
             ))}
-          </BarChart>
+          </BarChartContainer>
         </ChartContainer>
       </DetailedSection>
 
@@ -411,7 +691,7 @@ const ReportsPage: React.FC = () => {
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiCheckCircle /> {t('reports.sections.validation_report')}
+            <FiCheckCircle /> {t('reports.sections.validation_stats')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
@@ -424,80 +704,48 @@ const ReportsPage: React.FC = () => {
             <StatValue>{validationsData.total}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.approval_rate')}</StatLabel>
-            <StatValue>{validationsData.approvalRate}%</StatValue>
+            <StatLabel>{t('reports.sections.approved_documents')}</StatLabel>
+            <StatValue>{validationsData.approved}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.average_time')}</StatLabel>
-            <StatValue>{validationsData.avgTime}</StatValue>
+            <StatLabel>{t('reports.sections.rejected_documents')}</StatLabel>
+            <StatValue style={{ color: '#f56565' }}>{validationsData.rejected}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.returned_for_revision')}</StatLabel>
+            <StatValue style={{ color: '#ed8936' }}>{validationsData.returned}</StatValue>
           </StatItem>
         </StatsGrid>
 
-        <h3 style={{ marginTop: '32px', marginBottom: '16px', color: '#2d3748' }}>
-          {t('reports.sections.top_validators')}
-        </h3>
-        <Table>
-          <thead>
-            <tr>
-              <Th>{t('reports.sections.validator')}</Th>
-              <Th>{t('reports.sections.validations')}</Th>
-              <Th>{t('reports.sections.participation')}</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {validationsData.topValidators.map((validator, index) => (
-              <tr key={index}>
-                <Td>{validator.name}</Td>
-                <Td><strong>{validator.count}</strong></Td>
-                <Td>
-                  <ProgressBar>
-                    <ProgressFill 
-                      percentage={(validator.count / validationsData.total) * 100} 
-                      color="#667eea"
-                    />
-                  </ProgressBar>
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-
         <ChartContainer>
-          <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>
-            {t('reports.sections.status_distribution')}
-          </h3>
-          <StatsGrid>
-            <StatItem>
-              <StatLabel>{t('reports.charts.approved')}</StatLabel>
-              <StatValue>{validationsData.approved}</StatValue>
-              <ProgressBar>
-                <ProgressFill 
-                  percentage={(validationsData.approved / validationsData.total) * 100} 
-                  color="#48bb78"
-                />
-              </ProgressBar>
-            </StatItem>
-            <StatItem>
-              <StatLabel>{t('reports.charts.rejected')}</StatLabel>
-              <StatValue>{validationsData.rejected}</StatValue>
-              <ProgressBar>
-                <ProgressFill 
-                  percentage={(validationsData.rejected / validationsData.total) * 100} 
-                  color="#f56565"
-                />
-              </ProgressBar>
-            </StatItem>
-            <StatItem>
-              <StatLabel>{t('reports.charts.returned')}</StatLabel>
-              <StatValue>{validationsData.returned}</StatValue>
-              <ProgressBar>
-                <ProgressFill 
-                  percentage={(validationsData.returned / validationsData.total) * 100} 
-                  color="#ed8936"
-                />
-              </ProgressBar>
-            </StatItem>
-          </StatsGrid>
+          <SectionHeading>
+            {t('reports.sections.top_validators')}
+          </SectionHeading>
+          <Table>
+            <thead>
+              <tr>
+                <Th>{t('reports.sections.validator')}</Th>
+                <Th>{t('reports.sections.documents_validated')}</Th>
+                <Th>{t('reports.sections.contribution')}</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {validationsData.topValidators.map((validator, index) => (
+                <tr key={index}>
+                  <Td>{validator.name}</Td>
+                  <Td><strong>{validator.count}</strong></Td>
+                  <Td>
+                    <ProgressBar>
+                      <ProgressFill 
+                        percentage={(validator.count / validationsData.topValidators[0].count) * 100} 
+                        color="#667eea"
+                      />
+                    </ProgressBar>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </ChartContainer>
       </DetailedSection>
 
@@ -505,7 +753,7 @@ const ReportsPage: React.FC = () => {
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiClock /> {t('reports.sections.version_control')}
+            <FiClock /> {t('reports.sections.version_history')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
@@ -519,15 +767,15 @@ const ReportsPage: React.FC = () => {
           </StatItem>
         </StatsGrid>
 
-        <h3 style={{ marginTop: '32px', marginBottom: '16px', color: '#2d3748' }}>
-          {t('reports.sections.most_edited')}
-        </h3>
+        <SectionHeading>
+          {t('reports.sections.most_edited_documents')}
+        </SectionHeading>
         <Table>
           <thead>
             <tr>
               <Th>{t('reports.sections.document')}</Th>
-              <Th>{t('reports.sections.versions')}</Th>
-              <Th>{t('reports.sections.activity')}</Th>
+              <Th>{t('reports.sections.version_count')}</Th>
+              <Th>{t('reports.sections.relative')}</Th>
             </tr>
           </thead>
           <tbody>
@@ -567,9 +815,9 @@ const ReportsPage: React.FC = () => {
           </StatItem>
         </StatsGrid>
 
-        <h3 style={{ marginTop: '32px', marginBottom: '16px', color: '#2d3748' }}>
+        <SectionHeading>
           {t('reports.sections.tag_cloud')}
-        </h3>
+        </SectionHeading>
         <TagCloud>
           {tagsData.topTags.map((tag, index) => (
             <TagItem key={index} size={tag.size}>
@@ -606,9 +854,9 @@ const ReportsPage: React.FC = () => {
         </StatsGrid>
 
         <ChartContainer>
-          <h3 style={{ marginBottom: '20px', color: '#2d3748' }}>
+          <SectionHeading>
             {t('reports.sections.priority_distribution')}
-          </h3>
+          </SectionHeading>
           <StatsGrid>
             <StatItem>
               <StatLabel>{t('reports.sections.high_priority')}</StatLabel>
@@ -636,7 +884,7 @@ const ReportsPage: React.FC = () => {
               <ProgressBar>
                 <ProgressFill 
                   percentage={(tasksData.byPriority.low / tasksData.total) * 100} 
-                  color="#48bb78"
+                  color="#38b2ac"
                 />
               </ProgressBar>
             </StatItem>
@@ -662,23 +910,23 @@ const ReportsPage: React.FC = () => {
           </StatItem>
           <StatItem>
             <StatLabel>{t('reports.sections.total_members')}</StatLabel>
-            <StatValue>{groupsData.members}</StatValue>
+            <StatValue>{groupsData.totalMembers}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.average_per_group')}</StatLabel>
+            <StatLabel>{t('reports.sections.avg_members_per_group')}</StatLabel>
             <StatValue>{groupsData.avgMembersPerGroup}</StatValue>
           </StatItem>
         </StatsGrid>
 
-        <h3 style={{ marginTop: '32px', marginBottom: '16px', color: '#2d3748' }}>
-          {t('reports.sections.most_populous')}
-        </h3>
+        <SectionHeading>
+          {t('reports.sections.largest_groups')}
+        </SectionHeading>
         <Table>
           <thead>
             <tr>
               <Th>{t('reports.sections.group')}</Th>
               <Th>{t('reports.sections.members')}</Th>
-              <Th>{t('reports.sections.distribution')}</Th>
+              <Th>{t('reports.sections.relative_size')}</Th>
             </tr>
           </thead>
           <tbody>
@@ -730,9 +978,9 @@ const ReportsPage: React.FC = () => {
           </StatItem>
         </StatsGrid>
 
-        <h3 style={{ marginTop: '32px', marginBottom: '16px', color: '#2d3748' }}>
+        <SectionHeading>
           {t('reports.sections.top_users')}
-        </h3>
+        </SectionHeading>
         <Table>
           <thead>
             <tr>
