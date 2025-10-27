@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import {  FiPlus } from "react-icons/fi";
+import { FiPlus, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { Group } from "./types";
@@ -19,14 +19,74 @@ import { ActionButtons } from "../../components/lib/ActionButtons";
 
 const GroupPage: React.FC = () => {
   const { activeGroup, deactiveGroup, create, update, softDelete } = useGroup();
-  const [searchStatus, setSearchStatus] = useState<number>(1)
-  const Group = searchStatus === 1 ? activeGroup : searchStatus === 2 ? deactiveGroup : [...activeGroup, ...deactiveGroup]
+  const [searchStatus, setSearchStatus] = useState<number>(1);
+  const Group = searchStatus === 1 ? activeGroup : searchStatus === 2 ? deactiveGroup : [...activeGroup, ...deactiveGroup];
   const [editing, setEditing] = useState<Group | null>(null);
   const [query, setQuery] = useState("");
   const modal = useModal();
   const { t } = useTranslation();
-  const { userProfile } = useAuthContext()
+  const { userProfile } = useAuthContext();
 
+  // ==== Paginação (adição) ====
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
+  const resetToFirstPage = () => setCurrentPage(1);
+
+  useEffect(() => {
+    resetToFirstPage();
+  }, [query, searchStatus]);
+
+  const paginate = (rows: Group[]) => {
+    const start = (currentPage - 1) * pageSize;
+    return rows.slice(start, start + pageSize);
+  };
+
+  const PaginationBar: React.FC<{ total: number }> = ({ total }) => {
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    useEffect(() => {
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages);
+      }
+    }, [totalPages]);
+
+    if (total === 0) return null;
+
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 12 }}>
+        <div style={{ fontSize: 14, color: '#666' }}>
+          {t("pagination.showing") || "Exibindo"} {(currentPage - 1) * pageSize + 1}
+          –{Math.min(currentPage * pageSize, total)} {t("pagination.of") || "de"} {total}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label style={{ fontSize: 14, color: '#666' }}>
+            {t("pagination.rows_per_page") || "Linhas por página"}:
+          </label>
+          <select
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); resetToFirstPage(); }}
+            style={{ padding: '6px 8px', border: '1px solid #ced4da', borderRadius: 6 }}
+          >
+            {[5, 10, 20, 50, 100].map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+
+          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+            <FiChevronLeft /> {t("pagination.prev") || "Anterior"}
+          </Button>
+          <div style={{ minWidth: 60, textAlign: 'center' }}>
+            {currentPage} / {totalPages}
+          </div>
+          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
+            {t("pagination.next") || "Próxima"} <FiChevronRight />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+  // ==== fim paginação ====
 
   const Columns = (onEdit: (c: Group) => void, onToggleStatus: (id: number) => void): ColumnDef<Group>[] => {
     const baseCols: ColumnDef<Group>[] = [
@@ -51,67 +111,79 @@ const GroupPage: React.FC = () => {
   };
 
 
-const filteredGroup = React.useMemo(() => {
-  if (!query) return Group;
+  const filteredGroup = React.useMemo(() => {
+    if (!query) return Group;
 
-  const searchQuery = query.toLowerCase();
-  return Group.filter(group => {
-    const searchableText = [
-      group.Name || "",
-      group.Description || "",
-    ].join(" ").toLowerCase();
+    const searchQuery = query.toLowerCase();
+    return Group.filter(group => {
+      const searchableText = [
+        group.Name || "",
+        group.Description || "",
+      ].join(" ").toLowerCase();
 
-    return searchableText.includes(searchQuery);
-  });
-}, [Group, query]);
+      return searchableText.includes(searchQuery);
+    });
+  }, [Group, query]);
 
-const handleAdd = () => {
-  setEditing(null);
-  modal.open();
-};
+  const handleAdd = () => {
+    setEditing(null);
+    modal.open();
+  };
 
-const handleEdit = (c: Group) => {
-  setEditing(c);
-  modal.open();
-};
+  const handleEdit = (c: Group) => {
+    setEditing(c);
+    modal.open();
+  };
 
-const handleSave = (payload: any) => {
-  if (editing) {
-    update(editing.GroupId, payload);
-  } else {
-    create(payload);
-  }
-  modal.close();
-};
-
-const handleToggleStatus = async (id: number) => {
-  try {
-    await softDelete(id);
-  } catch (error) {
-    console.error("Erro ao alterar status da folder:", error);
-  }
-};
-
-const columns = Columns(handleEdit, handleToggleStatus);
-
-return (
-  <PageLayout title={t("groups.title")} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("groups.add_group")}</Button>}>
-    <FilterBar
-      columns={columns}
-      value={query}
-      onChange={setQuery}
-      placeholder={t("groups.search_groups")}
-    />
-    {
-      userProfile &&
-      <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+  const handleSave = (payload: any) => {
+    if (editing) {
+      update(editing.GroupId, payload);
+    } else {
+      create(payload);
     }
-    <DataTable columns={columns} data={filteredGroup} />
-    <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("groups.edit_group") : t("groups.add_group")}>
-      <GroupForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
-    </Modal>
-  </PageLayout>
-);
+    modal.close();
+  };
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await softDelete(id);
+    } catch (error) {
+      console.error("Erro ao alterar status da folder:", error);
+    }
+  };
+
+  const columns = Columns(handleEdit, handleToggleStatus);
+
+  return (
+    <PageLayout title={t("groups.title")} actions={<Button disabled={!userProfile} onClick={handleAdd}><FiPlus />&nbsp;{t("groups.add_group")}</Button>}>
+      <FilterBar
+        columns={columns}
+        value={query}
+        onChange={setQuery}
+        placeholder={t("groups.search_groups")}
+      />
+      {
+        userProfile &&
+        <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+      }
+
+      {/* Tabela + Paginação */}
+      {(() => {
+        const total = filteredGroup.length;
+        const page = paginate(filteredGroup);
+        return (
+          <>
+            <DataTable columns={columns} data={page} />
+            <PaginationBar total={total} />
+          </>
+        );
+      })()}
+
+      <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("groups.edit_group") : t("groups.add_group")}>
+        <GroupForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
+      </Modal>
+    </PageLayout>
+  );
 };
 
 export default GroupPage;
