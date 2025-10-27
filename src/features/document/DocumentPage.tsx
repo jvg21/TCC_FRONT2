@@ -984,7 +984,7 @@ const DocumentPage: React.FC = () => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
             <Button onClick={importModal.close} variant="ghost">
-              {t('common.cancel') || 'Cancelar'}
+              {t('navigation.cancel') || 'Cancelar'}
             </Button>
             <Button onClick={handleImportDocument} variant="primary">
               {t('documents.import') || 'Importar'}
