@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus, FiEye, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter } from "react-icons/fi";
+import { FiPlus, FiEye, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -117,8 +117,70 @@ const DocumentPage: React.FC = () => {
   const { updateValidationStatus } = useDocument();
   const { theme } = useThemeContext();
 
-
   const navigate = useNavigate();
+
+  // === Paginação (adição) ===
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
+  const resetToFirstPage = () => setCurrentPage(1);
+
+  useEffect(() => {
+    resetToFirstPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, JSON.stringify(dateFilter), authorFilter, tagFilter, showAdvancedFilters, searchStatus, activeTabId]);
+
+  const paginate = (rows: Document[]) => {
+    const start = (currentPage - 1) * pageSize;
+    return rows.slice(start, start + pageSize);
+  };
+
+  const PaginationBar: React.FC<{ total: number }> = ({ total }) => {
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    // Garante que a página atual nunca ultrapasse o total de páginas ao mudar filtros/tamanho
+    useEffect(() => {
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages);
+      }
+    }, [totalPages]);
+
+    if (total === 0) return null;
+
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 12 }}>
+        <div style={{ fontSize: 14, color: '#666' }}>
+          {t("pagination.showing") || "Exibindo"} {(currentPage - 1) * pageSize + 1}
+          –{Math.min(currentPage * pageSize, total)} {t("pagination.of") || "de"} {total}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label style={{ fontSize: 14, color: '#666' }}>
+            {t("pagination.rows_per_page") || "Linhas por página"}:
+          </label>
+          <select
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); resetToFirstPage(); }}
+            style={{ padding: '6px 8px', border: '1px solid #ced4da', borderRadius: 6 }}
+          >
+            {[5, 10, 20, 50, 100].map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+
+          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+            <FiChevronLeft /> {t("pagination.prev") || "Anterior"}
+          </Button>
+          <div style={{ minWidth: 60, textAlign: 'center' }}>
+            {currentPage} / {totalPages}
+          </div>
+          <Button variant="ghost" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>
+            {t("pagination.next") || "Próxima"} <FiChevronRight />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+  // === fim paginação ===
 
   useEffect(() => {
     const loadDocumentsByTag = async () => {
@@ -595,7 +657,16 @@ const DocumentPage: React.FC = () => {
               <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
             </div>
           )}
-          <DataTable columns={columns} data={getFilteredDocuments(Documents)} />
+
+          {(() => {
+            const filtered = getFilteredDocuments(Documents);
+            return (
+              <>
+                <DataTable columns={columns} data={paginate(filtered)} />
+                <PaginationBar total={filtered.length} />
+              </>
+            );
+          })()}
         </div>
       )
     },
@@ -636,7 +707,15 @@ const DocumentPage: React.FC = () => {
               description={t("documents.tabs.no_documents_created_description")}
             />
           ) : (
-            <DataTable columns={columns} data={getFilteredDocuments(getMyDocuments())} />
+            (() => {
+              const mine = getFilteredDocuments(getMyDocuments());
+              return (
+                <>
+                  <DataTable columns={columns} data={paginate(mine)} />
+                  <PaginationBar total={mine.length} />
+                </>
+              );
+            })()
           )}
         </div>
       )
@@ -678,7 +757,15 @@ const DocumentPage: React.FC = () => {
               description={t("documents.tabs.no_documents_to_edit_description")}
             />
           ) : (
-            <DataTable columns={columns} data={getFilteredDocuments(userDocuments)} />
+            (() => {
+              const toEdit = getFilteredDocuments(userDocuments);
+              return (
+                <>
+                  <DataTable columns={columns} data={paginate(toEdit)} />
+                  <PaginationBar total={toEdit.length} />
+                </>
+              );
+            })()
           )}
         </div>
       )
@@ -720,7 +807,15 @@ const DocumentPage: React.FC = () => {
               description={t("documents.tabs.no_validations_pending_description")}
             />
           ) : (
-            <DataTable columns={columns} data={getFilteredDocuments(userValidatorDocuments)} />
+            (() => {
+              const vals = getFilteredDocuments(userValidatorDocuments);
+              return (
+                <>
+                  <DataTable columns={columns} data={paginate(vals)} />
+                  <PaginationBar total={vals.length} />
+                </>
+              );
+            })()
           )}
         </div>
       )
