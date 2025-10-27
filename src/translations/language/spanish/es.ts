@@ -282,6 +282,9 @@ export const esTranslations = {
     import: "Importar Documento",
     importSuccess: "¡Documento importado con éxito!",
     importError: "Error al importar documento",
+    importDocument: "Importar Documento",
+    selectFolder: "Seleccionar Carpeta",
+    
 
     filters: {
       hide: "Ocultar",

@@ -282,6 +282,8 @@ export const enTranslations = {
     import: "Import Document",
     importSuccess: "Document imported successfully!",
     importError: "Error importing document",
+    importDocument: "Import Document",
+    selectFolder: "Select Folder",
 
     filters: {
       hide: "Hide",

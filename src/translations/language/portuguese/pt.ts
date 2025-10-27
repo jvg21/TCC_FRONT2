@@ -290,6 +290,8 @@ export const ptTranslations = {
     import: "Importar Documento",
     importSuccess: "Documento importado com sucesso!",
     importError: "Erro ao importar documento",
+    importDocument: "Importar Documento",
+    selectFolder: "Selecionar Pasta",
 
     filters: {
       hide: "Ocultar",
