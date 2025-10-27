@@ -445,8 +445,8 @@ const handleRagSearch = async () => {
       notificationActions.showError(t("documents.no_similar_documents"));
     }
   } catch (error) {
-    console.error("Error performing RAG search:", error);
-    notificationActions.showError("Erro ao realizar a busca semântica");
+    console.error(t("documents.error_during_search"), error);
+    notificationActions.showError(t("documents.error_during_search"));
   } finally {
     setIsRagSearching(false);
   }
@@ -628,7 +628,7 @@ const handleRagSearch = async () => {
             setTagFilter(null);
           }}
         >
-          {t("documents.filters.clear_filters") || "Limpar filtros"}
+          {t("documents.filters.clear_filters") }
         </Button>
       </div>
     </div>
