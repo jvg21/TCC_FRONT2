@@ -253,6 +253,9 @@ export const ptTranslations = {
   documents: {
     title: "Documentos",
     add_document: "Adicionar Documento",
+    semantic_search: "Busca Semântica",
+    semantic_search_description: "Encontre documentos semelhantes em conteúdo usando embeddings com tecnologia de IA.",
+    search_by_meaning: "Buscar por significado...",
     edit_document: "Editar Documento",
     search_documents: "Buscar documentos...",
     title_field: "Título",

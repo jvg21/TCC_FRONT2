@@ -357,7 +357,7 @@ const DocumentDetailsPage: React.FC = () => {
   }, [showVersionHistory]);
 
   const handleBack = () => {
-    navigate('/documents');
+    navigate('/document');
   };
 
   const handleSaveDocument = async () => {

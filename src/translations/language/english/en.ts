@@ -250,6 +250,10 @@ export const enTranslations = {
   // Documents
   documents: {
     title: "Documents",
+    semantic_search: "Semantic Search",
+    semantic_search_description: "Find documents similar in content using AI-powered embeddings.",
+    search_by_meaning: "Search by meaning...",
+
     add_document: "Add Document",
     edit_document: "Edit Document",
     search_documents: "Search documents...",

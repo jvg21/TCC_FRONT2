@@ -79,7 +79,8 @@ export const useDocument = () => {
     IsActive: apiDoc.isActive,
     IsValid: apiDoc.isValid,
     CreatedAt: apiDoc.createdAt,
-    UpdatedAt: apiDoc.updatedAt
+    UpdatedAt: apiDoc.updatedAt,
+    Embedding: apiDoc.embedding || null
   });
 
 
