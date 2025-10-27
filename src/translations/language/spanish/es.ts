@@ -96,6 +96,7 @@ export const esTranslations = {
     updateSuccess: "¡Usuario actualizado exitosamente!",
     createError: "Error al crear usuario",
     no_select: "Seleccione un usuario",
+    updateStatusSuccess: "¡Estado del usuario cambiado con éxito!",
   },
 
   // Grupos
@@ -334,7 +335,16 @@ export const esTranslations = {
         button: "Versiones del Documento",
         today: "Hoy",
         current_version: "Versión Actual",
-        title: "Historial de Versiones"
+        title: "Historial de Versiones",
+
+      summary_types: {
+          structured: "Resumen estándar",
+          structured_desc: "Resumen completo y estructurado del documento",
+          comparative: "Resumen en tópicos",
+          comparative_desc: "Lista los puntos principales en formato de tópicos",
+          analytical: "Resumen corto (TL;DR)",
+          analytical_desc: "Versión resumida destacando solo lo esencial"
+        },
       },
 
       export: {
@@ -695,114 +705,114 @@ export const esTranslations = {
   },
 
   // Informes
-reports: {
-  title: "Informes y Análisis",
-  subtitle: "Visualice conocimientos y métricas del sistema Documentin",
-  
-  // Filtros
-  filters: {
-    period: "Período",
-    all_periods: "Todos los períodos",
-    today: "Hoy",
-    last_week: "Última semana",
-    last_month: "Último mes",
-    last_quarter: "Último trimestre",
-    last_year: "Último año",
-    custom: "Personalizado",
-    from: "Desde",
-    to: "Hasta",
-    apply_filter: "Aplicar Filtro"
-  },
+  reports: {
+    title: "Informes y Análisis",
+    subtitle: "Visualice conocimientos y métricas del sistema Documentin",
 
-  // Tarjetas
-  cards: {
-    documents: "Documentos",
-    validations: "Validaciones",
-    versions: "Versiones",
-    tags: "Etiquetas",
-    tasks: "Tareas",
-    groups: "Grupos",
-    ai: "IA",
-    active: "activos",
-    validated: "validados",
-    approval_rate: "Tasa de aprobación",
-    complete_history: "Historial completo de ediciones",
-    active_system: "Sistema de categorización activo",
-    completed: "completadas",
-    overdue: "atrasadas",
-    total_members: "miembros en total",
-    processed_requests: "Solicitudes procesadas"
-  },
+    // Filtros
+    filters: {
+      period: "Período",
+      all_periods: "Todos los períodos",
+      today: "Hoy",
+      last_week: "Última semana",
+      last_month: "Último mes",
+      last_quarter: "Último trimestre",
+      last_year: "Último año",
+      custom: "Personalizado",
+      from: "Desde",
+      to: "Hasta",
+      apply_filter: "Aplicar Filtro"
+    },
 
-  // Gráficos
-  charts: {
-    validation_distribution: "Distribución de Validaciones",
-    document_evolution: "Evolución de Documentos",
-    approved: "Aprobadas",
-    rejected: "Rechazadas",
-    returned: "Devueltas",
-    pending: "Pendientes"
-  },
+    // Tarjetas
+    cards: {
+      documents: "Documentos",
+      validations: "Validaciones",
+      versions: "Versiones",
+      tags: "Etiquetas",
+      tasks: "Tareas",
+      groups: "Grupos",
+      ai: "IA",
+      active: "activos",
+      validated: "validados",
+      approval_rate: "Tasa de aprobación",
+      complete_history: "Historial completo de ediciones",
+      active_system: "Sistema de categorización activo",
+      completed: "completadas",
+      overdue: "atrasadas",
+      total_members: "miembros en total",
+      processed_requests: "Solicitudes procesadas"
+    },
 
-  // Secciones Detalladas
-  sections: {
-    detailed_analysis: "Análisis Detallado de Documentos",
-    validation_report: "Informe de Validaciones",
-    version_control: "Control de Versiones",
-    tags_analysis: "Análisis de Etiquetas",
-    tasks_analysis: "Análisis de Tareas",
-    groups_analysis: "Análisis de Grupos",
-    ai_usage: "Análisis de Uso de IA",
-    export_report: "Exportar Informe",
-    
-    documents_created_period: "Documentos Creados por Período",
-    total_documents: "Total de Documentos",
-    active_documents: "Documentos Activos",
-    validated_documents: "Documentos Validados",
-    awaiting_validation: "Esperando Validación",
-    
-    total_validations: "Total de Validaciones",
-    approval_rate: "Tasa de Aprobación",
-    average_time: "Tiempo Promedio",
-    top_validators: "Principales Validadores",
-    validator: "Validador",
-    validations: "Validaciones",
-    participation: "Participación",
-    status_distribution: "Distribución de Estado",
-    
-    total_versions: "Total de Versiones",
-    most_edited: "Documentos Más Editados",
-    document: "Documento",
-    versions: "Versiones",
-    activity: "Actividad",
-    
-    total_tags: "Total de Etiquetas",
-    tag_cloud: "Nube de Etiquetas",
-    
-    total_tasks: "Total de Tareas",
-    completion_rate: "Tasa de Finalización",
-    overdue_tasks: "Tareas Atrasadas",
-    priority_distribution: "Distribución por Prioridad",
-    high_priority: "Alta Prioridad",
-    medium_priority: "Prioridad Media",
-    low_priority: "Baja Prioridad",
-    
-    total_groups: "Total de Grupos",
-    total_members: "Total de Miembros",
-    average_per_group: "Promedio por Grupo",
-    most_populous: "Grupos Más Poblados",
-    group: "Grupo",
-    members: "Miembros",
-    distribution: "Distribución",
-    
-    total_requests: "Total de Solicitudes",
-    tokens_used: "Tokens Utilizados",
-    average_per_request: "Promedio por Solicitud",
-    estimated_cost: "Costo Estimado",
-    top_users: "Principales Usuarios por Solicitudes",
-    user: "Usuario",
-    requests: "Solicitudes",
-    usage: "Uso"
-  }
-},
+    // Gráficos
+    charts: {
+      validation_distribution: "Distribución de Validaciones",
+      document_evolution: "Evolución de Documentos",
+      approved: "Aprobadas",
+      rejected: "Rechazadas",
+      returned: "Devueltas",
+      pending: "Pendientes"
+    },
+
+    // Secciones Detalladas
+    sections: {
+      detailed_analysis: "Análisis Detallado de Documentos",
+      validation_report: "Informe de Validaciones",
+      version_control: "Control de Versiones",
+      tags_analysis: "Análisis de Etiquetas",
+      tasks_analysis: "Análisis de Tareas",
+      groups_analysis: "Análisis de Grupos",
+      ai_usage: "Análisis de Uso de IA",
+      export_report: "Exportar Informe",
+
+      documents_created_period: "Documentos Creados por Período",
+      total_documents: "Total de Documentos",
+      active_documents: "Documentos Activos",
+      validated_documents: "Documentos Validados",
+      awaiting_validation: "Esperando Validación",
+
+      total_validations: "Total de Validaciones",
+      approval_rate: "Tasa de Aprobación",
+      average_time: "Tiempo Promedio",
+      top_validators: "Principales Validadores",
+      validator: "Validador",
+      validations: "Validaciones",
+      participation: "Participación",
+      status_distribution: "Distribución de Estado",
+
+      total_versions: "Total de Versiones",
+      most_edited: "Documentos Más Editados",
+      document: "Documento",
+      versions: "Versiones",
+      activity: "Actividad",
+
+      total_tags: "Total de Etiquetas",
+      tag_cloud: "Nube de Etiquetas",
+
+      total_tasks: "Total de Tareas",
+      completion_rate: "Tasa de Finalización",
+      overdue_tasks: "Tareas Atrasadas",
+      priority_distribution: "Distribución por Prioridad",
+      high_priority: "Alta Prioridad",
+      medium_priority: "Prioridad Media",
+      low_priority: "Baja Prioridad",
+
+      total_groups: "Total de Grupos",
+      total_members: "Total de Miembros",
+      average_per_group: "Promedio por Grupo",
+      most_populous: "Grupos Más Poblados",
+      group: "Grupo",
+      members: "Miembros",
+      distribution: "Distribución",
+
+      total_requests: "Total de Solicitudes",
+      tokens_used: "Tokens Utilizados",
+      average_per_request: "Promedio por Solicitud",
+      estimated_cost: "Costo Estimado",
+      top_users: "Principales Usuarios por Solicitudes",
+      user: "Usuario",
+      requests: "Solicitudes",
+      usage: "Uso"
+    }
+  },
 };
