@@ -609,9 +609,9 @@ const handleRagSearch = async () => {
               gap: '4px'
             }}>
               {tagFilteredDocIds.length === 0 ? (
-                <>⏳ Carregando documentos...</>
+                <>⏳{t('documents.loading')}</>
               ) : (
-                <>✓ {tagFilteredDocIds.length} documento(s) encontrado(s)</>
+                <>✓ {tagFilteredDocIds.length} documento(s) encontrado(s){t('documents.found')}</>
               )}
             </div>
           )}
