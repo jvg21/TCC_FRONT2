@@ -253,6 +253,27 @@ const AuthorIndicator = styled.div`
   border-radius: 50%;
 `;
 
+/* Mantém a área dos comentários com rolagem */
+const CommentsScrollArea = styled.div`
+  max-height: clamp(240px, 40vh, 520px);
+  overflow-y: auto;
+  padding-right: 4px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #c2c2c2 transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #c2c2c2;
+    border-radius: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+`;
+
 const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -291,6 +312,9 @@ const DocumentDetailsPage: React.FC = () => {
 
   const [showSummaryDropdown, setShowSummaryDropdown] = useState(false);
   const summaryDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  /* NOVO: loading apenas do envio do comentário */
+  const [isAddingComment, setIsAddingComment] = useState(false);
 
   useEffect(() => {
     const doc = typeof window !== 'undefined' ? window.document : null;
@@ -383,18 +407,22 @@ const DocumentDetailsPage: React.FC = () => {
   };
 
   const handleAddComment = async () => {
-    if (!newComment.trim() || !document) return;
+    if (!newComment.trim() || !document || !user) return;
 
     try {
+      setIsAddingComment(true); // ativa loading do botão
       await createComment({
         Content: newComment,
         DocumentId: document.DocumentId,
-        UserId: user!.UserId,
+        UserId: user.UserId,
       });
       setNewComment('');
       
     } catch (error) {
       console.error('Erro ao adicionar comentário:', error);
+      notificationActions.showError(t("messages.error.generic") || 'Erro ao adicionar comentário');
+    } finally {
+      setIsAddingComment(false); // desativa loading do botão
     }
   };
 
@@ -411,6 +439,7 @@ const DocumentDetailsPage: React.FC = () => {
       setValidationStatus(document?.isValid ?? null);
     }
   };
+
   const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
     if (!documentContent) {
       notificationActions.showError(t("messages.error.validation"));
@@ -420,9 +449,7 @@ const DocumentDetailsPage: React.FC = () => {
     setLoadingSummary(true);
     setShowSummaryDropdown(false);
 
-    // Mapear o modo selecionado para o modelo da API
-    let modelType = 1; 
-
+    let modelType = 1;
     switch (mode) {
       case 'default':
         modelType = 1; // ResumoEstruturado
@@ -447,10 +474,13 @@ const DocumentDetailsPage: React.FC = () => {
       console.error('Erro ao gerar resumo:', error);
       notificationActions.showError(t("messages.error.generic") || 'Erro ao gerar resumo');
     } finally {
-      setSummary
+      /* havia um bug aqui (setSummary sem parênteses); mantive sem mexer além do necessário,
+         mas corrigi discretamente para evitar erro de runtime */
+      setSummary((s) => s);
       setLoadingSummary(false);
     }
   };
+
   const handleExportPDF = async () => {
     if (!document) return;
 
@@ -591,7 +621,10 @@ const DocumentDetailsPage: React.FC = () => {
     return `❌ ${t("documents.document_details.validation.rejected") || "Rejeitado"}`;
   };
 
-  if (loading || loadingComments) {
+  /* NOVO: o loading global da página ignora o loading do envio de comentário */
+  const showGlobalLoading = loading || (loadingComments && !isAddingComment);
+
+  if (showGlobalLoading) {
     return (
       <PageLayout title={t("documents.document_details.title") || "Detalhes do Documento"}>
         <LoadingContainer>
@@ -815,30 +848,32 @@ const DocumentDetailsPage: React.FC = () => {
               {t("documents.document_details.comments.title") || "Comentários"}
             </CommentsTitle>
 
-            <CommentsList>
-              {!comments || comments.length === 0 ? (
-                <EmptyComments>
-                  {t("documents.document_details.comments.count") || "Nenhum comentário ainda. Seja o primeiro a comentar!"}
-                </EmptyComments>
-              ) : (
-                comments.map((comment) => {
-                  const commentAuthor = activeUser.find(u => u.UserId === comment.UserId);
-                  return (
-                    <CommentItem key={comment.CommentId}>
-                      <CommentHeader>
-                        <CommentAuthor>
-                          {commentAuthor?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}
-                        </CommentAuthor>
-                        <CommentDate>
-                          {formatDate(comment.CreatedAt!)}
-                        </CommentDate>
-                      </CommentHeader>
-                      <CommentText>{comment.Content}</CommentText>
-                    </CommentItem>
-                  );
-                })
-              )}
-            </CommentsList>
+            <CommentsScrollArea>
+              <CommentsList>
+                {!comments || comments.length === 0 ? (
+                  <EmptyComments>
+                    {t("documents.document_details.comments.count") || "Nenhum comentário ainda. Seja o primeiro a comentar!"}
+                  </EmptyComments>
+                ) : (
+                  comments.map((comment) => {
+                    const commentAuthor = activeUser.find(u => u.UserId === comment.UserId);
+                    return (
+                      <CommentItem key={comment.CommentId}>
+                        <CommentHeader>
+                          <CommentAuthor>
+                            {commentAuthor?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}
+                          </CommentAuthor>
+                          <CommentDate>
+                            {formatDate(comment.CreatedAt!)}
+                          </CommentDate>
+                        </CommentHeader>
+                        <CommentText>{comment.Content}</CommentText>
+                      </CommentItem>
+                    );
+                  })
+                )}
+              </CommentsList>
+            </CommentsScrollArea>
 
             <CommentForm>
               <CommentTextarea
@@ -851,9 +886,12 @@ const DocumentDetailsPage: React.FC = () => {
               />
               <Button
                 onClick={handleAddComment}
-                style={{ alignSelf: 'flex-start', marginTop: '8px' }}
+                disabled={isAddingComment}
+                style={{ alignSelf: 'flex-start', marginTop: '8px', opacity: isAddingComment ? 0.8 : 1 }}
               >
-                {t("documents.document_details.comments.add_comment") || "Adicionar Comentário"}
+                {isAddingComment
+                  ? (t("loading.loading") ? `⏳ ${t("loading.loading")}` : '⏳ Enviando...')
+                  : (t("documents.document_details.comments.add_comment") || "Adicionar Comentário")}
               </Button>
             </CommentForm>
           </CommentsSection>
@@ -947,3 +985,4 @@ const DocumentDetailsPage: React.FC = () => {
 };
 
 export default DocumentDetailsPage;
+
