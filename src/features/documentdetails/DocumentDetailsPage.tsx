@@ -661,7 +661,7 @@ const DocumentDetailsPage: React.FC = () => {
               disabled={loadingSummary}
             >
               {loadingSummary ? (
-                <>⏳ Gerando resumo...</>
+                <>⏳{t('documents.document_details.generating_summary')}</>
               ) : (
                 <>{t("documents.document_details.generate_summary") || "Gerar Resumo"} <FiChevronDown /></>
               )}
@@ -893,11 +893,11 @@ const DocumentDetailsPage: React.FC = () => {
         <SidebarContent>
           {loadingVersions ? (
             <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-              Carregando versões...
+              {t('loading.loading')}
             </div>
           ) : documentVersions.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-              Nenhuma versão encontrada
+              {t('documents.document_details.version_history.no_versions') }
             </div>
           ) : (
             <>
