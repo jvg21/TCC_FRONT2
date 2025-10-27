@@ -39,7 +39,8 @@ export const ptTranslations = {
     export: "Exportar",
     import: "Importar",
     activate: "Ativar",
-    deactivate: "Desativar"
+    deactivate: "Desativar",
+    find_similar: "Encontrar Similares",
   },
 
   // Estados
@@ -276,6 +277,13 @@ export const ptTranslations = {
     template_applied_from: "Conteúdo aplicado do template",
     select_template: "Selecionar template (opcional)",
     template_applied: "Template aplicado com sucesso!",
+    click_to_view : "Clique para visualizar",
+    similarity : "Similaridade",
+    no_similar_documents : "Nenhum documento similar encontrado",
+    found : "encontrado",
+    similar_documents : "documentos similares",
+    error_during_search : "Erro durante a busca",
+    loading : "Carregando...",
 
     filters: {
       hide: "Ocultar",
@@ -337,6 +345,8 @@ export const ptTranslations = {
       folder: "Pasta",
       created_at: "Criado em",
       updated_at: "Atualizado em",
+      generating_summary : "Gerando resumo...",
+
       
       summary_types: {
         structured: "Resumo padrão",
@@ -351,7 +361,8 @@ export const ptTranslations = {
         button: "Versões do Documento",
         today: "Hoje",
         current_version: "Versão Atual",
-        title: "Histórico de Versões"
+        title: "Histórico de Versões",
+        no_versions : "Nenhuma versão disponível",
       },
 
       export: {
@@ -745,6 +756,28 @@ export const ptTranslations = {
       groups_analysis: "Análise de Grupos",
       ai_usage: "Análise de Uso de IA",
       export_report: "Exportar Relatório",
+      document_stats: "Estatísticas de Documentos",
+      pending_documents: "Documentos Pendentes",
+      documents_by_period: "Documentos por Período",
+      validation_stats: "Estatísticas de Validações",
+      version_stats: "Estatísticas de Versões",
+      tag_stats: "Estatísticas de Tags",
+      task_stats: "Estatísticas de Tarefas",
+      group_stats: "Estatísticas de Grupos",
+      ai_stats: "Estatísticas de IA",
+      approved_documents: "Documentos Aprovados",
+      rejected_documents: "Documentos Rejeitados",
+      returned_for_revision: "Documentos Devolvidos para Revisão",
+      documents_validated: "Documentos Validados",
+      contribution: "Contribuição por Validador",
+      version_history: "Histórico de Versões de Documentos",
+      most_edited_documents: "Documentos Mais Editados",
+      version_count: "Número de Versões",
+      relative: "Relativo",
+      avg_members_per_group: "Média de Membros por Grupo",
+      largest_groups: "Grupos com Mais Membros",
+      relative_size: "Tamanho Relativo",
+      
 
       documents_created_period: "Documentos Criados por Período",
       total_documents: "Total de Documentos",
