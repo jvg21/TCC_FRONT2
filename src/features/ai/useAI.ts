@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 // Types baseados nos DTOs da API
 export interface AIRequest {
   DocumentId: number;
+  Model: number;
 }
 
 export interface AIResponse {
@@ -50,11 +51,12 @@ export const useAI = () => {
   };
 
   // Gerar resumo de documento usando OpenAI
-  const generateSummary = async (documentId: number): Promise<AIResponse> => {
+  const generateSummary = async (documentId: number, modelType: number = 1): Promise<AIResponse> => {
     setLoading(true);
     try {
       const payload: AIRequest = {
-        DocumentId: documentId
+        DocumentId: documentId,
+        Model: modelType
       };
 
       const response = await fetch(`${apiUrl}/AI/GenerateSummary`, {
@@ -187,6 +189,34 @@ export const useAI = () => {
     }
   };
 
+  const generateEmbedding = async (text: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/Embedding/GetEmbedding`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(text)
+      });
+
+      const data = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem || "Error generating embedding");
+        throw new Error(data.mensagem);
+      }
+
+      // A API retorna o embedding como um array de floats
+      return data.objeto;
+    } catch (error) {
+      console.error("Error generating embedding:", error);
+      notificationActions.showError("Failed to generate embedding");
+      return null;
+    }
+  };
+
+
   // Verificar se OpenAI está configurado
   const isOpenAIConfigured = (): boolean => {
     return !!(openAIConfig && openAIConfig.ApiKey && openAIConfig.IsActive);
@@ -216,14 +246,15 @@ export const useAI = () => {
   return {
     openAIConfig,
     loading,
-    
+
     generateSummary,
     getOpenAIConfig,
     addOpenAIConfig,
     updateOpenAIConfig,
-    
+
     isOpenAIConfigured,
     getMaskedApiKey,
     validateApiKey,
+    generateEmbedding
   } as const;
 };

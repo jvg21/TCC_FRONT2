@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus, FiEye, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiPlus, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiSearch, FiX } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -22,12 +22,15 @@ import { useNavigate } from "react-router-dom";
 import { TabContainer } from "../../components/common/TabContainer";
 import { useTag } from "../tag/useTag";
 import { useThemeContext } from "../../context/ThemeContext";
+import { RagResultContent, RagResultItem, RagResultsClear, RagResultsContainer, RagResultScore, RagResultsCount, RagResultsHeader, RagResultsList, RagResultTitle, RagResultView, RagSearchButton, RagSearchContainer, RagSearchControls, RagSearchDescription, RagSearchInput, RagSearchTitle, Spinner } from "../../components/common/Components";
+import { notificationActions } from "../notifications/useNotification";
+import { findSimilarDocuments, type DocumentWithSimilarity } from "./ragFunctions";
+import { useAI } from "../ai/useAI";
 
 const DocumentTagsCell: React.FC<{ documentId: number }> = ({ documentId }) => {
   const [tags, setTags] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { getTagsByDocument } = useTag();
-
   useEffect(() => {
     const loadTags = async () => {
       setLoading(true);
@@ -104,13 +107,19 @@ const DocumentPage: React.FC = () => {
   const [tagFilteredDocIds, setTagFilteredDocIds] = useState<number[]>([]);
   const { t } = useTranslation();
   const { userProfile, user } = useAuthContext();
-  const { getTagsByDocument, getDocumentsByTag, activeTag } = useTag();
+  const {  getDocumentsByTag, activeTag } = useTag();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { updateValidationStatus } = useDocument();
   const { theme } = useThemeContext();
-
   const navigate = useNavigate();
+  const { generateEmbedding } = useDocument();
+
+  //rag
+  const [ragSearchQuery, setRagSearchQuery] = useState("");
+  const [isRagSearching, setIsRagSearching] = useState(false);
+  const [ragResults, setRagResults] = useState<DocumentWithSimilarity[]>([]);
+  const [showRagResults, setShowRagResults] = useState(false);
 
   // === Paginação (adição) ===
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -341,14 +350,19 @@ const DocumentPage: React.FC = () => {
 
           return (
             <div style={{ display: 'flex', gap: '4px' }}>
-              <>
-                <Button variant="ghost" onClick={() => onView(row)} title={t("documents.view_document")}>
+
+              {/* <>
+                <Button
+                  variant="ghost"
+                  onClick={() => onView(row)}
+                  title={t("documents.view_document")}
+                >
                   <FiEye />
                 </Button>
-              </>
+              </> */}
               {canEdit() && (
                 <>
-                  <ActionButtons onEdit={onEdit} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
+                  <ActionButtons onEdit={() => onView(row)} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
                 </>
               )}
             </div>
@@ -438,7 +452,77 @@ const DocumentPage: React.FC = () => {
 
   const handleTabChange = (tabId: string) => {
     setActiveTabId(tabId);
+
   };
+
+  //rag serch
+  // Versão otimizada da função handleRagSearch para o DocumentPage.tsx
+
+
+const handleRagSearch = async () => {
+  if (!ragSearchQuery.trim()) return;
+  
+  setIsRagSearching(true);
+  setShowRagResults(true);
+  
+  try {
+    console.log("Starting RAG search for:", ragSearchQuery);
+    
+    // Gerar embedding para o texto da busca
+    const queryEmbedding = await generateEmbedding(ragSearchQuery);
+    
+    if (!queryEmbedding) {
+      notificationActions.showError("Não foi possível gerar embeddings para a busca");
+      setIsRagSearching(false);
+      return;
+    }
+    
+    console.log(`Embedding generated successfully with length: ${queryEmbedding.length}`);
+    
+    // Combinando documentos ativos e inativos para a busca
+    const allDocuments = [...activeDocument, ...deactiveDocument];
+    console.log(`Searching among ${allDocuments.length} total documents`);
+    
+    // Contando quantos têm embeddings
+    const withEmbeddings = allDocuments.filter(d => d.Embedding && d.Embedding.length > 0);
+    console.log(`${withEmbeddings.length} documents have embeddings`);
+    
+    // Buscar documentos similares com configurações otimizadas
+    const similarDocuments = findSimilarDocuments(
+      allDocuments,
+      queryEmbedding,
+      {
+        maxResults: 5,      // Retornar até 5 resultados
+        threshold: 0.2,     // Limiar de similaridade reduzido para 0.2 (era 0.5)
+        forceResults: false, // Sempre retornar alguns resultados
+        minResults: 2       // Tentar retornar pelo menos 3 resultados
+      }
+    );
+    
+    console.log(`Found ${similarDocuments.length} similar documents`);
+    
+    if (similarDocuments.length > 0) {
+      // Log dos scores para debug
+      similarDocuments.forEach((doc, i) => {
+        console.log(`Result ${i+1}: Score ${doc.similarityScore.toFixed(4)} - ${doc.Title}`);
+      });
+    }
+    
+    // Atualizar o estado com os resultados
+    setRagResults(similarDocuments);
+    
+    // Feedback ao usuário
+    if (similarDocuments.length === 0) {
+      notificationActions.showError(t("documents.no_similar_documents"));
+    }
+  } catch (error) {
+    console.error(t("documents.error_during_search"), error);
+    notificationActions.showError(t("documents.error_during_search"));
+  } finally {
+    setIsRagSearching(false);
+  }
+};
+
 
   const columns = Columns(handleEdit, handleToggleStatus, handleView, handleEditContent);
 
@@ -494,16 +578,37 @@ const DocumentPage: React.FC = () => {
             {activeTag.map(tag => (<option key={tag.TagId} value={tag.TagId}>{tag.Name}</option>))}
           </select>
           {tagFilter && (
-            <div style={{ fontSize: '12px', color: '#666', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {tagFilteredDocIds.length === 0 ? (<>⏳ Carregando documentos...</>) : (<>✓ {tagFilteredDocIds.length} documento(s) encontrado(s)</>)}
+
+            <div style={{
+              fontSize: '12px',
+              color: '#666',
+              marginTop: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              {tagFilteredDocIds.length === 0 ? (
+                <>⏳{t('documents.loading')}</>
+              ) : (
+                <>✓ {tagFilteredDocIds.length} documento(s) encontrado(s){t('documents.found')}</>
+              )}
+
             </div>
           )}
         </div>
       </div>
 
+      { }
       <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
-        <Button variant="ghost" onClick={() => { setDateFilter({ startDate: "", endDate: "" }); setAuthorFilter(null); setTagFilter(null); }}>
-          {t("documents.filters.clear_filters") || "Limpar filtros"}
+        <Button
+          variant="ghost"
+          onClick={() => {
+            setDateFilter({ startDate: "", endDate: "" });
+            setAuthorFilter(null);
+            setTagFilter(null);
+          }}
+        >
+          {t("documents.filters.clear_filters") }
         </Button>
       </div>
     </div>
@@ -526,6 +631,7 @@ const DocumentPage: React.FC = () => {
             </Button>
           </div>
 
+          { }
           <AdvancedFilters />
 
           {userProfile && (
@@ -590,9 +696,17 @@ const DocumentPage: React.FC = () => {
           <InfoAlert type="warning" title={t("documents.tabs.to_edit_alert_title")} description={t("documents.tabs.to_edit_alert_description")} />
 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-            <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("documents.tabs.search_to_edit")} />
-            <Button variant="ghost" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
-              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+            <FilterBar
+              columns={columns}
+              value={query}
+              onChange={setQuery}
+              placeholder={t("documents.tabs.search_to_edit")}
+            />
+            <Button
+              variant="ghost"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") ) : (t("documents.filters.show") )}
             </Button>
           </div>
 
@@ -624,9 +738,17 @@ const DocumentPage: React.FC = () => {
           <InfoAlert type="info" title={t("documents.tabs.validations_alert_title")} description={t("documents.tabs.validations_alert_description")} />
 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-            <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("documents.tabs.search_validations")} />
-            <Button variant="ghost" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
-              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+            <FilterBar
+              columns={columns}
+              value={query}
+              onChange={setQuery}
+              placeholder={t("documents.tabs.search_validations")}
+            />
+            <Button
+              variant="ghost"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") ) : (t("documents.filters.show"))}
             </Button>
           </div>
 
@@ -651,8 +773,114 @@ const DocumentPage: React.FC = () => {
   ];
 
   return (
-    <PageLayout title={t("documents.title")} actions={<Button onClick={handleAdd}><FiPlus />&nbsp;{t("documents.add_document")}</Button>}>
-      <TabContainer tabs={tabs} defaultTab="geral" onTabChange={handleTabChange} />
+    <PageLayout
+      title={t("documents.title")}
+      actions={
+        <Button onClick={handleAdd}>
+          <FiPlus />&nbsp;{t("documents.add_document")}
+        </Button>
+      }
+    >
+      { }
+      <TabContainer
+        tabs={tabs}
+        defaultTab="geral"
+        onTabChange={handleTabChange}
+      />
+
+      <RagSearchContainer>
+        <RagSearchTitle>
+          <FiSearch style={{ marginRight: '8px' }} />
+          {t("documents.semantic_search") }
+        </RagSearchTitle>
+        <RagSearchDescription>
+          {t("documents.semantic_search_description")}
+        </RagSearchDescription>
+        <RagSearchControls>
+          <RagSearchInput
+            type="text"
+            value={ragSearchQuery}
+            onChange={(e) => setRagSearchQuery(e.target.value)}
+            placeholder={t("documents.search_by_meaning") }
+          />
+          <RagSearchButton
+            onClick={handleRagSearch}
+            disabled={isRagSearching || !ragSearchQuery.trim()}
+          >
+            {isRagSearching ? (
+              <Spinner aria-hidden="true" />
+            ) : (
+              <FiSearch />
+            )}
+            {t("actions.find_similar") }
+          </RagSearchButton>
+        </RagSearchControls>
+
+        {/* Seção de resultados RAG */}
+        {showRagResults && (
+          <RagResultsContainer>
+            <RagResultsHeader>
+              <RagResultsCount>
+                {ragResults.length > 0
+                  ? `${ragResults.length} ${t("documents.similar_documents") } ${t("documents.found") }`
+                  : t("documents.no_similar_documents") }
+              </RagResultsCount>
+              {ragResults.length > 0 && (
+                <RagResultsClear
+                  onClick={() => {
+                    setRagResults([]);
+                    setShowRagResults(false);
+                    setRagSearchQuery("");
+                  }}
+                >
+                  <FiX />
+                  {t("actions.clear_results") }
+                </RagResultsClear>
+              )}
+            </RagResultsHeader>
+
+            {ragResults.length > 0 && (
+              <RagResultsList>
+                {ragResults.map((doc, index) => (
+                  <RagResultItem
+                    key={doc.DocumentId}
+                    onClick={() => navigate(`/document/details/${doc.DocumentId}`)}
+                  >
+                    <RagResultTitle>
+                      <FiFileText style={{ marginRight: '8px' }} />
+                      {doc.Title}
+                      <RagResultScore>
+                        {t("documents.similarity") }: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
+                      </RagResultScore>
+                    </RagResultTitle>
+                    <RagResultContent>
+                      {doc.Content && doc.Content.length > 150
+                        ? `${doc.Content.substring(0, 150)}...`
+                        : doc.Content}
+                    </RagResultContent>
+                    <RagResultView>
+                      {t("documents.click_to_view") }
+                    </RagResultView>
+                  </RagResultItem>
+                ))}
+              </RagResultsList>
+            )}
+          </RagResultsContainer>
+        )}
+      </RagSearchContainer>
+
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={modal.close}
+        title={editing ? t("documents.edit_document") : t("documents.add_document")}
+      >
+        <DocumentForm
+          initial={editing ?? undefined}
+          onCancel={modal.close}
+          onSave={handleSave}
+          onEditContent={handleEditContentFromForm}
+        />
+      </Modal>
 
       <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("documents.edit_document") : t("documents.add_document")}>
         <DocumentForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} onEditContent={handleEditContentFromForm} />

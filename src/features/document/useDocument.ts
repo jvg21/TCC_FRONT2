@@ -37,7 +37,8 @@ export const useDocument = () => {
       userId: user?.UserId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      isActive: true
+      isActive: true,
+      embedding: payload.Embedding || null
     };
   };
 
@@ -50,7 +51,8 @@ export const useDocument = () => {
       UserId: item.userId,
       IsActive: item.isActive,
       CreatedAt: item.createdAt,
-      UpdatedAt: item.updatedAt
+      UpdatedAt: item.updatedAt,
+      Embedding: item.embedding || null
     }));
   };
 
@@ -63,7 +65,8 @@ export const useDocument = () => {
       UserId: item.userId,
       IsActive: item.isActive,
       CreatedAt: item.createdAt,
-      UpdatedAt: item.updatedAt
+      UpdatedAt: item.updatedAt,
+      Embedding: item.embedding || null
     };
   };
 
@@ -76,7 +79,8 @@ export const useDocument = () => {
     IsActive: apiDoc.isActive,
     IsValid: apiDoc.isValid,
     CreatedAt: apiDoc.createdAt,
-    UpdatedAt: apiDoc.updatedAt
+    UpdatedAt: apiDoc.updatedAt,
+    Embedding: apiDoc.embedding || null
   });
 
 
@@ -279,73 +283,73 @@ export const useDocument = () => {
     }
   };
   const getDocumentValidatorByValidator = async () => {
-  try {
-    
-    const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationByValidator`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-    });
+    try {
 
-    const data: ApiResponse = await response.json();
-    
+      const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationByValidator`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
 
-    if (data.erro) {
-      notificationActions.showError(data.mensagem);
-      throw new Error(data.mensagem);
+      const data: ApiResponse = await response.json();
+
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+
+      const documents = Array.isArray(data.objeto)
+        ? data.objeto.map(mapApiDocumentToFrontend)
+        : [];
+
+      setUserValidatorDocuments(documents);
+      return data;
+
+    } catch (err) {
+      console.error("❌ Erro ao buscar validações:", err);
+      setUserValidatorDocuments([]);
+      throw err;
     }
+  };
 
-    
-    const documents = Array.isArray(data.objeto) 
-      ? data.objeto.map(mapApiDocumentToFrontend)
-      : [];
-    
-    setUserValidatorDocuments(documents);
-    return data;
+  const getDocumentToEdit = async () => {
+    try {
 
-  } catch (err) {
-    console.error("❌ Erro ao buscar validações:", err);
-    setUserValidatorDocuments([]);
-    throw err;
-  }
-};
+      const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationToEdit`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
 
-const getDocumentToEdit = async () => {
-  try {
-    
-    const response = await fetch(`${apiUrl}/DocumentValidation/GetListDocumentValidationToEdit`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-    });
+      const data: ApiResponse = await response.json();
 
-    const data: ApiResponse = await response.json();
-    
 
-    if (data.erro) {
-      notificationActions.showError(data.mensagem);
-      throw new Error(data.mensagem);
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+
+      const documents = Array.isArray(data.objeto)
+        ? data.objeto.map(mapApiDocumentToFrontend)
+        : [];
+
+
+      setUserDocuments(documents);
+      return data;
+
+    } catch (err) {
+      console.error("❌ Erro ao buscar documentos para edição:", err);
+      setUserDocuments([]);
+      throw err;
     }
-
-    
-    const documents = Array.isArray(data.objeto) 
-      ? data.objeto.map(mapApiDocumentToFrontend)
-      : [];
-    
-    
-    setUserDocuments(documents);
-    return data;
-
-  } catch (err) {
-    console.error("❌ Erro ao buscar documentos para edição:", err);
-    setUserDocuments([]);
-    throw err;
-  }
-};
+  };
 
   const updateValidationStatus = async (documentId: number, isValid: boolean | null, comment?: string) => {
     try {
@@ -379,7 +383,7 @@ const getDocumentToEdit = async () => {
         throw new Error(data.mensagem);
       }
 
-      
+
       setDocument((s) => s.map((doc) =>
         doc.DocumentId === documentId
           ? { ...doc, isValid }
@@ -399,14 +403,97 @@ const getDocumentToEdit = async () => {
     }
   };
 
+  // Adicionar estas funções dentro do hook useDocument, antes do return
+
+  const getDocumentVersionsByDocumentId = async (documentId: number) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/DocumentVersion/GetListDocumentVersionByDocumentId/${documentId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      return data;
+    } catch (err) {
+      console.error("Erro ao buscar versões do documento:", err);
+      throw err;
+    }
+  };
+
+  const getDocumentVersionById = async (documentVersionId: number) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/DocumentVersion/GetDocumentVersionById/${documentVersionId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      return data;
+    } catch (err) {
+      console.error("Erro ao buscar versão do documento:", err);
+      throw err;
+    }
+  };
+
+  const generateEmbedding = async (text: string): Promise<number[]> => {
+    try {
+      const response = await fetch(`${apiUrl}/Embedding/GetEmbedding`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(text) 
+      });
+
+      const data = await response.json();
+
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+
+      // Retorna o array de floats (embedding)
+      return data.objeto;
+    } catch (error) {
+      console.error("Erro ao gerar embedding:", error);
+      throw error;
+    }
+  };
+
+
   useEffect(() => {
     if (token) {
       console.log("🚀 Iniciando carregamento de dados...");
       const loadData = async () => {
         try {
-          await get(); 
-          await getDocumentToEdit(); 
-          await getDocumentValidatorByValidator(); 
+          await get();
+          await getDocumentToEdit();
+          await getDocumentValidatorByValidator();
         } catch (error) {
           console.error("❌ Erro ao carregar dados:", error);
         }
@@ -423,6 +510,7 @@ const getDocumentToEdit = async () => {
     userDocuments,
     userValidatorDocuments,
     GetDocumentValidationById,
+    generateEmbedding,
     query,
     setQuery,
     create,
@@ -431,6 +519,8 @@ const getDocumentToEdit = async () => {
     getById,
     getValidationsByDocumentId,
     updateValidationStatus,
-    transformSingleApiData
+    transformSingleApiData,
+    getDocumentVersionsByDocumentId,
+    getDocumentVersionById
   } as const;
 };

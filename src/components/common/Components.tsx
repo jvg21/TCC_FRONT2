@@ -707,3 +707,186 @@ export const TagSuggestionEmpty = styled.div`
   font-style: italic;
   text-align: center;
 `;
+
+export const RagSearchContainer = styled.div`
+  margin: 20px 0 30px;
+  padding: 20px;
+  background-color: ${props => props.theme.mode === 'dark' ? '#2d3748' : '#f0f5ff'};
+  border-radius: 10px;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? '#4a5568' : '#d0e0ff'};
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+`;
+
+export const RagSearchTitle = styled.h3`
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: ${props => props.theme.mode === 'dark' ? '#90cdf4' : '#2c5282'};
+  margin-bottom: 10px;
+`;
+
+export const RagSearchDescription = styled.p`
+  font-size: 14px;
+  color: ${props => props.theme.mode === 'dark' ? '#e2e8f0' : '#4a5568'};
+  margin-bottom: 16px;
+`;
+
+export const RagSearchControls = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  width: 100%;
+`;
+
+export const RagSearchInput = styled.input`
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? '#4a5568' : '#cbd5e0'};
+  border-radius: 6px;
+  font-size: 15px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: ${props => props.theme.mode === 'dark' ? '#1a202c' : 'white'};
+  color: ${props => props.theme.mode === 'dark' ? '#e2e8f0' : 'inherit'};
+  
+  &:focus {
+    border-color: ${props => props.theme.mode === 'dark' ? '#63b3ed' : '#4299e1'};
+    outline: 0;
+    box-shadow: 0 0 0 3px ${props => props.theme.mode === 'dark' ? 'rgba(66, 153, 225, 0.25)' : 'rgba(66, 153, 225, 0.15)'};
+  }
+`;
+
+export const RagSearchButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #3182ce;
+  color: white;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover:not(:disabled) {
+    background-color: #2b6cb0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  &:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+`;
+
+export const Spinner = styled.span`
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
+export const RagResultsContainer = styled.div`
+  margin-top: 20px;
+  border-top: 1px solid ${props => props.theme.mode === 'dark' ? '#4a5568' : '#e2e8f0'};
+  padding-top: 16px;
+`;
+
+export const RagResultsHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+`;
+
+export const RagResultsCount = styled.span`
+  font-weight: 600;
+  color: ${props => props.theme.mode === 'dark' ? '#e2e8f0' : '#4a5568'};
+  font-size: 15px;
+`;
+
+export const RagResultsClear = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: ${props => props.theme.mode === 'dark' ? '#cbd5e0' : '#4a5568'};
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover {
+    color: ${props => props.theme.mode === 'dark' ? '#e2e8f0' : '#2d3748'};
+    text-decoration: underline;
+  }
+`;
+
+export const RagResultsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const RagResultItem = styled.div`
+  padding: 16px;
+  background-color: ${props => props.theme.mode === 'dark' ? '#2d3748' : 'white'};
+  border-left: 4px solid ${props => props.theme.mode === 'dark' ? '#63b3ed' : '#4299e1'};
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+export const RagResultTitle = styled.div`
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: ${props => props.theme.mode === 'dark' ? '#e2e8f0' : '#2d3748'};
+`;
+
+export const RagResultScore = styled.span`
+  margin-left: auto;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 3px 8px;
+  background-color: ${props => props.theme.mode === 'dark' ? '#2c5282' : '#ebf8ff'};
+  color: ${props => props.theme.mode === 'dark' ? '#90cdf4' : '#2b6cb0'};
+  border-radius: 12px;
+`;
+
+export const RagResultContent = styled.div`
+  font-size: 14px;
+  color: ${props => props.theme.mode === 'dark' ? '#cbd5e0' : '#4a5568'};
+  margin-bottom: 12px;
+  line-height: 1.5;
+`;
+
+export const RagResultView = styled.div`
+  font-size: 13px;
+  color: ${props => props.theme.mode === 'dark' ? '#a0aec0' : '#718096'};
+  font-style: italic;
+`;
