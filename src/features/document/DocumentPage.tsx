@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FilterBar } from "../../components/lib/FilterBar";
 import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiSearch, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiPlus, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiSearch, FiX, FiChevronLeft, FiChevronRight, FiUpload } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -25,7 +25,6 @@ import { useThemeContext } from "../../context/ThemeContext";
 import { RagResultContent, RagResultItem, RagResultsClear, RagResultsContainer, RagResultScore, RagResultsCount, RagResultsHeader, RagResultsList, RagResultTitle, RagResultView, RagSearchButton, RagSearchContainer, RagSearchControls, RagSearchDescription, RagSearchInput, RagSearchTitle, Spinner } from "../../components/common/Components";
 import { notificationActions } from "../notifications/useNotification";
 import { findSimilarDocuments, type DocumentWithSimilarity } from "./ragFunctions";
-import { useAI } from "../ai/useAI";
 
 const DocumentTagsCell: React.FC<{ documentId: number }> = ({ documentId }) => {
   const [tags, setTags] = useState<any[]>([]);
@@ -84,7 +83,8 @@ const DocumentPage: React.FC = () => {
     userValidatorDocuments,
     create,
     update,
-    softDelete
+    softDelete,
+    importDocument
   } = useDocument();
 
   const [searchStatus, setSearchStatus] = useState<number>(1);
@@ -107,7 +107,7 @@ const DocumentPage: React.FC = () => {
   const [tagFilteredDocIds, setTagFilteredDocIds] = useState<number[]>([]);
   const { t } = useTranslation();
   const { userProfile, user } = useAuthContext();
-  const {  getDocumentsByTag, activeTag } = useTag();
+  const { getDocumentsByTag, activeTag } = useTag();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { updateValidationStatus } = useDocument();
@@ -126,6 +126,10 @@ const DocumentPage: React.FC = () => {
   const [pageSize, setPageSize] = useState<number>(10);
 
   const resetToFirstPage = () => setCurrentPage(1);
+  // Estados e refs para importação
+  const importFileRef = useRef<HTMLInputElement>(null);
+  const importModal = useModal();
+  const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
 
   useEffect(() => {
     resetToFirstPage();
@@ -173,20 +177,20 @@ const DocumentPage: React.FC = () => {
 
     const containerStyle: React.CSSProperties = isNarrow
       ? {
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gridTemplateRows: 'auto auto',
-          gap: 8,
-          alignItems: 'center',
-          paddingTop: 12,
-        }
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: 'auto auto',
+        gap: 8,
+        alignItems: 'center',
+        paddingTop: 12,
+      }
       : {
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-          paddingTop: 12,
-        };
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        paddingTop: 12,
+      };
 
     return (
       <div style={containerStyle}>
@@ -266,6 +270,41 @@ const DocumentPage: React.FC = () => {
       editorModal.close();
     });
     editorModal.open();
+  };
+
+  // Funções para importação de documento
+  const handleImportButtonClick = () => {
+    if (importFileRef.current) {
+      importFileRef.current.click();
+    }
+  };
+
+  const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Abrir o modal para selecionar a pasta
+      importModal.open();
+    }
+  };
+
+  const handleImportDocument = async () => {
+    const file = importFileRef.current?.files?.[0];
+
+    if (!file || !selectedFolderId) {
+      notificationActions.showError(t('documents.importMissingData') || 'Selecione um arquivo e uma pasta');
+      return;
+    }
+
+    try {
+      await importDocument(file, selectedFolderId);
+      importModal.close();
+      // Limpar o input para permitir selecionar o mesmo arquivo novamente
+      if (importFileRef.current) {
+        importFileRef.current.value = '';
+      }
+    } catch (error) {
+      console.error("Erro ao importar documento:", error);
+    }
   };
 
   const handleEditContentFromForm = (currentContent: string, onContentSaved: (newContent: string) => void) => {
@@ -459,69 +498,69 @@ const DocumentPage: React.FC = () => {
   // Versão otimizada da função handleRagSearch para o DocumentPage.tsx
 
 
-const handleRagSearch = async () => {
-  if (!ragSearchQuery.trim()) return;
-  
-  setIsRagSearching(true);
-  setShowRagResults(true);
-  
-  try {
-    console.log("Starting RAG search for:", ragSearchQuery);
-    
-    // Gerar embedding para o texto da busca
-    const queryEmbedding = await generateEmbedding(ragSearchQuery);
-    
-    if (!queryEmbedding) {
-      notificationActions.showError("Não foi possível gerar embeddings para a busca");
-      setIsRagSearching(false);
-      return;
-    }
-    
-    console.log(`Embedding generated successfully with length: ${queryEmbedding.length}`);
-    
-    // Combinando documentos ativos e inativos para a busca
-    const allDocuments = [...activeDocument, ...deactiveDocument];
-    console.log(`Searching among ${allDocuments.length} total documents`);
-    
-    // Contando quantos têm embeddings
-    const withEmbeddings = allDocuments.filter(d => d.Embedding && d.Embedding.length > 0);
-    console.log(`${withEmbeddings.length} documents have embeddings`);
-    
-    // Buscar documentos similares com configurações otimizadas
-    const similarDocuments = findSimilarDocuments(
-      allDocuments,
-      queryEmbedding,
-      {
-        maxResults: 5,      // Retornar até 5 resultados
-        threshold: 0.2,     // Limiar de similaridade reduzido para 0.2 (era 0.5)
-        forceResults: false, // Sempre retornar alguns resultados
-        minResults: 2       // Tentar retornar pelo menos 3 resultados
+  const handleRagSearch = async () => {
+    if (!ragSearchQuery.trim()) return;
+
+    setIsRagSearching(true);
+    setShowRagResults(true);
+
+    try {
+      console.log("Starting RAG search for:", ragSearchQuery);
+
+      // Gerar embedding para o texto da busca
+      const queryEmbedding = await generateEmbedding(ragSearchQuery);
+
+      if (!queryEmbedding) {
+        notificationActions.showError("Não foi possível gerar embeddings para a busca");
+        setIsRagSearching(false);
+        return;
       }
-    );
-    
-    console.log(`Found ${similarDocuments.length} similar documents`);
-    
-    if (similarDocuments.length > 0) {
-      // Log dos scores para debug
-      similarDocuments.forEach((doc, i) => {
-        console.log(`Result ${i+1}: Score ${doc.similarityScore.toFixed(4)} - ${doc.Title}`);
-      });
+
+      console.log(`Embedding generated successfully with length: ${queryEmbedding.length}`);
+
+      // Combinando documentos ativos e inativos para a busca
+      const allDocuments = [...activeDocument, ...deactiveDocument];
+      console.log(`Searching among ${allDocuments.length} total documents`);
+
+      // Contando quantos têm embeddings
+      const withEmbeddings = allDocuments.filter(d => d.Embedding && d.Embedding.length > 0);
+      console.log(`${withEmbeddings.length} documents have embeddings`);
+
+      // Buscar documentos similares com configurações otimizadas
+      const similarDocuments = findSimilarDocuments(
+        allDocuments,
+        queryEmbedding,
+        {
+          maxResults: 5,      // Retornar até 5 resultados
+          threshold: 0.2,     // Limiar de similaridade reduzido para 0.2 (era 0.5)
+          forceResults: false, // Sempre retornar alguns resultados
+          minResults: 2       // Tentar retornar pelo menos 3 resultados
+        }
+      );
+
+      console.log(`Found ${similarDocuments.length} similar documents`);
+
+      if (similarDocuments.length > 0) {
+        // Log dos scores para debug
+        similarDocuments.forEach((doc, i) => {
+          console.log(`Result ${i + 1}: Score ${doc.similarityScore.toFixed(4)} - ${doc.Title}`);
+        });
+      }
+
+      // Atualizar o estado com os resultados
+      setRagResults(similarDocuments);
+
+      // Feedback ao usuário
+      if (similarDocuments.length === 0) {
+        notificationActions.showError(t("documents.no_similar_documents"));
+      }
+    } catch (error) {
+      console.error(t("documents.error_during_search"), error);
+      notificationActions.showError(t("documents.error_during_search"));
+    } finally {
+      setIsRagSearching(false);
     }
-    
-    // Atualizar o estado com os resultados
-    setRagResults(similarDocuments);
-    
-    // Feedback ao usuário
-    if (similarDocuments.length === 0) {
-      notificationActions.showError(t("documents.no_similar_documents"));
-    }
-  } catch (error) {
-    console.error(t("documents.error_during_search"), error);
-    notificationActions.showError(t("documents.error_during_search"));
-  } finally {
-    setIsRagSearching(false);
-  }
-};
+  };
 
 
   const columns = Columns(handleEdit, handleToggleStatus, handleView, handleEditContent);
@@ -608,7 +647,7 @@ const handleRagSearch = async () => {
             setTagFilter(null);
           }}
         >
-          {t("documents.filters.clear_filters") }
+          {t("documents.filters.clear_filters")}
         </Button>
       </div>
     </div>
@@ -706,7 +745,7 @@ const handleRagSearch = async () => {
               variant="ghost"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             >
-              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") ) : (t("documents.filters.show") )}
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide")) : (t("documents.filters.show"))}
             </Button>
           </div>
 
@@ -748,7 +787,7 @@ const handleRagSearch = async () => {
               variant="ghost"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             >
-              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") ) : (t("documents.filters.show"))}
+              <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide")) : (t("documents.filters.show"))}
             </Button>
           </div>
 
@@ -776,9 +815,38 @@ const handleRagSearch = async () => {
     <PageLayout
       title={t("documents.title")}
       actions={
-        <Button onClick={handleAdd}>
-          <FiPlus />&nbsp;{t("documents.add_document")}
-        </Button>
+        <>
+          {/* Botão de Importar */}
+          <Button
+            onClick={handleImportButtonClick}
+            variant="primary"
+            aria-label={t('documents.import') || 'Importar'}
+            style={{ marginRight: '8px' }}
+          >
+            <FiUpload /> {t('documents.import') || 'Importar'}
+          </Button>
+
+          {/* Input de arquivo oculto */}
+          <input
+            type="file"
+            ref={importFileRef}
+            style={{ display: 'none' }}
+            accept=".pdf,.docx"
+            onChange={handleFileSelection}
+          />
+
+          {/* Botão de Adicionar existente */}
+          <Button
+            onClick={() => {
+              setEditing(null);
+              modal.open();
+            }}
+            variant="primary"
+            aria-label={t("documents.add")}
+          >
+            <FiPlus /> {t("documents.add")}
+          </Button>
+        </>
       }
     >
       { }
@@ -791,7 +859,7 @@ const handleRagSearch = async () => {
       <RagSearchContainer>
         <RagSearchTitle>
           <FiSearch style={{ marginRight: '8px' }} />
-          {t("documents.semantic_search") }
+          {t("documents.semantic_search")}
         </RagSearchTitle>
         <RagSearchDescription>
           {t("documents.semantic_search_description")}
@@ -801,7 +869,7 @@ const handleRagSearch = async () => {
             type="text"
             value={ragSearchQuery}
             onChange={(e) => setRagSearchQuery(e.target.value)}
-            placeholder={t("documents.search_by_meaning") }
+            placeholder={t("documents.search_by_meaning")}
           />
           <RagSearchButton
             onClick={handleRagSearch}
@@ -812,7 +880,7 @@ const handleRagSearch = async () => {
             ) : (
               <FiSearch />
             )}
-            {t("actions.find_similar") }
+            {t("actions.find_similar")}
           </RagSearchButton>
         </RagSearchControls>
 
@@ -822,8 +890,8 @@ const handleRagSearch = async () => {
             <RagResultsHeader>
               <RagResultsCount>
                 {ragResults.length > 0
-                  ? `${ragResults.length} ${t("documents.similar_documents") } ${t("documents.found") }`
-                  : t("documents.no_similar_documents") }
+                  ? `${ragResults.length} ${t("documents.similar_documents")} ${t("documents.found")}`
+                  : t("documents.no_similar_documents")}
               </RagResultsCount>
               {ragResults.length > 0 && (
                 <RagResultsClear
@@ -834,7 +902,7 @@ const handleRagSearch = async () => {
                   }}
                 >
                   <FiX />
-                  {t("actions.clear_results") }
+                  {t("actions.clear_results")}
                 </RagResultsClear>
               )}
             </RagResultsHeader>
@@ -850,7 +918,7 @@ const handleRagSearch = async () => {
                       <FiFileText style={{ marginRight: '8px' }} />
                       {doc.Title}
                       <RagResultScore>
-                        {t("documents.similarity") }: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
+                        {t("documents.similarity")}: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
                       </RagResultScore>
                     </RagResultTitle>
                     <RagResultContent>
@@ -859,7 +927,7 @@ const handleRagSearch = async () => {
                         : doc.Content}
                     </RagResultContent>
                     <RagResultView>
-                      {t("documents.click_to_view") }
+                      {t("documents.click_to_view")}
                     </RagResultView>
                   </RagResultItem>
                 ))}
@@ -888,6 +956,41 @@ const handleRagSearch = async () => {
 
       <Modal isOpen={editorModal.isOpen} onClose={editorModal.close} title={t("documents.markdown_editor")}>
         <MarkdownEditorPage initialContent={editingContent} onSave={handleSaveContent} onCancel={editorModal.close} />
+      </Modal>
+
+      {/* Modal de importação */}
+      <Modal
+        isOpen={importModal.isOpen}
+        onClose={importModal.close}
+        title={t('documents.importDocument') || 'Importar Documento'}
+      >
+        <div style={{ padding: '16px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px' }}>
+              {t('documents.selectFolder') || 'Selecione a pasta'}
+            </label>
+            <select
+              value={selectedFolderId || ''}
+              onChange={(e) => setSelectedFolderId(Number(e.target.value))}
+              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+            >
+              <option value="">{t('documents.selectFolderPlaceholder') || 'Selecione uma pasta...'}</option>
+              {activeFolder.map((folder) => (
+                <option key={folder.FolderId} value={folder.FolderId}>
+                  {folder.Name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+            <Button onClick={importModal.close} variant="ghost">
+              {t('common.cancel') || 'Cancelar'}
+            </Button>
+            <Button onClick={handleImportDocument} variant="primary">
+              {t('documents.import') || 'Importar'}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </PageLayout>
   );
