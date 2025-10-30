@@ -41,7 +41,9 @@ export const enTranslations = {
     export: "Export",
     import: "Import",
     activate: "Activate",
-    deactivate: "Deactivate"
+    deactivate: "Deactivate",
+    find_similar: "Find Similar",
+    clear_results: "Clear Results"
   },
 
   // Status
