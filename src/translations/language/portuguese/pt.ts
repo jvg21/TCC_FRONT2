@@ -1,5 +1,3 @@
-import { clear } from "console";
-
 export const ptTranslations = {
   // Navegação
   navigation: {
