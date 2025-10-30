@@ -95,6 +95,7 @@ const DocumentPage: React.FC = () => {
   const editorModal = useModal();
   const [editing, setEditing] = useState<Document | null>(null);
   const [viewing, setViewing] = useState<Document | null>(null);
+  const [showRagSearch, setShowRagSearch] = useState<boolean>(false);
   const [editingContent, setEditingContent] = useState<string>("");
   const [contentSaveCallback, setContentSaveCallback] = useState<((content: string) => void) | null>(null);
   const [query, setQuery] = useState("");
@@ -668,10 +669,103 @@ const DocumentPage: React.FC = () => {
             <Button variant="ghost" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)} title={t("documents.filters.advanced_filters") || "Filtros avançados"}>
               <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
             </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowRagSearch(!showRagSearch)}
+              title={t("documents.semantic_search")}
+            >
+              <FiSearch /> {showRagSearch ? (t("documents.filters.rag.hide") || "Ocultar") : (t("documents.filters.rag.show") || "Mostrar")}
+            </Button>
           </div>
 
           { }
           <AdvancedFilters />
+
+          {/* Seção RAG */}
+    {showRagSearch && (
+      <div style={{ marginBottom: '16px' }}>
+        <RagSearchContainer>
+          <RagSearchTitle>
+            <FiSearch style={{ marginRight: '8px' }} />
+            {t("documents.semantic_search")}
+          </RagSearchTitle>
+          <RagSearchDescription>
+            {t("documents.semantic_search_description")}
+          </RagSearchDescription>
+          <RagSearchControls>
+            <RagSearchInput
+              type="text"
+              value={ragSearchQuery}
+              onChange={(e) => setRagSearchQuery(e.target.value)}
+              placeholder={t("documents.search_by_meaning")}
+            />
+            <RagSearchButton
+              onClick={handleRagSearch}
+              disabled={isRagSearching || !ragSearchQuery.trim()}
+            >
+              {isRagSearching ? (
+                <Spinner aria-hidden="true" />
+              ) : (
+                <FiSearch />
+              )}
+              {t("actions.find_similar")}
+            </RagSearchButton>
+          </RagSearchControls>
+
+          {/* Seção de resultados RAG */}
+          {showRagResults && (
+            <RagResultsContainer>
+              <RagResultsHeader>
+                <RagResultsCount>
+                  {ragResults.length > 0
+                    ? `${ragResults.length} ${t("documents.similar_documents")} ${t("documents.found")}`
+                    : t("documents.no_similar_documents")}
+                </RagResultsCount>
+                {ragResults.length > 0 && (
+                  <RagResultsClear
+                    onClick={() => {
+                      setRagResults([]);
+                      setShowRagResults(false);
+                      setRagSearchQuery("");
+                    }}
+                  >
+                    <FiX />
+                    {t("actions.clear_results")}
+                  </RagResultsClear>
+                )}
+              </RagResultsHeader>
+
+              {ragResults.length > 0 && (
+                <RagResultsList>
+                  {ragResults.map((doc, index) => (
+                    <RagResultItem
+                      key={doc.DocumentId}
+                      onClick={() => navigate(`/document/details/${doc.DocumentId}`)}
+                    >
+                      <RagResultTitle>
+                        <FiFileText style={{ marginRight: '8px' }} />
+                        {doc.Title}
+                        <RagResultScore>
+                          {t("documents.similarity")}: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
+                        </RagResultScore>
+                      </RagResultTitle>
+                      <RagResultContent>
+                        {doc.Content && doc.Content.length > 150
+                          ? `${doc.Content.substring(0, 150)}...`
+                          : doc.Content}
+                      </RagResultContent>
+                      <RagResultView>
+                        {t("documents.click_to_view")}
+                      </RagResultView>
+                    </RagResultItem>
+                  ))}
+                </RagResultsList>
+              )}
+            </RagResultsContainer>
+          )}
+        </RagSearchContainer>
+      </div>
+    )}
 
           {userProfile && (
             <div style={{ marginBottom: '16px' }}>
@@ -704,6 +798,13 @@ const DocumentPage: React.FC = () => {
             <FilterBar columns={columns} value={query} onChange={setQuery} placeholder={t("documents.tabs.search_my_documents")} />
             <Button variant="ghost" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
               <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide") || "Ocultar") : (t("documents.filters.show") || "Mostrar")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowRagSearch(!showRagSearch)}
+              title={t("documents.semantic_search")}
+            >
+              <FiSearch /> {showRagSearch ? (t("documents.filters.rag.hide") || "Ocultar") : (t("documents.filters.rag.show") || "Mostrar")}
             </Button>
           </div>
 
@@ -747,6 +848,13 @@ const DocumentPage: React.FC = () => {
             >
               <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide")) : (t("documents.filters.show"))}
             </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowRagSearch(!showRagSearch)}
+              title={t("documents.semantic_search")}
+            >
+              <FiSearch /> {showRagSearch ? (t("documents.filters.rag.hide") || "Ocultar") : (t("documents.filters.rag.show") || "Mostrar")}
+            </Button>
           </div>
 
           <AdvancedFilters />
@@ -788,6 +896,13 @@ const DocumentPage: React.FC = () => {
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             >
               <FiFilter /> {showAdvancedFilters ? (t("documents.filters.hide")) : (t("documents.filters.show"))}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowRagSearch(!showRagSearch)}
+              title={t("documents.semantic_search")}
+            >
+              <FiSearch /> {showRagSearch ? (t("documents.filters.rag.hide") || "Ocultar") : (t("documents.filters.rag.show") || "Mostrar")}
             </Button>
           </div>
 
@@ -855,88 +970,6 @@ const DocumentPage: React.FC = () => {
         defaultTab="geral"
         onTabChange={handleTabChange}
       />
-
-      <RagSearchContainer>
-        <RagSearchTitle>
-          <FiSearch style={{ marginRight: '8px' }} />
-          {t("documents.semantic_search")}
-        </RagSearchTitle>
-        <RagSearchDescription>
-          {t("documents.semantic_search_description")}
-        </RagSearchDescription>
-        <RagSearchControls>
-          <RagSearchInput
-            type="text"
-            value={ragSearchQuery}
-            onChange={(e) => setRagSearchQuery(e.target.value)}
-            placeholder={t("documents.search_by_meaning")}
-          />
-          <RagSearchButton
-            onClick={handleRagSearch}
-            disabled={isRagSearching || !ragSearchQuery.trim()}
-          >
-            {isRagSearching ? (
-              <Spinner aria-hidden="true" />
-            ) : (
-              <FiSearch />
-            )}
-            {t("actions.find_similar")}
-          </RagSearchButton>
-        </RagSearchControls>
-
-        {/* Seção de resultados RAG */}
-        {showRagResults && (
-          <RagResultsContainer>
-            <RagResultsHeader>
-              <RagResultsCount>
-                {ragResults.length > 0
-                  ? `${ragResults.length} ${t("documents.similar_documents")} ${t("documents.found")}`
-                  : t("documents.no_similar_documents")}
-              </RagResultsCount>
-              {ragResults.length > 0 && (
-                <RagResultsClear
-                  onClick={() => {
-                    setRagResults([]);
-                    setShowRagResults(false);
-                    setRagSearchQuery("");
-                  }}
-                >
-                  <FiX />
-                  {t("actions.clear_results")}
-                </RagResultsClear>
-              )}
-            </RagResultsHeader>
-
-            {ragResults.length > 0 && (
-              <RagResultsList>
-                {ragResults.map((doc, index) => (
-                  <RagResultItem
-                    key={doc.DocumentId}
-                    onClick={() => navigate(`/document/details/${doc.DocumentId}`)}
-                  >
-                    <RagResultTitle>
-                      <FiFileText style={{ marginRight: '8px' }} />
-                      {doc.Title}
-                      <RagResultScore>
-                        {t("documents.similarity")}: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
-                      </RagResultScore>
-                    </RagResultTitle>
-                    <RagResultContent>
-                      {doc.Content && doc.Content.length > 150
-                        ? `${doc.Content.substring(0, 150)}...`
-                        : doc.Content}
-                    </RagResultContent>
-                    <RagResultView>
-                      {t("documents.click_to_view")}
-                    </RagResultView>
-                  </RagResultItem>
-                ))}
-              </RagResultsList>
-            )}
-          </RagResultsContainer>
-        )}
-      </RagSearchContainer>
-
       <Modal
         isOpen={modal.isOpen}
         onClose={modal.close}
