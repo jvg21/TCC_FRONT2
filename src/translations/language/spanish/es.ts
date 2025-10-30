@@ -1,3 +1,5 @@
+import { clear } from "console";
+
 export const esTranslations = {
   // Navegación
   navigation: {
@@ -40,7 +42,9 @@ export const esTranslations = {
     export: "Exportar",
     import: "Importar",
     activate: "Activar",
-    deactivate: "Desactivar"
+    deactivate: "Desactivar",
+    find_similar: "Encontrar Similares",
+    clear_results: "Limpiar Resultados"
   },
 
   // Estados

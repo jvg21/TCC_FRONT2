@@ -1,3 +1,5 @@
+import { clear } from "console";
+
 export const ptTranslations = {
   // Navegação
   navigation: {
@@ -42,6 +44,7 @@ export const ptTranslations = {
     activate: "Ativar",
     deactivate: "Desativar",
     find_similar: "Encontrar Similares",
+    clear_results: "Limpar Resultados"
   },
 
   // Estados
