@@ -6,8 +6,8 @@ import { Select } from "../../components/common/Select";
 import { useTranslation } from "react-i18next";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
-import { getTaskStatus, taskStatus } from "../../enum/taskStatus";
-import { getTaskPriority, taskPriority } from "../../enum/taskPriority";
+import { getTaskStatus } from "../../enum/taskStatus";
+import { getTaskPriority } from "../../enum/taskPriority";
 import { useUser } from "../user/useUser";
 import styled from "styled-components";
 
@@ -40,7 +40,7 @@ export const TaskForm: React.FC<{
   isEditing?: boolean;
   onCancel: () => void;
   onSave: (data: Partial<Task>) => void;
-}> = ({ initial = {}, isEditing = false, onCancel, onSave }) => {
+}> = ({ initial = {},  onCancel, onSave }) => {
   const [Title, setTitle] = useState(initial.Title ?? "");
   const [Description, setDescription] = useState(initial.Description ?? "");
   const [DueDate, setDueDate] = useState(initial.DueDate ?? "");

@@ -17,7 +17,7 @@ type Props = {
   onSave: (data: Omit<Group, "GroupId" | "CreatedAt" | "UpdatedAt" | "IsActive"> & Partial<Group>) => void;
 };
 
-export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, onCancel, onSave }) => {
+export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
   const [Description, setDescription] = useState(initial.Description ?? "");
   const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
@@ -28,7 +28,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {}, isEditing = false, on
   const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [showUserSection, setShowUserSection] = useState(false);
-  const { activeFolder, addFolderXGroup, deleteFolderXGroup, getListFolderXGroupByFolder } = useFolder();
+  const { activeFolder, addFolderXGroup, deleteFolderXGroup } = useFolder();
   const [groupFolders, setGroupFolders] = useState<any[]>([]);
   const [availableFolders, setAvailableFolders] = useState<any[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);

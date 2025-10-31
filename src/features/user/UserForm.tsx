@@ -17,14 +17,14 @@ type Props = {
   onSave: (data: Omit<User, "UserId" | "CreatedAt" | "UpdatedAt" | "IsActive" | "PreferredLanguage" | "PreferredTheme" | "LastLoginAt" > & Partial<User>) => void;
 };
 
-export const UserForm: React.FC<Props> = ({ initial = {}, isEditing = false, onCancel, onSave }) => {
+export const UserForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
   const [Email, setEmail] = useState(initial.Email ?? "");
   const [Password, setPassword] = useState(initial.Password ?? "");
   const [Profile, setProfile] = useState(initial.Profile ?? 0);
   const { t } = useTranslation();
   const { user } = useAuthContext(); 
-  const isDev = user?.Profile === 1;
+  // const isDev = user?.Profile === 1;
 
   useEffect(() => {
     setName(initial.Name ?? "");

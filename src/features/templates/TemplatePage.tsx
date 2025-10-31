@@ -24,7 +24,7 @@ const TemplatePage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const Templates = searchStatus === 1 ? activeTemplate : searchStatus === 2 ? deactiveTemplate : [...activeTemplate, ...deactiveTemplate];
   const [editing, setEditing] = useState<Template | null>(null);
-  const [query, setQuery] = useState("");
+  const [query, _] = useState("");
   const modal = useModal();
   const { t } = useTypedTranslation();
   const { userProfile } = useAuthContext();
@@ -34,7 +34,7 @@ const TemplatePage: React.FC = () => {
     template.Content.toLowerCase().includes(query.toLowerCase())
   );
 
-  const Columns = (onEdit: (c: Template) => void, onToggleStatus: (id: number) => void, onCopy: (id: number) => void): ColumnDef<Template>[] => [
+  const Columns = (onEdit: (c: Template) => void, onToggleStatus: (id: number) => void, _: (id: number) => void): ColumnDef<Template>[] => [
     { key: "Name", header: t("templates.name"), render: (row) => row.Name || "-" },
 
     { key: "CreatedAt", header: t("templates.created_at"), render: (row) => new Date(row.CreatedAt!).toLocaleDateString() },

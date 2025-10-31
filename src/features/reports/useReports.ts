@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
-import { useAuthContext } from "../../context/AuthContext";
 
-// Types para Relatórios
 export interface DocumentStats {
   total: number;
   active: number;
@@ -75,20 +73,19 @@ export interface ReportsData {
 export const useReports = () => {
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
   const [loading, setLoading] = useState(false);
-  const { user } = useAuthContext();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
 
   // Buscar estatísticas de documentos
-  const getDocumentStats = async (): Promise<DocumentStats> => {
+  const getDocumentStats = async (body?:{CreatedAtFrom: string, CreatedAtTo: string}): Promise<DocumentStats> => {
     try {
-      const response = await fetch(`${apiUrl}/Report/GetDocumentStats`, {
+      const response = await fetch(`${apiUrl}/dashboard/documents`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        },
+        },body: body ? JSON.stringify(body) : undefined
       });
 
       const data: ApiResponse = await response.json();
@@ -112,7 +109,7 @@ export const useReports = () => {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        },
+        }
       });
 
       const data: ApiResponse = await response.json();

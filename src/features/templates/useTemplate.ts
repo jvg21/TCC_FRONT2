@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useAuthContext } from "../../context/AuthContext";
 import { notificationActions } from "../notifications/useNotification";
 import { useTypedTranslation } from "../../context/LanguageContext";
 import type { Template } from "./types";

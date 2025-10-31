@@ -17,7 +17,6 @@ type Props<T> = {
 };
 
 export function FilterBar<T extends Record<string, any>>({ 
-  columns, 
   value, 
   onChange, 
   placeholder = "Buscar..."

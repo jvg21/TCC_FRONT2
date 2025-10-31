@@ -63,7 +63,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   children, 
   defaultLanguage = 'pt' 
 }) => {
-  const { i18n: hookI18n } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>(defaultLanguage);
   const [isChangingLanguage, setIsChangingLanguage] = useState(false);
   const [isI18nReady, setIsI18nReady] = useState(false);

@@ -92,7 +92,7 @@ const StatCardValue = styled.div`
 const StatCardChange = styled.div<{ positive: boolean }>`
   font-size: 14px;
   font-weight: 500;
-  color: ${({ positive, theme }) => positive ? '#22c55e' : '#ef4444'};
+  color: ${({ positive}) => positive ? '#22c55e' : '#ef4444'};
   display: flex;
   align-items: center;
   gap: 4px;
@@ -111,9 +111,8 @@ const DashboardPage: React.FC = () => {
     pendingTasks: 0,
   });
 
-  
   const { get: getUsers, activeUser } = useUser();
-  const { get: getDocuments, activeDocument } = useDocument();
+  const { activeDocument } = useDocument();
   const { get: getTasks, activeTask } = useTask();
 
   useEffect(() => {
@@ -122,7 +121,6 @@ const DashboardPage: React.FC = () => {
         
         await Promise.all([
           getUsers(),
-          getDocuments(),
           getTasks()
         ]);
       } catch (error) {

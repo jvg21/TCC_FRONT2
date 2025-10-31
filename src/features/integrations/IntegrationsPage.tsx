@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { FiKey, FiSend, FiCheck, FiAlertCircle } from "react-icons/fi";
+import { FiSend, FiCheck, FiAlertCircle } from "react-icons/fi";
 import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
 import { useTranslation } from "react-i18next";
 import { useAI } from "../ai/useAI";
 import { notificationActions } from "../notifications/useNotification";
-import { t } from "i18next";
 
 
 const IntegrationCard = styled.div`
@@ -169,7 +168,7 @@ const IntegrationsPage: React.FC = () => {
     try {
 
       
-      const response = await addOpenAIConfig(apiKey);
+      await addOpenAIConfig(apiKey);
       notificationActions.showNotification(t('ai.configSuccess'), 'success');
 
     } catch (error) {

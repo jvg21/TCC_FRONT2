@@ -23,7 +23,7 @@ const NotificationCard = styled.div<{ type: 'success' | 'error' | 'warning' | 'i
   border: 1px solid;
   animation: slideIn 0.3s ease-out;
   
-  ${({ type, theme }) => {
+  ${({ type }) => {
     switch (type) {
       case 'success':
         return `
