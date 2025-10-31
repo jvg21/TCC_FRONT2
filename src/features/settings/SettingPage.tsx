@@ -10,13 +10,10 @@ import PageLayout from "../../components/common/PageLayout";
 import { useTranslation } from "react-i18next";
 import { 
   FiSettings, 
-  FiGlobe, 
   FiMoon, 
   FiSun, 
   FiLogOut, 
   FiUser,
-  FiMonitor,
-  FiCheck
 } from "react-icons/fi";
 
 const SettingsContainer = styled.div`

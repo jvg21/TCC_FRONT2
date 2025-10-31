@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
-import { useAuthContext } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 
 // Types baseados nos DTOs da API
@@ -32,7 +31,6 @@ export interface OpenAIConfigResponse {
 export const useAI = () => {
   const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfigResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const { user } = useAuthContext();
   const { t } = useTranslation();
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -51,7 +49,7 @@ export const useAI = () => {
   };
 
   // Gerar resumo de documento usando OpenAI
-  const generateSummary = async (documentId: number, modelType: number = 1): Promise<AIResponse> => {
+  const generateSummary = async (documentId: number, modelType: number = 1) => {
     setLoading(true);
     try {
       const payload: AIRequest = {

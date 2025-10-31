@@ -76,7 +76,7 @@ export function findSimilarDocuments(
   const {
     maxResults = 5,
     threshold = 0.3, // Threshold reduzido para 0.3 (era 0.5)
-    forceResults = true, // Forçar retorno de alguns resultados mesmo se abaixo do threshold
+    forceResults = false, // Forçar retorno de alguns resultados mesmo se abaixo do threshold
     minResults = 3 // Tentar retornar pelo menos 3 resultados se disponíveis
   } = options;
 
@@ -148,7 +148,6 @@ export async function searchSimilarDocuments(
   try {
     console.log(`Generating embedding for query: "${query}"`);
     
-    // Gerar embedding para a consulta
     const queryEmbedding = await generateEmbedding(query);
     
     if (!queryEmbedding) {
@@ -157,7 +156,6 @@ export async function searchSimilarDocuments(
     
     console.log(`Embedding generated with length: ${queryEmbedding.length}`);
     
-    // Buscar documentos similares
     return findSimilarDocuments(documents, queryEmbedding, options);
     
   } catch (error) {

@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
-import { useAuthContext } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import type { Comment } from "./types";
 
@@ -12,7 +11,6 @@ export const useComment = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
-  const { user } = useAuthContext();
   const { t } = useTranslation();
 
   const apiUrl = import.meta.env.VITE_API_URL;

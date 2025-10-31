@@ -279,7 +279,7 @@ const EmptyIcon = styled.div`
 
 const TaskBoardPage: React.FC = () => {
   
-  const { activeTask, create, update, softDelete } = useTask();
+  const { activeTask, create, update } = useTask();
   const [editing, setEditing] = useState<Task | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number>(1);
 
@@ -342,9 +342,9 @@ const TaskBoardPage: React.FC = () => {
     modal.close();
   };
 
-  const handleDelete = (id: number) => {
-    softDelete(id);
-  };
+  // const handleDelete = (id: number) => {
+  //   softDelete(id);
+  // };
 
   return (
     <PageLayout 

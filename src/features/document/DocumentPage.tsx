@@ -91,10 +91,8 @@ const DocumentPage: React.FC = () => {
   const Documents = searchStatus === 1 ? activeDocument : searchStatus === 2 ? deactiveDocument : [...activeDocument, ...deactiveDocument];
 
   const modal = useModal();
-  const viewModal = useModal();
   const editorModal = useModal();
   const [editing, setEditing] = useState<Document | null>(null);
-  const [viewing, setViewing] = useState<Document | null>(null);
   const [showRagSearch, setShowRagSearch] = useState<boolean>(false);
   const [editingContent, setEditingContent] = useState<string>("");
   const [contentSaveCallback, setContentSaveCallback] = useState<((content: string) => void) | null>(null);
@@ -314,19 +312,19 @@ const DocumentPage: React.FC = () => {
     editorModal.open();
   };
 
-  const handleEditFromViewer = () => {
-    if (viewing) {
-      viewModal.close();
-      setEditing(viewing);
-      modal.open();
-    }
-  };
+  // const handleEditFromViewer = () => {
+  //   if (viewing) {
+  //     viewModal.close();
+  //     setEditing(viewing);
+  //     modal.open();
+  //   }
+  // };
 
   const Columns = (
-    onEdit: (c: Document) => void,
+    _: (c: Document) => void,
     onToggleStatus: (id: number) => void,
     onView: (c: Document) => void,
-    onEditContent: (c: Document) => void
+    __: (c: Document) => void
   ): ColumnDef<Document>[] => {
     const baseCols: ColumnDef<Document>[] = [
       {
@@ -458,7 +456,7 @@ const DocumentPage: React.FC = () => {
     return activeDocument.filter(doc => doc.UserId === user.UserId);
   };
 
-  const handleAdd = () => { setEditing(null); modal.open(); };
+  // const handleAdd = () => { setEditing(null); modal.open(); };
   const handleEdit = (c: Document) => { setEditing(c); modal.open(); };
   const handleSave = async (payload: any) => {
     try {
@@ -529,11 +527,11 @@ const DocumentPage: React.FC = () => {
 
       // Buscar documentos similares com configurações otimizadas
       const similarDocuments = findSimilarDocuments(
-        allDocuments,
+        activeDocument,
         queryEmbedding,
         {
           maxResults: 5,      // Retornar até 5 resultados
-          threshold: 0.2,     // Limiar de similaridade reduzido para 0.2 (era 0.5)
+          threshold: 0.3,     // Limiar de similaridade reduzido para 0.2 (era 0.5)
           forceResults: false, // Sempre retornar alguns resultados
           minResults: 2       // Tentar retornar pelo menos 3 resultados
         }
@@ -737,7 +735,7 @@ const DocumentPage: React.FC = () => {
 
               {ragResults.length > 0 && (
                 <RagResultsList>
-                  {ragResults.map((doc, index) => (
+                  {ragResults.map((doc) => (
                     <RagResultItem
                       key={doc.DocumentId}
                       onClick={() => navigate(`/document/details/${doc.DocumentId}`)}

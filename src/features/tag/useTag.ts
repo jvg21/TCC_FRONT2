@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import type { Tag, DocumentXTag } from "./types";
+import type { Tag } from "./types";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";

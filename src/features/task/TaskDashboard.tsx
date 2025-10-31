@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import styled from "styled-components";
-import { FiClock, FiCheckSquare, FiTrendingUp, FiPlus, FiUsers } from "react-icons/fi";
+import { FiClock, FiPlus } from "react-icons/fi";
 import { Button } from "../../components/common/Button";
 import PageLayout from "../../components/common/PageLayout";
 import { useTask } from "../task/useTask";
@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
 import { TaskForm } from "./TaskForm";
-import { useUser } from "../user/useUser";
 import { useAuthContext } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { dateUtils } from "../../utils/dateUtils";
@@ -312,7 +311,6 @@ const TaskDashboard: React.FC = () => {
   const [editing, setEditing] = useState<Task | null>(null);
   const modal = useModal();
   const { t } = useTranslation();
-  const { activeUser } = useUser();
   const { userProfile } = useAuthContext();
   const { currentLanguage } = useLanguage();
 
@@ -364,16 +362,16 @@ const TaskDashboard: React.FC = () => {
       .slice(0, 5); 
   }, [activeTask]);
 
-  const getUserName = (userId?: number) => {
-    const user = activeUser.find(u => u.UserId === userId);
-    return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
-  };
+  // const getUserName = (userId?: number) => {
+  //   const user = activeUser.find(u => u.UserId === userId);
+  //   return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
+  // };
 
-  const getUserInitials = (userId?: number) => {
-    const user = activeUser.find(u => u.UserId === userId);
-    if (!user) return "?";
-    return user.Name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
+  // const getUserInitials = (userId?: number) => {
+  //   const user = activeUser.find(u => u.UserId === userId);
+  //   if (!user) return "?";
+  //   return user.Name.split(' ').map(n => n[0]).join('').toUpperCase();
+  // };
 
   const handleAddTask = () => {
     setEditing(null);

@@ -15,7 +15,7 @@ type Props = {
   onSave: (data: Omit<Company, "CompanyId" | "CreatedAt" | "UpdatedAt" | "IsActive"> & Partial<Company>) => void;
 };
 
-export const CompanyForm: React.FC<Props> = ({ initial = {}, isEditing = false, onCancel, onSave }) => {
+export const CompanyForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
   const [TaxId, setTaxId] = useState(initial.TaxId ?? "");
   const [Email, setEmail] = useState(initial.Email ?? "");

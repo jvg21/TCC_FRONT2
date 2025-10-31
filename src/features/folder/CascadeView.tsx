@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { FiFolder, FiFile, FiChevronRight, FiChevronDown, FiPlus, FiFilter, FiChevronUp } from 'react-icons/fi';
+import {FiChevronRight, FiChevronDown, FiPlus, FiFilter, FiChevronUp } from 'react-icons/fi';
 import { HiFolder, HiDocumentText } from 'react-icons/hi';
 import PageLayout from '../../components/common/PageLayout';
 import { Button } from '../../components/common/Button';

@@ -12,27 +12,9 @@ import {
   FiDownload,
   FiCalendar,
   FiFilter,
-  FiPieChart,
-  FiBarChart2
+
 } from 'react-icons/fi';
-import { 
-  ChartAxis, 
-  ChartLabel, 
-  ChartLine, 
-  ChartPoint, 
-  LineChartContainer, 
-  LineChartSvg, 
-  LegendColor, 
-  LegendItem, 
-  LegendLabel, 
-  LegendValue, 
-  ChartCard, 
-  ChartsGrid, 
-  ChartTitle, 
-  PieChartContainer, 
-  PieLegend
-} from '../../components/common/reportsComponents';
-import { BarChart, PieChart } from 'lucide-react';
+
 
 // Componentes estilizados com suporte a tema claro/escuro
 const PageContainer = styled.div`
