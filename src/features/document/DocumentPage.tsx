@@ -680,90 +680,97 @@ const DocumentPage: React.FC = () => {
           <AdvancedFilters />
 
           {/* Seção RAG */}
-    {showRagSearch && (
-      <div style={{ marginBottom: '16px' }}>
-        <RagSearchContainer>
-          <RagSearchTitle>
-            <FiSearch style={{ marginRight: '8px' }} />
-            {t("documents.semantic_search")}
-          </RagSearchTitle>
-          <RagSearchDescription>
-            {t("documents.semantic_search_description")}
-          </RagSearchDescription>
-          <RagSearchControls>
-            <RagSearchInput
-              type="text"
-              value={ragSearchQuery}
-              onChange={(e) => setRagSearchQuery(e.target.value)}
-              placeholder={t("documents.search_by_meaning")}
-            />
-            <RagSearchButton
-              onClick={handleRagSearch}
-              disabled={isRagSearching || !ragSearchQuery.trim()}
-            >
-              {isRagSearching ? (
-                <Spinner aria-hidden="true" />
-              ) : (
-                <FiSearch />
-              )}
-              {t("actions.find_similar")}
-            </RagSearchButton>
-          </RagSearchControls>
-
-          {/* Seção de resultados RAG */}
-          {showRagResults && (
-            <RagResultsContainer>
-              <RagResultsHeader>
-                <RagResultsCount>
-                  {ragResults.length > 0
-                    ? `${ragResults.length} ${t("documents.similar_documents")} ${t("documents.found")}`
-                    : t("documents.no_similar_documents")}
-                </RagResultsCount>
-                {ragResults.length > 0 && (
-                  <RagResultsClear
-                    onClick={() => {
-                      setRagResults([]);
-                      setShowRagResults(false);
-                      setRagSearchQuery("");
-                    }}
+          {showRagSearch && (
+            <div style={{ marginBottom: '16px' }}>
+              <RagSearchContainer>
+                <RagSearchTitle>
+                  <FiSearch style={{ marginRight: '8px' }} />
+                  {t("documents.semantic_search")}
+                </RagSearchTitle>
+                <RagSearchDescription>
+                  {t("documents.semantic_search_description")}
+                </RagSearchDescription>
+                <RagSearchControls>
+                  <RagSearchInput
+                    type="text"
+                    value={ragSearchQuery}
+                    onChange={(e) => setRagSearchQuery(e.target.value)}
+                    placeholder={t("documents.search_by_meaning")}
+                  />
+                  <RagSearchButton
+                    onClick={handleRagSearch}
+                    disabled={isRagSearching || !ragSearchQuery.trim()}
                   >
-                    <FiX />
-                    {t("actions.clear_results")}
-                  </RagResultsClear>
-                )}
-              </RagResultsHeader>
+                    {isRagSearching ? (
+                      <Spinner aria-hidden="true" />
+                    ) : (
+                      <FiSearch />
+                    )}
+                    {t("actions.find_similar")}
+                  </RagSearchButton>
+                </RagSearchControls>
 
-              {ragResults.length > 0 && (
-                <RagResultsList>
-                  {ragResults.map((doc) => (
-                    <RagResultItem
-                      key={doc.DocumentId}
-                      onClick={() => navigate(`/document/details/${doc.DocumentId}`)}
-                    >
-                      <RagResultTitle>
-                        <FiFileText style={{ marginRight: '8px' }} />
-                        {doc.Title}
-                        <RagResultScore>
-                          {t("documents.similarity")}: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
-                        </RagResultScore>
-                      </RagResultTitle>
-                      <RagResultContent>
-                        {doc.Content && doc.Content.length > 150
-                          ? `${doc.Content.substring(0, 150)}...`
-                          : doc.Content}
-                      </RagResultContent>
-                      <RagResultView>
-                        {t("documents.click_to_view")}
-                      </RagResultView>
-                    </RagResultItem>
-                  ))}
-                </RagResultsList>
-              )}
-            </RagResultsContainer>
+                {/* Seção de resultados RAG */}
+                {showRagResults && (
+                  <RagResultsContainer>
+                    <RagResultsHeader>
+                      <RagResultsCount>
+                        {
+                          ragResults.length === 0 && !isRagSearching ? (
+                            t("documents.no_similar_documents")
+                          ) : null
+                        }
+
+                        {ragResults.length > 0
+                          ? `${ragResults.length} ${t("documents.similar_documents")} ${t("documents.found")}`
+                          : null}
+                      </RagResultsCount>
+
+                      {ragResults.length > 0 && (
+                        <RagResultsClear
+                          onClick={() => {
+                            setRagResults([]);
+                            setShowRagResults(false);
+                            setRagSearchQuery("");
+                          }}
+                        >
+                          <FiX />
+                          {t("actions.clear_results")}
+                        </RagResultsClear>
+                      )}
+                    </RagResultsHeader>
+
+                    {ragResults.length > 0 && (
+                      <RagResultsList>
+                        {ragResults.map((doc) => (
+                          <RagResultItem
+                            key={doc.DocumentId}
+                            onClick={() => navigate(`/document/details/${doc.DocumentId}`)}
+                          >
+                            <RagResultTitle>
+                              <FiFileText style={{ marginRight: '8px' }} />
+                              {doc.Title}
+                              <RagResultScore>
+                                {t("documents.similarity")}: {(doc as any).similarityScore?.toFixed(2) || "N/A"}
+                              </RagResultScore>
+                            </RagResultTitle>
+                            <RagResultContent>
+                              {doc.Content && doc.Content.length > 150
+                                ? `${doc.Content.substring(0, 150)}...`
+                                : doc.Content}
+                            </RagResultContent>
+                            <RagResultView>
+                              {t("documents.click_to_view")}
+                            </RagResultView>
+                          </RagResultItem>
+                        ))}
+                      </RagResultsList>
+                    )}
+                  </RagResultsContainer>
+                )}
+              </RagSearchContainer>
+            </div>
           )}
-        </RagSearchContainer>
-      </div>
-    )}
 
           {userProfile && (
             <div style={{ marginBottom: '16px' }}>
