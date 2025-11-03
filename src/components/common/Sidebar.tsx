@@ -586,16 +586,17 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               )
             )}
 
-            <NavItem to="/ReportsPage"
-
-              $isActive={location.pathname === '/ReportsPage'}
-              $isCollapsed={isCollapsed}
-              onClick={handleNavItemClick}
-              data-tooltip={t("navigation.reports")}
-            >
-              <FiBarChart2 />
-              <span>{t("navigation.reports")}</span>
-            </NavItem>
+            {profile === 2 && (
+              <NavItem to="/ReportsPage"
+                $isActive={location.pathname === '/ReportsPage'}
+                $isCollapsed={isCollapsed}
+                onClick={handleNavItemClick}
+                data-tooltip={t("navigation.reports")}
+              >
+                <FiBarChart2 />
+                <span>{t("navigation.reports")}</span>
+              </NavItem>
+            )}
             <NavItem
               to="/settings"
               $isActive={location.pathname === '/settings'}
