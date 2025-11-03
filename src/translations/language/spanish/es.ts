@@ -286,7 +286,7 @@ export const esTranslations = {
     importError: "Error al importar documento",
     importDocument: "Importar Documento",
     selectFolder: "Seleccionar Carpeta",
-    
+
 
     filters: {
       hide: "Ocultar",
@@ -347,15 +347,15 @@ export const esTranslations = {
         today: "Hoy",
         current_version: "Versión Actual",
         title: "Historial de Versiones",
+      },
 
       summary_types: {
-          structured: "Resumen estándar",
-          structured_desc: "Resumen completo y estructurado del documento",
-          comparative: "Resumen en tópicos",
-          comparative_desc: "Lista los puntos principales en formato de tópicos",
-          analytical: "Resumen corto (TL;DR)",
-          analytical_desc: "Versión resumida destacando solo lo esencial"
-        },
+        structured: "Resumen estándar",
+        structured_desc: "Resumen completo y estructurado del documento",
+        comparative: "Resumen en tópicos",
+        comparative_desc: "Lista los puntos principales en formato de tópicos",
+        analytical: "Resumen corto (TL;DR)",
+        analytical_desc: "Versión resumida destacando solo lo esencial"
       },
 
       export: {
