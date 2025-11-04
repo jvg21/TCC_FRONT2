@@ -182,7 +182,7 @@ const TaskPage: React.FC = () => {
         const page = paginate(filteredTask);
         return (
           <>
-            <DataTable columns={columns} data={page} />
+            <DataTable columns={columns} data={paginate(filteredTask)} pageSize={pageSize} />
             <PaginationBar total={total} />
           </>
         );

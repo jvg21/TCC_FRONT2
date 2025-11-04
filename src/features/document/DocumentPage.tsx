@@ -782,7 +782,7 @@ const DocumentPage: React.FC = () => {
             const filtered = getFilteredDocuments(Documents);
             return (
               <>
-                <DataTable columns={columns} data={paginate(filtered)} />
+                <DataTable columns={columns} data={paginate(filtered)} pageSize={pageSize} />
                 <PaginationBar total={filtered.length} />
               </>
             );
@@ -822,7 +822,7 @@ const DocumentPage: React.FC = () => {
               const mine = getFilteredDocuments(getMyDocuments());
               return (
                 <>
-                  <DataTable columns={columns} data={paginate(mine)} />
+                  <DataTable columns={columns} data={paginate(mine)} pageSize={pageSize} />
                   <PaginationBar total={mine.length} />
                 </>
               );
@@ -871,7 +871,7 @@ const DocumentPage: React.FC = () => {
               const toEdit = getFilteredDocuments(userDocuments);
               return (
                 <>
-                  <DataTable columns={columns} data={paginate(toEdit)} />
+                  <DataTable columns={columns} data={paginate(toEdit)} pageSize={pageSize} />
                   <PaginationBar total={toEdit.length} />
                 </>
               );
@@ -920,7 +920,7 @@ const DocumentPage: React.FC = () => {
               const vals = getFilteredDocuments(userValidatorDocuments);
               return (
                 <>
-                  <DataTable columns={columns} data={paginate(vals)} />
+                  <DataTable columns={columns} data={paginate(vals)} pageSize={pageSize}/>
                   <PaginationBar total={vals.length} />
                 </>
               );
