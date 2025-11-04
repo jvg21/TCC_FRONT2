@@ -578,7 +578,9 @@ export const enTranslations = {
     items_per_page: "Items per page",
     showing: "Showing",
     to: "to",
-    entries: "entries"
+    entries: "entries",
+    prev: "Previous",
+    rows_per_page: "Rows per page",
   },
 
   // Loading

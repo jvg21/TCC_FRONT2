@@ -587,7 +587,10 @@ export const esTranslations = {
     items_per_page: "Elementos por página",
     showing: "Mostrando",
     to: "a",
-    entries: "entradas"
+    entries: "entradas",
+    prev: "Anterior",
+    next_page: "Siguiente",
+    rows_per_page: "Filas por página"
   },
 
   // Carga
