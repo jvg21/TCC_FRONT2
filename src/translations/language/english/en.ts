@@ -1,4 +1,8 @@
+import { error } from "console";
+
 export const enTranslations = {
+  invalidCredentials: "Invalid credentials",
+  notFound: "Not found",
   // Navigation
   navigation: {
     home: "Home",
@@ -43,7 +47,10 @@ export const enTranslations = {
     activate: "Activate",
     deactivate: "Deactivate",
     find_similar: "Find Similar",
-    clear_results: "Clear Results"
+    clear_results: "Clear Results",
+    saving: "Saving...",
+    importing: "Importing...",
+    copy: "Copy"
   },
 
   // Status
@@ -101,6 +108,7 @@ export const enTranslations = {
     createError: "Error creating user",
     no_select: "Select a user",
     updateStatusSuccess: "User status changed successfully!",
+    select_company: "Select Company"
   },
 
   // Groups
@@ -159,7 +167,9 @@ export const enTranslations = {
     no_folders_in_group: "No Folders in Group",
     createSuccess: "Folder created successfully!",
     updateSuccess: "Folder updated successfully!",
-    updateStatusSuccess: "Folder status changed successfully!"
+    updateStatusSuccess: "Folder status changed successfully!",
+    groupAddedSuccess: "Folder added to group successfully!",
+    statusToggleSuccess: "Folder status toggled successfully!"
 
   },
 
@@ -286,8 +296,14 @@ export const enTranslations = {
     importError: "Error importing document",
     importDocument: "Import Document",
     selectFolder: "Select Folder",
+    resetValidationSuccess: "Document validation reset successfully!",
+    validationUpdateSuccess: "Document validation status updated successfully!",
 
     filters: {
+      rag:{
+        hide: "Hide RAG",
+        show: "Show RAG",
+      },
       hide: "Hide",
       show: "Show",
       date_range: "Date Range",
@@ -296,7 +312,7 @@ export const enTranslations = {
       all_authors: "All authors",
       all_tags: "All tags",
       clear_filters: "Clear filters",
-      advanced_filters: "Advanced filters"
+      advanced_filters: "Advanced filters",
     },
 
     tabs: {
@@ -385,6 +401,7 @@ export const enTranslations = {
         placeholder: "Type your comment...",
         add_comment: "Add Comment",
         count: "Comments",
+        createSuccess: "Comment added successfully!"
       }
     },
     messages: {
@@ -419,7 +436,9 @@ export const enTranslations = {
     light_mode: "Light Mode",
     dark_mode: "Dark Mode",
     is_active: "Status",
-    logout: "Logout"
+    logout: "Logout",
+    success: "Login out successfully!",
+    error: "Login failed. Check your credentials."
   },
 
   // Password recovery
@@ -823,6 +842,14 @@ export const enTranslations = {
       usage: "Usage"
     }
   },
+  logout:{
+    success: "Logged out successfully!"
+  },
+  markdown_editor:{
+    upload_error: "Error uploading image",
+    placeholder: "Write your content here..."
+  }
+  
 
 }
 
