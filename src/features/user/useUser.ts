@@ -108,8 +108,8 @@ export const useUser = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       return { ...data, objeto: transformSingleApiData(data.objeto) };
@@ -137,8 +137,8 @@ export const useUser = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       const newUser: User = transformSingleApiData(data.objeto);
@@ -171,8 +171,8 @@ export const useUser = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       const updatedUser: User = transformSingleApiData(data.objeto);
@@ -198,8 +198,8 @@ export const useUser = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       const updatedUser: User = transformSingleApiData(data.objeto);

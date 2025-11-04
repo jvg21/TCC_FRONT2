@@ -9,6 +9,7 @@ import { useUser } from "../user/useUser";
 import { useGroup } from "./useGroup";
 import { useFolder } from "../folder/useFolder";
 import { FiPlus, FiX } from "react-icons/fi";
+import { LoadingIcon } from "../../components/common/LoadingIcon";
 
 type Props = {
   initial?: Partial<Group>;
@@ -17,7 +18,7 @@ type Props = {
   onSave: (data: Omit<Group, "GroupId" | "CreatedAt" | "UpdatedAt" | "IsActive"> & Partial<Group>) => void;
 };
 
-export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) => {
+export const GroupForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) => {
   const [Name, setName] = useState(initial.Name ?? "");
   const [Description, setDescription] = useState(initial.Description ?? "");
   const [IsActive, setIsActive] = useState(initial.IsActive ?? "");
@@ -33,6 +34,8 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
   const [availableFolders, setAvailableFolders] = useState<any[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [showFolderSection, setShowFolderSection] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     setName(initial.Name ?? "");
@@ -53,7 +56,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
   }, [initial?.GroupId, showFolderSection]);
 
   useEffect(() => {
-    
+
     const usersNotInGroup = activeUser.filter(user =>
       !groupUsers.some(groupUser => groupUser.UserId === user.UserId)
     );
@@ -61,7 +64,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
   }, [activeUser, groupUsers]);
 
   useEffect(() => {
-    
+
     const foldersNotInGroup = activeFolder.filter(folder =>
       !groupFolders.some(groupFolder => groupFolder.FolderId === folder.FolderId)
     );
@@ -93,11 +96,16 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
   const handleAddUser = async () => {
     if (selectedUserId && initial?.GroupId) {
       try {
+        setIsLoading(true);
         await addUserToGroup(selectedUserId, initial.GroupId);
         setSelectedUserId(null);
+
         loadGroupUsers();
       } catch (error) {
         console.error("Erro ao adicionar usuário:", error);
+      }
+      finally {
+        setIsLoading(false);
       }
     }
   };
@@ -172,7 +180,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
 
       <Row>
         <Col>
-          {}
+          { }
           <label style={{ display: "block", marginBottom: 6, fontWeight: 500 }}>
             {t("groups.description")}
           </label>
@@ -193,11 +201,11 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
             }}
             placeholder=""
           />
-          {}
+          { }
         </Col>
       </Row>
 
-      {}
+      { }
       {initial?.GroupId && (
         <>
           <hr style={{ margin: "20px 0" }} />
@@ -215,7 +223,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
             <div>
               <h4 style={{ marginBottom: "12px" }}>{t("groups.manage_users")}</h4>
 
-              {}
+              { }
               <div style={{ display: "flex", gap: "8px", marginBottom: "16px", alignItems: "end" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "500" }}>
@@ -250,7 +258,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
                 </Button>
               </div>
 
-              {}
+              { }
               <div>
                 <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                   {t("groups.users_in_group")} ({groupUsers.length})
@@ -288,7 +296,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
         </>
       )}
 
-      {}
+      { }
       {initial?.GroupId && (
         <>
           <hr style={{ margin: "20px 0" }} />
@@ -306,7 +314,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
             <div>
               <h4 style={{ marginBottom: "12px" }}>{t("folders.manage_folders")}</h4>
 
-              {}
+              { }
               <div style={{ display: "flex", gap: "8px", marginBottom: "16px", alignItems: "end" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "500" }}>
@@ -341,7 +349,7 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
                 </Button>
               </div>
 
-              {}
+              { }
               <div>
                 <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                   {t("folders.folders_in_group")} ({groupFolders.length})
@@ -384,7 +392,14 @@ export const GroupForm: React.FC<Props> = ({ initial = {},  onCancel, onSave }) 
           {t("actions.cancel")}
         </Button>
         <Button type="submit" disabled={!canSave}>
-          {t("actions.save")}
+          {isLoading ? (
+            <>
+              <LoadingIcon size={18} />
+              {t("actions.saving") || "Salvando..."}
+            </>
+          ) : (
+            t("actions.save") || "Salvar"
+          )}
         </Button>
       </div>
     </form>

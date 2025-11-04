@@ -25,6 +25,7 @@ import { useThemeContext } from "../../context/ThemeContext";
 import { RagResultContent, RagResultItem, RagResultsClear, RagResultsContainer, RagResultScore, RagResultsCount, RagResultsHeader, RagResultsList, RagResultTitle, RagResultView, RagSearchButton, RagSearchContainer, RagSearchControls, RagSearchDescription, RagSearchInput, RagSearchTitle, Spinner } from "../../components/common/Components";
 import { notificationActions } from "../notifications/useNotification";
 import { findSimilarDocuments, type DocumentWithSimilarity } from "./ragFunctions";
+import { LoadingIcon } from "../../components/common/LoadingIcon";
 
 const DocumentTagsCell: React.FC<{ documentId: number }> = ({ documentId }) => {
   const [tags, setTags] = useState<any[]>([]);
@@ -113,6 +114,7 @@ const DocumentPage: React.FC = () => {
   const { theme } = useThemeContext();
   const navigate = useNavigate();
   const { generateEmbedding } = useDocument();
+  const [isLoading, setIsLoading] = useState(false);
 
   //rag
   const [ragSearchQuery, setRagSearchQuery] = useState("");
@@ -295,6 +297,7 @@ const DocumentPage: React.FC = () => {
     }
 
     try {
+      setIsLoading(true);
       await importDocument(file, selectedFolderId);
       importModal.close();
       // Limpar o input para permitir selecionar o mesmo arquivo novamente
@@ -303,6 +306,8 @@ const DocumentPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Erro ao importar documento:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -1025,8 +1030,18 @@ const DocumentPage: React.FC = () => {
               {t('navigation.cancel') || 'Cancelar'}
             </Button>
             <Button onClick={handleImportDocument} variant="primary">
-              {t('documents.import') || 'Importar'}
+              {}
+              {isLoading ? (
+                <>
+                  <LoadingIcon size={18} />
+                  {t("actions.importing") || "Importando..."}
+                </>
+              ) : (
+                t('documents.import') || 'Importar'
+              )}
             </Button>
+
+
           </div>
         </div>
       </Modal>

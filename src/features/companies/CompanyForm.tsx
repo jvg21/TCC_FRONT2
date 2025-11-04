@@ -6,6 +6,7 @@ import { useTypedTranslation } from "../../context/LanguageContext";
 import { regexPatterns } from "../../utils/regexUtils";
 import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
+import { LoadingIcon } from "../../components/common/LoadingIcon";
 
 
 type Props = {
@@ -22,7 +23,9 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, onCancel, onSave })
   const [Phone, setPhone] = useState(initial.Phone ?? "");
   const [Adress, setAdress] = useState(initial.Adress ?? "");
   const [ZipCode, setZipCode] = useState(initial.ZipCode ?? "");
-  
+  const [isLoading, setIsLoading] = useState(false);
+
+
   const { t } = useTypedTranslation();
 
   useEffect(() => {
@@ -32,7 +35,7 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, onCancel, onSave })
     setTaxId(initial.TaxId ? regexPatterns.applyMask(initial.TaxId, "99.999.999/9999-99") : "");
     setPhone(initial.Phone ? regexPatterns.applyMask(initial.Phone, "+99 (99) 99999-9999") : "");
     setZipCode(initial.ZipCode ? regexPatterns.applyMask(initial.ZipCode, "99999-999") : "")
- 
+
   }, [
     initial.Name,
     initial.TaxId,
@@ -65,11 +68,17 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, onCancel, onSave })
     e.preventDefault();
     if (!canSave) return;
 
-    onSave({ Name, TaxId, Email, Phone, Adress, ZipCode,  });
+    try {
+      setIsLoading(true);
+      onSave({ Name, TaxId, Email, Phone, Adress, ZipCode, });
+
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    
+
     <form onSubmit={handleSubmit}>
       <Row>
         <Col><Input label={t("companies.name")} maxLength={50} minLength={3} required value={Name} onChange={(e) => setName(e.target.value)} /></Col>
@@ -118,7 +127,18 @@ export const CompanyForm: React.FC<Props> = ({ initial = {}, onCancel, onSave })
       </Row>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button variant="ghost" type="button" onClick={onCancel}>{t("actions.cancel")}</Button>
-        <Button type="submit" disabled={!canSave}>{t("actions.save")}</Button>
+
+        <Button type="submit" disabled={!canSave}>
+          {isLoading ? (
+            <>
+              <LoadingIcon size={18} />
+              {t("actions.saving") || "Salvando..."}
+            </>
+          ) : (
+            t("actions.save") || "Salvar"
+          )}
+        </Button>
+
       </div>
     </form>
   );

@@ -10,6 +10,7 @@ import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
 import { useUser } from "../user/useUser";
 import styled from "styled-components";
+import { LoadingIcon } from "../../components/common/LoadingIcon";
 
 
 const TextArea = styled.textarea`
@@ -40,7 +41,7 @@ export const TaskForm: React.FC<{
   isEditing?: boolean;
   onCancel: () => void;
   onSave: (data: Partial<Task>) => void;
-}> = ({ initial = {},  onCancel, onSave }) => {
+}> = ({ initial = {}, onCancel, onSave }) => {
   const [Title, setTitle] = useState(initial.Title ?? "");
   const [Description, setDescription] = useState(initial.Description ?? "");
   const [DueDate, setDueDate] = useState(initial.DueDate ?? "");
@@ -49,6 +50,8 @@ export const TaskForm: React.FC<{
   const [AssigneeId, setAssigneeId] = useState(initial.AssigneeId ?? 0);
   const { t } = useTranslation();
   const { activeUser } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     setTitle(initial.Title ?? "");
@@ -87,7 +90,12 @@ export const TaskForm: React.FC<{
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
-    onSave({ Title, Description, DueDate, Priority, Status, AssigneeId });
+    try {
+      setIsLoading(true);
+      onSave({ Title, Description, DueDate, Priority, Status, AssigneeId });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -107,7 +115,7 @@ export const TaskForm: React.FC<{
 
       <Row>
         <Col>
-          {}
+          { }
           <Label>{t("tasks.description")}</Label>
           <TextArea
             required
@@ -164,7 +172,14 @@ export const TaskForm: React.FC<{
           {t("actions.cancel")}
         </Button>
         <Button type="submit" disabled={!canSave}>
-          {t("actions.save")}
+          {isLoading ? (
+            <>
+              <LoadingIcon size={18} />
+              {t("actions.saving") || "Salvando..."}
+            </>
+          ) : (
+            t("actions.save") || "Salvar"
+          )}
         </Button>
       </div>
     </form>

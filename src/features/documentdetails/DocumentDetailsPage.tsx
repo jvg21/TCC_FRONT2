@@ -52,6 +52,7 @@ import { useModal } from '../../hooks/useModal';
 import { Modal } from '../../components/common/Modal';
 import { MarkdownEditorPage } from '../markdown-editor/MarkdownEditorPage';
 import { ActionsBar, AuthorIndicator, CloseButton, CommentsScrollArea, DropdownContainer, DropdownItemButton, DropdownMenu, SectionLabel, SidebarContent, SidebarHeader, SidebarOverlay, SidebarTitle, VersionAuthor, VersionBadge, VersionDate, VersionItem, VersionSection, VersionSidebar } from '../../components/common/documentDetailsComponents';
+import { LoadingIcon } from '../../components/common/LoadingIcon';
 
 
 const DocumentDetailsPage: React.FC = () => {
@@ -79,22 +80,22 @@ const DocumentDetailsPage: React.FC = () => {
   const { generateSummary } = useAI();
   const [validatorNote, setValidatorNote] = useState('');
   const [validationStatus, setValidationStatus] = useState<number | boolean | null>(null);
-  const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
   const [documentContent, setDocumentContent] = useState('');
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [loadingSummary, setLoadingSummary] = useState(false);
-
   const hasLoadedRef = useRef(false);
-
   const [showExportDropdown, setShowExportDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-
   const [showSummaryDropdown, setShowSummaryDropdown] = useState(false);
   const summaryDropdownRef = useRef<HTMLDivElement | null>(null);
-
-  /* NOVO: loading apenas do envio do comentário */
   const [isAddingComment, setIsAddingComment] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [loadingExport, setLoadingExport] = useState(false);
+  const [documentLoading, setDocumentLoading] = useState(false);
+  const [validationLoading, setValidationLoading] = useState(false);
 
   useEffect(() => {
     const doc = typeof window !== 'undefined' ? window.document : null;
@@ -168,6 +169,7 @@ const DocumentDetailsPage: React.FC = () => {
     if (!document) return;
 
     try {
+      setDocumentLoading(true);
       await update(document.DocumentId, {
         ...document,
         Content: documentContent,
@@ -183,7 +185,10 @@ const DocumentDetailsPage: React.FC = () => {
       notificationActions.showError(
         t("messages.error.generic") || 'Erro ao salvar documento'
       );
+    } finally {
+      setDocumentLoading(false);
     }
+
   };
 
   const handleAddComment = async () => {
@@ -197,7 +202,7 @@ const DocumentDetailsPage: React.FC = () => {
         UserId: user.UserId,
       });
       setNewComment('');
-      
+
     } catch (error) {
       console.error('Erro ao adicionar comentário:', error);
       notificationActions.showError(t("messages.error.generic") || 'Erro ao adicionar comentário');
@@ -205,20 +210,24 @@ const DocumentDetailsPage: React.FC = () => {
       setIsAddingComment(false); // desativa loading do botão
     }
   };
-
   const handleValidation = async (isValid: boolean) => {
     if (!document) return;
 
     try {
-      setValidationStatus(isValid);
+      setValidationLoading(true);
+      // ❌ Removido: setValidationStatus(isValid);
       await updateValidationStatus(document.DocumentId, isValid, validatorNote);
       setValidatorNote(validatorNote);
+      // ✅ Só atualiza o status depois da resposta
       setValidationStatus(isValid ? 1 : 2);
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
-      setValidationStatus(document?.isValid ?? null);
+      notificationActions.showError('Erro ao validar documento');
+    } finally {
+      setValidationLoading(false);
     }
   };
+
 
   const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
     if (!documentContent) {
@@ -265,6 +274,7 @@ const DocumentDetailsPage: React.FC = () => {
     if (!document) return;
 
     try {
+      setLoadingExport(true);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const margin = 15;
@@ -293,6 +303,8 @@ const DocumentDetailsPage: React.FC = () => {
     } catch (error) {
       console.error('Erro ao exportar PDF:', error);
       notificationActions.showError('Erro ao exportar PDF');
+    } finally {
+      setLoadingExport(false);
     }
   };
 
@@ -326,6 +338,7 @@ const DocumentDetailsPage: React.FC = () => {
     if (!document) return;
 
     try {
+      setLoadingExport(true);
       const doc = new Document({
         sections: [{
           properties: {},
@@ -363,6 +376,8 @@ const DocumentDetailsPage: React.FC = () => {
     } catch (error) {
       console.error('Erro ao exportar DOCX:', error);
       notificationActions.showError('Erro ao exportar DOCX');
+    } finally {
+      setLoadingExport(false);
     }
   };
 
@@ -370,6 +385,7 @@ const DocumentDetailsPage: React.FC = () => {
     if (!document) return;
 
     try {
+      setLoadingExport(true);
       let markdown = `# ${document.Title}\n\n`;
       markdown += `**Criado por:** ${creator?.Name || 'N/A'}\n`;
       markdown += `**Pasta:** ${folder?.Name || 'N/A'}\n`;
@@ -383,6 +399,8 @@ const DocumentDetailsPage: React.FC = () => {
     } catch (error) {
       console.error('Erro ao exportar Markdown:', error);
       notificationActions.showError('Erro ao exportar Markdown');
+    } finally {
+      setLoadingExport(false);
     }
   };
 
@@ -444,13 +462,22 @@ const DocumentDetailsPage: React.FC = () => {
           </Button>
 
           <DropdownContainer ref={dropdownRef}>
-            <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
-              <FiDownload style={{ marginRight: 6 }} />
-              {t("documents.document_details.export.button") || "Exportar"}
-              <FiChevronDown style={{ marginLeft: 6 }} />
-            </Button>
+            {
+              loadingExport ? (
+                <Button disabled>
+                  <LoadingIcon size={18} /> {t("loading.loading") || "Carregando..."}
+                </Button>
+              ) : (
+                <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
+                  <FiDownload style={{ marginRight: 6 }} />
+                  {t("documents.document_details.export.button") || "Exportar"}
+                  <FiChevronDown style={{ marginLeft: 6 }} />
+                </Button>)
+            }
+
 
             {showExportDropdown && (
+
               <DropdownMenu>
                 <DropdownItemButton onClick={() => { handleExportPDF(); setShowExportDropdown(false); }}>
                   📄 {t("documents.document_details.export.export_pdf") || "Exportar PDF"}
@@ -506,8 +533,21 @@ const DocumentDetailsPage: React.FC = () => {
           </DropdownContainer>
 
           <Button onClick={handleSaveDocument}>
-            <FiEdit /> {t("documents.document_details.save_changes") || "Salvar Alterações"}
+            {
+              documentLoading ? (
+                <>
+                  <LoadingIcon size={18} />
+                  {t("actions.loading") || "Carregando..."}
+                </>
+              ) : (
+                <>
+                  <FiEdit />
+                  {t("documents.document_details.save_changes") || "Salvar Alterações"}
+                </>
+              )}
           </Button>
+
+
         </ActionsBar>
       }
     >
@@ -603,19 +643,41 @@ const DocumentDetailsPage: React.FC = () => {
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <Button
                     onClick={() => handleValidation(true)}
-                    style={{ flex: 1, background: '#28a745' }}
+                    disabled={validationLoading}
+                    style={{ flex: 1, background: '#28a745', opacity: validationLoading ? 0.8 : 1 }}
                   >
-                    ✅ {t("documents.document_details.validation.approve") || "Aprovar"}
+                    {validationLoading ? (
+                      <>
+                        <LoadingIcon size={18} />
+                        {t("loading.loading") || "Carregando..."}
+                      </>
+                    ) : (
+                      <>
+                        ✅ {t("documents.document_details.validation.approve") || "Aprovar"}
+                      </>
+                    )}
                   </Button>
+
                   <Button
                     onClick={() => handleValidation(false)}
-                    style={{ flex: 1, background: '#dc3545' }}
+                    disabled={validationLoading}
+                    style={{ flex: 1, background: '#dc3545', opacity: validationLoading ? 0.8 : 1 }}
                   >
-                    ❌ {t("documents.document_details.validation.reject")}
+                    {validationLoading ? (
+                      <>
+                        <LoadingIcon size={18} />
+                        {t("loading.loading") || "Carregando..."}
+                      </>
+                    ) : (
+                      <>
+                        ❌ {t("documents.document_details.validation.reject") || "Rejeitar"}
+                      </>
+                    )}
                   </Button>
                 </div>
               </ValidatorActions>
             )}
+
           </ValidationSection>
 
           {document?.DocumentId && (
@@ -712,7 +774,7 @@ const DocumentDetailsPage: React.FC = () => {
             </div>
           ) : documentVersions.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-              {t('documents.document_details.version_history.no_versions') }
+              {t('documents.document_details.version_history.no_versions')}
             </div>
           ) : (
             <>

@@ -26,6 +26,7 @@ const GroupPage: React.FC = () => {
   const { t } = useTranslation();
   const { userProfile } = useAuthContext();
 
+
   // ==== Paginação (adição) ====
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
@@ -75,20 +76,20 @@ const GroupPage: React.FC = () => {
 
     const containerStyle: React.CSSProperties = isNarrow
       ? {
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gridTemplateRows: 'auto auto',
-          gap: 8,
-          alignItems: 'center',
-          paddingTop: 12,
-        }
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: 'auto auto',
+        gap: 8,
+        alignItems: 'center',
+        paddingTop: 12,
+      }
       : {
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-          paddingTop: 12,
-        };
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        paddingTop: 12,
+      };
 
     return (
       <div style={containerStyle}>
