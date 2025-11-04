@@ -349,14 +349,15 @@ export const enTranslations = {
         today: "Today",
         current_version: "Current Version",
         title: "Version History",
-        summary_types: {
-          structured: "Standard Summary",
-          structured_desc: "Complete and structured document summary",
-          comparative: "Bullet Point Summary",
-          comparative_desc: "Lists the main points in bullet format",
-          analytical: "Short Summary (TL;DR)",
-          analytical_desc: "Brief version highlighting only the essentials"
-        },
+
+      },
+      summary_types: {
+        structured: "Standard Summary",
+        structured_desc: "Complete and structured document summary",
+        comparative: "Bullet Point Summary",
+        comparative_desc: "Lists the main points in bullet format",
+        analytical: "Short Summary (TL;DR)",
+        analytical_desc: "Brief version highlighting only the essentials"
       },
 
       export: {
@@ -577,7 +578,9 @@ export const enTranslations = {
     items_per_page: "Items per page",
     showing: "Showing",
     to: "to",
-    entries: "entries"
+    entries: "entries",
+    prev: "Previous",
+    rows_per_page: "Rows per page",
   },
 
   // Loading

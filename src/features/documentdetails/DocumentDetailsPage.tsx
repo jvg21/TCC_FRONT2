@@ -254,8 +254,7 @@ const DocumentDetailsPage: React.FC = () => {
       console.error('Erro ao gerar resumo:', error);
       notificationActions.showError(t("messages.error.generic") || 'Erro ao gerar resumo');
     } finally {
-      /* havia um bug aqui (setSummary sem parênteses); mantive sem mexer além do necessário,
-         mas corrigi discretamente para evitar erro de runtime */
+
       setSummary((s) => s);
       setLoadingSummary(false);
     }

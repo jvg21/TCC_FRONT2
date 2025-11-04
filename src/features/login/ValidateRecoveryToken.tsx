@@ -65,6 +65,9 @@ const TokenInput = styled.input`
   transition: all 0.2s ease;
   background: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.text};
+  width: 100%;  
+  display: block;  
+  margin: 0 auto;  
   
   &:focus {
     border-color: ${({ theme }) => theme.colors.primary};
@@ -76,6 +79,7 @@ const TokenInput = styled.input`
     color: ${({ theme }) => theme.colors.muted};
     font-weight: 400;
     letter-spacing: 2px;
+    text-align: center;  
   }
   
   &:disabled {

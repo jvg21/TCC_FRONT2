@@ -3,12 +3,12 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import {  FiPlus} from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiPlus } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import type { Folder } from "./types";
 import { FolderForm } from "./FolderForm";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFolder } from "./useFolder";
 import { useUser } from "../user/useUser";
@@ -28,8 +28,121 @@ const FolderPage: React.FC = () => {
   const { t } = useTranslation();
   const { userProfile } = useAuthContext()
 
-
   const { activeUser } = useUser();
+
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
+  const resetToFirstPage = () => setCurrentPage(1);
+
+  useEffect(() => {
+    resetToFirstPage();
+  }, [query, searchStatus]);
+
+  const paginate = (rows: Folder[]) => {
+    const start = (currentPage - 1) * pageSize;
+    return rows.slice(start, start + pageSize);
+  };
+
+  const useIsNarrow = (breakpoint = 480) => {
+    const [isNarrow, setIsNarrow] = useState(false);
+    useEffect(() => {
+      const onResize = () => setIsNarrow(window.innerWidth < breakpoint);
+      onResize();
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }, [breakpoint]);
+    return isNarrow;
+  };
+
+  const PaginationBar: React.FC<{ total: number }> = ({ total }) => {
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const isNarrow = useIsNarrow();
+
+    const canPrev = currentPage > 1;
+    const canNext = currentPage < totalPages;
+
+    // helper para fallback de i18n quando a key não existir
+    const tt = (key: string, fallback: string) => {
+      const v = t(key) as unknown as string;
+      return v && v !== key ? v : fallback;
+    };
+
+    useEffect(() => {
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages);
+      }
+    }, [totalPages]);
+
+    // Removida a condição que retornava null quando total é 0
+    // if (total === 0) return null;
+
+    const containerStyle: React.CSSProperties = isNarrow
+      ? {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: 'auto auto',
+        gap: 8,
+        alignItems: 'center',
+        paddingTop: 12,
+      }
+      : {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        paddingTop: 12,
+      };
+
+    return (
+      <div style={containerStyle}>
+        <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
+          {total > 0 ? (
+            `${tt('pagination.showing', 'Mostrando')} ${(currentPage - 1) * pageSize + 1}–${Math.min(currentPage * pageSize, total)} ${tt('pagination.of', 'de')} ${total}`
+          ) : (
+            `${tt('pagination.showing', 'Mostrando')} 0 ${tt('pagination.of', 'de')} 0`
+          )}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
+          <select
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); resetToFirstPage(); }}
+            style={{ padding: '6px 8px', border: '1px solid #ced4da', borderRadius: 6 }}
+          >
+            {[5, 10, 20, 50, 100].map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Navegação */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
+          <Button
+            variant="ghost"
+            aria-label={tt('pagination.prev', 'Anterior')}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={!canPrev}
+          >
+            <FiChevronLeft /> {!isNarrow && tt('pagination.prev', 'Anterior')}
+          </Button>
+          <div style={{ minWidth: 64, textAlign: 'center' }}>{currentPage} / {totalPages || 1}</div>
+          <Button
+            variant="ghost"
+            aria-label={tt('pagination.next', 'Próxima')}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={!canNext}
+          >
+            {!isNarrow && tt('pagination.next', 'Próxima')} <FiChevronRight />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+
 
 
   const Columns = (onEdit: (c: Folder) => void, onToggleStatus: (id: number) => void): ColumnDef<Folder>[] => {
@@ -41,7 +154,7 @@ const FolderPage: React.FC = () => {
         render: (row) => {
           if (!row.ParentFolderId) return t("folders.no_parent_folder");
           const parentFolder = Folder.find(f => f.FolderId === row.ParentFolderId);
-          return parentFolder ? parentFolder.Name :'-';
+          return parentFolder ? parentFolder.Name : '-';
         }
       },
       {
@@ -135,7 +248,11 @@ const FolderPage: React.FC = () => {
         userProfile &&
         <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
       }
-      <DataTable columns={columns} data={filteredFolder} />
+      {/* Aqui foi adicionado o pageSize como prop ao DataTable */}
+      <DataTable columns={columns} data={paginate(filteredFolder)} pageSize={pageSize} />
+
+      {/* A barra de paginação agora sempre será exibida */}
+      <PaginationBar total={filteredFolder.length} />
       <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("folders.edit_folder") : t("folders.add_folder")}>
         <FolderForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />
       </Modal>

@@ -355,6 +355,8 @@ export const ptTranslations = {
       created_at: "Criado em",
       updated_at: "Atualizado em",
       generating_summary : "Gerando resumo...",
+      
+      
 
       
       summary_types: {
@@ -363,7 +365,8 @@ export const ptTranslations = {
         comparative: "Resumo em tópicos",
         comparative_desc: "Lista os pontos principais em formato de tópicos",
         analytical: "Resumo curto (TL;DR)",
-        analytical_desc: "Versão resumida destacando apenas o essencial"
+        analytical_desc: "Versão resumida destacando apenas o essencial",
+        
       },
 
       version_history: {

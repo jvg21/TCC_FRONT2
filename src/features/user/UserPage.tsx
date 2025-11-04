@@ -247,7 +247,7 @@ const UserPage: React.FC = () => {
         const page = paginate(filteredUser);
         return (
           <>
-            <DataTable columns={columns} data={page} />
+            <DataTable columns={columns} data={paginate(filteredUser)} pageSize={pageSize} />
             <PaginationBar total={total} />
           </>
         );

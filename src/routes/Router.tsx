@@ -12,7 +12,7 @@ import { DevRoutes } from "./DevRoutes"
 import { AdmRoutes } from "./AdmRoutes"
 import UserPage from "../features/user/UserPage"
 import SettingsPage from "../features/settings/SettingPage"
-import IntegrationsPage from "../features/integrations/IntegrationsPage" 
+import IntegrationsPage from "../features/integrations/IntegrationsPage"
 import ResetPassword from "../features/login/ResetPassword"
 import ValidateRecoveryToken from "../features/login/ValidateRecoveryToken"
 import RequestPasswordRecovery from "../features/login/RequestPasswordRecovery"
@@ -37,7 +37,7 @@ export const AppRoutes = () => {
             <Route path="/reset-password" element={<ResetPassword />} />
 
 
-            {}
+            { }
 
             <Route path="/" element={
                 <ProtectedRoutes>
@@ -52,7 +52,7 @@ export const AppRoutes = () => {
                 </ProtectedRoutes>
             } />
 
-            {}
+            { }
             <Route path="/integrations/openai" element={
                 <AdmRoutes>
                     <IntegrationsPage />
@@ -126,9 +126,9 @@ export const AppRoutes = () => {
             } />
 
             <Route path="/ReportsPage" element={
-                <ProtectedRoutes>
+                <AdmRoutes>
                     <ReportsPage />
-                </ProtectedRoutes>
+                </AdmRoutes>
             } />
 
 
