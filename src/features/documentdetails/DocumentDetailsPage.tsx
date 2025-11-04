@@ -783,7 +783,8 @@ const DocumentDetailsPage: React.FC = () => {
               <VersionSection>
                 {documentVersions.map((version, index) => {
                   const versionAuthor = activeUser.find(u => u.UserId === version.userId);
-                  const isCurrentVersion = index === 0;
+                  const isCurrentVersion = index === documentVersions.length - 1;
+
 
                   return (
                     <VersionItem

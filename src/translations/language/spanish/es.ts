@@ -105,8 +105,7 @@ export const esTranslations = {
     createError: "Error al crear usuario",
     no_select: "Seleccione un usuario",
     select_company: "Seleccione una empresa",
-    updateStatusSuccess: "¡Estado del usuario cambiado con éxito!",
-    select_company: "Seleccionar Empresa"
+    updateStatusSuccess: "¡Estado del usuario cambiado con éxito!"
   },
 
   // Grupos

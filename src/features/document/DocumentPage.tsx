@@ -388,7 +388,7 @@ const DocumentPage: React.FC = () => {
                 return true;
               }
             }
-            return false;
+            return true;
           };
 
           return (

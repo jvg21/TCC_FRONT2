@@ -1,5 +1,3 @@
-import { error } from "console";
-
 export const enTranslations = {
   invalidCredentials: "Invalid credentials",
   notFound: "Not found",
