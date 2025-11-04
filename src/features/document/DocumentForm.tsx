@@ -88,7 +88,8 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
   const validateFields = () => {
     const isTitleValid = Title.trim().length > 0;
     const isContentValid = Content.trim().length > 0;
-    return isTitleValid && isContentValid;
+    const isFolderIdValid = FolderId.trim().length > 0;
+    return isTitleValid && isContentValid && isFolderIdValid;
   };
 
   const canSave = validateFields() && !isLoading;

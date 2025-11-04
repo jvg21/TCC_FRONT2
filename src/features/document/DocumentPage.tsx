@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { TabContainer } from "../../components/common/TabContainer";
 import { useTag } from "../tag/useTag";
 import { useThemeContext } from "../../context/ThemeContext";
-import { RagResultContent, RagResultItem, RagResultsClear, RagResultsContainer, RagResultScore, RagResultsCount, RagResultsHeader, RagResultsList, RagResultTitle, RagResultView, RagSearchButton, RagSearchContainer, RagSearchControls, RagSearchDescription, RagSearchInput, RagSearchTitle, Spinner } from "../../components/common/Components";
+import { ActionButton, RagResultContent, RagResultItem, RagResultsClear, RagResultsContainer, RagResultScore, RagResultsCount, RagResultsHeader, RagResultsList, RagResultTitle, RagResultView, RagSearchButton, RagSearchContainer, RagSearchControls, RagSearchDescription, RagSearchInput, RagSearchTitle, Spinner } from "../../components/common/Components";
 import { notificationActions } from "../notifications/useNotification";
 import { findSimilarDocuments, type DocumentWithSimilarity } from "./ragFunctions";
 import { LoadingIcon } from "../../components/common/LoadingIcon";
@@ -388,7 +388,7 @@ const DocumentPage: React.FC = () => {
                 return true;
               }
             }
-            return false;
+            return true;
           };
 
           return (
@@ -923,9 +923,22 @@ const DocumentPage: React.FC = () => {
           ) : (
             (() => {
               const vals = getFilteredDocuments(userValidatorDocuments);
+              const validationColumns = [...columns];
+
+              // Substituindo a última coluna (actions) para permitir edição independente do nível
+              validationColumns[validationColumns.length - 1] = {
+                key: "actions",
+                header: t("actions.actions"),
+                render: (row) => (
+                  <>
+                    <ActionButtons onEdit={() => handleView(row)} onToggleStatus={handleToggleStatus} row={row} id={row.DocumentId} />
+                  </>
+                )
+              };
+
               return (
                 <>
-                  <DataTable columns={columns} data={paginate(vals)} pageSize={pageSize}/>
+                  <DataTable columns={validationColumns} data={paginate(vals)} pageSize={pageSize} />
                   <PaginationBar total={vals.length} />
                 </>
               );
@@ -1030,7 +1043,7 @@ const DocumentPage: React.FC = () => {
               {t('navigation.cancel') || 'Cancelar'}
             </Button>
             <Button onClick={handleImportDocument} variant="primary">
-              {}
+              { }
               {isLoading ? (
                 <>
                   <LoadingIcon size={18} />

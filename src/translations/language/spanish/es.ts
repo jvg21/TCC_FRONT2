@@ -101,6 +101,7 @@ export const esTranslations = {
     no_select: "Seleccione un usuario",
     select_company: "Seleccione una empresa",
     updateStatusSuccess: "¡Estado del usuario cambiado con éxito!",
+    updateStatusSuccess: "¡Estado del usuario cambiado con éxito!"
   },
 
   // Grupos
