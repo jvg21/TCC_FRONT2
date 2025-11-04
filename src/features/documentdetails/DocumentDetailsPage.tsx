@@ -632,7 +632,6 @@ const DocumentDetailsPage: React.FC = () => {
                 </ValidationStatus>
               </ValidatorActions>
             )}
-
             {validationStatus === 0 && (
               <ValidatorActions>
                 <ValidatorNote
