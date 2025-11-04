@@ -2,6 +2,7 @@ import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
 import { eraseCookie,  setCookie } from "../../utils/Cookies";
 import { useAuthContext } from "../../context/AuthContext";
+import { t } from "i18next";
 
 export const useLogin = () => {
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -20,12 +21,12 @@ export const useLogin = () => {
             const data: ApiResponse = await response.json();
 
             if (data.erro || !data.objeto?.token || !data.objeto) {
-                notificationActions.showError(data.mensagem || 'Erro no login');
-                throw new Error(data.mensagem || 'Erro no login');
+                notificationActions.showError(t('login_error') || 'Erro no login');
+                throw new Error(t('login_error') || 'Erro no login');
             }
 
             setCookie('authToken', data.objeto.token);
-            notificationActions.showNotification(data.mensagem || 'Login realizado com sucesso!', 'success');
+            notificationActions.showNotification(t('login_success'), 'success');
             setIsAuthenticated(true);
             setUser(data.objeto.user);
             return data.objeto;
@@ -41,7 +42,7 @@ export const useLogin = () => {
 
     function logout() {
         eraseCookie('authToken');
-        notificationActions.showNotification('Logout realizado com sucesso', "info");
+        notificationActions.showNotification(t('logout_success'), "info");
         setIsAuthenticated(false);
         setUser(null);
     }

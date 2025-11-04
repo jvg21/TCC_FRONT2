@@ -234,7 +234,7 @@ const UserPage: React.FC = () => {
             onChange={(e) => setSelectedCompanyId(e.target.value ? Number(e.target.value) : null)}
             style={{ padding: '8px 12px', border: '1px solid #ffffff', borderRadius: '4px', fontSize: '14px', minWidth: '200px' }}
           >
-            <option value="">{t("users.no_select")}</option>
+            <option value="">{t("users.select_company")}</option>
             {activeCompanies.map(company => (
               <option key={company.CompanyId} value={company.CompanyId}>{company.Name}</option>
             ))}

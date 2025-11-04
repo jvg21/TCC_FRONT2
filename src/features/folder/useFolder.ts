@@ -101,8 +101,8 @@ export const useFolder = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       const newFolder: Folder = transformSingleApiData(data.objeto);
@@ -133,8 +133,8 @@ export const useFolder = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       const updatedFolder: Folder = transformSingleApiData(data.objeto);
@@ -159,8 +159,8 @@ export const useFolder = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       notificationActions.showNotification(t("folders.statusToggleSuccess"), 'success');
@@ -191,8 +191,8 @@ export const useFolder = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       notificationActions.showNotification(t("folders.moveSuccess"), 'success');
@@ -224,8 +224,8 @@ export const useFolder = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       notificationActions.showNotification(t("folders.groupAddedSuccess"), 'success');
@@ -255,8 +255,8 @@ export const useFolder = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       notificationActions.showNotification(t("folders.groupRemovedSuccess"), 'success');
@@ -280,8 +280,8 @@ export const useFolder = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       return data;

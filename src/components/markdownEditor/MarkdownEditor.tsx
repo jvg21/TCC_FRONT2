@@ -13,6 +13,7 @@ import 'highlight.js/styles/default.css';
 import 'katex/dist/katex.css';
 import 'medium-zoom/dist/style.css';
 import { getCookie } from '../../utils/Cookies';
+import { t } from 'i18next';
 
 const EditorContainer = styled.div`
   .bytemd {
@@ -85,7 +86,6 @@ const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: #333;
 `;
 
 interface MarkdownEditorProps {
@@ -114,7 +114,7 @@ const uploadImages = async (files: File[]): Promise<string[]> => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro no upload da imagem');
+        throw new Error(t('markdown_editor.upload_error') || 'Erro no upload da imagem');
       }
 
       const result = await response.json();
@@ -206,7 +206,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   value,
   onChange,
   required = false,
-  placeholder = "Digite seu conteúdo em markdown..."
+  placeholder = t("markdown_editor.placeholder")
 }) => {
   return (
     <div>

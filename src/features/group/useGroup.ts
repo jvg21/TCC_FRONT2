@@ -95,8 +95,8 @@ export const useGroup = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       return { ...data, objeto: transformSingleApiData(data.objeto) };
@@ -124,8 +124,8 @@ export const useGroup = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       const newGroup: Group = transformSingleApiData(data.objeto);
@@ -158,8 +158,8 @@ export const useGroup = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       const updatedGroup: Group = transformSingleApiData(data.objeto);
@@ -185,8 +185,8 @@ export const useGroup = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       const updatedGroup: Group = transformSingleApiData(data.objeto);
@@ -210,8 +210,8 @@ export const useGroup = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       return data.objeto.map((item: any) => ({
@@ -238,8 +238,8 @@ export const useGroup = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       return data.objeto.map((item: any) => ({
@@ -276,8 +276,8 @@ export const useGroup = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       notificationActions.showNotification(t('groups.addUserSuccess') || 'Usuário adicionado ao grupo com sucesso!', 'success');
@@ -305,8 +305,8 @@ export const useGroup = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        notificationActions.showError(data.mensagem);
-        throw new Error(data.mensagem);
+        notificationActions.showError(t(data.mensagem));
+        throw new Error(t(data.mensagem));
       }
 
       notificationActions.showNotification(t('groups.removeUserSuccess') || 'Usuário removido do grupo com sucesso!', 'success');

@@ -8,6 +8,7 @@ import { Row } from "../../components/common/Row";
 import { Col } from "../../components/common/Col";
 import { useFolder } from "./useFolder";
 import { useUser } from "../user/useUser";
+import { LoadingIcon } from "../../components/common/LoadingIcon";
 
 type Props = {
   initial?: Partial<Folder>;
@@ -22,6 +23,8 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
   const { t } = useTranslation();
   const { activeFolder } = useFolder();
   const { activeUser } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     setName(initial.Name ?? "");
@@ -39,16 +42,21 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSave) return;
+    // console.log(ParentFolderId, ValidatorId);
 
-    console.log(ParentFolderId, ValidatorId);
+    try {
+      setIsLoading(true);
+      const payload = {
+        Name: Name.trim(),
+        ParentFolderId: ParentFolderId ? parseInt(ParentFolderId) : null,
+        ValidatorId: ValidatorId ? parseInt(ValidatorId) : null
+      };
 
-    const payload = {
-      Name: Name.trim(),
-      ParentFolderId: ParentFolderId ? parseInt(ParentFolderId) : null,
-      ValidatorId: ValidatorId ? parseInt(ValidatorId) : null 
-    };
+      onSave(payload);
+    } finally {
+      setIsLoading(false);
+    }
 
-    onSave(payload);
   };
 
   const parentFolderOptions = [
@@ -62,9 +70,9 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
   ];
 
   const validatorOptions = [
-    { value: "", label: t("folders.select_validator") }, 
+    { value: "", label: t("folders.select_validator") },
     ...activeUser.map(user => ({
-      value: user.UserId.toString(), 
+      value: user.UserId.toString(),
       label: user.Name
     }))
   ]
@@ -101,7 +109,7 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
           <Select
             label={t("folders.validator")}
             value={ValidatorId}
-            onChange={(e) => setValidatorId(e.target.value)} 
+            onChange={(e) => setValidatorId(e.target.value)}
             options={validatorOptions}
           />
         </Col>
@@ -112,7 +120,14 @@ export const FolderForm: React.FC<Props> = ({ initial = {}, onCancel, onSave }) 
           {t("actions.cancel")}
         </Button>
         <Button type="submit" disabled={!canSave}>
-          {t("actions.save")}
+          {isLoading ? (
+            <>
+              <LoadingIcon size={18} />
+              {t("actions.saving") || "Salvando..."}
+            </>
+          ) : (
+            t("actions.save") || "Salvar"
+          )}
         </Button>
       </div>
     </form>
