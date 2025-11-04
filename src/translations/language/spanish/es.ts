@@ -1,4 +1,6 @@
 export const esTranslations = {
+  invalidCredentials: "Credenciales inválidas",
+  notFound: "No encontrado",
   // Navegación
   navigation: {
     home: "Inicio",
@@ -42,7 +44,10 @@ export const esTranslations = {
     activate: "Activar",
     deactivate: "Desactivar",
     find_similar: "Encontrar Similares",
-    clear_results: "Limpiar Resultados"
+    clear_results: "Limpiar Resultados",
+    saving: "Guardando...",
+    importing: "Importando...",
+    copy: "Copiar"
   },
 
   // Estados
@@ -101,6 +106,7 @@ export const esTranslations = {
     no_select: "Seleccione un usuario",
     select_company: "Seleccione una empresa",
     updateStatusSuccess: "¡Estado del usuario cambiado con éxito!",
+    select_company: "Seleccionar Empresa"
   },
 
   // Grupos
@@ -160,7 +166,9 @@ export const esTranslations = {
     hide_group_folders: "Ocultar Carpetas de Grupo",
     createSuccess: "¡Carpeta creada con éxito!",
     updateSuccess: "¡Carpeta actualizada con éxito!",
-    updateStatusSuccess: "¡Estado de la carpeta cambiado con éxito!"
+    updateStatusSuccess: "¡Estado de la carpeta cambiado con éxito!",
+    groupAddedSuccess: "¡Carpeta agregada al grupo con éxito!",
+    statusToggleSuccess: "¡Estado de la carpeta alternado con éxito!"
   },
 
   tags: {
@@ -287,9 +295,15 @@ export const esTranslations = {
     importError: "Error al importar documento",
     importDocument: "Importar Documento",
     selectFolder: "Seleccionar Carpeta",
+    resetValidationSuccess: "¡Validación del documento restablecida con éxito!",
+    validationUpdateSuccess: "¡Estado de validación del documento actualizado con éxito!",
 
 
     filters: {
+      rag:{
+        hide: "Ocultar RAG",
+        show: "Mostrar RAG",
+      },
       hide: "Ocultar",
       show: "Mostrar",
       date_range: "Rango de Fechas",
@@ -382,7 +396,8 @@ export const esTranslations = {
         title: "Comentarios",
         placeholder: "Escriba su comentario...",
         add_comment: "Agregar Comentario",
-        count: "Comentarios"
+        count: "Comentarios",
+        createSuccess: "¡Comentario agregado con éxito!"
       }
     },
     messages: {
@@ -500,7 +515,9 @@ export const esTranslations = {
     light_mode: "Modo Claro",
     dark_mode: "Modo Oscuro",
     is_active: "Estado",
-    logout: "Cerrar Sesión"
+    logout: "Cerrar Sesión",
+    success: "¡Cierre de sesión exitoso!",
+    error: "Error de inicio de sesión. Verifica tus credenciales."
   },
 
   // Recuperación de contraseña
@@ -830,4 +847,11 @@ export const esTranslations = {
       usage: "Uso"
     }
   },
+  logout:{
+    success: "¡Cierre de sesión exitoso!"
+  },
+   markdown_editor:{
+    upload_error: "Error al subir la imagen",
+    placeholder: "Escribe aquí tu contenido en Markdown..."
+  }
 };

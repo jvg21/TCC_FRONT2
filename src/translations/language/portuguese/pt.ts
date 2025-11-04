@@ -1,4 +1,6 @@
 export const ptTranslations = {
+  invalidCredentials: "Credenciais inválidas",
+  notFound: "Não encontrado",
   // Navegação
   navigation: {
     home: "Início",
@@ -42,7 +44,10 @@ export const ptTranslations = {
     activate: "Ativar",
     deactivate: "Desativar",
     find_similar: "Encontrar Similares",
-    clear_results: "Limpar Resultados"
+    clear_results: "Limpar Resultados",
+    saving: "Salvando...",
+    importing: "Importando...",
+    copy: "Copiar"
   },
 
   // Estados
@@ -100,6 +105,7 @@ export const ptTranslations = {
     createError: "Erro ao criar usuário",
     no_select: "Selecione um usuário",
     updateStatusSuccess: "Status do usuário alterado com sucesso!",
+    select_company: "Selecionar Empresa"
   },
 
   // Grupos
@@ -156,9 +162,10 @@ export const ptTranslations = {
     select_folder: "Selecionar Pastas",
     folders_in_group: "Pastas em Grupo",
     no_folders_in_group: "Nenhuma Pasta no Grupo",
-    statusToggleSuccess: "Status da pasta alterado com sucesso!",
     createSuccess: "Pasta criada com sucesso!",
-    updateSuccess: "Pasta atualizada com sucesso!"
+    updateSuccess: "Pasta atualizada com sucesso!",
+    groupAddedSuccess: "Pasta adicionada ao grupo com sucesso!",
+    statusToggleSuccess: "Status da pasta alterado com sucesso!"
 
 
   },
@@ -293,8 +300,14 @@ export const ptTranslations = {
     importError: "Erro ao importar documento",
     importDocument: "Importar Documento",
     selectFolder: "Selecionar Pasta",
+    resetValidationSuccess: "Validação do documento restabelecida com sucesso!",
+    validationUpdateSuccess: "Estado de validação do documento atualizado com sucesso!",
 
     filters: {
+      rag:{
+        hide: "Ocultar RAG",
+        show: "Mostrar RAG",
+      },
       hide: "Ocultar",
       show: "Mostrar",
       date_range: "Período",
@@ -399,6 +412,7 @@ export const ptTranslations = {
         placeholder: "Digite seu comentário...",
         add_comment: "Adicionar Comentário",
         count: "Comentários",
+        createSuccess: "Comentário adicionado com sucesso!"
       }
     },
     messages: {
@@ -432,7 +446,9 @@ export const ptTranslations = {
     light_mode: "Modo Claro",
     dark_mode: "Modo Escuro",
     is_active: "Status",
-    logout: "Sair"
+    logout: "Sair",
+    success: "Login realizado com sucesso!",
+    error: "Login falhou. Verifique suas credenciais."
   },
 
   // Recuperação de senha
@@ -843,4 +859,11 @@ export const ptTranslations = {
 
 
   },
+  logout:{
+    success: "Logout realizado com sucesso!"
+  },
+   markdown_editor:{
+    upload_error: "Erro ao enviar imagem",
+    placeholder: "Escreva seu conteúdo aqui..."
+  }
 };
