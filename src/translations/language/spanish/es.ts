@@ -100,8 +100,11 @@ export const esTranslations = {
     createError: "Error al crear usuario",
     no_select: "Seleccione un usuario",
     select_company: "Seleccione una empresa",
+<<<<<<< Updated upstream
     updateStatusSuccess: "¡Estado del usuario cambiado con éxito!",
+=======
     updateStatusSuccess: "¡Estado del usuario cambiado con éxito!"
+>>>>>>> Stashed changes
   },
 
   // Grupos
