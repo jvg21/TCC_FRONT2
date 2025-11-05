@@ -1,4 +1,7 @@
 export const ptTranslations = {
+  date_format: "dd/MM/yyyy",
+  locale_date_string: "pt-BR",
+  
   invalidCredentials: "Credenciais inválidas",
   notFound: "Não encontrado",
   // Navegação

@@ -1,4 +1,7 @@
 export const enTranslations = {
+  date_format: "yyyy-MM-dd",
+  locale_date_string: "en-US",
+
   invalidCredentials: "Invalid credentials",
   notFound: "Not found",
   // Navigation

@@ -1,4 +1,7 @@
 export const esTranslations = {
+  date_format: "dd-MM-yyyy",
+  locale_date_string: "es-ES",
+
   invalidCredentials: "Credenciales inválidas",
   notFound: "No encontrado",
   // Navegación

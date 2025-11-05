@@ -53,6 +53,7 @@ import { Modal } from '../../components/common/Modal';
 import { MarkdownEditorPage } from '../markdown-editor/MarkdownEditorPage';
 import { ActionsBar, AuthorIndicator, CloseButton, CommentsScrollArea, DropdownContainer, DropdownItemButton, DropdownMenu, SectionLabel, SidebarContent, SidebarHeader, SidebarOverlay, SidebarTitle, VersionAuthor, VersionBadge, VersionDate, VersionItem, VersionSection, VersionSidebar } from '../../components/common/documentDetailsComponents';
 import { LoadingIcon } from '../../components/common/LoadingIcon';
+import { FormatDate } from '../../utils/FormatDate';
 
 
 const DocumentDetailsPage: React.FC = () => {
@@ -69,6 +70,8 @@ const DocumentDetailsPage: React.FC = () => {
   const [newComment, setNewComment] = useState('');
   const [documentVersions, setDocumentVersions] = useState<any[]>([]);
   const [loadingVersions, setLoadingVersions] = useState(false);
+
+  // console.log('documento:', document);
 
   const {
     comments,
@@ -129,11 +132,23 @@ const DocumentDetailsPage: React.FC = () => {
       try {
         const response = await GetDocumentValidationById(Number(id));
         if (response && !response.erro) {
-          setDocument(transformSingleApiData(response.objeto.document));
+
+          const documentData = response.objeto.document;
+          documentData.createdAt = new Date(response.objeto.createdAt).toUTCString();
+          documentData.updatedAt = new Date(response.objeto.updatedAt).toUTCString();
+
+          // console.log('Raw document data:', documentData);
+          setDocument(transformSingleApiData(documentData));
+
+
+
+          // console.log('Document after transform:', response,transformSingleApiData(response.objeto.document));
+
+
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status);
           setValidatorNote(response.objeto.comment || '');
-          console.log('Documento carregado:', response.objeto);
+          // console.log('Documento carregado:', response.objeto);
         } else {
           setError(t("messages.error.generic"));
         }
@@ -290,7 +305,7 @@ const DocumentDetailsPage: React.FC = () => {
       yPosition += 6;
       pdf.text(`Pasta: ${folder?.Name || 'N/A'}`, margin, yPosition);
       yPosition += 6;
-      pdf.text(`Data de criação: ${formatDate(document.CreatedAt)}`, margin, yPosition);
+      pdf.text(`Data de criação: ${FormatDate(document.CreatedAt,t("date_format"))}`, margin, yPosition);
       yPosition += 10;
 
       pdf.setFontSize(12);
@@ -328,7 +343,7 @@ const DocumentDetailsPage: React.FC = () => {
     setDocumentContent(version.content || '');
     setShowVersionHistory(false);
     notificationActions.showNotification(
-      `Versão de ${new Date(version.createdAt).toLocaleDateString('pt-BR')} carregada no editor`,
+      `Versão de ${new Date(version.createdAt).toLocaleDateString(t('locale_date_string'))} carregada no editor`,
       'success'
     );
   };
@@ -357,7 +372,7 @@ const DocumentDetailsPage: React.FC = () => {
                   break: 1,
                 }),
                 new TextRun({
-                  text: `Data de criação: ${formatDate(document.CreatedAt)}`,
+                  text: `Data de criação: ${FormatDate(document.CreatedAt,t("date_format"))}`,
                   break: 2,
                 }),
               ],
@@ -388,7 +403,7 @@ const DocumentDetailsPage: React.FC = () => {
       let markdown = `# ${document.Title}\n\n`;
       markdown += `**Criado por:** ${creator?.Name || 'N/A'}\n`;
       markdown += `**Pasta:** ${folder?.Name || 'N/A'}\n`;
-      markdown += `**Data de criação:** ${formatDate(document.CreatedAt)}\n\n`;
+      markdown += `**Data de criação:** ${FormatDate(document.CreatedAt,t("date_format"))}\n\n`;
       markdown += `---\n\n`;
       markdown += documentContent;
 
@@ -403,10 +418,6 @@ const DocumentDetailsPage: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
 
   const getValidationStatusText = (status: number) => {
     if (status === 0) {
@@ -584,7 +595,7 @@ const DocumentDetailsPage: React.FC = () => {
                   <div style={{ fontSize: '12px', color: '#666' }}>
                     {t("documents.document_details.created_at") || "Criado em"}
                   </div>
-                  <MetaValue>{formatDate(document.CreatedAt)}</MetaValue>
+                  <MetaValue>{FormatDate(document.CreatedAt,t("date_format"))}</MetaValue>
                 </div>
               </MetaItem>
 
@@ -594,7 +605,7 @@ const DocumentDetailsPage: React.FC = () => {
                   <div style={{ fontSize: '12px', color: '#666' }}>
                     {t("documents.document_details.updated_at") || "Atualizado em"}
                   </div>
-                  <MetaValue>{formatDate(document.UpdatedAt)}</MetaValue>
+                  <MetaValue>{FormatDate(document.UpdatedAt,t("date_format"))}</MetaValue>
                 </div>
               </MetaItem>
             </DocumentMeta>
@@ -704,7 +715,7 @@ const DocumentDetailsPage: React.FC = () => {
                             {commentAuthor?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}
                           </CommentAuthor>
                           <CommentDate>
-                            {formatDate(comment.CreatedAt!)}
+                            {FormatDate(comment.CreatedAt!,t("date_format"))}
                           </CommentDate>
                         </CommentHeader>
                         <CommentText>{comment.Content}</CommentText>
@@ -792,7 +803,7 @@ const DocumentDetailsPage: React.FC = () => {
                       onClick={() => handleLoadVersion(version)}
                     >
                       <VersionDate>
-                        {new Date(version.createdAt).toLocaleDateString('pt-BR', {
+                        {new Date(version.createdAt).toLocaleDateString(t('locale_date_string'), {
                           day: '2-digit',
                           month: 'long',
                           hour: '2-digit',
