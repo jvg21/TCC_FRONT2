@@ -405,7 +405,7 @@ const DocumentPage: React.FC = () => {
 
   const getMyDocuments = () => {
     if (!user) return [];
-    console.log("Filtrando documentos do usuário:", creatorDocuments);
+    // console.log("Filtrando documentos do usuário:", creatorDocuments);
     return creatorDocuments;
   };
 

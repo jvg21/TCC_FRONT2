@@ -559,7 +559,7 @@ export const useDocument = () => {
 
   useEffect(() => {
     if (token) {
-      console.log("🚀 Iniciando carregamento de dados...");
+      // console.log("🚀 Iniciando carregamento de dados...");
       const loadData = async () => {
         try {
           await get();
