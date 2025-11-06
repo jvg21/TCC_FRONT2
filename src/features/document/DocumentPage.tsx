@@ -26,55 +26,8 @@ import { RagResultContent, RagResultItem, RagResultsClear, RagResultsContainer, 
 import { notificationActions } from "../notifications/useNotification";
 import { findSimilarDocuments, type DocumentWithSimilarity } from "./ragFunctions";
 import { LoadingIcon } from "../../components/common/LoadingIcon";
+import { DocumentTagsCell } from "./DocumentTagsCell";
 
-const DocumentTagsCell: React.FC<{ documentId: number }> = ({ documentId }) => {
-  const [tags, setTags] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { getTagsByDocument } = useTag();
-  useEffect(() => {
-    const loadTags = async () => {
-      setLoading(true);
-      try {
-        const response = await getTagsByDocument(documentId);
-        if (response && !response.erro) {
-          setTags(response.objeto || []);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar tags:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadTags();
-  }, [documentId]);
-
-  if (loading) {
-    return <span style={{ color: '#999', fontSize: '12px' }}>...</span>;
-  }
-
-  return (
-    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-      {tags.length > 0 ? (
-        tags.map((tag) => (
-          <span
-            key={tag.tagId}
-            style={{
-              padding: '2px 8px',
-              borderRadius: '12px',
-              fontSize: '12px',
-              backgroundColor: tag.color || '#007bff',
-              color: '#fff'
-            }}
-          >
-            {tag.name}
-          </span>
-        ))
-      ) : (
-        <span style={{ color: '#999', fontSize: '12px' }}>-</span>
-      )}
-    </div>
-  );
-};
 
 const DocumentPage: React.FC = () => {
   const {
@@ -116,6 +69,8 @@ const DocumentPage: React.FC = () => {
   const { generateEmbedding } = useDocument();
   const [isLoading, setIsLoading] = useState(false);
 
+
+
   //rag
   const [ragSearchQuery, setRagSearchQuery] = useState("");
   const [isRagSearching, setIsRagSearching] = useState(false);
@@ -134,7 +89,6 @@ const DocumentPage: React.FC = () => {
 
   useEffect(() => {
     resetToFirstPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, JSON.stringify(dateFilter), authorFilter, tagFilter, showAdvancedFilters, searchStatus, activeTabId]);
 
   const paginate = (rows: Document[]) => {
@@ -298,12 +252,16 @@ const DocumentPage: React.FC = () => {
 
     try {
       setIsLoading(true);
-      await importDocument(file, selectedFolderId);
+      const response = await importDocument(file, selectedFolderId);
+      console.log(response)
       importModal.close();
       // Limpar o input para permitir selecionar o mesmo arquivo novamente
       if (importFileRef.current) {
         importFileRef.current.value = '';
       }
+
+      navigate(`/document/details/${response.objeto.documentId}`);
+
     } catch (error) {
       console.error("Erro ao importar documento:", error);
     } finally {
@@ -317,13 +275,6 @@ const DocumentPage: React.FC = () => {
     editorModal.open();
   };
 
-  // const handleEditFromViewer = () => {
-  //   if (viewing) {
-  //     viewModal.close();
-  //     setEditing(viewing);
-  //     modal.open();
-  //   }
-  // };
 
   const Columns = (
     _: (c: Document) => void,
@@ -464,13 +415,16 @@ const DocumentPage: React.FC = () => {
   // const handleAdd = () => { setEditing(null); modal.open(); };
   const handleEdit = (c: Document) => { setEditing(c); modal.open(); };
   const handleSave = async (payload: any) => {
+    let documentId = editing ? editing.DocumentId : null;
     try {
       if (editing) {
         await update(editing.DocumentId, payload);
         await updateValidationStatus(editing.DocumentId, null, "");
       } else {
-        await create(payload);
+        const response = await create(payload);
+        documentId = response.objeto.documentId;
       }
+      navigate(`/document/details/${documentId}`);
     } catch (error) {
       console.error("Erro ao salvar documento:", error);
     } finally {
@@ -497,10 +451,6 @@ const DocumentPage: React.FC = () => {
     setActiveTabId(tabId);
 
   };
-
-  //rag serch
-  // Versão otimizada da função handleRagSearch para o DocumentPage.tsx
-
 
   const handleRagSearch = async () => {
     if (!ragSearchQuery.trim()) return;
@@ -925,7 +875,7 @@ const DocumentPage: React.FC = () => {
               const vals = getFilteredDocuments(userValidatorDocuments);
               return (
                 <>
-                  <DataTable columns={columns} data={paginate(vals)} pageSize={pageSize}/>
+                  <DataTable columns={columns} data={paginate(vals)} pageSize={pageSize} />
                   <PaginationBar total={vals.length} />
                 </>
               );
@@ -1030,7 +980,7 @@ const DocumentPage: React.FC = () => {
               {t('navigation.cancel') || 'Cancelar'}
             </Button>
             <Button onClick={handleImportDocument} variant="primary">
-              {}
+              { }
               {isLoading ? (
                 <>
                   <LoadingIcon size={18} />
