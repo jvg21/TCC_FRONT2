@@ -11,6 +11,7 @@ export const useDocument = () => {
   const [document, setDocument] = useState<Document[]>([]);
   const [userValidatorDocuments, setUserValidatorDocuments] = useState<Document[]>([]);
   const [userDocuments, setUserDocuments] = useState<Document[]>([]);
+  const [creatorDocuments, setCreatorDocuments] = useState<Document[]>([]);
   const [query, setQuery] = useState("");
   const { user } = useAuthContext();
 
@@ -282,6 +283,36 @@ export const useDocument = () => {
       throw err;
     }
   };
+
+
+   const getDocumentByUser = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/Document/GetUserDocuments`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      const data: ApiResponse = await response.json();
+      if (data.erro) {
+        notificationActions.showError(data.mensagem);
+        throw new Error(data.mensagem);
+      }
+        const documents = Array.isArray(data.objeto)
+        ? data.objeto.map(mapApiDocumentToFrontend)
+        : [];
+
+      setCreatorDocuments(documents);
+      return data;
+
+    } catch (err) {
+      console.error("Erro ao buscar validações:", err);
+      throw err;
+    }
+  };
+
   const getDocumentValidatorByValidator = async () => {
     try {
 
@@ -534,6 +565,7 @@ export const useDocument = () => {
           await get();
           await getDocumentToEdit();
           await getDocumentValidatorByValidator();
+          await getDocumentByUser();
         } catch (error) {
           console.error("❌ Erro ao carregar dados:", error);
         }
@@ -554,6 +586,7 @@ export const useDocument = () => {
     generateEmbedding,
     query,
     setQuery,
+    creatorDocuments,
     create,
     update,
     softDelete,

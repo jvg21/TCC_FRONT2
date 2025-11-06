@@ -38,7 +38,10 @@ const DocumentPage: React.FC = () => {
     create,
     update,
     softDelete,
-    importDocument
+    importDocument,
+    updateValidationStatus,
+    creatorDocuments,
+    generateEmbedding
   } = useDocument();
 
   const [searchStatus, setSearchStatus] = useState<number>(1);
@@ -63,10 +66,9 @@ const DocumentPage: React.FC = () => {
   const { getDocumentsByTag, activeTag } = useTag();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
-  const { updateValidationStatus } = useDocument();
+
   const { theme } = useThemeContext();
   const navigate = useNavigate();
-  const { generateEmbedding } = useDocument();
   const [isLoading, setIsLoading] = useState(false);
 
   const [ragSearchQuery, setRagSearchQuery] = useState("");
@@ -403,7 +405,8 @@ const DocumentPage: React.FC = () => {
 
   const getMyDocuments = () => {
     if (!user) return [];
-    return activeDocument.filter(doc => doc.UserId === user.UserId);
+    console.log("Filtrando documentos do usuário:", creatorDocuments);
+    return creatorDocuments;
   };
 
   // const handleAdd = () => { setEditing(null); modal.open(); };
