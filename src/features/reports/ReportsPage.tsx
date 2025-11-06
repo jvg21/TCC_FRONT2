@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  FiFileText, 
-  FiCheckCircle, 
-  FiClock, 
-  FiTag, 
+import {
+  FiFileText,
+  FiCheckCircle,
+  FiClock,
   FiList,
-  FiUsers,
   FiCpu,
   FiDownload,
   FiCalendar,
@@ -14,81 +12,78 @@ import {
 
 } from 'react-icons/fi';
 
-import { PageContainer,ApplyFilterButton,Bar,BarLabel,BarValue,CardDescription,CardHeader,CardIcon,CardTitle,CardValue,ChartContainer,DetailedSection,DownloadButton,FilterInput,FilterLabel,FilterSection,FilterSelect,PageHeader,PageSubtitle,PageTitle,ProgressBar,ProgressFill,ReportCard,ReportsGrid,SectionHeader,SectionTitle,StatItem,StatLabel,StatValue,StatsGrid,Table,TagCloud,TagItem,BarChartContainer,SectionHeading, Th, Td } from '../../components/common/reportsComponents';
+import { PageContainer, ApplyFilterButton, Bar, BarLabel, BarValue, CardDescription, CardHeader, CardIcon, CardTitle, CardValue, ChartContainer, DetailedSection, DownloadButton, FilterInput, FilterLabel, FilterSection, FilterSelect, PageHeader, PageSubtitle, PageTitle, ProgressBar, ProgressFill, ReportCard, ReportsGrid, SectionHeader, SectionTitle, StatItem, StatLabel, StatValue, StatsGrid, Table, TagCloud, TagItem, BarChartContainer, SectionHeading, Th, Td } from '../../components/common/reportsComponents';
+import { useReports } from './useReports';
+import type { ReportsData } from './types';
 
 
 // Componente Principal
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
+  const [reportsData, setReportsData] = useState<ReportsData | null>(null);
   const [timeFilter, setTimeFilter] = useState<string>('all');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
-  // Dados simulados
+  const { getAllReports } = useReports();
+
+  const documentReportData = reportsData ? reportsData.documents : null;
+  const documentMonthReportData = reportsData ? reportsData.documentMonths : null;
+  const aiUsersReportData = reportsData ? reportsData.aiUsers : null;
+  const validationsReportData = reportsData ? reportsData.validations : null;
+  const validatorsReportData = reportsData ? reportsData.validators : null;
+  const tasksReportData = reportsData ? reportsData.tasks : null;
+  const taskPrioritysReportData = reportsData ? reportsData.taskPrioritys : null;
+  const aiReportData = reportsData ? reportsData.ai : null;
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const allReports = await getAllReports();
+      setReportsData(allReports);
+      // console.log("Relatórios carregados com sucesso:", allReports);
+    }
+    fetchData();
+  }, []);
+
+
   const documentsData = {
-    total: 1247,
-    active: 1198,
-    inactive: 49,
-    validated: 892,
-    pending: 306,
-    byPeriod: [
-      { month: 'Jan', count: 98 },
-      { month: 'Fev', count: 112 },
-      { month: 'Mar', count: 135 },
-      { month: 'Abr', count: 156 },
-      { month: 'Mai', count: 178 },
-      { month: 'Jun', count: 142 }
-    ]
+    total: documentReportData ? documentReportData.totalDocuments : 0,
+    active: documentReportData ? documentReportData.activeDocuments : 0,
+    inactive: documentReportData ? documentReportData.inactiveDocuments : 0,
+    validated: documentReportData ? documentReportData.approvedDocuments : 0,
+    pending: documentReportData ? documentReportData.pendingDocuments : 0,
+    byPeriod: documentMonthReportData ? documentMonthReportData : []
   };
 
   const validationsData = {
-    total: 892,
-    approved: 745,
-    rejected: 89,
-    returned: 58,
-    approvalRate: 83.5,
-    avgTime: '2.3 dias',
-    topValidators: [
-      { name: 'João Silva', count: 234 },
-      { name: 'Maria Santos', count: 198 },
-      { name: 'Pedro Costa', count: 167 }
-    ]
+    total: validationsReportData ? validationsReportData.totalValidations : 0,
+    approved: validationsReportData ? validationsReportData.totalApproved : 0,
+    rejected: validationsReportData ? validationsReportData.totalRejected : 0,
+    returned: validationsReportData ? validationsReportData.totalInRevision : 0,
+    approvalRate: validationsReportData ? (validationsReportData.totalApproved / validationsReportData.totalValidations * 100).toFixed(2) : 0,
+    topValidators: validatorsReportData ? validatorsReportData : []
   };
-
-  const versionsData = {
-    total: 3456,
-    mostEdited: [
-      { title: 'Manual de Onboarding', versions: 23 },
-      { title: 'Política de Segurança', versions: 19 },
-      { title: 'Processo de Vendas', versions: 17 }
-    ]
-  };
-
 
   const tasksData = {
-    total: 456,
-    completed: 345,
-    overdue: 23,
-    completionRate: 75,
+    total: tasksReportData ? tasksReportData.totalTasks : 0,
+    completed: tasksReportData ? tasksReportData.totalCompleted : 0,
+    overdue: tasksReportData ? tasksReportData.totalLate : 0,
+    completionRate: tasksReportData ? tasksReportData.completionRate : 0,
     byPriority: {
-      high: 78,
-      medium: 189,
-      low: 189
+      high: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Alta')).reduce((sum, t) => sum + t.total, 0) : 0,
+      medium: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Média')).reduce((sum, t) => sum + t.total, 0) : 0,
+      low: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Baixa')).reduce((sum, t) => sum + t.total, 0) : 0
     }
   };
 
-
   const aiData = {
-    totalRequests: 1234,
-    totalTokens: 5678912,
-    avgTokensPerRequest: 4602,
-    estimatedCost: '$56.79',
-    topUsers: [
-      { name: 'João Silva', requests: 234 },
-      { name: 'Maria Santos', requests: 198 },
-      { name: 'Pedro Costa', requests: 167 }
-    ]
+    totalRequests: aiReportData ? aiReportData.totalRequests : 0,
+    totalTokens: aiReportData ? aiReportData.totalTokens : 0,
+    avgTokensPerRequest: aiReportData ? aiReportData.requestAverageTokens : 0,
+    estimatedCost: aiReportData ? aiReportData.estimatedCost : 0,
+    topUsers: aiUsersReportData ? aiUsersReportData : []
   };
 
   // Manipuladores de eventos
@@ -117,7 +112,7 @@ const ReportsPage: React.FC = () => {
         <FilterLabel>
           <FiCalendar /> {t('reports.filters.period')}:
         </FilterLabel>
-        <FilterSelect 
+        <FilterSelect
           value={timeFilter}
           onChange={(e) => {
             setTimeFilter(e.target.value);
@@ -141,16 +136,16 @@ const ReportsPage: React.FC = () => {
             <FilterLabel>
               <FiCalendar /> {t('reports.filters.from')}:
             </FilterLabel>
-            <FilterInput 
-              type="date" 
+            <FilterInput
+              type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <FilterLabel>
               <FiCalendar /> {t('reports.filters.to')}:
             </FilterLabel>
-            <FilterInput 
-              type="date" 
+            <FilterInput
+              type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
@@ -186,18 +181,6 @@ const ReportsPage: React.FC = () => {
           </CardDescription>
         </ReportCard>
 
-        <ReportCard onClick={() => setSelectedReport('versions')}>
-          <CardHeader>
-            <CardIcon><FiClock /></CardIcon>
-          </CardHeader>
-          <CardTitle>{t('reports.cards.versions')}</CardTitle>
-          <CardValue>{versionsData.total}</CardValue>
-          <CardDescription>
-            {t('reports.cards.complete_history')}
-          </CardDescription>
-        </ReportCard>
-
-      
 
         <ReportCard onClick={() => setSelectedReport('tasks')}>
           <CardHeader>
@@ -210,7 +193,7 @@ const ReportsPage: React.FC = () => {
           </CardDescription>
         </ReportCard>
 
-    
+
 
         <ReportCard onClick={() => setSelectedReport('ai')}>
           <CardHeader>
@@ -261,12 +244,12 @@ const ReportsPage: React.FC = () => {
           <BarChartContainer>
             {documentsData.byPeriod.map((item, index) => (
               <div key={index} style={{ flex: '1' }}>
-                <Bar 
-                  height={(item.count / Math.max(...documentsData.byPeriod.map(i => i.count))) * 100}
+                <Bar
+                  height={(item.totalDocumentos / Math.max(...documentsData.byPeriod.map(i => i.totalDocumentos))) * 100}
                 >
-                  <BarValue>{item.count}</BarValue>
+                  <BarValue>{item.totalDocumentos}</BarValue>
                 </Bar>
-                <BarLabel>{item.month}</BarLabel>
+                <BarLabel>{item.nomeMes}</BarLabel>
               </div>
             ))}
           </BarChartContainer>
@@ -298,7 +281,7 @@ const ReportsPage: React.FC = () => {
             <StatValue style={{ color: '#f56565' }}>{validationsData.rejected}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.returned_for_revision')}</StatLabel>
+            <StatLabel>{t('reports.sections.pending')}</StatLabel>
             <StatValue style={{ color: '#ed8936' }}>{validationsData.returned}</StatValue>
           </StatItem>
         </StatsGrid>
@@ -319,11 +302,11 @@ const ReportsPage: React.FC = () => {
               {validationsData.topValidators.map((validator, index) => (
                 <tr key={index}>
                   <Td>{validator.name}</Td>
-                  <Td><strong>{validator.count}</strong></Td>
+                  <Td><strong>{validator.totalValidations}</strong></Td>
                   <Td>
                     <ProgressBar>
-                      <ProgressFill 
-                        percentage={(validator.count / validationsData.topValidators[0].count) * 100} 
+                      <ProgressFill
+                        percentage={(validator.totalValidations / validationsData.topValidators[0].totalValidations) * 100}
                         color="#667eea"
                       />
                     </ProgressBar>
@@ -335,55 +318,6 @@ const ReportsPage: React.FC = () => {
         </ChartContainer>
       </DetailedSection>
 
-      {/* Relatório de Versões */}
-      <DetailedSection>
-        <SectionHeader>
-          <SectionTitle>
-            <FiClock /> {t('reports.sections.version_history')}
-          </SectionTitle>
-          <DownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </DownloadButton>
-        </SectionHeader>
-
-        <StatsGrid>
-          <StatItem>
-            <StatLabel>{t('reports.sections.total_versions')}</StatLabel>
-            <StatValue>{versionsData.total}</StatValue>
-          </StatItem>
-        </StatsGrid>
-
-        <SectionHeading>
-          {t('reports.sections.most_edited_documents')}
-        </SectionHeading>
-        <Table>
-          <thead>
-            <tr>
-              <Th>{t('reports.sections.document')}</Th>
-              <Th>{t('reports.sections.version_count')}</Th>
-              <Th>{t('reports.sections.relative')}</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {versionsData.mostEdited.map((doc, index) => (
-              <tr key={index}>
-                <Td>{doc.title}</Td>
-                <Td><strong>{doc.versions}</strong></Td>
-                <Td>
-                  <ProgressBar>
-                    <ProgressFill 
-                      percentage={(doc.versions / versionsData.mostEdited[0].versions) * 100} 
-                      color="#667eea"
-                    />
-                  </ProgressBar>
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </DetailedSection>
-
-    
 
       {/* Relatório de Tarefas */}
       <DetailedSection>
@@ -420,8 +354,8 @@ const ReportsPage: React.FC = () => {
               <StatLabel>{t('reports.sections.high_priority')}</StatLabel>
               <StatValue>{tasksData.byPriority.high}</StatValue>
               <ProgressBar>
-                <ProgressFill 
-                  percentage={(tasksData.byPriority.high / tasksData.total) * 100} 
+                <ProgressFill
+                  percentage={(tasksData.byPriority.high / tasksData.total) * 100}
                   color="#f56565"
                 />
               </ProgressBar>
@@ -430,8 +364,8 @@ const ReportsPage: React.FC = () => {
               <StatLabel>{t('reports.sections.medium_priority')}</StatLabel>
               <StatValue>{tasksData.byPriority.medium}</StatValue>
               <ProgressBar>
-                <ProgressFill 
-                  percentage={(tasksData.byPriority.medium / tasksData.total) * 100} 
+                <ProgressFill
+                  percentage={(tasksData.byPriority.medium / tasksData.total) * 100}
                   color="#ed8936"
                 />
               </ProgressBar>
@@ -440,8 +374,8 @@ const ReportsPage: React.FC = () => {
               <StatLabel>{t('reports.sections.low_priority')}</StatLabel>
               <StatValue>{tasksData.byPriority.low}</StatValue>
               <ProgressBar>
-                <ProgressFill 
-                  percentage={(tasksData.byPriority.low / tasksData.total) * 100} 
+                <ProgressFill
+                  percentage={(tasksData.byPriority.low / tasksData.total) * 100}
                   color="#38b2ac"
                 />
               </ProgressBar>
@@ -450,7 +384,7 @@ const ReportsPage: React.FC = () => {
         </ChartContainer>
       </DetailedSection>
 
-      
+
 
       {/* Relatório de IA */}
       <DetailedSection>
@@ -497,11 +431,11 @@ const ReportsPage: React.FC = () => {
             {aiData.topUsers.map((user, index) => (
               <tr key={index}>
                 <Td>{user.name}</Td>
-                <Td><strong>{user.requests}</strong></Td>
+                <Td><strong>{user.totalRequests}</strong></Td>
                 <Td>
                   <ProgressBar>
                     <ProgressFill
-                      percentage={(user.requests / aiData.topUsers[0].requests) * 100} 
+                      percentage={(user.totalRequests / aiData.topUsers[0].totalRequests) * 100}
                       color="#667eea"
                     />
                   </ProgressBar>

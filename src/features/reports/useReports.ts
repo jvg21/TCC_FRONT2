@@ -48,7 +48,6 @@ export const useReports = () => {
       });
 
       const data: ApiResponse = await response.json();
-
       if (data.erro) {
         throw new Error(t(data.mensagem));
       }
@@ -96,7 +95,7 @@ export const useReports = () => {
       });
 
       const data: ApiResponse = await response.json();
-
+      // console.log("Document Stats Data:", data);
       if (data.erro) {
         throw new Error(t(data.mensagem));
       }
@@ -110,7 +109,7 @@ export const useReports = () => {
 
   const getAIUserStats = async (params?: Record<string, any>): Promise<AIUsersStats[]> => {
     try {
-      const url = buildUrlWithParams(`${apiUrl}/dashboard/aiUser`, params);
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/aiUsers`, params);
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -134,7 +133,7 @@ export const useReports = () => {
 
   const getValidationStats = async (params?: Record<string, any>): Promise<ValidationStats> => {
     try {
-      const url = buildUrlWithParams(`${apiUrl}/dashboard/validation`, params);
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/documentvalidation`, params);
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -158,7 +157,7 @@ export const useReports = () => {
 
   const getValidatorsStats = async (params?: Record<string, any>): Promise<ValidatorsStats[]> => {
     try {
-      const url = buildUrlWithParams(`${apiUrl}/dashboard/validators`, params);
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/documentvalidationUsers`, params);
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -270,6 +269,9 @@ export const useReports = () => {
       };
 
       setReportsData(reports);
+
+      // console.log("Relatórios carregados com sucesso:", reports);
+
       return reports;
     } catch (err) {
       console.error("Erro ao buscar relatórios:", err);
@@ -324,5 +326,6 @@ export const useReports = () => {
     getAIUserStats,
     exportToCSV,
     exportToPDF,
+    
   } as const;
 };
