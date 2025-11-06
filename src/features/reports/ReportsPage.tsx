@@ -65,17 +65,6 @@ const ReportsPage: React.FC = () => {
     ]
   };
 
-  const tagsData = {
-    total: 45,
-    topTags: [
-      { name: 'Processo', count: 234, size: 3 },
-      { name: 'Manual', count: 198, size: 2 },
-      { name: 'Política', count: 167, size: 2 },
-      { name: 'Treinamento', count: 145, size: 1 },
-      { name: 'Financeiro', count: 123, size: 1 },
-      { name: 'RH', count: 98, size: 0 }
-    ]
-  };
 
   const tasksData = {
     total: 456,
@@ -89,18 +78,6 @@ const ReportsPage: React.FC = () => {
     }
   };
 
-  const groupsData = {
-    total: 15,
-    totalMembers: 134,
-    avgMembersPerGroup: 8.9,
-    topGroups: [
-      { name: 'Financeiro', members: 23 },
-      { name: 'Desenvolvimento', members: 18 },
-      { name: 'Marketing', members: 15 },
-      { name: 'RH', members: 12 },
-      { name: 'Comercial', members: 10 }
-    ]
-  };
 
   const aiData = {
     totalRequests: 1234,
@@ -220,16 +197,7 @@ const ReportsPage: React.FC = () => {
           </CardDescription>
         </ReportCard>
 
-        <ReportCard onClick={() => setSelectedReport('tags')}>
-          <CardHeader>
-            <CardIcon><FiTag /></CardIcon>
-          </CardHeader>
-          <CardTitle>{t('reports.cards.tags')}</CardTitle>
-          <CardValue>{tagsData.total}</CardValue>
-          <CardDescription>
-            {t('reports.cards.active_system')}
-          </CardDescription>
-        </ReportCard>
+      
 
         <ReportCard onClick={() => setSelectedReport('tasks')}>
           <CardHeader>
@@ -242,16 +210,7 @@ const ReportsPage: React.FC = () => {
           </CardDescription>
         </ReportCard>
 
-        <ReportCard onClick={() => setSelectedReport('groups')}>
-          <CardHeader>
-            <CardIcon><FiUsers /></CardIcon>
-          </CardHeader>
-          <CardTitle>{t('reports.cards.groups')}</CardTitle>
-          <CardValue>{groupsData.total}</CardValue>
-          <CardDescription>
-            {groupsData.totalMembers} {t('reports.cards.total_members')}
-          </CardDescription>
-        </ReportCard>
+    
 
         <ReportCard onClick={() => setSelectedReport('ai')}>
           <CardHeader>
@@ -424,35 +383,7 @@ const ReportsPage: React.FC = () => {
         </Table>
       </DetailedSection>
 
-      {/* Relatório de Tags */}
-      <DetailedSection>
-        <SectionHeader>
-          <SectionTitle>
-            <FiTag /> {t('reports.sections.tags_analysis')}
-          </SectionTitle>
-          <DownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </DownloadButton>
-        </SectionHeader>
-
-        <StatsGrid>
-          <StatItem>
-            <StatLabel>{t('reports.sections.total_tags')}</StatLabel>
-            <StatValue>{tagsData.total}</StatValue>
-          </StatItem>
-        </StatsGrid>
-
-        <SectionHeading>
-          {t('reports.sections.tag_cloud')}
-        </SectionHeading>
-        <TagCloud>
-          {tagsData.topTags.map((tag, index) => (
-            <TagItem key={index} size={tag.size}>
-              {tag.name} ({tag.count})
-            </TagItem>
-          ))}
-        </TagCloud>
-      </DetailedSection>
+    
 
       {/* Relatório de Tarefas */}
       <DetailedSection>
@@ -519,61 +450,7 @@ const ReportsPage: React.FC = () => {
         </ChartContainer>
       </DetailedSection>
 
-      {/* Relatório de Grupos */}
-      <DetailedSection>
-        <SectionHeader>
-          <SectionTitle>
-            <FiUsers /> {t('reports.sections.groups_analysis')}
-          </SectionTitle>
-          <DownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </DownloadButton>
-        </SectionHeader>
-
-        <StatsGrid>
-          <StatItem>
-            <StatLabel>{t('reports.sections.total_groups')}</StatLabel>
-            <StatValue>{groupsData.total}</StatValue>
-          </StatItem>
-          <StatItem>
-            <StatLabel>{t('reports.sections.total_members')}</StatLabel>
-            <StatValue>{groupsData.totalMembers}</StatValue>
-          </StatItem>
-          <StatItem>
-            <StatLabel>{t('reports.sections.avg_members_per_group')}</StatLabel>
-            <StatValue>{groupsData.avgMembersPerGroup}</StatValue>
-          </StatItem>
-        </StatsGrid>
-
-        <SectionHeading>
-          {t('reports.sections.largest_groups')}
-        </SectionHeading>
-        <Table>
-          <thead>
-            <tr>
-              <Th>{t('reports.sections.group')}</Th>
-              <Th>{t('reports.sections.members')}</Th>
-              <Th>{t('reports.sections.relative_size')}</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {groupsData.topGroups.map((group, index) => (
-              <tr key={index}>
-                <Td>{group.name}</Td>
-                <Td><strong>{group.members}</strong></Td>
-                <Td>
-                  <ProgressBar>
-                    <ProgressFill 
-                      percentage={(group.members / groupsData.topGroups[0].members) * 100} 
-                      color="#667eea"
-                    />
-                  </ProgressBar>
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </DetailedSection>
+      
 
       {/* Relatório de IA */}
       <DetailedSection>
