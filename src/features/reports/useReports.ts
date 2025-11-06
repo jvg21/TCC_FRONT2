@@ -2,25 +2,49 @@ import { useState, useEffect } from "react";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
-import type { AIStats, AIUsersStats, DocumentMonthStatus, DocumentStats, GroupStats, ReportsData, TaskPriorityStats, TaskStats, ValidationStats, ValidatorsStats } from "./types";
+import type { AIStats, AIUsersStats, DocumentMonthStatus, DocumentStats, ReportsData, TaskPriorityStats, TaskStats, ValidationStats, ValidatorsStats } from "./types";
 import { t } from "i18next";
-
 
 export const useReports = () => {
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState<{
+    CreatedAtFrom?: string;
+    CreatedAtTo?: string;
+    [key: string]: any;
+  }>({});
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
 
-  const getDocumentStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<DocumentStats> => {
+  const buildUrlWithParams = (baseUrl: string, params?: Record<string, any>): string => {
+    if (!params || Object.keys(params).length === 0) {
+      return baseUrl;
+    }
+
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        queryParams.append(key, String(value));
+      }
+    });
+
+    const queryString = queryParams.toString();
+    if (queryString) {
+      return `${baseUrl}?${queryString}`;
+    }
+    return baseUrl;
+  };
+
+  const getDocumentStats = async (params?: Record<string, any>): Promise<DocumentStats> => {
     try {
-      const response = await fetch(`${apiUrl}/dashboard/documents`, {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/documents`, params);
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }, body: body ? JSON.stringify(body) : undefined
+        }
       });
 
       const data: ApiResponse = await response.json();
@@ -36,14 +60,15 @@ export const useReports = () => {
     }
   };
 
-  const getDocumentMonthsStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<DocumentMonthStatus[]> => {
+  const getDocumentMonthsStats = async (params?: Record<string, any>): Promise<DocumentMonthStatus[]> => {
     try {
-      const response = await fetch(`${apiUrl}/dashboard/documentsMonths`, {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/documentsMonths`, params);
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }, body: body ? JSON.stringify(body) : undefined
+        }
       });
 
       const data: ApiResponse = await response.json();
@@ -54,19 +79,20 @@ export const useReports = () => {
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de documentos:", err);
+      console.error("Erro ao buscar estatísticas de documentos por mês:", err);
       throw err;
     }
   };
 
-  const getAIStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<AIStats> => {
+  const getAIStats = async (params?: Record<string, any>): Promise<AIStats> => {
     try {
-      const response = await fetch(`${apiUrl}/dashboard/ai`, {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/ai`, params);
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }, body: body ? JSON.stringify(body) : undefined
+        }
       });
 
       const data: ApiResponse = await response.json();
@@ -82,15 +108,15 @@ export const useReports = () => {
     }
   };
 
-
-  const getAIUserStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<AIUsersStats[]> => {
+  const getAIUserStats = async (params?: Record<string, any>): Promise<AIUsersStats[]> => {
     try {
-      const response = await fetch(`${apiUrl}/dashboard/aiUsers`, {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/aiUser`, params);
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }, body: body ? JSON.stringify(body) : undefined
+        }
       });
 
       const data: ApiResponse = await response.json();
@@ -101,19 +127,20 @@ export const useReports = () => {
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de usuarios de  ai:", err);
+      console.error("Erro ao buscar estatísticas de usuários de AI:", err);
       throw err;
     }
   };
 
-   const getValidationStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<ValidationStats> => {
+  const getValidationStats = async (params?: Record<string, any>): Promise<ValidationStats> => {
     try {
-      const response = await fetch(`${apiUrl}/dashboard/documentvalidation`, {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/validation`, params);
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }, body: body ? JSON.stringify(body) : undefined
+        }
       });
 
       const data: ApiResponse = await response.json();
@@ -124,19 +151,20 @@ export const useReports = () => {
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de validações:", err);
+      console.error("Erro ao buscar estatísticas de validação:", err);
       throw err;
     }
   };
 
-   const getValidatorsStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<ValidatorsStats[]> => {
+  const getValidatorsStats = async (params?: Record<string, any>): Promise<ValidatorsStats[]> => {
     try {
-      const response = await fetch(`${apiUrl}/dashboard/documentvalidationUsers`, {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/validators`, params);
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }, body: body ? JSON.stringify(body) : undefined
+        }
       });
 
       const data: ApiResponse = await response.json();
@@ -147,19 +175,20 @@ export const useReports = () => {
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de validações:", err);
+      console.error("Erro ao buscar estatísticas de validadores:", err);
       throw err;
     }
   };
 
-   const getTaskStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<TaskStats> => {
+  const getTaskStats = async (params?: Record<string, any>): Promise<TaskStats> => {
     try {
-      const response = await fetch(`${apiUrl}/dashboard/task`, {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/task`, params);
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }, body: body ? JSON.stringify(body) : undefined
+        }
       });
 
       const data: ApiResponse = await response.json();
@@ -170,19 +199,20 @@ export const useReports = () => {
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de task:", err);
+      console.error("Erro ao buscar estatísticas de tarefas:", err);
       throw err;
     }
   };
 
-   const getTaskPriorityStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<TaskPriorityStats[]> => {
+  const getTaskPriorityStats = async (params?: Record<string, any>): Promise<TaskPriorityStats[]> => {
     try {
-      const response = await fetch(`${apiUrl}/dashboard/taskPriority`, {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/taskPriority`, params);
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }, body: body ? JSON.stringify(body) : undefined
+        }
       });
 
       const data: ApiResponse = await response.json();
@@ -193,26 +223,39 @@ export const useReports = () => {
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de tasks:", err);
+      console.error("Erro ao buscar estatísticas de prioridade de tarefas:", err);
       throw err;
     }
   };
 
+  // Atualiza os filtros globais
+  const updateFilters = (newFilters: Record<string, any>) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      ...newFilters
+    }));
+  };
 
+  // Limpa os filtros
+  const clearFilters = () => {
+    setFilters({});
+  };
 
-
-  const getAllReports = async () => {
+  const getAllReports = async (customFilters?: Record<string, any>) => {
     setLoading(true);
+    // Usa os filtros fornecidos ou os filtros globais
+    const currentFilters = customFilters || filters;
+    
     try {
-      const [documents, documentMonths, ai, aiUsers,validations,validators,tasks,taskPrioritys] = await Promise.all([
-        getDocumentStats(),
-        getDocumentMonthsStats(),
-        getAIStats(),
-        getAIUserStats(),
-        getValidationStats(),
-        getValidatorsStats(),
-        getTaskStats(),
-        getTaskPriorityStats(),
+      const [documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys] = await Promise.all([
+        getDocumentStats(currentFilters),
+        getDocumentMonthsStats(currentFilters),
+        getAIStats(currentFilters),
+        getAIUserStats(currentFilters),
+        getValidationStats(currentFilters),
+        getValidatorsStats(currentFilters),
+        getTaskStats(currentFilters),
+        getTaskPriorityStats(currentFilters),
       ]);
 
       const reports: ReportsData = {
@@ -238,7 +281,7 @@ export const useReports = () => {
   };
 
   // Exportar relatório em CSV
-  const exportToCSV = (reportType: string) => {
+  const exportToCSV = (reportType: string, customFilters?: Record<string, any>) => {
     try {
       // Implementar lógica de exportação
       notificationActions.showNotification(`Relatório de ${reportType} exportado com sucesso!`, 'success');
@@ -249,9 +292,8 @@ export const useReports = () => {
   };
 
   // Exportar relatório em PDF
-  const exportToPDF = (reportType: string) => {
+  const exportToPDF = (reportType: string, customFilters?: Record<string, any>) => {
     try {
-      // Implementar lógica de exportação
       notificationActions.showNotification(`Relatório de ${reportType} exportado em PDF!`, 'success');
     } catch (err) {
       console.error("Erro ao exportar relatório:", err);
@@ -263,17 +305,23 @@ export const useReports = () => {
     if (token) {
       getAllReports();
     }
-  }, [token]);
+  }, [token, filters]); 
 
   return {
     reportsData,
     loading,
+    filters,
+    updateFilters,
+    clearFilters,
     getAllReports,
     getDocumentStats,
+    getDocumentMonthsStats,
     getValidationStats,
+    getValidatorsStats,
     getTaskStats,
     getTaskPriorityStats,
     getAIStats,
+    getAIUserStats,
     exportToCSV,
     exportToPDF,
   } as const;
