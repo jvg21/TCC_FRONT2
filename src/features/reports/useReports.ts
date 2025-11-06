@@ -2,73 +2,9 @@ import { useState, useEffect } from "react";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
+import type { AIStats, AIUsersStats, DocumentMonthStatus, DocumentStats, GroupStats, ReportsData, TaskPriorityStats, TaskStats, ValidationStats, ValidatorsStats } from "./types";
+import { t } from "i18next";
 
-export interface DocumentStats {
-  total: number;
-  active: number;
-  inactive: number;
-  validated: number;
-  pending: number;
-  byPeriod: Array<{ month: string; count: number }>;
-}
-
-export interface ValidationStats {
-  total: number;
-  approved: number;
-  rejected: number;
-  returned: number;
-  approvalRate: number;
-  avgTime: string;
-  topValidators: Array<{ name: string; count: number }>;
-}
-
-export interface VersionStats {
-  total: number;
-  mostEdited: Array<{ title: string; versions: number }>;
-}
-
-export interface TagStats {
-  total: number;
-  topTags: Array<{ name: string; count: number; size: number }>;
-}
-
-export interface TaskStats {
-  total: number;
-  completed: number;
-  pending: number;
-  overdue: number;
-  completionRate: number;
-  byPriority: {
-    high: number;
-    medium: number;
-    low: number;
-  };
-}
-
-export interface GroupStats {
-  total: number;
-  members: number;
-  avgMembersPerGroup: number;
-  topGroups: Array<{ name: string; members: number }>;
-}
-
-export interface AIStats {
-  totalRequests: number;
-  totalTokens: number;
-  avgTokensPerRequest: number;
-  topUsers: Array<{ name: string; requests: number }>;
-  estimatedCost: string;
-}
-
-export interface ReportsData {
-  documents: DocumentStats;
-  validations: ValidationStats;
-  versions: VersionStats;
-  tags: TagStats;
-  tasks: TaskStats;
-  groups: GroupStats;
-  ai: AIStats;
-}
 
 export const useReports = () => {
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
@@ -77,21 +13,20 @@ export const useReports = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
 
-  // Buscar estatísticas de documentos
-  const getDocumentStats = async (body?:{CreatedAtFrom: string, CreatedAtTo: string}): Promise<DocumentStats> => {
+  const getDocumentStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<DocumentStats> => {
     try {
       const response = await fetch(`${apiUrl}/dashboard/documents`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        },body: body ? JSON.stringify(body) : undefined
+        }, body: body ? JSON.stringify(body) : undefined
       });
 
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        throw new Error(data.mensagem);
+        throw new Error(t(data.mensagem));
       }
 
       return data.objeto;
@@ -101,21 +36,90 @@ export const useReports = () => {
     }
   };
 
-  // Buscar estatísticas de validações
-  const getValidationStats = async (): Promise<ValidationStats> => {
+  const getDocumentMonthsStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<DocumentMonthStatus[]> => {
     try {
-      const response = await fetch(`${apiUrl}/Report/GetValidationStats`, {
+      const response = await fetch(`${apiUrl}/dashboard/documentsMonths`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        }
+        }, body: body ? JSON.stringify(body) : undefined
       });
 
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        throw new Error(data.mensagem);
+        throw new Error(t(data.mensagem));
+      }
+
+      return data.objeto;
+    } catch (err) {
+      console.error("Erro ao buscar estatísticas de documentos:", err);
+      throw err;
+    }
+  };
+
+  const getAIStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<AIStats> => {
+    try {
+      const response = await fetch(`${apiUrl}/dashboard/ai`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        }, body: body ? JSON.stringify(body) : undefined
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        throw new Error(t(data.mensagem));
+      }
+
+      return data.objeto;
+    } catch (err) {
+      console.error("Erro ao buscar estatísticas de ai:", err);
+      throw err;
+    }
+  };
+
+
+  const getAIUserStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<AIUsersStats[]> => {
+    try {
+      const response = await fetch(`${apiUrl}/dashboard/aiUsers`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        }, body: body ? JSON.stringify(body) : undefined
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        throw new Error(t(data.mensagem));
+      }
+
+      return data.objeto;
+    } catch (err) {
+      console.error("Erro ao buscar estatísticas de usuarios de  ai:", err);
+      throw err;
+    }
+  };
+
+   const getValidationStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<ValidationStats> => {
+    try {
+      const response = await fetch(`${apiUrl}/dashboard/documentvalidation`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        }, body: body ? JSON.stringify(body) : undefined
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        throw new Error(t(data.mensagem));
       }
 
       return data.objeto;
@@ -125,148 +129,101 @@ export const useReports = () => {
     }
   };
 
-  // Buscar estatísticas de versões
-  const getVersionStats = async (): Promise<VersionStats> => {
+   const getValidatorsStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<ValidatorsStats[]> => {
     try {
-      const response = await fetch(`${apiUrl}/Report/GetVersionStats`, {
+      const response = await fetch(`${apiUrl}/dashboard/documentvalidationUsers`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        },
+        }, body: body ? JSON.stringify(body) : undefined
       });
 
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        throw new Error(data.mensagem);
+        throw new Error(t(data.mensagem));
       }
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de versões:", err);
+      console.error("Erro ao buscar estatísticas de validações:", err);
       throw err;
     }
   };
 
-  // Buscar estatísticas de tags
-  const getTagStats = async (): Promise<TagStats> => {
+   const getTaskStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<TaskStats> => {
     try {
-      const response = await fetch(`${apiUrl}/Report/GetTagStats`, {
+      const response = await fetch(`${apiUrl}/dashboard/task`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        },
+        }, body: body ? JSON.stringify(body) : undefined
       });
 
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        throw new Error(data.mensagem);
+        throw new Error(t(data.mensagem));
       }
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de tags:", err);
+      console.error("Erro ao buscar estatísticas de task:", err);
       throw err;
     }
   };
 
-  // Buscar estatísticas de tarefas
-  const getTaskStats = async (): Promise<TaskStats> => {
+   const getTaskPriorityStats = async (body?: { CreatedAtFrom: string, CreatedAtTo: string }): Promise<TaskPriorityStats[]> => {
     try {
-      const response = await fetch(`${apiUrl}/Report/GetTaskStats`, {
+      const response = await fetch(`${apiUrl}/dashboard/taskPriority`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
-        },
+        }, body: body ? JSON.stringify(body) : undefined
       });
 
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        throw new Error(data.mensagem);
+        throw new Error(t(data.mensagem));
       }
 
       return data.objeto;
     } catch (err) {
-      console.error("Erro ao buscar estatísticas de tarefas:", err);
+      console.error("Erro ao buscar estatísticas de tasks:", err);
       throw err;
     }
   };
 
-  // Buscar estatísticas de grupos
-  const getGroupStats = async (): Promise<GroupStats> => {
-    try {
-      const response = await fetch(`${apiUrl}/Report/GetGroupStats`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
 
-      const data: ApiResponse = await response.json();
 
-      if (data.erro) {
-        throw new Error(data.mensagem);
-      }
 
-      return data.objeto;
-    } catch (err) {
-      console.error("Erro ao buscar estatísticas de grupos:", err);
-      throw err;
-    }
-  };
-
-  // Buscar estatísticas de IA
-  const getAIStats = async (): Promise<AIStats> => {
-    try {
-      const response = await fetch(`${apiUrl}/Report/GetAIStats`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      const data: ApiResponse = await response.json();
-
-      if (data.erro) {
-        throw new Error(data.mensagem);
-      }
-
-      return data.objeto;
-    } catch (err) {
-      console.error("Erro ao buscar estatísticas de IA:", err);
-      throw err;
-    }
-  };
-
-  // Buscar todos os dados de relatório
   const getAllReports = async () => {
     setLoading(true);
     try {
-      const [documents, validations, versions, tags, tasks, groups, ai] = await Promise.all([
+      const [documents, documentMonths, ai, aiUsers,validations,validators,tasks,taskPrioritys] = await Promise.all([
         getDocumentStats(),
-        getValidationStats(),
-        getVersionStats(),
-        getTagStats(),
-        getTaskStats(),
-        getGroupStats(),
+        getDocumentMonthsStats(),
         getAIStats(),
+        getAIUserStats(),
+        getValidationStats(),
+        getValidatorsStats(),
+        getTaskStats(),
+        getTaskPriorityStats(),
       ]);
 
       const reports: ReportsData = {
         documents,
-        validations,
-        versions,
-        tags,
-        tasks,
-        groups,
+        documentMonths,
         ai,
+        aiUsers,
+        validations,
+        validators,
+        tasks,
+        taskPrioritys,
       };
 
       setReportsData(reports);
@@ -314,10 +271,8 @@ export const useReports = () => {
     getAllReports,
     getDocumentStats,
     getValidationStats,
-    getVersionStats,
-    getTagStats,
     getTaskStats,
-    getGroupStats,
+    getTaskPriorityStats,
     getAIStats,
     exportToCSV,
     exportToPDF,
