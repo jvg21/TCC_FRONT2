@@ -268,7 +268,6 @@ export const enTranslations = {
     semantic_search: "Semantic Search",
     semantic_search_description: "Find documents similar in content using AI-powered embeddings.",
     search_by_meaning: "Search by meaning...",
-
     add_document: "Add Document",
     edit_document: "Edit Document",
     search_documents: "Search documents...",
@@ -296,12 +295,13 @@ export const enTranslations = {
     importSuccess: "Document imported successfully!",
     importError: "Error importing document",
     importDocument: "Import Document",
+    importMissingData: "No file selected for import",
     selectFolder: "Select Folder",
     resetValidationSuccess: "Document validation reset successfully!",
     validationUpdateSuccess: "Document validation status updated successfully!",
 
     filters: {
-      rag:{
+      rag: {
         hide: "Hide RAG",
         show: "Show RAG",
       },
@@ -843,14 +843,14 @@ export const enTranslations = {
       usage: "Usage"
     }
   },
-  logout:{
+  logout: {
     success: "Logged out successfully!"
   },
-  markdown_editor:{
+  markdown_editor: {
     upload_error: "Error uploading image",
     placeholder: "Write your content here..."
   }
-  
+
 
 }
 
