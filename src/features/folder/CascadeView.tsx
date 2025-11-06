@@ -1,89 +1,77 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {FiChevronRight, FiChevronDown, FiPlus, FiFilter, FiChevronUp } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
+import { FiFilter, FiChevronUp, FiChevronDown, FiChevronRight, FiPlus } from 'react-icons/fi';
 import { HiFolder, HiDocumentText } from 'react-icons/hi';
-import PageLayout from '../../components/common/PageLayout';
-import { Button } from '../../components/common/Button';
 import { useFolder } from './useFolder';
 import { useDocument } from '../document/useDocument';
+import PageLayout from '../../components/common/PageLayout';
+import { Button } from '../../components/common/Button';
 import { useModal } from '../../hooks/useModal';
-import { Modal } from '../../components/common/Modal';
 import { FolderForm } from './FolderForm';
 import { DocumentForm } from '../document/DocumentForm';
 import { MarkdownEditorPage } from '../markdown-editor/MarkdownEditorPage';
+import { Modal } from '../../components/common/Modal';
+import styled from 'styled-components';
 
 const CascadeContainer = styled.div`
   display: flex;
-  height: calc(100vh - 120px);
+  flex-direction: row;
   gap: 16px;
-  padding: 16px;
+  width: 100%;
   
   @media (max-width: 768px) {
     flex-direction: column;
-    height: auto;
-    min-height: calc(100vh - 120px);
-    padding: 8px;
-    gap: 12px;
   }
 `;
 
-const FilterPanel = styled.div<{ $isCollapsed?: boolean }>`
-  width: 280px;
+const FilterPanel = styled.div<{ $isCollapsed: boolean }>`
+  width: ${props => props.$isCollapsed ? '50px' : '300px'};
+  min-width: ${props => props.$isCollapsed ? '50px' : '300px'};
   background: ${props => props.theme.colors.background};
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 8px;
-  padding: 16px;
-  height: fit-content;
-  transition: all 0.3s ease;
+  overflow: hidden;
+  transition: width 0.3s ease, min-width 0.3s ease;
   
   @media (max-width: 768px) {
     width: 100%;
-    max-height: ${props => props.$isCollapsed ? '60px' : 'none'};
-    overflow: hidden;
-    padding: ${props => props.$isCollapsed ? '12px' : '16px'};
+    min-width: 100%;
   }
 `;
 
 const FilterHeader = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid ${props => props.theme.colors.border};
   cursor: pointer;
-  color: ${props => props.theme.colors.text};
   
   h3 {
-    margin: 0;
-    font-size: 16px;
     display: flex;
     align-items: center;
     gap: 8px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
     color: ${props => props.theme.colors.text};
   }
 `;
 
-const FilterToggle = styled.button`
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  color: ${props => props.theme.colors.text};
-  
-  &:hover {
-    background: ${props => props.theme.colors.hover || 'rgba(255, 255, 255, 0.05)'};
-  }
-  
-  @media (max-width: 768px) {
-    display: flex;
-    align-items: center;
-  }
+const FilterToggle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
-const FilterContent = styled.div<{ $isCollapsed?: boolean }>`
+const FilterContent = styled.div<{ $isCollapsed: boolean }>`
+  padding: 16px;
+  overflow: hidden;
+  max-height: ${props => props.$isCollapsed ? '0' : '800px'};
+  opacity: ${props => props.$isCollapsed ? 0 : 1};
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  
   @media (max-width: 768px) {
     display: ${props => props.$isCollapsed ? 'none' : 'block'};
   }
@@ -236,11 +224,6 @@ export const CascadeView: React.FC = () => {
   });
 
   const [isMobile, setIsMobile] = useState(false);
-
-  
-  const folderModal = useModal();
-  const documentModal = useModal();
-  const editorModal = useModal();
   const [editingFolder, setEditingFolder] = useState<any>(null);
   const [editingDocument, setEditingDocument] = useState<any>(null);
   const [editingContent, setEditingContent] = useState<string>("");
@@ -392,7 +375,8 @@ export const CascadeView: React.FC = () => {
             $isSelected={isSelected}
             onClick={() => {
               setSelectedNode({ type: 'document', id: node.DocumentId });
-              navigate(`/document/${node.DocumentId}`);
+              // ALTERAÇÃO AQUI: Navegando para a página de detalhes do documento
+              navigate(`/document/details/${node.DocumentId}`);
             }}
           >
             <NodeIcon style={{ width: '16px' }} />
@@ -410,6 +394,10 @@ export const CascadeView: React.FC = () => {
       );
     }
   };
+
+  const folderModal = useModal();
+  const documentModal = useModal();
+  const editorModal = useModal();
 
   const handleAddFolder = () => {
     setEditingFolder(null);
@@ -549,11 +537,11 @@ export const CascadeView: React.FC = () => {
         <TreeContainer>
           <StatsBar>
             <span>
-              <HiFolder size={16}  color="#ff9800" />
+              <HiFolder size={16} color="#ff9800" />
               {activeFolder.length} {t("cascadeview.folders")}
             </span>
             <span>
-              <HiDocumentText size={16} color="#2196f3"/>
+              <HiDocumentText size={16} color="#2196f3" />
               {activeDocument.length} {t("cascadeview.documents")}
             </span>
           </StatsBar>
