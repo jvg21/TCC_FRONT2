@@ -60,7 +60,7 @@ const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTypedTranslation();
-  const { GetDocumentValidationById, update, updateValidationStatus, transformSingleApiData, getDocumentVersionsByDocumentId } = useDocument();
+  const { GetDocumentValidationById, getDocumentValidatorByValidator, update, updateValidationStatus, transformSingleApiData, getDocumentVersionsByDocumentId } = useDocument();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
   const { user } = useAuthContext();
@@ -70,8 +70,6 @@ const DocumentDetailsPage: React.FC = () => {
   const [newComment, setNewComment] = useState('');
   const [documentVersions, setDocumentVersions] = useState<any[]>([]);
   const [loadingVersions, setLoadingVersions] = useState(false);
-
-  // console.log('documento:', document);
 
   const {
     comments,
@@ -94,7 +92,7 @@ const DocumentDetailsPage: React.FC = () => {
   const [showSummaryDropdown, setShowSummaryDropdown] = useState(false);
   const summaryDropdownRef = useRef<HTMLDivElement | null>(null);
   const [isAddingComment, setIsAddingComment] = useState(false);
-
+  const [isValidator, setIsValidator] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingExport, setLoadingExport] = useState(false);
   const [documentLoading, setDocumentLoading] = useState(false);
@@ -131,19 +129,18 @@ const DocumentDetailsPage: React.FC = () => {
       hasLoadedRef.current = true;
       try {
         const response = await GetDocumentValidationById(Number(id));
-        if (response && !response.erro) {
+        const responsea = await getDocumentValidatorByValidator();
 
+        setIsValidator(responsea && responsea.objeto.find((val: any) => val.documentId === Number(id)))
+
+        // console.log('Is user a validator for this document?', isValidator);
+        if (response && !response.erro) {
           const documentData = response.objeto.document;
           documentData.createdAt = new Date(response.objeto.createdAt).toUTCString();
           documentData.updatedAt = new Date(response.objeto.updatedAt).toUTCString();
 
           // console.log('Raw document data:', documentData);
           setDocument(transformSingleApiData(documentData));
-
-
-
-          // console.log('Document after transform:', response,transformSingleApiData(response.objeto.document));
-
 
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status);
@@ -193,7 +190,6 @@ const DocumentDetailsPage: React.FC = () => {
         t("documents.updateSuccess") || 'Documento atualizado com sucesso!',
         'success'
       );
-
       await updateValidationStatus(document.DocumentId, null, validatorNote);
       setValidationStatus(0);
     } catch (error) {
@@ -203,7 +199,6 @@ const DocumentDetailsPage: React.FC = () => {
     } finally {
       setDocumentLoading(false);
     }
-
   };
 
   const handleAddComment = async () => {
@@ -230,10 +225,8 @@ const DocumentDetailsPage: React.FC = () => {
 
     try {
       setValidationLoading(true);
-      // ❌ Removido: setValidationStatus(isValid);
       await updateValidationStatus(document.DocumentId, isValid, validatorNote);
       setValidatorNote(validatorNote);
-      // ✅ Só atualiza o status depois da resposta
       setValidationStatus(isValid ? 1 : 2);
     } catch (error) {
       console.error('Erro ao aprovar documento:', error);
@@ -242,7 +235,6 @@ const DocumentDetailsPage: React.FC = () => {
       setValidationLoading(false);
     }
   };
-
 
   const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
     if (!documentContent) {
@@ -305,7 +297,7 @@ const DocumentDetailsPage: React.FC = () => {
       yPosition += 6;
       pdf.text(`Pasta: ${folder?.Name || 'N/A'}`, margin, yPosition);
       yPosition += 6;
-      pdf.text(`Data de criação: ${FormatDate(document.CreatedAt,t("date_format"))}`, margin, yPosition);
+      pdf.text(`Data de criação: ${FormatDate(document.CreatedAt, t("date_format"))}`, margin, yPosition);
       yPosition += 10;
 
       pdf.setFontSize(12);
@@ -372,7 +364,7 @@ const DocumentDetailsPage: React.FC = () => {
                   break: 1,
                 }),
                 new TextRun({
-                  text: `Data de criação: ${FormatDate(document.CreatedAt,t("date_format"))}`,
+                  text: `Data de criação: ${FormatDate(document.CreatedAt, t("date_format"))}`,
                   break: 2,
                 }),
               ],
@@ -403,7 +395,7 @@ const DocumentDetailsPage: React.FC = () => {
       let markdown = `# ${document.Title}\n\n`;
       markdown += `**Criado por:** ${creator?.Name || 'N/A'}\n`;
       markdown += `**Pasta:** ${folder?.Name || 'N/A'}\n`;
-      markdown += `**Data de criação:** ${FormatDate(document.CreatedAt,t("date_format"))}\n\n`;
+      markdown += `**Data de criação:** ${FormatDate(document.CreatedAt, t("date_format"))}\n\n`;
       markdown += `---\n\n`;
       markdown += documentContent;
 
@@ -595,7 +587,7 @@ const DocumentDetailsPage: React.FC = () => {
                   <div style={{ fontSize: '12px', color: '#666' }}>
                     {t("documents.document_details.created_at") || "Criado em"}
                   </div>
-                  <MetaValue>{FormatDate(document.CreatedAt,t("date_format"))}</MetaValue>
+                  <MetaValue>{FormatDate(document.CreatedAt, t("date_format"))}</MetaValue>
                 </div>
               </MetaItem>
 
@@ -605,7 +597,7 @@ const DocumentDetailsPage: React.FC = () => {
                   <div style={{ fontSize: '12px', color: '#666' }}>
                     {t("documents.document_details.updated_at") || "Atualizado em"}
                   </div>
-                  <MetaValue>{FormatDate(document.UpdatedAt,t("date_format"))}</MetaValue>
+                  <MetaValue>{FormatDate(document.UpdatedAt, t("date_format"))}</MetaValue>
                 </div>
               </MetaItem>
             </DocumentMeta>
@@ -620,74 +612,77 @@ const DocumentDetailsPage: React.FC = () => {
         </LeftColumn>
 
         <RightColumn>
-          <ValidationSection>
-            <ValidationTitle>
-              {t("documents.document_details.validation.title") || "Validação do Documento"}
-            </ValidationTitle>
+          {isValidator && (
+            <ValidationSection>
+              <ValidationTitle>
+                {t("documents.document_details.validation.title") || "Validação do Documento"}
+              </ValidationTitle>
 
-            {(validationStatus === 1 || validationStatus === 2) && (
-              <ValidatorActions>
-                <ValidationStatus>
-                  <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
-                    {getValidationStatusText(validationStatus as number)}
-                  </StatusBadge>
-                  <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}></div>
+              {(validationStatus === 1 || validationStatus === 2) && (
+                <ValidatorActions>
+                  <ValidationStatus>
+                    <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
+                      {getValidationStatusText(validationStatus as number)}
+                    </StatusBadge>
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}></div>
 
-                  {validatorNote && (
-                    <ValidatorNote
-                      value={validatorNote}
-                      readOnly
-                    />
-                  )}
-                </ValidationStatus>
-              </ValidatorActions>
-            )}
-            {validationStatus === 0 && (
-              <ValidatorActions>
-                <ValidatorNote
-                  placeholder={t("documents.document_details.validation.add_note")}
-                  value={validatorNote}
-                  onChange={(e) => setValidatorNote(e.target.value)}
-                />
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <Button
-                    onClick={() => handleValidation(true)}
-                    disabled={validationLoading}
-                    style={{ flex: 1, background: '#28a745', opacity: validationLoading ? 0.8 : 1 }}
-                  >
-                    {validationLoading ? (
-                      <>
-                        <LoadingIcon size={18} />
-                        {t("loading.loading") || "Carregando..."}
-                      </>
-                    ) : (
-                      <>
-                        ✅ {t("documents.document_details.validation.approve") || "Aprovar"}
-                      </>
+                    {validatorNote && (
+                      <ValidatorNote
+                        value={validatorNote}
+                        readOnly
+                      />
                     )}
-                  </Button>
+                  </ValidationStatus>
+                </ValidatorActions>
+              )}
+              {validationStatus === 0 && (
+                <ValidatorActions>
+                  <ValidatorNote
+                    placeholder={t("documents.document_details.validation.add_note")}
+                    value={validatorNote}
+                    onChange={(e) => setValidatorNote(e.target.value)}
+                  />
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <Button
+                      onClick={() => handleValidation(true)}
+                      disabled={validationLoading}
+                      style={{ flex: 1, background: '#28a745', opacity: validationLoading ? 0.8 : 1 }}
+                    >
+                      {validationLoading ? (
+                        <>
+                          <LoadingIcon size={18} />
+                          {t("loading.loading") || "Carregando..."}
+                        </>
+                      ) : (
+                        <>
+                          ✅ {t("documents.document_details.validation.approve") || "Aprovar"}
+                        </>
+                      )}
+                    </Button>
 
-                  <Button
-                    onClick={() => handleValidation(false)}
-                    disabled={validationLoading}
-                    style={{ flex: 1, background: '#dc3545', opacity: validationLoading ? 0.8 : 1 }}
-                  >
-                    {validationLoading ? (
-                      <>
-                        <LoadingIcon size={18} />
-                        {t("loading.loading") || "Carregando..."}
-                      </>
-                    ) : (
-                      <>
-                        ❌ {t("documents.document_details.validation.reject") || "Rejeitar"}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </ValidatorActions>
-            )}
+                    <Button
+                      onClick={() => handleValidation(false)}
+                      disabled={validationLoading}
+                      style={{ flex: 1, background: '#dc3545', opacity: validationLoading ? 0.8 : 1 }}
+                    >
+                      {validationLoading ? (
+                        <>
+                          <LoadingIcon size={18} />
+                          {t("loading.loading") || "Carregando..."}
+                        </>
+                      ) : (
+                        <>
+                          ❌ {t("documents.document_details.validation.reject") || "Rejeitar"}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </ValidatorActions>
+              )}
 
-          </ValidationSection>
+            </ValidationSection>
+
+          )}
 
           {document?.DocumentId && (
             <DocumentTags documentId={document.DocumentId} />
@@ -715,7 +710,7 @@ const DocumentDetailsPage: React.FC = () => {
                             {commentAuthor?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}
                           </CommentAuthor>
                           <CommentDate>
-                            {FormatDate(comment.CreatedAt!,t("date_format"))}
+                            {FormatDate(comment.CreatedAt!, t("date_format"))}
                           </CommentDate>
                         </CommentHeader>
                         <CommentText>{comment.Content}</CommentText>

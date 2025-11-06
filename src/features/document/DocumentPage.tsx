@@ -69,9 +69,6 @@ const DocumentPage: React.FC = () => {
   const { generateEmbedding } = useDocument();
   const [isLoading, setIsLoading] = useState(false);
 
-
-
-  //rag
   const [ragSearchQuery, setRagSearchQuery] = useState("");
   const [isRagSearching, setIsRagSearching] = useState(false);
   const [ragResults, setRagResults] = useState<DocumentWithSimilarity[]>([]);
@@ -82,7 +79,6 @@ const DocumentPage: React.FC = () => {
   const [pageSize, setPageSize] = useState<number>(10);
 
   const resetToFirstPage = () => setCurrentPage(1);
-  // Estados e refs para importação
   const importFileRef = useRef<HTMLInputElement>(null);
   const importModal = useModal();
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
@@ -96,7 +92,6 @@ const DocumentPage: React.FC = () => {
     return rows.slice(start, start + pageSize);
   };
 
-  // hook de responsividade para manter navegação sempre visível
   const useIsNarrow = (breakpoint = 480) => {
     const [isNarrow, setIsNarrow] = useState(false);
     useEffect(() => {
@@ -115,7 +110,6 @@ const DocumentPage: React.FC = () => {
     const canPrev = currentPage > 1;
     const canNext = currentPage < totalPages;
 
-    // fallback i18n
     const tt = (key: string, fallback: string) => {
       const v = t(key) as unknown as string;
       return v && v !== key ? v : fallback;
@@ -459,8 +453,7 @@ const DocumentPage: React.FC = () => {
     setShowRagResults(true);
 
     try {
-      console.log("Starting RAG search for:", ragSearchQuery);
-
+      // console.log("Starting RAG search for:", ragSearchQuery);
       // Gerar embedding para o texto da busca
       const queryEmbedding = await generateEmbedding(ragSearchQuery);
 

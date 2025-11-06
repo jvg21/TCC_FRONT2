@@ -550,6 +550,7 @@ export const useDocument = () => {
     userDocuments,
     userValidatorDocuments,
     GetDocumentValidationById,
+    getDocumentValidatorByValidator,
     generateEmbedding,
     query,
     setQuery,
