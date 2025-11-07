@@ -872,5 +872,9 @@ export const ptTranslations = {
 
   workspace:{
     title: "Áreas de Trabalho",
+  },
+
+  common:{
+    view_all: "Ver Todos"
   }
 };
