@@ -757,7 +757,8 @@ export const enTranslations = {
       processed_requests: "Processed requests",
       approved: "Approved",
       ai_usage: "AI Usage",
-      tokens: "Tokens"
+      tokens: "Tokens",
+      rejected: "Rejected"
     },
 
     // Charts
@@ -850,7 +851,9 @@ export const enTranslations = {
       modifications: "Modifications",
       comments: "Comments",
       approvals: "Approvals",
-      total_activity: "Total Activity"
+      total_activity: "Total Activity",
+      documents: "Documents",
+      tasks: "Tasks"
     }
   },
   logout: {
