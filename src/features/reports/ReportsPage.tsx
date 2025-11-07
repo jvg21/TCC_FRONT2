@@ -26,7 +26,7 @@ const ReportsPage: React.FC = () => {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
-  const { getAllReports } = useReports();
+  const { getAllReports, loading, clearFilters, updateFilters } = useReports();
 
   const documentReportData = reportsData ? reportsData.documents : null;
   const documentMonthReportData = reportsData ? reportsData.documentMonths : null;
@@ -42,11 +42,9 @@ const ReportsPage: React.FC = () => {
     const fetchData = async () => {
       const allReports = await getAllReports();
       setReportsData(allReports);
-      // console.log("Relatórios carregados com sucesso:", allReports);
     }
     fetchData();
   }, []);
-
 
   const documentsData = {
     total: documentReportData ? documentReportData.totalDocuments : 0,
@@ -92,8 +90,56 @@ const ReportsPage: React.FC = () => {
   };
 
   const handleApplyFilter = () => {
-    alert(`Filtro aplicado: ${timeFilter}${timeFilter === 'custom' ? ` de ${startDate} a ${endDate}` : ''}`);
-  };
+    let dateFilters = {};
+
+    if (timeFilter === 'custom' && startDate && endDate) {
+      dateFilters = {
+        CreatedAtFrom: startDate,
+        CreatedAtTo: endDate
+      };
+    } else if (timeFilter !== 'all') {
+      // Converter os filtros de tempo para datas
+      const today = new Date();
+      const endDateStr = today.toISOString().split('T')[0];
+      let startDateStr;
+
+      switch (timeFilter) {
+        case 'today':
+          startDateStr = endDateStr;
+          break;
+        case 'week':
+          const lastWeek = new Date(today);
+          lastWeek.setDate(today.getDate() - 7);
+          startDateStr = lastWeek.toISOString().split('T')[0];
+          break;
+        case 'month':
+          const lastMonth = new Date(today);
+          lastMonth.setMonth(today.getMonth() - 1);
+          startDateStr = lastMonth.toISOString().split('T')[0];
+          break;
+        case 'quarter':
+          const lastQuarter = new Date(today);
+          lastQuarter.setMonth(today.getMonth() - 3);
+          startDateStr = lastQuarter.toISOString().split('T')[0];
+          break;
+        case 'year':
+          const lastYear = new Date(today);
+          lastYear.setFullYear(today.getFullYear() - 1);
+          startDateStr = lastYear.toISOString().split('T')[0];
+          break;
+      }
+
+      if (startDateStr) {
+        dateFilters = {
+          CreatedAtFrom: startDateStr,
+          CreatedAtTo: endDateStr
+        };
+      }
+    }
+
+    // Buscar relatórios com os novos filtros
+    getAllReports(dateFilters);
+  }
 
   // Helper para renderizar o relatório selecionado
   const renderSelectedReport = () => {
@@ -154,6 +200,10 @@ const ReportsPage: React.FC = () => {
 
         <ApplyFilterButton onClick={handleApplyFilter}>
           <FiFilter /> {t('reports.filters.apply_filter')}
+        </ApplyFilterButton>
+
+          <ApplyFilterButton onClick={clearFilters}>
+          <FiFilter /> {t('reports.filters.clear_filters')}
         </ApplyFilterButton>
       </FilterSection>
 
