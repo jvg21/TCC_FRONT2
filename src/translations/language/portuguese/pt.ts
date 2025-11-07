@@ -302,7 +302,6 @@ export const ptTranslations = {
     importSuccess: "Documento importado com sucesso!",
     importError: "Erro ao importar documento",
     importDocument: "Importar Documento",
-    importMissingData: "Nenhum arquivo selecionado para importação",
     selectFolder: "Selecionar Pasta",
     resetValidationSuccess: "Validação do documento restabelecida com sucesso!",
     validationUpdateSuccess: "Estado de validação do documento atualizado com sucesso!",
@@ -869,5 +868,9 @@ export const ptTranslations = {
    markdown_editor:{
     upload_error: "Erro ao enviar imagem",
     placeholder: "Escreva seu conteúdo aqui..."
+  },
+
+  workspace:{
+    title: "Áreas de Trabalho",
   }
 };
