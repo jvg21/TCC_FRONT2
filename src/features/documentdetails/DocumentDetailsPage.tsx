@@ -184,10 +184,11 @@ const DocumentDetailsPage: React.FC = () => {
 
     try {
       setDocumentLoading(true);
+      console.log('Salvando documento com título:', documentTitle);
       await update(document.DocumentId, {
         ...document,
         Content: documentContent,
-        Name : documentTitle
+        Title: documentTitle
       });
       notificationActions.showNotification(
         t("documents.updateSuccess") || 'Documento atualizado com sucesso!',
@@ -560,7 +561,25 @@ const DocumentDetailsPage: React.FC = () => {
         <LeftColumn>
           <DocumentCard>
             <DocumentHeader>
-              <DocumentTitle>{document.Title}</DocumentTitle>
+              <DocumentTitle>
+                <input
+                  type="text"
+                  value={documentTitle}
+                  onChange={(e) => setDocumentTitle(e.target.value)}
+                  style={{
+                    width: '100%',
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    border: 'none',
+                    background: 'transparent',
+                    padding: '4px',
+                    borderRadius: '4px',
+                    outline: 'none'
+                  }}
+                  onFocus={(e) => e.target.style.border = '1px solid #ccc'}
+                  onBlur={(e) => e.target.style.border = 'none'}
+                />
+              </DocumentTitle>
             </DocumentHeader>
 
             <DocumentMeta>
