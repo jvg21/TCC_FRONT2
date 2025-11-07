@@ -141,16 +141,11 @@ const ReportsPage: React.FC = () => {
     getAllReports(dateFilters);
   }
 
-  // Helper para renderizar o relatório selecionado
-  const renderSelectedReport = () => {
-    // Implementação futura para relatórios detalhados específicos
-  };
-
   return (
     <PageContainer>
       <PageHeader>
-        <PageTitle>{t('reports.title') || "Relatórios e Análises"}</PageTitle>
-        <PageSubtitle>{t('reports.subtitle') || "Visualize insights e métricas do sistema Documentin"}</PageSubtitle>
+        <PageTitle>{t('reports.title') }</PageTitle>
+        <PageSubtitle>{t('reports.subtitle') }</PageSubtitle>
       </PageHeader>
 
       {/* Filtros */}
