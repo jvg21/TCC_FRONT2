@@ -84,6 +84,7 @@ const DocumentDetailsPage: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [documentContent, setDocumentContent] = useState('');
+  const [documentTitle, setDocumentTitle] = useState('');
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const hasLoadedRef = useRef(false);
@@ -141,6 +142,7 @@ const DocumentDetailsPage: React.FC = () => {
 
           // console.log('Raw document data:', documentData);
           setDocument(transformSingleApiData(documentData));
+          setDocumentTitle(response.objeto.document.title || '');
 
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status);
@@ -185,6 +187,7 @@ const DocumentDetailsPage: React.FC = () => {
       await update(document.DocumentId, {
         ...document,
         Content: documentContent,
+        Name : documentTitle
       });
       notificationActions.showNotification(
         t("documents.updateSuccess") || 'Documento atualizado com sucesso!',
