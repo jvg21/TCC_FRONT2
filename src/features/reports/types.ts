@@ -71,6 +71,7 @@ export interface ReportsData {
   documents: DocumentStats;
   documentMonths: DocumentMonthStatus[];
   aiUsers: AIUsersStats[];
+  userActivity: [];
 
   validations: ValidationStats;
   validators: ValidatorsStats[];

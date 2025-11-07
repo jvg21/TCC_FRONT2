@@ -856,5 +856,9 @@ export const esTranslations = {
    markdown_editor:{
     upload_error: "Error al subir la imagen",
     placeholder: "Escribe aquí tu contenido en Markdown..."
+  },
+
+  workspace:{
+    title: "Espacio de Trabajo",
   }
 };

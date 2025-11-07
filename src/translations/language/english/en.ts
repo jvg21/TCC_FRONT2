@@ -849,6 +849,10 @@ export const enTranslations = {
   markdown_editor: {
     upload_error: "Error uploading image",
     placeholder: "Write your content here..."
+  },
+
+  workspace:{
+    title: "Workspace",
   }
 
 
