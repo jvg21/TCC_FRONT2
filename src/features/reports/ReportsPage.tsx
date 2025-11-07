@@ -145,8 +145,8 @@ const ReportsPage: React.FC = () => {
   return (
     <PageContainer>
       <PageHeader>
-        <PageTitle>{t('reports.title') }</PageTitle>
-        <PageSubtitle>{t('reports.subtitle') }</PageSubtitle>
+        <PageTitle>{t('reports.title')}</PageTitle>
+        <PageSubtitle>{t('reports.subtitle')}</PageSubtitle>
       </PageHeader>
 
       {/* Filtros */}
@@ -278,7 +278,10 @@ const ReportsPage: React.FC = () => {
         </SectionHeading>
         <BarChartContainer>
           {documentsData.byPeriod.map((month, index) => (
-            <Bar key={index} height={`${(month.totalDocumentos / Math.max(...documentsData.byPeriod.map(m => m.totalDocumentos))) * 100}%`}>
+            <Bar
+              key={index}
+              height={(month.totalDocumentos / Math.max(...documentsData.byPeriod.map(m => m.totalDocumentos))) * 100}
+            >
               <BarValue>{month.totalDocumentos}</BarValue>
               <BarLabel>{month.nomeMes.substring(0, 3)}</BarLabel>
             </Bar>
@@ -506,7 +509,7 @@ const ReportsPage: React.FC = () => {
                 <Td>
                   <ProgressBar>
                     <ProgressFill
-                      percentage={(1 / (1|| 1)) * 100}
+                      percentage={(1 / (1 || 1)) * 100}
                       color="#4299e1"
                     />
                   </ProgressBar>
