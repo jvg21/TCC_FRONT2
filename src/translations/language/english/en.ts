@@ -853,6 +853,10 @@ export const enTranslations = {
 
   workspace:{
     title: "Workspace",
+  },
+
+  common:{
+    view_all: "View All"
   }
 
 

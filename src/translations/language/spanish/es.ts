@@ -860,5 +860,9 @@ export const esTranslations = {
 
   workspace:{
     title: "Espacio de Trabajo",
+  },
+
+  common:{
+    view_all: "Ver Todo"
   }
 };
