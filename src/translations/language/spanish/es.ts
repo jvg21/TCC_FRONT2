@@ -846,7 +846,13 @@ export const esTranslations = {
       top_users: "Principales Usuarios por Solicitudes",
       user: "Usuario",
       requests: "Solicitudes",
-      usage: "Uso"
+      usage: "Uso",
+      user_activity: "Actividad del Usuario",
+      top_active_users: "Principales Usuarios Activos",
+      modifications: "Modificaciones",
+      comments: "Comentarios",
+      approvals: "Aprobaciones",
+      total_activity: "Total de Actividad"
     }
   },
   logout:{

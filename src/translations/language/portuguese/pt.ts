@@ -857,7 +857,13 @@ export const ptTranslations = {
       top_users: "Usuários com Mais Requisições",
       user: "Usuário",
       requests: "Requisições",
-      usage: "Uso"
+      usage: "Uso",
+      user_activity: "Atividade do Usuário",
+      top_active_users: "Usuários Mais Ativos",
+      modifications: "Modificações",
+      comments: "Comentários",
+      approvals: "Aprovações",
+      total_activity: "Total de Atividade"
     }
 
 
