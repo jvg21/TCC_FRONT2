@@ -9,7 +9,7 @@ import {
   FiCalendar,
   FiFilter,
   FiUsers,
-  FiClock, 
+  FiClock,
 } from 'react-icons/fi';
 
 import { PageContainer, ApplyFilterButton, Bar, BarLabel, BarValue, CardDescription, CardHeader, CardIcon, CardTitle, CardValue, ChartContainer, DetailedSection, DownloadButton, FilterInput, FilterLabel, FilterSection, FilterSelect, PageHeader, PageSubtitle, PageTitle, ProgressBar, ProgressFill, ReportCard, ReportsGrid, SectionHeader, SectionTitle, StatItem, StatLabel, StatValue, StatsGrid, Table, TagCloud, TagItem, BarChartContainer, SectionHeading, Th, Td } from '../../components/common/reportsComponents';
@@ -26,7 +26,7 @@ const ReportsPage: React.FC = () => {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
-  const { getAllReports, loading, clearFilters, updateFilters,reportsData:hookreportData } = useReports();
+  const { getAllReports, loading, clearFilters, updateFilters, reportsData: hookreportData } = useReports();
 
   const documentReportData = reportsData ? reportsData.documents : null;
   const documentMonthReportData = reportsData ? reportsData.documentMonths : null;
@@ -36,7 +36,7 @@ const ReportsPage: React.FC = () => {
   const tasksReportData = reportsData ? reportsData.tasks : null;
   const taskPrioritysReportData = reportsData ? reportsData.taskPrioritys : null;
   const aiReportData = reportsData ? reportsData.ai : null;
-  const userActivityData = reportsData ? reportsData.userActivity || [] : []; 
+  const userActivityData = reportsData ? reportsData.userActivity || [] : [];
 
 
   useEffect(() => {
@@ -85,12 +85,12 @@ const ReportsPage: React.FC = () => {
     topUsers: aiUsersReportData ? aiUsersReportData : []
   };
 
-  
+
   const handleDownloadReport = () => {
     alert('Download de relatório em PDF iniciado');
   };
 
-  const handleApplyFilter = async() => {
+  const handleApplyFilter = async () => {
     let dateFilters = {};
 
     if (timeFilter === 'custom' && startDate && endDate) {
@@ -99,7 +99,7 @@ const ReportsPage: React.FC = () => {
         CreatedAtTo: endDate
       };
     } else if (timeFilter !== 'all') {
-      
+
       const today = new Date();
       const endDateStr = today.toISOString().split('T')[0];
       let startDateStr;
@@ -137,11 +137,21 @@ const ReportsPage: React.FC = () => {
         };
       }
     }
-    await updateFilters(dateFilters);
-    // Buscar relatórios com os novos filtros
-    
-    setReportsData(hookreportData);
 
+    updateFilters(dateFilters);
+    setReportsData(hookreportData);
+  }
+
+  const handleClearFilters = async () => {
+    clearFilters();
+    setTimeFilter('all');
+    setStartDate('');
+    setEndDate('');
+
+    const emptyFilters = {};
+
+    await updateFilters(emptyFilters);
+    setReportsData(hookreportData);
   }
 
   return (
@@ -151,7 +161,7 @@ const ReportsPage: React.FC = () => {
         <PageSubtitle>{t('reports.subtitle')}</PageSubtitle>
       </PageHeader>
 
-      {}
+      { }
       <FilterSection>
         <FilterLabel>
           <FiCalendar /> {t('reports.filters.period')}:
@@ -197,12 +207,12 @@ const ReportsPage: React.FC = () => {
           <FiFilter /> {t('reports.filters.apply_filter')}
         </ApplyFilterButton>
 
-        <ApplyFilterButton onClick={clearFilters}>
+        <ApplyFilterButton onClick={handleClearFilters}>
           <FiFilter /> {t('reports.filters.clear_filters')}
         </ApplyFilterButton>
       </FilterSection>
 
-      {}
+      { }
       <ReportsGrid>
         <ReportCard onClick={() => setSelectedReport('documents')}>
           <CardHeader>
@@ -249,7 +259,7 @@ const ReportsPage: React.FC = () => {
         </ReportCard>
       </ReportsGrid>
 
-      {}
+      { }
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
@@ -295,7 +305,7 @@ const ReportsPage: React.FC = () => {
         </BarChartContainer>
       </DetailedSection>
 
-      {}
+      { }
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
@@ -355,7 +365,7 @@ const ReportsPage: React.FC = () => {
         </Table>
       </DetailedSection>
 
-      {}
+      { }
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
@@ -421,7 +431,7 @@ const ReportsPage: React.FC = () => {
         </ChartContainer>
       </DetailedSection>
 
-      {}
+      { }
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
@@ -481,7 +491,7 @@ const ReportsPage: React.FC = () => {
         </Table>
       </DetailedSection>
 
-      {}
+      { }
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
