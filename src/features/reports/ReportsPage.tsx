@@ -9,7 +9,7 @@ import {
   FiDownload,
   FiCalendar,
   FiFilter,
-
+  FiUsers, // Adicionado para a seção de atividade de usuários
 } from 'react-icons/fi';
 
 import { PageContainer, ApplyFilterButton, Bar, BarLabel, BarValue, CardDescription, CardHeader, CardIcon, CardTitle, CardValue, ChartContainer, DetailedSection, DownloadButton, FilterInput, FilterLabel, FilterSection, FilterSelect, PageHeader, PageSubtitle, PageTitle, ProgressBar, ProgressFill, ReportCard, ReportsGrid, SectionHeader, SectionTitle, StatItem, StatLabel, StatValue, StatsGrid, Table, TagCloud, TagItem, BarChartContainer, SectionHeading, Th, Td } from '../../components/common/reportsComponents';
@@ -36,6 +36,7 @@ const ReportsPage: React.FC = () => {
   const tasksReportData = reportsData ? reportsData.tasks : null;
   const taskPrioritysReportData = reportsData ? reportsData.taskPrioritys : null;
   const aiReportData = reportsData ? reportsData.ai : null;
+  const userActivityData = reportsData ? reportsData.userActivity || [] : []; // Adicionado para atividade dos usuários
 
 
   useEffect(() => {
@@ -174,17 +175,14 @@ const ReportsPage: React.FC = () => {
 
         {timeFilter === 'custom' && (
           <>
-            <FilterLabel>
-              <FiCalendar /> {t('reports.filters.from')}:
-            </FilterLabel>
+            <FilterLabel>{t('reports.filters.start_date')}:</FilterLabel>
             <FilterInput
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
-            <FilterLabel>
-              <FiCalendar /> {t('reports.filters.to')}:
-            </FilterLabel>
+
+            <FilterLabel>{t('reports.filters.end_date')}:</FilterLabel>
             <FilterInput
               type="date"
               value={endDate}
@@ -194,60 +192,53 @@ const ReportsPage: React.FC = () => {
         )}
 
         <ApplyFilterButton onClick={handleApplyFilter}>
-          <FiFilter /> {t('reports.filters.apply_filter')}
-        </ApplyFilterButton>
-
-          <ApplyFilterButton onClick={clearFilters}>
-          <FiFilter /> {t('reports.filters.clear_filters')}
+          <FiFilter /> {t('reports.filters.apply')}
         </ApplyFilterButton>
       </FilterSection>
 
-      {/* Cards de Resumo */}
+      {/* Cards de Relatórios */}
       <ReportsGrid>
         <ReportCard onClick={() => setSelectedReport('documents')}>
           <CardHeader>
             <CardIcon><FiFileText /></CardIcon>
+            <CardTitle>{t('reports.cards.documents')}</CardTitle>
           </CardHeader>
-          <CardTitle>{t('reports.cards.documents')}</CardTitle>
           <CardValue>{documentsData.total}</CardValue>
           <CardDescription>
-            {documentsData.active} {t('reports.cards.active')} • {documentsData.validated} {t('reports.cards.validated')}
+            {documentsData.active} {t('reports.cards.active')}
           </CardDescription>
         </ReportCard>
 
         <ReportCard onClick={() => setSelectedReport('validations')}>
           <CardHeader>
             <CardIcon><FiCheckCircle /></CardIcon>
+            <CardTitle>{t('reports.cards.validations')}</CardTitle>
           </CardHeader>
-          <CardTitle>{t('reports.cards.validations')}</CardTitle>
           <CardValue>{validationsData.total}</CardValue>
           <CardDescription>
-            {t('reports.cards.approval_rate')}: {validationsData.approvalRate}%
+            {validationsData.approvalRate}% {t('reports.cards.approved')}
           </CardDescription>
         </ReportCard>
-
 
         <ReportCard onClick={() => setSelectedReport('tasks')}>
           <CardHeader>
-            <CardIcon><FiList /></CardIcon>
+            <CardIcon><FiClock /></CardIcon>
+            <CardTitle>{t('reports.cards.tasks')}</CardTitle>
           </CardHeader>
-          <CardTitle>{t('reports.cards.tasks')}</CardTitle>
           <CardValue>{tasksData.total}</CardValue>
           <CardDescription>
-            {tasksData.completed} {t('reports.cards.completed')} • {tasksData.overdue} {t('reports.cards.overdue')}
+            {tasksData.completionRate}% {t('reports.cards.completed')}
           </CardDescription>
         </ReportCard>
-
-
 
         <ReportCard onClick={() => setSelectedReport('ai')}>
           <CardHeader>
             <CardIcon><FiCpu /></CardIcon>
+            <CardTitle>{t('reports.cards.ai_usage')}</CardTitle>
           </CardHeader>
-          <CardTitle>{t('reports.cards.ai')}</CardTitle>
           <CardValue>{aiData.totalRequests}</CardValue>
           <CardDescription>
-            {t('reports.cards.processed_requests')}
+            {aiData.totalTokens.toLocaleString()} {t('reports.cards.tokens')}
           </CardDescription>
         </ReportCard>
       </ReportsGrid>
@@ -256,7 +247,7 @@ const ReportsPage: React.FC = () => {
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiFileText /> {t('reports.sections.document_stats')}
+            <FiFileText /> {t('reports.sections.documents')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
@@ -277,35 +268,29 @@ const ReportsPage: React.FC = () => {
             <StatValue>{documentsData.validated}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.pending_documents')}</StatLabel>
+            <StatLabel>{t('reports.sections.awaiting_validation')}</StatLabel>
             <StatValue>{documentsData.pending}</StatValue>
           </StatItem>
         </StatsGrid>
 
-        <ChartContainer>
-          <SectionHeading>
-            {t('reports.sections.documents_by_period')}
-          </SectionHeading>
-          <BarChartContainer>
-            {documentsData.byPeriod.map((item, index) => (
-              <div key={index} style={{ flex: '1' }}>
-                <Bar
-                  height={(item.totalDocumentos / Math.max(...documentsData.byPeriod.map(i => i.totalDocumentos))) * 100}
-                >
-                  <BarValue>{item.totalDocumentos}</BarValue>
-                </Bar>
-                <BarLabel>{item.nomeMes}</BarLabel>
-              </div>
-            ))}
-          </BarChartContainer>
-        </ChartContainer>
+        <SectionHeading>
+          {t('reports.sections.documents_created_period')}
+        </SectionHeading>
+        <BarChartContainer>
+          {documentsData.byPeriod.map((month, index) => (
+            <Bar key={index} height={`${(month.totalDocumentos / Math.max(...documentsData.byPeriod.map(m => m.totalDocumentos))) * 100}%`}>
+              <BarValue>{month.totalDocumentos}</BarValue>
+              <BarLabel>{month.nomeMes.substring(0, 3)}</BarLabel>
+            </Bar>
+          ))}
+        </BarChartContainer>
       </DetailedSection>
 
       {/* Relatório de Validações */}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiCheckCircle /> {t('reports.sections.validation_stats')}
+            <FiCheckCircle /> {t('reports.sections.validations')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
@@ -318,57 +303,54 @@ const ReportsPage: React.FC = () => {
             <StatValue>{validationsData.total}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.approved_documents')}</StatLabel>
+            <StatLabel>{t('reports.sections.approval_rate')}</StatLabel>
+            <StatValue>{validationsData.approvalRate}%</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.cards.approved')}</StatLabel>
             <StatValue>{validationsData.approved}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.rejected_documents')}</StatLabel>
-            <StatValue style={{ color: '#f56565' }}>{validationsData.rejected}</StatValue>
-          </StatItem>
-          <StatItem>
-            <StatLabel>{t('reports.sections.pending')}</StatLabel>
-            <StatValue style={{ color: '#ed8936' }}>{validationsData.returned}</StatValue>
+            <StatLabel>{t('reports.cards.rejected')}</StatLabel>
+            <StatValue>{validationsData.rejected}</StatValue>
           </StatItem>
         </StatsGrid>
 
-        <ChartContainer>
-          <SectionHeading>
-            {t('reports.sections.top_validators')}
-          </SectionHeading>
-          <Table>
-            <thead>
-              <tr>
-                <Th>{t('reports.sections.validator')}</Th>
-                <Th>{t('reports.sections.documents_validated')}</Th>
-                <Th>{t('reports.sections.contribution')}</Th>
+        <SectionHeading>
+          {t('reports.sections.top_validators')}
+        </SectionHeading>
+        <Table>
+          <thead>
+            <tr>
+              <Th>{t('reports.sections.validator')}</Th>
+              <Th>{t('reports.sections.validations')}</Th>
+              <Th>{t('reports.sections.participation')}</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {validationsData.topValidators.map((validator, index) => (
+              <tr key={index}>
+                <Td>{validator.name}</Td>
+                <Td><strong>{validator.totalValidations}</strong></Td>
+                <Td>
+                  <ProgressBar>
+                    <ProgressFill
+                      percentage={(validator.totalValidations / validationsData.total) * 100}
+                      color="#48bb78"
+                    />
+                  </ProgressBar>
+                </Td>
               </tr>
-            </thead>
-            <tbody>
-              {validationsData.topValidators.map((validator, index) => (
-                <tr key={index}>
-                  <Td>{validator.name}</Td>
-                  <Td><strong>{validator.totalValidations}</strong></Td>
-                  <Td>
-                    <ProgressBar>
-                      <ProgressFill
-                        percentage={(validator.totalValidations / validationsData.topValidators[0].totalValidations) * 100}
-                        color="#667eea"
-                      />
-                    </ProgressBar>
-                  </Td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </ChartContainer>
+            ))}
+          </tbody>
+        </Table>
       </DetailedSection>
-
 
       {/* Relatório de Tarefas */}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
-            <FiList /> {t('reports.sections.tasks_analysis')}
+            <FiList /> {t('reports.sections.tasks')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
@@ -386,28 +368,30 @@ const ReportsPage: React.FC = () => {
           </StatItem>
           <StatItem>
             <StatLabel>{t('reports.sections.overdue_tasks')}</StatLabel>
-            <StatValue style={{ color: '#f56565' }}>{tasksData.overdue}</StatValue>
+            <StatValue>{tasksData.overdue}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.cards.completed')}</StatLabel>
+            <StatValue>{tasksData.completed}</StatValue>
           </StatItem>
         </StatsGrid>
 
+        <SectionHeading>
+          {t('reports.sections.priority_distribution')}
+        </SectionHeading>
         <ChartContainer>
-          <SectionHeading>
-            {t('reports.sections.priority_distribution')}
-          </SectionHeading>
           <StatsGrid>
             <StatItem>
               <StatLabel>{t('reports.sections.high_priority')}</StatLabel>
-              <StatValue>{tasksData.byPriority.high}</StatValue>
               <ProgressBar>
                 <ProgressFill
                   percentage={(tasksData.byPriority.high / tasksData.total) * 100}
-                  color="#f56565"
+                  color="#e53e3e"
                 />
               </ProgressBar>
             </StatItem>
             <StatItem>
               <StatLabel>{t('reports.sections.medium_priority')}</StatLabel>
-              <StatValue>{tasksData.byPriority.medium}</StatValue>
               <ProgressBar>
                 <ProgressFill
                   percentage={(tasksData.byPriority.medium / tasksData.total) * 100}
@@ -417,7 +401,6 @@ const ReportsPage: React.FC = () => {
             </StatItem>
             <StatItem>
               <StatLabel>{t('reports.sections.low_priority')}</StatLabel>
-              <StatValue>{tasksData.byPriority.low}</StatValue>
               <ProgressBar>
                 <ProgressFill
                   percentage={(tasksData.byPriority.low / tasksData.total) * 100}
@@ -428,8 +411,6 @@ const ReportsPage: React.FC = () => {
           </StatsGrid>
         </ChartContainer>
       </DetailedSection>
-
-
 
       {/* Relatório de IA */}
       <DetailedSection>
@@ -482,6 +463,51 @@ const ReportsPage: React.FC = () => {
                     <ProgressFill
                       percentage={(user.totalRequests / aiData.topUsers[0].totalRequests) * 100}
                       color="#667eea"
+                    />
+                  </ProgressBar>
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </DetailedSection>
+
+      {/* Nova seção: Relatório de Atividade dos Usuários */}
+      <DetailedSection>
+        <SectionHeader>
+          <SectionTitle>
+            <FiUsers /> {t('reports.sections.user_activity')}
+          </SectionTitle>
+          <DownloadButton onClick={handleDownloadReport}>
+            <FiDownload /> {t('reports.sections.export_report')}
+          </DownloadButton>
+        </SectionHeader>
+
+        <SectionHeading>
+          {t('reports.sections.top_active_users')}
+        </SectionHeading>
+        <Table>
+          <thead>
+            <tr>
+              <Th>{t('reports.sections.user')}</Th>
+              <Th>{t('reports.sections.modifications')}</Th>
+              <Th>{t('reports.sections.comments')}</Th>
+              <Th>{t('reports.sections.approvals')}</Th>
+              <Th>{t('reports.sections.total_activity')}</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {userActivityData.map((user, index) => (
+              <tr key={index}>
+                <Td>{'mengo'}</Td>
+                <Td><strong>{'mengo'}</strong></Td>
+                <Td><strong>{'mengo'}</strong></Td>
+                <Td><strong>{'mengo'}</strong></Td>
+                <Td>
+                  <ProgressBar>
+                    <ProgressFill
+                      percentage={(1 / (1|| 1)) * 100}
+                      color="#4299e1"
                     />
                   </ProgressBar>
                 </Td>
