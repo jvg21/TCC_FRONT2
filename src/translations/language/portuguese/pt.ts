@@ -1,7 +1,7 @@
 export const ptTranslations = {
   date_format: "dd/MM/yyyy",
   locale_date_string: "pt-BR",
-  
+
   invalidCredentials: "Credenciais inválidas",
   notFound: "Não encontrado",
   // Navegação
@@ -289,13 +289,13 @@ export const ptTranslations = {
     template_applied_from: "Conteúdo aplicado do template",
     select_template: "Selecionar template (opcional)",
     template_applied: "Template aplicado com sucesso!",
-    click_to_view : "Clique para visualizar",
-    similarity : "Similaridade",
-    no_similar_documents : "Nenhum documento similar encontrado",
-    found : "encontrado",
-    similar_documents : "documentos similares",
-    error_during_search : "Erro durante a busca",
-    loading : "Carregando...",
+    click_to_view: "Clique para visualizar",
+    similarity: "Similaridade",
+    no_similar_documents: "Nenhum documento similar encontrado",
+    found: "encontrado",
+    similar_documents: "documentos similares",
+    error_during_search: "Erro durante a busca",
+    loading: "Carregando...",
     add: "Adicionar Documento",
     selectFolderPlaceholder: "Selecione uma pasta para o documento",
     import: "Importar Documento",
@@ -307,7 +307,7 @@ export const ptTranslations = {
     validationUpdateSuccess: "Estado de validação do documento atualizado com sucesso!",
 
     filters: {
-      rag:{
+      rag: {
         hide: "Ocultar RAG",
         show: "Mostrar RAG",
       },
@@ -370,11 +370,11 @@ export const ptTranslations = {
       folder: "Pasta",
       created_at: "Criado em",
       updated_at: "Atualizado em",
-      generating_summary : "Gerando resumo...",
-      
-      
+      generating_summary: "Gerando resumo...",
 
-      
+
+
+
       summary_types: {
         structured: "Resumo padrão",
         structured_desc: "Resumo completo e estruturado do documento",
@@ -382,7 +382,7 @@ export const ptTranslations = {
         comparative_desc: "Lista os pontos principais em formato de tópicos",
         analytical: "Resumo curto (TL;DR)",
         analytical_desc: "Versão resumida destacando apenas o essencial",
-        
+
       },
 
       version_history: {
@@ -390,7 +390,7 @@ export const ptTranslations = {
         today: "Hoje",
         current_version: "Versão Atual",
         title: "Histórico de Versões",
-        no_versions : "Nenhuma versão disponível",
+        no_versions: "Nenhuma versão disponível",
       },
 
       export: {
@@ -744,7 +744,8 @@ export const ptTranslations = {
       custom: "Personalizado",
       from: "De",
       to: "Até",
-      apply_filter: "Aplicar Filtro"
+      apply_filter: "Aplicar Filtro",
+      clear_filters: "Limpar Filtros"
     },
 
     // Cards
@@ -764,7 +765,10 @@ export const ptTranslations = {
       completed: "concluídas",
       overdue: "atrasadas",
       total_members: "membros no total",
-      processed_requests: "Requisições processadas"
+      processed_requests: "Requisições processadas",
+      approved: "Aprovados",
+      ai_usage: "Uso de IA",
+      tokens: "Tokens",
     },
 
     // Gráficos
@@ -808,7 +812,7 @@ export const ptTranslations = {
       avg_members_per_group: "Média de Membros por Grupo",
       largest_groups: "Grupos com Mais Membros",
       relative_size: "Tamanho Relativo",
-      
+
 
       documents_created_period: "Documentos Criados por Período",
       total_documents: "Total de Documentos",
@@ -868,19 +872,19 @@ export const ptTranslations = {
 
 
   },
-  logout:{
+  logout: {
     success: "Logout realizado com sucesso!"
   },
-   markdown_editor:{
+  markdown_editor: {
     upload_error: "Erro ao enviar imagem",
     placeholder: "Escreva seu conteúdo aqui..."
   },
 
-  workspace:{
+  workspace: {
     title: "Área de Trabalho",
   },
 
-  common:{
+  common: {
     view_all: "Ver Todos"
   }
 };

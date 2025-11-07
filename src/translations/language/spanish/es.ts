@@ -755,7 +755,8 @@ export const esTranslations = {
       custom: "Personalizado",
       from: "Desde",
       to: "Hasta",
-      apply_filter: "Aplicar Filtro"
+      apply_filter: "Aplicar Filtro",
+      clear_filters: "Limpiar Filtros"
     },
 
     // Tarjetas
@@ -775,7 +776,10 @@ export const esTranslations = {
       completed: "completadas",
       overdue: "atrasadas",
       total_members: "miembros en total",
-      processed_requests: "Solicitudes procesadas"
+      processed_requests: "Solicitudes procesadas",
+      approved: "Aprobadas",
+      ai_usage: "Uso de IA",
+      tokens: "Tokens"
     },
 
     // Gráficos
