@@ -779,7 +779,8 @@ export const esTranslations = {
       processed_requests: "Solicitudes procesadas",
       approved: "Aprobadas",
       ai_usage: "Uso de IA",
-      tokens: "Tokens"
+      tokens: "Tokens",
+      rejected: "Rechazadas"
     },
 
     // Gráficos
@@ -856,7 +857,9 @@ export const esTranslations = {
       modifications: "Modificaciones",
       comments: "Comentarios",
       approvals: "Aprobaciones",
-      total_activity: "Total de Actividad"
+      total_activity: "Total de Actividad",
+      documents: "Documentos",
+      tasks: "Tareas"
     }
   },
   logout:{

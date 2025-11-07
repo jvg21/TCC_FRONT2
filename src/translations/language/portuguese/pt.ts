@@ -769,6 +769,7 @@ export const ptTranslations = {
       approved: "Aprovados",
       ai_usage: "Uso de IA",
       tokens: "Tokens",
+      rejected: "Rejeitados"
     },
 
     // Gráficos
@@ -867,7 +868,9 @@ export const ptTranslations = {
       modifications: "Modificações",
       comments: "Comentários",
       approvals: "Aprovações",
-      total_activity: "Total de Atividade"
+      total_activity: "Total de Atividade",
+      documents: "Documentos",
+      tasks: "Tarefas",
     }
 
 
