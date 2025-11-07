@@ -301,7 +301,7 @@ export const enTranslations = {
     validationUpdateSuccess: "Document validation status updated successfully!",
 
     filters: {
-      rag:{
+      rag: {
         hide: "Hide RAG",
         show: "Show RAG",
       },
@@ -733,7 +733,8 @@ export const enTranslations = {
       custom: "Custom",
       from: "From",
       to: "To",
-      apply_filter: "Apply Filter"
+      apply_filter: "Apply Filter",
+      clear_filters: "Clear Filters"
     },
 
     // Cards
@@ -753,7 +754,10 @@ export const enTranslations = {
       completed: "completed",
       overdue: "overdue",
       total_members: "total members",
-      processed_requests: "Processed requests"
+      processed_requests: "Processed requests",
+      approved: "Approved",
+      ai_usage: "AI Usage",
+      tokens: "Tokens"
     },
 
     // Charts
@@ -849,22 +853,22 @@ export const enTranslations = {
       total_activity: "Total Activity"
     }
   },
-  logout:{
+  logout: {
     success: "Logged out successfully!"
   },
-  markdown_editor:{
+  markdown_editor: {
     upload_error: "Error uploading image",
     placeholder: "Write your content here..."
   },
 
-  workspace:{
+  workspace: {
     title: "Workspace",
   },
 
-  common:{
+  common: {
     view_all: "View All"
   }
-  
+
 
 }
 
