@@ -9,7 +9,7 @@ import {
   FiDownload,
   FiCalendar,
   FiFilter,
-  FiUsers, // Adicionado para a seção de atividade de usuários
+  FiUsers, 
 } from 'react-icons/fi';
 
 import { PageContainer, ApplyFilterButton, Bar, BarLabel, BarValue, CardDescription, CardHeader, CardIcon, CardTitle, CardValue, ChartContainer, DetailedSection, DownloadButton, FilterInput, FilterLabel, FilterSection, FilterSelect, PageHeader, PageSubtitle, PageTitle, ProgressBar, ProgressFill, ReportCard, ReportsGrid, SectionHeader, SectionTitle, StatItem, StatLabel, StatValue, StatsGrid, Table, TagCloud, TagItem, BarChartContainer, SectionHeading, Th, Td } from '../../components/common/reportsComponents';
@@ -17,7 +17,7 @@ import { useReports } from './useReports';
 import type { ReportsData } from './types';
 
 
-// Componente Principal
+
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
@@ -36,7 +36,7 @@ const ReportsPage: React.FC = () => {
   const tasksReportData = reportsData ? reportsData.tasks : null;
   const taskPrioritysReportData = reportsData ? reportsData.taskPrioritys : null;
   const aiReportData = reportsData ? reportsData.ai : null;
-  const userActivityData = reportsData ? reportsData.userActivity || [] : []; // Adicionado para atividade dos usuários
+  const userActivityData = reportsData ? reportsData.userActivity || [] : []; 
 
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const ReportsPage: React.FC = () => {
     topUsers: aiUsersReportData ? aiUsersReportData : []
   };
 
-  // Manipuladores de eventos
+  
   const handleDownloadReport = () => {
     alert('Download de relatório em PDF iniciado');
   };
@@ -99,7 +99,7 @@ const ReportsPage: React.FC = () => {
         CreatedAtTo: endDate
       };
     } else if (timeFilter !== 'all') {
-      // Converter os filtros de tempo para datas
+      
       const today = new Date();
       const endDateStr = today.toISOString().split('T')[0];
       let startDateStr;
@@ -138,7 +138,7 @@ const ReportsPage: React.FC = () => {
       }
     }
 
-    // Buscar relatórios com os novos filtros
+    
     getAllReports(dateFilters);
   }
 
@@ -149,7 +149,7 @@ const ReportsPage: React.FC = () => {
         <PageSubtitle>{t('reports.subtitle')}</PageSubtitle>
       </PageHeader>
 
-      {/* Filtros */}
+      {}
       <FilterSection>
         <FilterLabel>
           <FiCalendar /> {t('reports.filters.period')}:
@@ -196,7 +196,7 @@ const ReportsPage: React.FC = () => {
         </ApplyFilterButton>
       </FilterSection>
 
-      {/* Cards de Relatórios */}
+      {}
       <ReportsGrid>
         <ReportCard onClick={() => setSelectedReport('documents')}>
           <CardHeader>
@@ -243,7 +243,7 @@ const ReportsPage: React.FC = () => {
         </ReportCard>
       </ReportsGrid>
 
-      {/* Relatório de Documentos */}
+      {}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
@@ -289,7 +289,7 @@ const ReportsPage: React.FC = () => {
         </BarChartContainer>
       </DetailedSection>
 
-      {/* Relatório de Validações */}
+      {}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
@@ -349,7 +349,7 @@ const ReportsPage: React.FC = () => {
         </Table>
       </DetailedSection>
 
-      {/* Relatório de Tarefas */}
+      {}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
@@ -415,7 +415,7 @@ const ReportsPage: React.FC = () => {
         </ChartContainer>
       </DetailedSection>
 
-      {/* Relatório de IA */}
+      {}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
@@ -475,7 +475,7 @@ const ReportsPage: React.FC = () => {
         </Table>
       </DetailedSection>
 
-      {/* Nova seção: Relatório de Atividade dos Usuários */}
+      {}
       <DetailedSection>
         <SectionHeader>
           <SectionTitle>
