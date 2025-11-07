@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import {
   FiFileText,
   FiCheckCircle,
-  FiClock,
   FiList,
   FiCpu,
   FiDownload,
@@ -26,7 +25,7 @@ const ReportsPage: React.FC = () => {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
-  const { getAllReports, loading, clearFilters, updateFilters } = useReports();
+  const { getAllReports, loading, clearFilters, updateFilters,reportsData:hookreportData } = useReports();
 
   const documentReportData = reportsData ? reportsData.documents : null;
   const documentMonthReportData = reportsData ? reportsData.documentMonths : null;
@@ -89,7 +88,7 @@ const ReportsPage: React.FC = () => {
     alert('Download de relatório em PDF iniciado');
   };
 
-  const handleApplyFilter = () => {
+  const handleApplyFilter = async() => {
     let dateFilters = {};
 
     if (timeFilter === 'custom' && startDate && endDate) {
@@ -136,16 +135,18 @@ const ReportsPage: React.FC = () => {
         };
       }
     }
-
+    await updateFilters(dateFilters);
     // Buscar relatórios com os novos filtros
-    getAllReports(dateFilters);
+    
+    setReportsData(hookreportData);
+
   }
 
   return (
     <PageContainer>
       <PageHeader>
-        <PageTitle>{t('reports.title') }</PageTitle>
-        <PageSubtitle>{t('reports.subtitle') }</PageSubtitle>
+        <PageTitle>{t('reports.title')}</PageTitle>
+        <PageSubtitle>{t('reports.subtitle')}</PageSubtitle>
       </PageHeader>
 
       {/* Filtros */}
@@ -197,7 +198,7 @@ const ReportsPage: React.FC = () => {
           <FiFilter /> {t('reports.filters.apply_filter')}
         </ApplyFilterButton>
 
-          <ApplyFilterButton onClick={clearFilters}>
+        <ApplyFilterButton onClick={clearFilters}>
           <FiFilter /> {t('reports.filters.clear_filters')}
         </ApplyFilterButton>
       </FilterSection>
