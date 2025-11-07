@@ -871,7 +871,7 @@ export const ptTranslations = {
   },
 
   workspace:{
-    title: "Áreas de Trabalho",
+    title: "Área de Trabalho",
   },
 
   common:{

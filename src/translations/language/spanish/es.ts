@@ -296,7 +296,6 @@ export const esTranslations = {
     importSuccess: "¡Documento importado con éxito!",
     importError: "Error al importar documento",
     importDocument: "Importar Documento",
-    importMissingData: "Ningún archivo seleccionado para importación",
     selectFolder: "Seleccionar Carpeta",
     resetValidationSuccess: "¡Validación del documento restablecida con éxito!",
     validationUpdateSuccess: "¡Estado de validación del documento actualizado con éxito!",
