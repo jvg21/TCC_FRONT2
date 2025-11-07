@@ -596,6 +596,7 @@ export const useDocument = () => {
     updateValidationStatus,
     transformSingleApiData,
     getDocumentVersionsByDocumentId,
-    getDocumentVersionById
+    getDocumentVersionById,
+    get
   } as const;
 };
