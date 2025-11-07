@@ -487,9 +487,7 @@ const WorkspacePage: React.FC = () => {
           <Button variant="ghost" onClick={() => navigate("/TaskBoardPage")}>
             <FiCheckSquare size={16} /> {t("tasks.task_board") || "Quadro de Tarefas"}
           </Button>
-          <Button onClick={() => navigate("/document")}>
-            <FiFile size={16} /> {t("documents.add") || "Adicionar Documento"}
-          </Button>
+          
         </div>
       }
     >
