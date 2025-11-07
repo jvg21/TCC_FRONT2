@@ -840,7 +840,13 @@ export const enTranslations = {
       top_users: "Top Users by Requests",
       user: "User",
       requests: "Requests",
-      usage: "Usage"
+      usage: "Usage",
+      user_activity: "User Activity",
+      top_active_users: "Top Active Users",
+      modifications: "Modifications",
+      comments: "Comments",
+      approvals: "Approvals",
+      total_activity: "Total Activity"
     }
   },
   logout:{
