@@ -1,5 +1,3 @@
-import { taskPriority } from '../../enum/taskPriority';
-
 export interface DocumentStats {
   totalDocuments: number,
   activeDocuments: number,
@@ -64,8 +62,6 @@ export interface AIUsersStats {
   tokenAverage: number,
   usePercentage: number
 }
-
-
 
 export interface ReportsData {
   documents: DocumentStats;

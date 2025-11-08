@@ -205,7 +205,7 @@ const StatsBar = styled.div`
   border: 1px solid ${props => props.theme.colors.border};
 `;
 
-export const CascadeView: React.FC = () => {
+export const CascadeView: React.FC = (config: { filter?: boolean }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -471,69 +471,70 @@ export const CascadeView: React.FC = () => {
       }
     >
       <CascadeContainer>
-        <FilterPanel $isCollapsed={filtersCollapsed}>
-          <FilterHeader onClick={() => setFiltersCollapsed(!filtersCollapsed)}>
-            <h3>
-              <FiFilter size={16} />
-              {t("cascadeview.filters")}
-            </h3>
-            <FilterToggle>
-              {filtersCollapsed ? <FiChevronDown size={18} /> : <FiChevronUp size={18} />}
-            </FilterToggle>
-          </FilterHeader>
+        {config.filter && config.filter === true &&
+          <FilterPanel $isCollapsed={filtersCollapsed}>
+            <FilterHeader onClick={() => setFiltersCollapsed(!filtersCollapsed)}>
+              <h3>
+                <FiFilter size={16} />
+                {t("cascadeview.filters")}
+              </h3>
+              <FilterToggle>
+                {filtersCollapsed ? <FiChevronDown size={18} /> : <FiChevronUp size={18} />}
+              </FilterToggle>
+            </FilterHeader>
 
-          <FilterContent $isCollapsed={filtersCollapsed}>
-            <FilterGroup>
-              <SearchInput
-                type="text"
-                placeholder={t("cascadeview.search_placeholder")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </FilterGroup>
+            <FilterContent $isCollapsed={filtersCollapsed}>
+              <FilterGroup>
+                <SearchInput
+                  type="text"
+                  placeholder={t("cascadeview.search_placeholder")}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </FilterGroup>
 
-            <FilterGroup>
-              <h4>{t("cascadeview.status")}</h4>
-              <CheckboxLabel>
-                <input
-                  type="checkbox"
-                  checked={filters.showInactive}
-                  onChange={(e) => setFilters({ ...filters, showInactive: e.target.checked })}
-                />
-                {t("cascadeview.show_inactive")}
-              </CheckboxLabel>
-            </FilterGroup>
+              <FilterGroup>
+                <h4>{t("cascadeview.status")}</h4>
+                <CheckboxLabel>
+                  <input
+                    type="checkbox"
+                    checked={filters.showInactive}
+                    onChange={(e) => setFilters({ ...filters, showInactive: e.target.checked })}
+                  />
+                  {t("cascadeview.show_inactive")}
+                </CheckboxLabel>
+              </FilterGroup>
 
-            <FilterGroup>
-              <h4>{t("cascadeview.document_validation")}</h4>
-              <CheckboxLabel>
-                <input
-                  type="checkbox"
-                  checked={filters.showValidated}
-                  onChange={(e) => setFilters({ ...filters, showValidated: e.target.checked })}
-                />
-                {t("cascadeview.valid_documents")}
-              </CheckboxLabel>
-              <CheckboxLabel>
-                <input
-                  type="checkbox"
-                  checked={filters.showPending}
-                  onChange={(e) => setFilters({ ...filters, showPending: e.target.checked })}
-                />
-                {t("cascadeview.pending_validation")}
-              </CheckboxLabel>
-              <CheckboxLabel>
-                <input
-                  type="checkbox"
-                  checked={filters.showInvalid}
-                  onChange={(e) => setFilters({ ...filters, showInvalid: e.target.checked })}
-                />
-                {t("cascadeview.invalid_documents")}
-              </CheckboxLabel>
-            </FilterGroup>
-          </FilterContent>
-        </FilterPanel>
-
+              <FilterGroup>
+                <h4>{t("cascadeview.document_validation")}</h4>
+                <CheckboxLabel>
+                  <input
+                    type="checkbox"
+                    checked={filters.showValidated}
+                    onChange={(e) => setFilters({ ...filters, showValidated: e.target.checked })}
+                  />
+                  {t("cascadeview.valid_documents")}
+                </CheckboxLabel>
+                <CheckboxLabel>
+                  <input
+                    type="checkbox"
+                    checked={filters.showPending}
+                    onChange={(e) => setFilters({ ...filters, showPending: e.target.checked })}
+                  />
+                  {t("cascadeview.pending_validation")}
+                </CheckboxLabel>
+                <CheckboxLabel>
+                  <input
+                    type="checkbox"
+                    checked={filters.showInvalid}
+                    onChange={(e) => setFilters({ ...filters, showInvalid: e.target.checked })}
+                  />
+                  {t("cascadeview.invalid_documents")}
+                </CheckboxLabel>
+              </FilterGroup>
+            </FilterContent>
+          </FilterPanel>
+        }
         <TreeContainer>
           <StatsBar>
             <span>
@@ -556,26 +557,26 @@ export const CascadeView: React.FC = () => {
         </TreeContainer>
       </CascadeContainer>
 
-      <Modal 
-        isOpen={folderModal.isOpen} 
-        onClose={folderModal.close} 
+      <Modal
+        isOpen={folderModal.isOpen}
+        onClose={folderModal.close}
         title={t("folders.add_folder")}
       >
-        <FolderForm 
-          initial={editingFolder ?? undefined} 
-          onCancel={folderModal.close} 
-          onSave={handleSaveFolder} 
+        <FolderForm
+          initial={editingFolder ?? undefined}
+          onCancel={folderModal.close}
+          onSave={handleSaveFolder}
         />
       </Modal>
 
-      <Modal 
-        isOpen={documentModal.isOpen} 
-        onClose={documentModal.close} 
+      <Modal
+        isOpen={documentModal.isOpen}
+        onClose={documentModal.close}
         title={t("documents.add_document")}
       >
-        <DocumentForm 
-          initial={editingDocument ?? undefined} 
-          onCancel={documentModal.close} 
+        <DocumentForm
+          initial={editingDocument ?? undefined}
+          onCancel={documentModal.close}
           onSave={handleSaveDocument}
           onEditContent={handleEditContentFromForm}
         />

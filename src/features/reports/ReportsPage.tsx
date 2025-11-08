@@ -10,7 +10,7 @@ import {
   FiCalendar,
   FiFilter,
   FiUsers,
-  FiClock, 
+  FiClock,
 } from 'react-icons/fi';
 
 // Componentes responsivos
@@ -434,13 +434,14 @@ import type { ReportsData } from './types';
 
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedReport, setSelectedReport] = useState<string | null>(null);
+  const [_, setSelectedReport] = useState<string | null>(null);
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
   const [timeFilter, setTimeFilter] = useState<string>('all');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const { getAllReports, loading, clearFilters, updateFilters, reportsData: hookreportData } = useReports();
+  const { getAllReports, clearFilters, updateFilters, getAIUserStats, getAIStats, getDocumentMonthsStats, getTaskPriorityStats, getValidationStats, getValidatorsStats, getDocumentStats, getTaskStats } = useReports();
 
   const documentReportData = reportsData ? reportsData.documents : null;
   const documentMonthReportData = reportsData ? reportsData.documentMonths : null;
@@ -460,6 +461,8 @@ const ReportsPage: React.FC = () => {
     }
     fetchData();
   }, []);
+
+
 
   const documentsData = {
     total: documentReportData ? documentReportData.totalDocuments : 0,
@@ -505,67 +508,126 @@ const ReportsPage: React.FC = () => {
   };
 
   const handleApplyFilter = async () => {
-    let dateFilters = {};
+    setLoading(true);
 
-    if (timeFilter === 'custom' && startDate && endDate) {
-      dateFilters = {
-        CreatedAtFrom: startDate,
-        CreatedAtTo: endDate
-      };
-    } else if (timeFilter !== 'all') {
+    try {
+      let dateFilters = {};
 
-      const today = new Date();
-      const endDateStr = today.toISOString().split('T')[0];
-      let startDateStr;
-
-      switch (timeFilter) {
-        case 'today':
-          startDateStr = endDateStr;
-          break;
-        case 'week':
-          const lastWeek = new Date(today);
-          lastWeek.setDate(today.getDate() - 7);
-          startDateStr = lastWeek.toISOString().split('T')[0];
-          break;
-        case 'month':
-          const lastMonth = new Date(today);
-          lastMonth.setMonth(today.getMonth() - 1);
-          startDateStr = lastMonth.toISOString().split('T')[0];
-          break;
-        case 'quarter':
-          const lastQuarter = new Date(today);
-          lastQuarter.setMonth(today.getMonth() - 3);
-          startDateStr = lastQuarter.toISOString().split('T')[0];
-          break;
-        case 'year':
-          const lastYear = new Date(today);
-          lastYear.setFullYear(today.getFullYear() - 1);
-          startDateStr = lastYear.toISOString().split('T')[0];
-          break;
-      }
-
-      if (startDateStr) {
+      if (timeFilter === 'custom' && startDate && endDate) {
         dateFilters = {
-          CreatedAtFrom: startDateStr,
-          CreatedAtTo: endDateStr
+          CreatedAtFrom: startDate,
+          CreatedAtTo: endDate
         };
+      } else if (timeFilter !== 'all') {
+        const today = new Date();
+        const endDateStr = today.toISOString().split('T')[0];
+        let startDateStr;
+
+        switch (timeFilter) {
+          case 'today':
+            startDateStr = endDateStr;
+            break;
+          case 'week':
+            const lastWeek = new Date(today);
+            lastWeek.setDate(today.getDate() - 7);
+            startDateStr = lastWeek.toISOString().split('T')[0];
+            break;
+          case 'month':
+            const lastMonth = new Date(today);
+            lastMonth.setMonth(today.getMonth() - 1);
+            startDateStr = lastMonth.toISOString().split('T')[0];
+            break;
+          case 'quarter':
+            const lastQuarter = new Date(today);
+            lastQuarter.setMonth(today.getMonth() - 3);
+            startDateStr = lastQuarter.toISOString().split('T')[0];
+            break;
+          case 'year':
+            const lastYear = new Date(today);
+            lastYear.setFullYear(today.getFullYear() - 1);
+            startDateStr = lastYear.toISOString().split('T')[0];
+            break;
+        }
+
+        if (startDateStr) {
+          dateFilters = {
+            CreatedAtFrom: startDateStr,
+            CreatedAtTo: endDateStr
+          };
+        }
       }
+      const [documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys] = await Promise.all([
+        getDocumentStats(dateFilters),
+        getDocumentMonthsStats(dateFilters),
+        getAIStats(dateFilters),
+        getAIUserStats(dateFilters),
+        getValidationStats(dateFilters),
+        getValidatorsStats(dateFilters),
+        getTaskStats(dateFilters),
+        getTaskPriorityStats(dateFilters),
+      ]);
+
+      // Criar manualmente o objeto de dados
+      const newData = {
+        documents,
+        documentMonths,
+        ai,
+        aiUsers,
+        validations,
+        validators,
+        tasks,
+        taskPrioritys,
+      };
+
+      setReportsData(newData);
+      updateFilters(dateFilters);
+    } catch (err) {
+      console.error("Erro ao aplicar filtros:", err);
+    } finally {
+      setLoading(false);
     }
 
-    updateFilters(dateFilters);
-    setReportsData(hookreportData);
   }
 
   const handleClearFilters = async () => {
-    clearFilters();
-    setTimeFilter('all');
-    setStartDate('');
-    setEndDate('');
+    setLoading(true);
 
-    const emptyFilters = {};
+    try {
+      setTimeFilter('all');
+      setStartDate('');
+      setEndDate('');
 
-    await updateFilters(emptyFilters);
-    setReportsData(hookreportData);
+      await clearFilters();
+
+      const [documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys] = await Promise.all([
+        getDocumentStats(),
+        getDocumentMonthsStats(),
+        getAIStats(),
+        getAIUserStats(),
+        getValidationStats(),
+        getValidatorsStats(),
+        getTaskStats(),
+        getTaskPriorityStats(),
+      ]);
+
+      // Criar manualmente o objeto de dados
+      const newData = {
+        documents,
+        documentMonths,
+        ai,
+        aiUsers,
+        validations,
+        validators,
+        tasks,
+        taskPrioritys,
+      };
+
+      setReportsData(newData);
+    } catch (err) {
+      console.error("Erro ao limpar filtros:", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -617,11 +679,11 @@ const ReportsPage: React.FC = () => {
         )}
 
         <ResponsiveButtonGroup>
-          <ResponsiveButton onClick={handleApplyFilter}>
+          <ResponsiveButton onClick={handleApplyFilter} disabled={loading}>
             <FiFilter /> {t('reports.filters.apply_filter')}
           </ResponsiveButton>
 
-          <ResponsiveButton onClick={handleClearFilters}>
+          <ResponsiveButton onClick={handleClearFilters} disabled={loading}>
             <FiFilter /> {t('reports.filters.clear_filters')}
           </ResponsiveButton>
         </ResponsiveButtonGroup>
@@ -693,8 +755,8 @@ const ReportsPage: React.FC = () => {
             <ResponsiveStatValue>{documentsData.active}</ResponsiveStatValue>
           </ResponsiveStatItem>
           <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.validated_documents')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{documentsData.validated}</ResponsiveStatValue>
+            <ResponsiveStatLabel>{t('reports.sections.inactive_documents')}</ResponsiveStatLabel>
+            <ResponsiveStatValue>{documentsData.inactive}</ResponsiveStatValue>
           </ResponsiveStatItem>
           <ResponsiveStatItem>
             <ResponsiveStatLabel>{t('reports.sections.awaiting_validation')}</ResponsiveStatLabel>
@@ -925,7 +987,7 @@ const ReportsPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {userActivityData.map((user, index) => (
+            {userActivityData.map((_, index) => (
               <tr key={index}>
                 <ResponsiveTd>{'mengo'}</ResponsiveTd>
                 <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>

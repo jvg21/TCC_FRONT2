@@ -17,8 +17,7 @@ import { SelectSelector } from "../../components/lib/StatusSelector";
 import { useAuthContext } from "../../context/AuthContext";
 import { ActionButtons } from "../../components/lib/ActionButtons";
 import { getTaskPriority } from "../../enum/taskPriority";
-import { useLanguage } from "../../context/LanguageContext";
-import { dateUtils } from "../../utils/dateUtils";
+import { FormatDate } from "../../utils/FormatDate";
 
 const TaskPage: React.FC = () => {
   const { activeTask, deactiveTask, create, update, softDelete } = useTask();
@@ -31,7 +30,6 @@ const TaskPage: React.FC = () => {
   const { t } = useTranslation();
   const { activeUser } = useUser();
   const { userProfile } = useAuthContext();
-  const { currentLanguage } = useLanguage();
 
   // ==== Paginação (adição) ====
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -135,7 +133,7 @@ const TaskPage: React.FC = () => {
     const baseCols: ColumnDef<Task>[] = [
       { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },
       { key: "Description", header: t("tasks.description"), render: (row) => row.Description || "-" },
-      { key: "DueDate", header: t("tasks.due_date"), render: (row) => dateUtils.formatDateShort(row.DueDate, currentLanguage) },
+      { key: "DueDate", header: t("tasks.due_date"), render: (row) => FormatDate(row.DueDate||"", t('date_format')) },
       { key: "Priority", header: t("tasks.priority"), render: (row) => { const priorityObj = getTaskPriority(t).find(p => p.value === row.Priority?.toString()); return priorityObj ? priorityObj.label : "-"; } },
       { key: "Status", header: t("tasks.status"), render: (row) => { const statusObj = getTaskStatus(t).find(p => p.value === row.Status?.toString()); return statusObj ? statusObj.label : "-"; } },
       { key: "AssigneeId", header: t("tasks.assignee"), render: (row) => { const assignee = activeUser.filter((a) => a.UserId === row.AssigneeId)[0]; return assignee ? assignee.Name : "-"; } },
@@ -182,7 +180,7 @@ const TaskPage: React.FC = () => {
         const page = paginate(filteredTask);
         return (
           <>
-            <DataTable columns={columns} data={paginate(filteredTask)} pageSize={pageSize} />
+            <DataTable columns={columns} data={page} pageSize={pageSize} />
             <PaginationBar total={total} />
           </>
         );
