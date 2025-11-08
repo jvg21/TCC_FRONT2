@@ -24,6 +24,7 @@ import { useUser } from "../user/useUser";
 import { useTypedTranslation } from "../../context/LanguageContext";
 import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
+import CascadeView from "../folder/CascadeView";
 
 // Container Principal - Layout vertical
 const WorkspaceContainer = styled.div`
@@ -492,44 +493,11 @@ const WorkspacePage: React.FC = () => {
       }
     >
       <WorkspaceContainer>
-        {/* Visão em Cascata - Agora com 100% de largura */}
         <SectionCard>
-          <SectionHeader>
-            <SectionTitle>
-              <HiFolder size={18} color="#ff9800" />
-              {t("cascadeview.title") || "Visualização em Cascata"}
-            </SectionTitle>
-            <ActionButton onClick={() => navigate("/CascadeView")}>
-              {t("common.view_all") || "Ver Tudo"} <FiExternalLink size={14} />
-            </ActionButton>
-          </SectionHeader>
-          <TreeContainer>
-            <StatsBar>
-              <span>
-                <HiFolder size={16} color="#ff9800" />
-                {activeFolder.length} {t("cascadeview.folders") || "Pastas"}
-              </span>
-              <span>
-                <HiDocumentText size={16} color="#2196f3" />
-                {activeDocument.length} {t("cascadeview.documents") || "Documentos"}
-              </span>
-            </StatsBar>
-
-            {buildTree.length === 0 ? (
-              <SectionContent $isEmpty>
-                <EmptyState>
-                  {t("cascadeview.no_folders") || "Nenhuma pasta encontrada"}
-                </EmptyState>
-              </SectionContent>
-            ) : (
-              buildTree.map(node => renderTreeNode(node))
-            )}
-          </TreeContainer>
+          <CascadeView {...({ config: { filter: false } } as any)} />
         </SectionCard>
 
-        {/* Seção inferior com tarefas e validações */}
         <BottomSection>
-          {/* Tarefas Pendentes */}
           <SectionCard>
             <SectionHeader>
               <SectionTitle>

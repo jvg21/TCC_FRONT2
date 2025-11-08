@@ -464,6 +464,7 @@ const ReportsPage: React.FC = () => {
           <StatsGrid>
             <StatItem>
               <StatLabel>{t('reports.sections.high_priority')}</StatLabel>
+              <StatValue>{tasksData.byPriority.high}</StatValue>
               <ProgressBar>
                 <ProgressFill
                   percentage={(tasksData.byPriority.high / tasksData.total) * 100}
@@ -473,6 +474,7 @@ const ReportsPage: React.FC = () => {
             </StatItem>
             <StatItem>
               <StatLabel>{t('reports.sections.medium_priority')}</StatLabel>
+              <StatValue>{tasksData.byPriority.medium}</StatValue>
               <ProgressBar>
                 <ProgressFill
                   percentage={(tasksData.byPriority.medium / tasksData.total) * 100}
@@ -482,6 +484,7 @@ const ReportsPage: React.FC = () => {
             </StatItem>
             <StatItem>
               <StatLabel>{t('reports.sections.low_priority')}</StatLabel>
+              <StatValue>{tasksData.byPriority.low}</StatValue>
               <ProgressBar>
                 <ProgressFill
                   percentage={(tasksData.byPriority.low / tasksData.total) * 100}

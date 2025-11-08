@@ -121,7 +121,7 @@ export const AppRoutes = () => {
 
             <Route path="/CascadeView" element={
                 <ProtectedRoutes>
-                    <CascadeView />
+                    <CascadeView {...({ config: { filter: true } } as any)} />
                 </ProtectedRoutes>
             } />
 
