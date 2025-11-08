@@ -227,10 +227,106 @@ const ReportsPage: React.FC = () => {
   const handleDownloadReport = () => {
     alert('Download de relatório em PDF iniciado');
   };
+  const handleApplyFilter = async () => {
+    setLoading(true);
 
-  const handleApplyFilter = () => {
-    alert(`Filtro aplicado: ${timeFilter}${timeFilter === 'custom' ? ` de ${startDate} a ${endDate}` : ''}`);
+    try {
+      let dateFilters = {};
+
+      // Função auxiliar para gerar uma data ISO corrigida para UTC-3 (somente parte "YYYY-MM-DD")
+      const formatDateUTCMinus3 = (date:Date) => {
+        const utcMinus3 = new Date(date.getTime() - 3 * 60 * 60 * 1000);
+        return utcMinus3.toISOString().split('T')[0];
+      };
+
+      if (timeFilter === 'custom' && startDate && endDate) {
+        dateFilters = {
+          CreatedAtFrom: formatDateUTCMinus3(new Date(startDate)),
+          CreatedAtTo: formatDateUTCMinus3(new Date(endDate)),
+        };
+      } else if (timeFilter !== 'all') {
+        const today = new Date();
+        const endDateStr = formatDateUTCMinus3(today);
+        let startDateStr;
+
+        switch (timeFilter) {
+          case 'today': {
+            startDateStr = endDateStr;
+            break;
+          }
+          case 'week': {
+            const lastWeek = new Date(today);
+            lastWeek.setDate(today.getDate() - 7);
+            startDateStr = formatDateUTCMinus3(lastWeek);
+            break;
+          }
+          case 'month': {
+            const lastMonth = new Date(today);
+            lastMonth.setMonth(today.getMonth() - 1);
+            startDateStr = formatDateUTCMinus3(lastMonth);
+            break;
+          }
+          case 'quarter': {
+            const lastQuarter = new Date(today);
+            lastQuarter.setMonth(today.getMonth() - 3);
+            startDateStr = formatDateUTCMinus3(lastQuarter);
+            break;
+          }
+          case 'year': {
+            const lastYear = new Date(today);
+            lastYear.setFullYear(today.getFullYear() - 1);
+            startDateStr = formatDateUTCMinus3(lastYear);
+            break;
+          }
+        }
+
+        if (startDateStr) {
+          dateFilters = {
+            CreatedAtFrom: startDateStr,
+            CreatedAtTo: endDateStr,
+          };
+        }
+      }
+
+      const [
+        documents,
+        documentMonths,
+        ai,
+        aiUsers,
+        validations,
+        validators,
+        tasks,
+        taskPrioritys,
+      ] = await Promise.all([
+        getDocumentStats(dateFilters),
+        getDocumentMonthsStats(dateFilters),
+        getAIStats(dateFilters),
+        getAIUserStats(dateFilters),
+        getValidationStats(dateFilters),
+        getValidatorsStats(dateFilters),
+        getTaskStats(dateFilters),
+        getTaskPriorityStats(dateFilters),
+      ]);
+
+      setReportsData({
+        documents,
+        documentMonths,
+        ai,
+        aiUsers,
+        validations,
+        validators,
+        tasks,
+        taskPrioritys,
+      });
+
+      updateFilters(dateFilters);
+    } catch (err) {
+      console.error("Erro ao aplicar filtros:", err);
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   // Helper futuro
   const renderSelectedReport = () => {};
