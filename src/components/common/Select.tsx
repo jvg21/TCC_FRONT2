@@ -8,7 +8,7 @@ const StyledSelect = styled.select`
   width: 100%;
   font-size: 14px;
   background-color: white;
-  appearance: none; /* remove estilo padrão do sistema */
+  appearance: none; 
 `;
 
 type Option = {

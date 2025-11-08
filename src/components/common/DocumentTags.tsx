@@ -31,7 +31,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
   const [tagInput, setTagInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Carregar tags do documento
+  
   useEffect(() => {
     loadDocumentTags();
   }, [documentId]);
@@ -52,7 +52,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
     }
   };
 
-  // Adicionar tag existente ao documento
+  
   const handleAddExistingTag = async (tagId: number) => {
     try {
       await addDocumentToTag(documentId, tagId);
@@ -65,24 +65,22 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
     }
   };
 
-  // Criar nova tag e adicioná-la automaticamente ao documento
+  
   const handleCreateTag = async () => {
     if (!tagInput.trim()) return;
 
     try {
-      // Primeiro criar a tag
+    
       const response = await createTag({ Name: tagInput.trim() });
       
-      // Verificar se a criação foi bem-sucedida
       if (response && !response.erro && response.objeto) {
-        // Extrair o ID da tag corretamente (estrutura camelCase da resposta da API)
-        const newTagId = response.objeto.tagId; // Nota: 'tagId' (camelCase) em vez de 'TagId' (PascalCase)
+        
+        const newTagId = response.objeto.tagId; 
         
         if (newTagId) {
-          // Adicionar a tag ao documento
+          
           try {
             await addDocumentToTag(documentId, newTagId);
-            // Recarregar as tags do documento
             await loadDocumentTags();
             notificationActions.showNotification(t('tags.createAddSuccess'), 'success');
           } catch (tagError) {
@@ -94,7 +92,7 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
           notificationActions.showError('Erro ao vincular documento à tag: ID da tag não encontrado');
         }
         
-        // Limpar o input e esconder sugestões de qualquer forma
+        
         setTagInput('');
         setShowSuggestions(false);
       }
@@ -104,7 +102,6 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
     }
   };
 
-  // Remover tag do documento
   const handleRemoveTag = async (tagId: number) => {
     try {
       await removeDocumentFromTag(documentId, tagId);
@@ -115,12 +112,11 @@ export const DocumentTags: React.FC<DocumentTagsProps> = ({ documentId }) => {
     }
   };
 
-  // Filtrar tags disponíveis (excluir as já adicionadas)
+  
   const availableTags = activeTag.filter(
     tag => !documentTags.some(dt => dt.tagId === tag.TagId)
   );
 
-  // Filtrar tags baseado no input
   const filteredTags = availableTags.filter(tag =>
     tag.Name.toLowerCase().includes(tagInput.toLowerCase())
   );

@@ -36,7 +36,6 @@ export const useAI = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
 
-  // Transformar dados da API seguindo padrão do useUser
   const transformConfigData = (item: any): OpenAIConfigResponse => {
     return {
       OpenAIConfigId: item.openAIConfigId || item.OpenAIConfigId,
@@ -48,7 +47,7 @@ export const useAI = () => {
     };
   };
 
-  // Gerar resumo de documento usando OpenAI
+  
   const generateSummary = async (documentId: number, modelType: number = 1) => {
     setLoading(true);
     try {
@@ -83,7 +82,7 @@ export const useAI = () => {
     }
   };
 
-  // Buscar configuração OpenAI da empresa
+  
   const getOpenAIConfig = async () => {
     try {
       const response = await fetch(`${apiUrl}/AI/GetOpenAIConfigByCompany`, {
@@ -97,9 +96,9 @@ export const useAI = () => {
       const data: ApiResponse = await response.json();
 
       if (data.erro) {
-        // Se não existe configuração, não mostrar erro
+        
         if (data.mensagem !== "configNotFound") {
-          // notificationActions.showError(data.mensagem);
+          
         }
         setOpenAIConfig(null);
         return null;
@@ -150,7 +149,6 @@ export const useAI = () => {
     }
   };
 
-  // Atualizar configuração OpenAI
   const updateOpenAIConfig = async (configId: number, apiKey: string) => {
     setLoading(true);
     try {
@@ -205,7 +203,6 @@ export const useAI = () => {
         throw new Error(data.mensagem);
       }
 
-      // A API retorna o embedding como um array de floats
       return data.objeto;
     } catch (error) {
       console.error("Error generating embedding:", error);
@@ -214,13 +211,10 @@ export const useAI = () => {
     }
   };
 
-
-  // Verificar se OpenAI está configurado
   const isOpenAIConfigured = (): boolean => {
     return !!(openAIConfig && openAIConfig.ApiKey && openAIConfig.IsActive);
   };
 
-  // Obter dados mascarados da API Key (para exibição)
   const getMaskedApiKey = (): string => {
     if (!openAIConfig || !openAIConfig.ApiKey) return '';
     const key = openAIConfig.ApiKey;
@@ -228,9 +222,8 @@ export const useAI = () => {
     return `${key.substring(0, 6)}...${key.substring(key.length - 4)}`;
   };
 
-  // Validar formato da API Key OpenAI
   const validateApiKey = (apiKey: string): boolean => {
-    // Formato esperado: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    
     const openAIKeyPattern = /^sk-[a-zA-Z0-9]{48}$/;
     return openAIKeyPattern.test(apiKey);
   };

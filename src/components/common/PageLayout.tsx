@@ -11,7 +11,7 @@ const PageContainer = styled.div`
   box-sizing: border-box;
   
   @media (max-width: 768px) {
-    padding: 80px 16px 16px 16px; // Top padding para não conflitar com o toggle mobile
+    padding: 80px 16px 16px 16px; 
   }
 `;
 

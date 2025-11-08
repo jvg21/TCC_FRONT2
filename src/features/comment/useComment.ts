@@ -52,7 +52,7 @@ export const useComment = () => {
     };
   };
 
-  // Buscar todos os comentários da empresa
+  
   const getComments = async () => {
     setLoading(true);
     try {
@@ -83,7 +83,7 @@ export const useComment = () => {
     }
   };
 
-  // Buscar comentário por ID
+  
   const getCommentById = async (commentId: number) => {
     try {
       const response = await fetch(`${apiUrl}/Comment/GetCommentById/${commentId}`, {
@@ -108,7 +108,7 @@ export const useComment = () => {
     }
   };
 
-  // Buscar comentários por documento
+  
   const getCommentsByDocumentId = async (documentId: number) => {
     if (!documentId) return [];
     
@@ -139,7 +139,6 @@ export const useComment = () => {
     }
   };
 
-  // Criar novo comentário
   const createComment = async (payload: Comment) => {
     if (!payload.Content.trim() || !payload.DocumentId) {
       notificationActions.showError(t('comments.contentRequired') || 'Conteúdo e documento são obrigatórios');
@@ -181,7 +180,6 @@ export const useComment = () => {
     }
   };
 
-  // Atualizar comentário
   const updateComment = async (commentId: number, payload: Comment) => {
     if (!payload.Content.trim()) {
       notificationActions.showError(t('comments.contentRequired') || 'Conteúdo é obrigatório');
@@ -224,7 +222,7 @@ export const useComment = () => {
     }
   };
 
-  // Excluir/toggle status comentário
+  
   const softDeleteComment = async (commentId: number) => {
     setLoading(true);
     try {
@@ -255,7 +253,7 @@ export const useComment = () => {
     }
   };
 
-  // Carregar comentários ao inicializar
+  
   useEffect(() => {
     if (token) {
       getComments();

@@ -1,4 +1,3 @@
-// src/contexts/I18nProviderWrapper.tsx
 import React, { useState, useEffect, type ReactNode } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import i18n, { ensureI18nReady } from '../translations';
@@ -23,7 +22,7 @@ export const I18nProviderWrapper: React.FC<I18nProviderWrapperProps> = ({
       } catch (err) {
         console.error('Erro ao inicializar i18n:', err);
         setError('Erro ao carregar traduções');
-        // Mesmo com erro, permite que a aplicação continue
+        
         setIsReady(true);
       }
     };

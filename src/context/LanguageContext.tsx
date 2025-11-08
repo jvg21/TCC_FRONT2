@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from '../translations'; // Import direto do i18n
+import i18n from '../translations'; 
 
-// Tipos de linguagens suportadas
+
 export type SupportedLanguage = 'pt' | 'en' | 'es';
 
-// Interface do contexto
+
 interface LanguageContextValue {
   currentLanguage: SupportedLanguage;
   changeLanguage: (language: SupportedLanguage) => void;
@@ -16,7 +16,6 @@ interface LanguageContextValue {
   isI18nReady: boolean;
 }
 
-// Opção de linguagem
 export interface LanguageOption {
   code: SupportedLanguage;
   label: string;
@@ -24,7 +23,6 @@ export interface LanguageOption {
   flag: string;
 }
 
-// Linguagens disponíveis
 const AVAILABLE_LANGUAGES: LanguageOption[] = [
   {
     code: 'pt',
@@ -46,19 +44,19 @@ const AVAILABLE_LANGUAGES: LanguageOption[] = [
   }
 ];
 
-// Chave para localStorage
+
 const LANGUAGE_STORAGE_KEY = 'documentin_language';
 
-// Criação do contexto
+
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
-// Props do provider
+
 interface LanguageProviderProps {
   children: ReactNode;
   defaultLanguage?: SupportedLanguage;
 }
 
-// Provider do contexto
+
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ 
   children, 
   defaultLanguage = 'pt' 
@@ -67,7 +65,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   const [isChangingLanguage, setIsChangingLanguage] = useState(false);
   const [isI18nReady, setIsI18nReady] = useState(false);
 
-  // Aguarda a inicialização do i18n
   useEffect(() => {
     const checkI18nReady = () => {
       if (i18n.isInitialized || (i18n.changeLanguage && typeof i18n.changeLanguage === 'function')) {
@@ -81,7 +78,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
       return;
     }
 
-    // Se não estiver pronto, aguarda o evento de inicialização
     const handleInitialized = () => {
       setIsI18nReady(true);
     };
@@ -90,7 +86,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
       i18n.on('initialized', handleInitialized);
     }
 
-    // Fallback: verifica periodicamente se está pronto
+    
     const interval = setInterval(() => {
       if (checkI18nReady()) {
         clearInterval(interval);
@@ -105,7 +101,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
     };
   }, []);
 
-  // Inicializa a linguagem do localStorage ou padrão
+  
   useEffect(() => {
     if (!isI18nReady) return;
 
@@ -113,12 +109,11 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
     
     if (savedLanguage && AVAILABLE_LANGUAGES.some(lang => lang.code === savedLanguage)) {
       setCurrentLanguage(savedLanguage);
-      // Sincroniza com i18next se necessário
       if (i18n.language !== savedLanguage && i18n.changeLanguage) {
         i18n.changeLanguage(savedLanguage).catch(console.error);
       }
     } else {
-      // Se não há linguagem salva, usa a detectada pelo i18next ou padrão
+      
       const detectedLanguage = i18n.language as SupportedLanguage;
       const validLanguage = AVAILABLE_LANGUAGES.some(lang => lang.code === detectedLanguage) 
         ? detectedLanguage 
@@ -133,14 +128,14 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
     }
   }, [isI18nReady, defaultLanguage]);
 
-  // Função para trocar idioma
+  
   const changeLanguage = async (language: SupportedLanguage) => {
     if (language === currentLanguage || isChangingLanguage || !isI18nReady) return;
 
     setIsChangingLanguage(true);
     
     try {
-      // Verifica se o i18n tem a função changeLanguage
+      
       if (i18n.changeLanguage && typeof i18n.changeLanguage === 'function') {
         await i18n.changeLanguage(language);
       } else {
@@ -148,10 +143,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
         return;
       }
       
-      // Atualiza o estado local
+      
       setCurrentLanguage(language);
       
-      // Salva no localStorage
+      
       localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
       
     } catch (error) {
@@ -161,19 +156,19 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
     }
   };
 
-  // Função para obter o label da linguagem
+  
   const getLanguageLabel = (language: SupportedLanguage): string => {
     const lang = AVAILABLE_LANGUAGES.find(l => l.code === language);
     return lang?.nativeLabel || language.toUpperCase();
   };
 
-  // Função para obter a bandeira da linguagem
+  
   const getLanguageFlag = (language: SupportedLanguage): string => {
     const lang = AVAILABLE_LANGUAGES.find(l => l.code === language);
     return lang?.flag || '🌐';
   };
 
-  // Sincroniza mudanças do i18next com o contexto
+
   useEffect(() => {
     if (!isI18nReady) return;
 
@@ -213,7 +208,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   );
 };
 
-// Hook para usar o contexto
 export const useLanguage = (): LanguageContextValue => {
   const context = useContext(LanguageContext);
   
@@ -224,7 +218,7 @@ export const useLanguage = (): LanguageContextValue => {
   return context;
 };
 
-// Hook customizado para traduções com tipagem
+
 export const useTypedTranslation = () => {
   const { t, i18n } = useTranslation();
   const { currentLanguage } = useLanguage();
@@ -233,7 +227,7 @@ export const useTypedTranslation = () => {
     t,
     i18n,
     currentLanguage,
-    // Função auxiliar para traduções com fallback
+    
     tWithFallback: (key: string, fallback: string = key) => {
       const translation = t(key);
       return translation !== key ? translation : fallback;
@@ -241,7 +235,7 @@ export const useTypedTranslation = () => {
   };
 };
 
-// Componente de seletor de idioma
+
 export const LanguageSelector: React.FC<{
   variant?: 'dropdown' | 'buttons' | 'minimal';
   showFlag?: boolean;
@@ -255,7 +249,7 @@ export const LanguageSelector: React.FC<{
 }) => {
   const { currentLanguage, changeLanguage, isChangingLanguage, availableLanguages, isI18nReady } = useLanguage();
 
-  // Se o i18n não estiver pronto, mostra um indicador de carregamento simples
+  
   if (!isI18nReady) {
     return (
       <div className={`language-selector-loading ${className}`} style={{ padding: '4px 8px' }}>
@@ -321,7 +315,7 @@ export const LanguageSelector: React.FC<{
     );
   }
 
-  // Dropdown variant (default)
+  
   return (
     <select
       value={currentLanguage}

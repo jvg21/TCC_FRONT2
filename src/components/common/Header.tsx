@@ -35,14 +35,14 @@ const Header: React.FC = () => {
   return (
     <Wrap>
       <ControlsGroup>
-        {/* Seletor de Idioma */}
+        {}
         <LanguageSelector
           variant="minimal"
           showFlag={true}
           showLabel={false}
         />
 
-        {/* Toggle de Tema */}
+        {}
         <Button variant="ghost" onClick={toggleTheme}>
           {themeName === "light" ? "Dark" : "Light"} Mode
         </Button>

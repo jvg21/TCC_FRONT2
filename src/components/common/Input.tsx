@@ -35,7 +35,7 @@ type Props = React.InputHTMLAttributes<HTMLInputElement> & {
   regex?: RegExp;
   errorMessage?: string;
   onValidationChange?: (isValid: boolean) => void;
-  maskFormat?: string; // Ex: "99.999.999/9999-99"
+  maskFormat?: string; 
 };
 
 export const Input: React.FC<Props> = ({
@@ -51,7 +51,6 @@ export const Input: React.FC<Props> = ({
   const [hasError, setHasError] = useState(false);
   const [showError, setShowError] = useState(false);
 
-  // Aplica máscara baseada no formato informado
   const applyMask = (val: string): string => {
     if (!maskFormat || !val) return val || "";
 
@@ -72,7 +71,7 @@ export const Input: React.FC<Props> = ({
     return masked;
   };
 
-  // Aplica máscara ao valor inicial quando o componente é montado ou valor muda
+  
   const maskedValue = React.useMemo(() => {
     if (maskFormat && value && typeof value === "string") {
       return applyMask(value);
@@ -82,12 +81,11 @@ export const Input: React.FC<Props> = ({
 
   useEffect(() => {
     if (regex && value && typeof value === "string") {
-      // Se tem máscara, valida o valor mascarado, senão valida o valor original
+      
       const valueToValidate = maskFormat && typeof maskedValue === "string" ? maskedValue : value;
       const isValid = regex.test(valueToValidate);
       setHasError(!isValid);
-      // Só mostra erro se o usuário já interagiu com o campo ou se está digitando
-      setShowError(false); // Inicialmente nunca mostra erro
+      setShowError(false); 
       onValidationChange?.(isValid);
     } else {
       setHasError(false);
@@ -99,7 +97,6 @@ export const Input: React.FC<Props> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue = e.target.value;
 
-    // Aplica a máscara antes de enviar o valor
     if (maskFormat) {
       newValue = applyMask(newValue);
       e.target.value = newValue;
