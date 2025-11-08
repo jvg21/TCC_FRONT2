@@ -342,8 +342,8 @@ const ReportsPage: React.FC = () => {
             <StatValue>{documentsData.active}</StatValue>
           </StatItem>
           <StatItem>
-            <StatLabel>{t('reports.sections.validated_documents')}</StatLabel>
-            <StatValue>{documentsData.validated}</StatValue>
+            <StatLabel>{t('reports.sections.inactive_documents')}</StatLabel>
+            <StatValue>{documentsData.inactive}</StatValue>
           </StatItem>
           <StatItem>
             <StatLabel>{t('reports.sections.awaiting_validation')}</StatLabel>
