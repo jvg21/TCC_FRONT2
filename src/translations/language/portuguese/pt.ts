@@ -305,6 +305,7 @@ export const ptTranslations = {
     selectFolder: "Selecionar Pasta",
     resetValidationSuccess: "Validação do documento restabelecida com sucesso!",
     validationUpdateSuccess: "Estado de validação do documento atualizado com sucesso!",
+    importMissingData: "Dados ausentes no documento importado",
 
     filters: {
       rag: {
@@ -745,7 +746,9 @@ export const ptTranslations = {
       from: "De",
       to: "Até",
       apply_filter: "Aplicar Filtro",
-      clear_filters: "Limpar Filtros"
+      clear_filters: "Limpar Filtros",
+      start_date: "Fecha de início",
+      end_date: "Fecha de término"
     },
 
     // Cards
@@ -813,6 +816,7 @@ export const ptTranslations = {
       avg_members_per_group: "Média de Membros por Grupo",
       largest_groups: "Grupos com Mais Membros",
       relative_size: "Tamanho Relativo",
+      validations: "Validações",
 
 
       documents_created_period: "Documentos Criados por Período",
@@ -826,7 +830,6 @@ export const ptTranslations = {
       average_time: "Tempo Médio",
       top_validators: "Top Validadores",
       validator: "Validador",
-      validations: "Validações",
       participation: "Participação",
       status_distribution: "Distribuição de Status",
 
@@ -871,6 +874,9 @@ export const ptTranslations = {
       total_activity: "Total de Atividade",
       documents: "Documentos",
       tasks: "Tarefas",
+      inactive_documents: "Documentos Inativos",
+      pending: "Pendentes"
+
     }
 
 

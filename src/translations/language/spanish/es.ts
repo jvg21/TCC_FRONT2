@@ -299,6 +299,7 @@ export const esTranslations = {
     selectFolder: "Seleccionar Carpeta",
     resetValidationSuccess: "¡Validación del documento restablecida con éxito!",
     validationUpdateSuccess: "¡Estado de validación del documento actualizado con éxito!",
+    importMissingData: "Datos faltantes en el documento importado",
 
 
     filters: {
@@ -364,6 +365,7 @@ export const esTranslations = {
         today: "Hoy",
         current_version: "Versión Actual",
         title: "Historial de Versiones",
+        no_versions: "No hay versiones anteriores",
       },
 
       summary_types: {
@@ -756,7 +758,9 @@ export const esTranslations = {
       from: "Desde",
       to: "Hasta",
       apply_filter: "Aplicar Filtro",
-      clear_filters: "Limpiar Filtros"
+      clear_filters: "Limpiar Filtros",
+      start_date: "Fecha de inicio",
+      end_date: "Fecha de fin"
     },
 
     // Tarjetas
@@ -803,6 +807,7 @@ export const esTranslations = {
       groups_analysis: "Análisis de Grupos",
       ai_usage: "Análisis de Uso de IA",
       export_report: "Exportar Informe",
+      validations: "Validaciones",
 
       documents_created_period: "Documentos Creados por Período",
       total_documents: "Total de Documentos",
@@ -815,7 +820,6 @@ export const esTranslations = {
       average_time: "Tiempo Promedio",
       top_validators: "Principales Validadores",
       validator: "Validador",
-      validations: "Validaciones",
       participation: "Participación",
       status_distribution: "Distribución de Estado",
 
@@ -859,7 +863,11 @@ export const esTranslations = {
       approvals: "Aprobaciones",
       total_activity: "Total de Actividad",
       documents: "Documentos",
-      tasks: "Tareas"
+      tasks: "Tareas",
+      inactive_documents: "Documentos Inactivos",
+      pending: "Pendientes"
+
+      
     }
   },
   logout:{
