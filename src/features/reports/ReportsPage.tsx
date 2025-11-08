@@ -506,57 +506,77 @@ const ReportsPage: React.FC = () => {
   const handleDownloadReport = () => {
     alert('Download de relatório em PDF iniciado');
   };
-
   const handleApplyFilter = async () => {
     setLoading(true);
 
     try {
       let dateFilters = {};
 
+      // Função auxiliar para gerar uma data ISO corrigida para UTC-3 (somente parte "YYYY-MM-DD")
+      const formatDateUTCMinus3 = (date:Date) => {
+        const utcMinus3 = new Date(date.getTime() - 3 * 60 * 60 * 1000);
+        return utcMinus3.toISOString().split('T')[0];
+      };
+
       if (timeFilter === 'custom' && startDate && endDate) {
         dateFilters = {
-          CreatedAtFrom: startDate,
-          CreatedAtTo: endDate
+          CreatedAtFrom: formatDateUTCMinus3(new Date(startDate)),
+          CreatedAtTo: formatDateUTCMinus3(new Date(endDate)),
         };
       } else if (timeFilter !== 'all') {
         const today = new Date();
-        const endDateStr = today.toISOString().split('T')[0];
+        const endDateStr = formatDateUTCMinus3(today);
         let startDateStr;
 
         switch (timeFilter) {
-          case 'today':
+          case 'today': {
             startDateStr = endDateStr;
             break;
-          case 'week':
+          }
+          case 'week': {
             const lastWeek = new Date(today);
             lastWeek.setDate(today.getDate() - 7);
-            startDateStr = lastWeek.toISOString().split('T')[0];
+            startDateStr = formatDateUTCMinus3(lastWeek);
             break;
-          case 'month':
+          }
+          case 'month': {
             const lastMonth = new Date(today);
             lastMonth.setMonth(today.getMonth() - 1);
-            startDateStr = lastMonth.toISOString().split('T')[0];
+            startDateStr = formatDateUTCMinus3(lastMonth);
             break;
-          case 'quarter':
+          }
+          case 'quarter': {
             const lastQuarter = new Date(today);
             lastQuarter.setMonth(today.getMonth() - 3);
-            startDateStr = lastQuarter.toISOString().split('T')[0];
+            startDateStr = formatDateUTCMinus3(lastQuarter);
             break;
-          case 'year':
+          }
+          case 'year': {
             const lastYear = new Date(today);
             lastYear.setFullYear(today.getFullYear() - 1);
-            startDateStr = lastYear.toISOString().split('T')[0];
+            startDateStr = formatDateUTCMinus3(lastYear);
             break;
+          }
         }
 
         if (startDateStr) {
           dateFilters = {
             CreatedAtFrom: startDateStr,
-            CreatedAtTo: endDateStr
+            CreatedAtTo: endDateStr,
           };
         }
       }
-      const [documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys] = await Promise.all([
+
+      const [
+        documents,
+        documentMonths,
+        ai,
+        aiUsers,
+        validations,
+        validators,
+        tasks,
+        taskPrioritys,
+      ] = await Promise.all([
         getDocumentStats(dateFilters),
         getDocumentMonthsStats(dateFilters),
         getAIStats(dateFilters),
@@ -567,8 +587,7 @@ const ReportsPage: React.FC = () => {
         getTaskPriorityStats(dateFilters),
       ]);
 
-      // Criar manualmente o objeto de dados
-      const newData = {
+      setReportsData({
         documents,
         documentMonths,
         ai,
@@ -577,17 +596,16 @@ const ReportsPage: React.FC = () => {
         validators,
         tasks,
         taskPrioritys,
-      };
+      });
 
-      setReportsData(newData);
       updateFilters(dateFilters);
     } catch (err) {
       console.error("Erro ao aplicar filtros:", err);
     } finally {
       setLoading(false);
     }
+  };
 
-  }
 
   const handleClearFilters = async () => {
     setLoading(true);
