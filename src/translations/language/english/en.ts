@@ -299,6 +299,7 @@ export const enTranslations = {
     selectFolder: "Select Folder",
     resetValidationSuccess: "Document validation reset successfully!",
     validationUpdateSuccess: "Document validation status updated successfully!",
+    importMissingData: "Missing data in imported document",
 
     filters: {
       rag: {
@@ -366,6 +367,7 @@ export const enTranslations = {
         today: "Today",
         current_version: "Current Version",
         title: "Version History",
+        no_versions: "No previous versions",
 
       },
       summary_types: {
@@ -734,7 +736,9 @@ export const enTranslations = {
       from: "From",
       to: "To",
       apply_filter: "Apply Filter",
-      clear_filters: "Clear Filters"
+      clear_filters: "Clear Filters",
+      start_date: "Start date",
+      end_date: "End date"
     },
 
     // Cards
@@ -803,13 +807,13 @@ export const enTranslations = {
       active_documents: "Active Documents",
       validated_documents: "Validated Documents",
       awaiting_validation: "Awaiting Validation",
+      validations: "Validations",
 
       total_validations: "Total Validations",
       approval_rate: "Approval Rate",
       average_time: "Average Time",
       top_validators: "Top Validators",
       validator: "Validator",
-      validations: "Validations",
       participation: "Participation",
       status_distribution: "Status Distribution",
 
@@ -853,7 +857,10 @@ export const enTranslations = {
       approvals: "Approvals",
       total_activity: "Total Activity",
       documents: "Documents",
-      tasks: "Tasks"
+      tasks: "Tasks",
+      inactive_documents: "Inactive Documents",
+      pending: "Pending",
+
     }
   },
   logout: {
