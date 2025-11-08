@@ -875,6 +875,7 @@ const ReportsPage: React.FC = () => {
           <ResponsiveStatsGrid>
             <ResponsiveStatItem>
               <ResponsiveStatLabel>{t('reports.sections.high_priority')}</ResponsiveStatLabel>
+              <ResponsiveStatValue>{tasksData.byPriority.high}</ResponsiveStatValue>
               <ResponsiveProgressBar>
                 <ResponsiveProgressFill
                   percentage={(tasksData.byPriority.high / tasksData.total) * 100}
@@ -884,6 +885,7 @@ const ReportsPage: React.FC = () => {
             </ResponsiveStatItem>
             <ResponsiveStatItem>
               <ResponsiveStatLabel>{t('reports.sections.medium_priority')}</ResponsiveStatLabel>
+              <ResponsiveStatValue>{tasksData.byPriority.medium}</ResponsiveStatValue>
               <ResponsiveProgressBar>
                 <ResponsiveProgressFill
                   percentage={(tasksData.byPriority.medium / tasksData.total) * 100}
@@ -893,6 +895,7 @@ const ReportsPage: React.FC = () => {
             </ResponsiveStatItem>
             <ResponsiveStatItem>
               <ResponsiveStatLabel>{t('reports.sections.low_priority')}</ResponsiveStatLabel>
+              <ResponsiveStatValue>{tasksData.byPriority.low}</ResponsiveStatValue>
               <ResponsiveProgressBar>
                 <ResponsiveProgressFill
                   percentage={(tasksData.byPriority.low / tasksData.total) * 100}
