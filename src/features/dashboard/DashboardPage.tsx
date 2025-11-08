@@ -327,6 +327,7 @@ const WorkspacePage: React.FC = () => {
   const { activeDocument, get: getDocuments } = useDocument();
   const { activeFolder, get: getFolders } = useFolder();
   const { activeUser } = useUser();
+  const {userValidatorDocuments} = useDocument()
   
   const [expandedFolders, setExpandedFolders] = useState<Record<number, boolean>>({});
   const [selectedNode, setSelectedNode] = useState<{ type: 'folder' | 'document', id: number } | null>(null);
@@ -349,15 +350,12 @@ const WorkspacePage: React.FC = () => {
   
   
   const myPendingTasks = activeTask.filter(task => 
-    task.AssignedId === user?.UserId && 
+    task.AssigneeId === user?.UserId && 
     (task.Status === 1 || task.Status === 2) 
   );
   
  
-  const pendingValidations = activeDocument.filter(doc => 
-    doc.ValidatorId === user?.UserId && 
-    doc.ValidationStatus === 0 
-  );
+  const pendingValidations = userValidatorDocuments.filter(document=>document.IsActive === true)
   
   
   const buildTree = activeFolder.filter(folder => !folder.ParentFolderId).map(folder => ({
