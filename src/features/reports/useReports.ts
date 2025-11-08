@@ -237,6 +237,7 @@ export const useReports = () => {
 
   // Limpa os filtros
   const clearFilters = () => {
+    updateFilters({});
     setFilters({});
   };
 
@@ -283,7 +284,7 @@ export const useReports = () => {
   };
 
   // Exportar relatório em CSV
-  const exportToCSV = (reportType: string, customFilters?: Record<string, any>) => {
+  const exportToCSV = (reportType: string) => {
     try {
       // Implementar lógica de exportação
       notificationActions.showNotification(`Relatório de ${reportType} exportado com sucesso!`, 'success');
@@ -294,7 +295,7 @@ export const useReports = () => {
   };
 
   // Exportar relatório em PDF
-  const exportToPDF = (reportType: string, customFilters?: Record<string, any>) => {
+  const exportToPDF = (reportType: string) => {
     try {
       notificationActions.showNotification(`Relatório de ${reportType} exportado em PDF!`, 'success');
     } catch (err) {

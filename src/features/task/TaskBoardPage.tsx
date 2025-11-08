@@ -13,9 +13,9 @@ import { useTranslation } from "react-i18next";
 import { useUser } from "../user/useUser";
 import { useAuthContext } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
-import { dateUtils } from "../../utils/dateUtils";
 import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
+import { FormatDate } from "../../utils/FormatDate";
 
 
 const BoardContainer = styled.div`
@@ -287,7 +287,6 @@ const TaskBoardPage: React.FC = () => {
   const { t } = useTranslation();
   const { activeUser } = useUser();
   const { userProfile } = useAuthContext();
-  const { currentLanguage } = useLanguage();
 
   
   const tasksByStatus = useMemo(() => {
@@ -398,7 +397,7 @@ const TaskBoardPage: React.FC = () => {
                             {task.DueDate && (
                               <MetaItem>
                                 <FiCalendar size={12} />
-                                {dateUtils.formatDateShort(task.DueDate, currentLanguage)}
+                                {FormatDate(task.DueDate, t('date_format'))}
                               </MetaItem>
                             )}
                             

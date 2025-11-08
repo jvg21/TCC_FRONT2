@@ -9,11 +9,10 @@ import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
 import { TaskForm } from "./TaskForm";
 import { useAuthContext } from "../../context/AuthContext";
-import { useLanguage } from "../../context/LanguageContext";
-import { dateUtils } from "../../utils/dateUtils";
 import type { Task } from "../task/types";
 import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
+import { FormatDate } from "../../utils/FormatDate";
 
 
 const DashboardContainer = styled.div`
@@ -312,7 +311,6 @@ const TaskDashboard: React.FC = () => {
   const modal = useModal();
   const { t } = useTranslation();
   const { userProfile } = useAuthContext();
-  const { currentLanguage } = useLanguage();
 
   const taskStats = useMemo(() => {
     const total = activeTask.length;
@@ -451,7 +449,7 @@ const TaskDashboard: React.FC = () => {
                               {task.DueDate && (
                                 <>
                                   <FiClock size={10} />
-                                  <span>{dateUtils.formatDateShort(task.DueDate, currentLanguage)}</span>
+                                  <span>{FormatDate(task.DueDate,  t('date_format'))}</span>
                                 </>
                               )}
                             </TaskMeta>
@@ -490,7 +488,7 @@ const TaskDashboard: React.FC = () => {
                       <DeadlineTitle>{task.Title}</DeadlineTitle>
                       <DeadlineDate>
                         <FiClock size={12} />
-                        {dateUtils.formatDateShort(task.DueDate, currentLanguage)}
+                        {FormatDate(task.DueDate || "", t('date_format'))}
                       </DeadlineDate>
                     </DeadlineInfo>
                   </DeadlineItem>
