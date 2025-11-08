@@ -13,13 +13,13 @@ const EditorContainer = styled.div`
   gap: 16px;
 `;
 
-const ActionsContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 16px 0;
-  border-top: 1px solid rgba(0,0,0,0.08);
-`;
+// const ActionsContainer = styled.div`
+//   display: flex;
+//   justify-content: flex-end;
+//   gap: 8px;
+//   padding: 16px 0;
+//   border-top: 1px solid rgba(0,0,0,0.08);
+// `;
 
 interface MarkdownEditorPageProps {
   initialContent?: string;

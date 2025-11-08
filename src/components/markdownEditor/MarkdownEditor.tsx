@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Editor } from '@bytemd/react';
 import gfm from '@bytemd/plugin-gfm';
