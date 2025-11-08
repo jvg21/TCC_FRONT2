@@ -134,20 +134,19 @@ const DocumentDetailsPage: React.FC = () => {
 
         setIsValidator(responsea && responsea.objeto.find((val: any) => val.documentId === Number(id)))
 
-        // console.log('Is user a validator for this document?', isValidator);
+        
         if (response && !response.erro) {
           const documentData = response.objeto.document;
           documentData.createdAt = new Date(response.objeto.createdAt).toUTCString();
           documentData.updatedAt = new Date(response.objeto.updatedAt).toUTCString();
 
-          // console.log('Raw document data:', documentData);
           setDocument(transformSingleApiData(documentData));
           setDocumentTitle(response.objeto.document.title || '');
 
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status);
           setValidatorNote(response.objeto.comment || '');
-          // console.log('Documento carregado:', response.objeto);
+          
         } else {
           setError(t("messages.error.generic"));
         }
@@ -209,7 +208,7 @@ const DocumentDetailsPage: React.FC = () => {
     if (!newComment.trim() || !document || !user) return;
 
     try {
-      setIsAddingComment(true); // ativa loading do botão
+      setIsAddingComment(true); 
       await createComment({
         Content: newComment,
         DocumentId: document.DocumentId,
@@ -221,7 +220,7 @@ const DocumentDetailsPage: React.FC = () => {
       console.error('Erro ao adicionar comentário:', error);
       notificationActions.showError(t("messages.error.generic") || 'Erro ao adicionar comentário');
     } finally {
-      setIsAddingComment(false); // desativa loading do botão
+      setIsAddingComment(false); 
     }
   };
   const handleValidation = async (isValid: boolean) => {
@@ -252,13 +251,13 @@ const DocumentDetailsPage: React.FC = () => {
     let modelType = 1;
     switch (mode) {
       case 'default':
-        modelType = 1; // ResumoEstruturado
+        modelType = 1; 
         break;
       case 'curto':
-        modelType = 3; // ResumoAnalitico
+        modelType = 3; 
         break;
       case 'bullet':
-        modelType = 2; // ResumoComparativo
+        modelType = 2; 
         break;
     }
 
@@ -425,7 +424,7 @@ const DocumentDetailsPage: React.FC = () => {
     return `❌ ${t("documents.document_details.validation.rejected") || "Rejeitado"}`;
   };
 
-  /* NOVO: o loading global da página ignora o loading do envio de comentário */
+  
   const showGlobalLoading = loading || (loadingComments && !isAddingComment);
 
   if (showGlobalLoading) {

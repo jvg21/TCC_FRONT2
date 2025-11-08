@@ -375,7 +375,7 @@ export const CascadeView: React.FC = (config: { filter?: boolean }) => {
             $isSelected={isSelected}
             onClick={() => {
               setSelectedNode({ type: 'document', id: node.DocumentId });
-              // ALTERAÇÃO AQUI: Navegando para a página de detalhes do documento
+              
               navigate(`/document/details/${node.DocumentId}`);
             }}
           >
