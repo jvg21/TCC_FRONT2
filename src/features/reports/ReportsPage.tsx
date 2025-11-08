@@ -1003,7 +1003,7 @@ const ReportsPage: React.FC = () => {
               <ResponsiveTh>{t('reports.sections.user')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.modifications')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.comments')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.approvals')}</ResponsiveTh>
+              <ResponsiveTh>{t('reports.sections.validations')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.total_activity')}</ResponsiveTh>
             </tr>
           </thead>
