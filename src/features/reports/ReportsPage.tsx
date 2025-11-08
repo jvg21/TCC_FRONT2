@@ -4,155 +4,20 @@ import {
   FiFileText, 
   FiCheckCircle, 
   FiClock, 
+  FiTag, 
   FiList,
+  FiUsers,
   FiCpu,
   FiDownload,
   FiCalendar,
   FiFilter,
+
 } from 'react-icons/fi';
-import styled from 'styled-components';
 
-import {
-  PageContainer, ApplyFilterButton, Bar, BarLabel, BarValue, CardDescription, CardHeader,
-  CardIcon, CardTitle, CardValue, ChartContainer, DetailedSection, DownloadButton,
-  FilterInput, FilterLabel, FilterSection, FilterSelect, PageHeader, PageSubtitle, PageTitle,
-  ProgressBar, ProgressFill, ReportCard, ReportsGrid, SectionHeader, SectionTitle, StatItem,
-  StatLabel, StatValue, StatsGrid, Table, BarChartContainer, SectionHeading, Th, Td
-} from '../../components/common/reportsComponents';
+import { PageContainer,ApplyFilterButton,Bar,BarLabel,BarValue,CardDescription,CardHeader,CardIcon,CardTitle,CardValue,ChartContainer,DetailedSection,DownloadButton,FilterInput,FilterLabel,FilterSection,FilterSelect,PageHeader,PageSubtitle,PageTitle,ProgressBar,ProgressFill,ReportCard,ReportsGrid,SectionHeader,SectionTitle,StatItem,StatLabel,StatValue,StatsGrid,Table,TagCloud,TagItem,BarChartContainer,SectionHeading, Th, Td } from '../../components/common/reportsComponents';
 
-/* =======================
-   WRAPPERS RESPONSIVOS
-   ======================= */
 
-// Filtros: grid fluido e empilhamento no mobile
-const ResponsiveFilters = styled(FilterSection)`
-  display: grid;
-  grid-template-columns: auto 160px auto 1fr auto;
-  align-items: center;
-  gap: 12px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: 1fr 180px auto;
-    grid-auto-rows: minmax(40px, auto);
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    > * {
-      width: 100%;
-    }
-  }
-`;
-
-// Grid de cards: 1→2→3 colunas
-const ResponsiveReportsGrid = styled(ReportsGrid)`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-// Grids de stats internos: 4→2→1
-const ResponsiveStatsGrid = styled(StatsGrid)`
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-// Wrap para tabelas com scroll horizontal
-const TableWrap = styled.div`
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-
-  table {
-    min-width: 560px;
-  }
-`;
-
-// Barras do "gráfico" com melhor espaçamento em telas menores
-const ResponsiveBarChart = styled(BarChartContainer)`
-  display: flex;
-  gap: 10px;
-
-  @media (max-width: 640px) {
-    gap: 6px;
-    > div ${BarValue} {
-      font-size: 0.85rem;
-    }
-    > div ${BarLabel} {
-      font-size: 0.8rem;
-    }
-  }
-`;
-
-// Cabeçalho da página
-const ResponsivePageHeader = styled(PageHeader)`
-  gap: 6px;
-
-  ${PageTitle} {
-    line-height: 1.2;
-  }
-
-  ${PageSubtitle} {
-    max-width: 100%;
-  }
-`;
-
-// Botão de aplicar filtro 100% no mobile
-const ResponsiveApplyButton = styled(ApplyFilterButton)`
-  @media (max-width: 768px) {
-    width: 100%;
-    justify-content: center;
-  }
-`;
-
-// *** Cabeçalho de seção com wrap e botão alinhado ***
-const ResponsiveSectionHeader = styled(SectionHeader)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-
-  ${SectionTitle} {
-    flex: 1 1 auto;
-    min-width: 220px; /* evita colisão com o botão */
-  }
-
-  ${DownloadButton} {
-    margin-left: auto;         /* mantém à direita no desktop */
-    white-space: nowrap;
-
-    @media (max-width: 640px) {
-      order: 2;                /* desce para linha de baixo */
-      width: 100%;             /* ocupa a largura toda */
-      margin-left: 0;          /* centralizado pelo container */
-      justify-content: center; /* centraliza conteúdo interno se for flex */
-    }
-  }
-`;
-
-/* =======================
-   COMPONENTE PRINCIPAL
-   ======================= */
-
+// Componente Principal
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
@@ -200,6 +65,7 @@ const ReportsPage: React.FC = () => {
     ]
   };
 
+
   const tasksData = {
     total: 456,
     completed: 345,
@@ -211,6 +77,7 @@ const ReportsPage: React.FC = () => {
       low: 189
     }
   };
+
 
   const aiData = {
     totalRequests: 1234,
@@ -224,127 +91,33 @@ const ReportsPage: React.FC = () => {
     ]
   };
 
+  // Manipuladores de eventos
   const handleDownloadReport = () => {
     alert('Download de relatório em PDF iniciado');
   };
-  const handleApplyFilter = async () => {
-    setLoading(true);
 
-    try {
-      let dateFilters = {};
-
-      // Função auxiliar para gerar uma data ISO corrigida para UTC-3 (somente parte "YYYY-MM-DD")
-      const formatDateUTCMinus3 = (date:Date) => {
-        const utcMinus3 = new Date(date.getTime() - 3 * 60 * 60 * 1000);
-        return utcMinus3.toISOString().split('T')[0];
-      };
-
-      if (timeFilter === 'custom' && startDate && endDate) {
-        dateFilters = {
-          CreatedAtFrom: formatDateUTCMinus3(new Date(startDate)),
-          CreatedAtTo: formatDateUTCMinus3(new Date(endDate)),
-        };
-      } else if (timeFilter !== 'all') {
-        const today = new Date();
-        const endDateStr = formatDateUTCMinus3(today);
-        let startDateStr;
-
-        switch (timeFilter) {
-          case 'today': {
-            startDateStr = endDateStr;
-            break;
-          }
-          case 'week': {
-            const lastWeek = new Date(today);
-            lastWeek.setDate(today.getDate() - 7);
-            startDateStr = formatDateUTCMinus3(lastWeek);
-            break;
-          }
-          case 'month': {
-            const lastMonth = new Date(today);
-            lastMonth.setMonth(today.getMonth() - 1);
-            startDateStr = formatDateUTCMinus3(lastMonth);
-            break;
-          }
-          case 'quarter': {
-            const lastQuarter = new Date(today);
-            lastQuarter.setMonth(today.getMonth() - 3);
-            startDateStr = formatDateUTCMinus3(lastQuarter);
-            break;
-          }
-          case 'year': {
-            const lastYear = new Date(today);
-            lastYear.setFullYear(today.getFullYear() - 1);
-            startDateStr = formatDateUTCMinus3(lastYear);
-            break;
-          }
-        }
-
-        if (startDateStr) {
-          dateFilters = {
-            CreatedAtFrom: startDateStr,
-            CreatedAtTo: endDateStr,
-          };
-        }
-      }
-
-      const [
-        documents,
-        documentMonths,
-        ai,
-        aiUsers,
-        validations,
-        validators,
-        tasks,
-        taskPrioritys,
-      ] = await Promise.all([
-        getDocumentStats(dateFilters),
-        getDocumentMonthsStats(dateFilters),
-        getAIStats(dateFilters),
-        getAIUserStats(dateFilters),
-        getValidationStats(dateFilters),
-        getValidatorsStats(dateFilters),
-        getTaskStats(dateFilters),
-        getTaskPriorityStats(dateFilters),
-      ]);
-
-      setReportsData({
-        documents,
-        documentMonths,
-        ai,
-        aiUsers,
-        validations,
-        validators,
-        tasks,
-        taskPrioritys,
-      });
-
-      updateFilters(dateFilters);
-    } catch (err) {
-      console.error("Erro ao aplicar filtros:", err);
-    } finally {
-      setLoading(false);
-    }
+  const handleApplyFilter = () => {
+    alert(`Filtro aplicado: ${timeFilter}${timeFilter === 'custom' ? ` de ${startDate} a ${endDate}` : ''}`);
   };
 
-
-  // Helper futuro
-  const renderSelectedReport = () => {};
+  // Helper para renderizar o relatório selecionado
+  const renderSelectedReport = () => {
+    // Implementação futura para relatórios detalhados específicos
+  };
 
   return (
     <PageContainer>
-      <ResponsivePageHeader>
-        <PageTitle>{t('reports.title') || 'Relatórios e Análises'}</PageTitle>
-        <PageSubtitle>{t('reports.subtitle') || 'Visualize insights e métricas do sistema Documentin'}</PageSubtitle>
-      </ResponsivePageHeader>
+      <PageHeader>
+        <PageTitle>{t('reports.title') || "Relatórios e Análises"}</PageTitle>
+        <PageSubtitle>{t('reports.subtitle') || "Visualize insights e métricas do sistema Documentin"}</PageSubtitle>
+      </PageHeader>
 
       {/* Filtros */}
-      <ResponsiveFilters role="region" aria-label="Filtros de período">
+      <FilterSection>
         <FilterLabel>
-          <FiCalendar /> {t('reports.filters.period')}
+          <FiCalendar /> {t('reports.filters.period')}:
         </FilterLabel>
-
-        <FilterSelect
+        <FilterSelect 
           value={timeFilter}
           onChange={(e) => {
             setTimeFilter(e.target.value);
@@ -366,31 +139,31 @@ const ReportsPage: React.FC = () => {
         {timeFilter === 'custom' && (
           <>
             <FilterLabel>
-              <FiCalendar /> {t('reports.filters.from')}
+              <FiCalendar /> {t('reports.filters.from')}:
             </FilterLabel>
-            <FilterInput
-              type="date"
+            <FilterInput 
+              type="date" 
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <FilterLabel>
-              <FiCalendar /> {t('reports.filters.to')}
+              <FiCalendar /> {t('reports.filters.to')}:
             </FilterLabel>
-            <FilterInput
-              type="date"
+            <FilterInput 
+              type="date" 
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
           </>
         )}
 
-        <ResponsiveApplyButton onClick={handleApplyFilter}>
+        <ApplyFilterButton onClick={handleApplyFilter}>
           <FiFilter /> {t('reports.filters.apply_filter')}
-        </ResponsiveApplyButton>
-      </ResponsiveFilters>
+        </ApplyFilterButton>
+      </FilterSection>
 
       {/* Cards de Resumo */}
-      <ResponsiveReportsGrid>
+      <ReportsGrid>
         <ReportCard onClick={() => setSelectedReport('documents')}>
           <CardHeader>
             <CardIcon><FiFileText /></CardIcon>
@@ -424,6 +197,8 @@ const ReportsPage: React.FC = () => {
           </CardDescription>
         </ReportCard>
 
+      
+
         <ReportCard onClick={() => setSelectedReport('tasks')}>
           <CardHeader>
             <CardIcon><FiList /></CardIcon>
@@ -435,6 +210,8 @@ const ReportsPage: React.FC = () => {
           </CardDescription>
         </ReportCard>
 
+    
+
         <ReportCard onClick={() => setSelectedReport('ai')}>
           <CardHeader>
             <CardIcon><FiCpu /></CardIcon>
@@ -445,20 +222,20 @@ const ReportsPage: React.FC = () => {
             {t('reports.cards.processed_requests')}
           </CardDescription>
         </ReportCard>
-      </ResponsiveReportsGrid>
+      </ReportsGrid>
 
       {/* Relatório de Documentos */}
       <DetailedSection>
-        <ResponsiveSectionHeader>
+        <SectionHeader>
           <SectionTitle>
             <FiFileText /> {t('reports.sections.document_stats')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
           </DownloadButton>
-        </ResponsiveSectionHeader>
+        </SectionHeader>
 
-        <ResponsiveStatsGrid>
+        <StatsGrid>
           <StatItem>
             <StatLabel>{t('reports.sections.total_documents')}</StatLabel>
             <StatValue>{documentsData.total}</StatValue>
@@ -475,40 +252,39 @@ const ReportsPage: React.FC = () => {
             <StatLabel>{t('reports.sections.pending_documents')}</StatLabel>
             <StatValue>{documentsData.pending}</StatValue>
           </StatItem>
-        </ResponsiveStatsGrid>
+        </StatsGrid>
 
         <ChartContainer>
           <SectionHeading>
             {t('reports.sections.documents_by_period')}
           </SectionHeading>
-          <ResponsiveBarChart>
+          <BarChartContainer>
             {documentsData.byPeriod.map((item, index) => (
               <div key={index} style={{ flex: '1' }}>
-                <Bar
+                <Bar 
                   height={(item.count / Math.max(...documentsData.byPeriod.map(i => i.count))) * 100}
-                  aria-label={`${item.month}: ${item.count}`}
                 >
                   <BarValue>{item.count}</BarValue>
                 </Bar>
                 <BarLabel>{item.month}</BarLabel>
               </div>
             ))}
-          </ResponsiveBarChart>
+          </BarChartContainer>
         </ChartContainer>
       </DetailedSection>
 
       {/* Relatório de Validações */}
       <DetailedSection>
-        <ResponsiveSectionHeader>
+        <SectionHeader>
           <SectionTitle>
             <FiCheckCircle /> {t('reports.sections.validation_stats')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
           </DownloadButton>
-        </ResponsiveSectionHeader>
+        </SectionHeader>
 
-        <ResponsiveStatsGrid>
+        <StatsGrid>
           <StatItem>
             <StatLabel>{t('reports.sections.total_validations')}</StatLabel>
             <StatValue>{validationsData.total}</StatValue>
@@ -525,81 +301,29 @@ const ReportsPage: React.FC = () => {
             <StatLabel>{t('reports.sections.returned_for_revision')}</StatLabel>
             <StatValue style={{ color: '#ed8936' }}>{validationsData.returned}</StatValue>
           </StatItem>
-        </ResponsiveStatsGrid>
+        </StatsGrid>
 
         <ChartContainer>
           <SectionHeading>
             {t('reports.sections.top_validators')}
           </SectionHeading>
-          <TableWrap>
-            <Table>
-              <thead>
-                <tr>
-                  <Th>{t('reports.sections.validator')}</Th>
-                  <Th>{t('reports.sections.documents_validated')}</Th>
-                  <Th>{t('reports.sections.contribution')}</Th>
-                </tr>
-              </thead>
-              <tbody>
-                {validationsData.topValidators.map((validator, index) => (
-                  <tr key={index}>
-                    <Td>{validator.name}</Td>
-                    <Td><strong>{validator.count}</strong></Td>
-                    <Td>
-                      <ProgressBar>
-                        <ProgressFill
-                          percentage={(validator.count / validationsData.topValidators[0].count) * 100}
-                          color="#667eea"
-                        />
-                      </ProgressBar>
-                    </Td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </TableWrap>
-        </ChartContainer>
-      </DetailedSection>
-
-      {/* Relatório de Versões */}
-      <DetailedSection>
-        <ResponsiveSectionHeader>
-          <SectionTitle>
-            <FiClock /> {t('reports.sections.version_history')}
-          </SectionTitle>
-          <DownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </DownloadButton>
-        </ResponsiveSectionHeader>
-
-        <ResponsiveStatsGrid>
-          <StatItem>
-            <StatLabel>{t('reports.sections.total_versions')}</StatLabel>
-            <StatValue>{versionsData.total}</StatValue>
-          </StatItem>
-        </ResponsiveStatsGrid>
-
-        <SectionHeading>
-          {t('reports.sections.most_edited_documents')}
-        </SectionHeading>
-        <TableWrap>
           <Table>
             <thead>
               <tr>
-                <Th>{t('reports.sections.document')}</Th>
-                <Th>{t('reports.sections.version_count')}</Th>
-                <Th>{t('reports.sections.relative')}</Th>
+                <Th>{t('reports.sections.validator')}</Th>
+                <Th>{t('reports.sections.documents_validated')}</Th>
+                <Th>{t('reports.sections.contribution')}</Th>
               </tr>
             </thead>
             <tbody>
-              {versionsData.mostEdited.map((doc, index) => (
+              {validationsData.topValidators.map((validator, index) => (
                 <tr key={index}>
-                  <Td>{doc.title}</Td>
-                  <Td><strong>{doc.versions}</strong></Td>
+                  <Td>{validator.name}</Td>
+                  <Td><strong>{validator.count}</strong></Td>
                   <Td>
                     <ProgressBar>
-                      <ProgressFill
-                        percentage={(doc.versions / versionsData.mostEdited[0].versions) * 100}
+                      <ProgressFill 
+                        percentage={(validator.count / validationsData.topValidators[0].count) * 100} 
                         color="#667eea"
                       />
                     </ProgressBar>
@@ -608,21 +332,71 @@ const ReportsPage: React.FC = () => {
               ))}
             </tbody>
           </Table>
-        </TableWrap>
+        </ChartContainer>
       </DetailedSection>
+
+      {/* Relatório de Versões */}
+      <DetailedSection>
+        <SectionHeader>
+          <SectionTitle>
+            <FiClock /> {t('reports.sections.version_history')}
+          </SectionTitle>
+          <DownloadButton onClick={handleDownloadReport}>
+            <FiDownload /> {t('reports.sections.export_report')}
+          </DownloadButton>
+        </SectionHeader>
+
+        <StatsGrid>
+          <StatItem>
+            <StatLabel>{t('reports.sections.total_versions')}</StatLabel>
+            <StatValue>{versionsData.total}</StatValue>
+          </StatItem>
+        </StatsGrid>
+
+        <SectionHeading>
+          {t('reports.sections.most_edited_documents')}
+        </SectionHeading>
+        <Table>
+          <thead>
+            <tr>
+              <Th>{t('reports.sections.document')}</Th>
+              <Th>{t('reports.sections.version_count')}</Th>
+              <Th>{t('reports.sections.relative')}</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {versionsData.mostEdited.map((doc, index) => (
+              <tr key={index}>
+                <Td>{doc.title}</Td>
+                <Td><strong>{doc.versions}</strong></Td>
+                <Td>
+                  <ProgressBar>
+                    <ProgressFill 
+                      percentage={(doc.versions / versionsData.mostEdited[0].versions) * 100} 
+                      color="#667eea"
+                    />
+                  </ProgressBar>
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </DetailedSection>
+
+    
 
       {/* Relatório de Tarefas */}
       <DetailedSection>
-        <ResponsiveSectionHeader>
+        <SectionHeader>
           <SectionTitle>
             <FiList /> {t('reports.sections.tasks_analysis')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
           </DownloadButton>
-        </ResponsiveSectionHeader>
+        </SectionHeader>
 
-        <ResponsiveStatsGrid>
+        <StatsGrid>
           <StatItem>
             <StatLabel>{t('reports.sections.total_tasks')}</StatLabel>
             <StatValue>{tasksData.total}</StatValue>
@@ -635,19 +409,19 @@ const ReportsPage: React.FC = () => {
             <StatLabel>{t('reports.sections.overdue_tasks')}</StatLabel>
             <StatValue style={{ color: '#f56565' }}>{tasksData.overdue}</StatValue>
           </StatItem>
-        </ResponsiveStatsGrid>
+        </StatsGrid>
 
         <ChartContainer>
           <SectionHeading>
             {t('reports.sections.priority_distribution')}
           </SectionHeading>
-          <ResponsiveStatsGrid>
+          <StatsGrid>
             <StatItem>
               <StatLabel>{t('reports.sections.high_priority')}</StatLabel>
               <StatValue>{tasksData.byPriority.high}</StatValue>
               <ProgressBar>
-                <ProgressFill
-                  percentage={(tasksData.byPriority.high / tasksData.total) * 100}
+                <ProgressFill 
+                  percentage={(tasksData.byPriority.high / tasksData.total) * 100} 
                   color="#f56565"
                 />
               </ProgressBar>
@@ -656,8 +430,8 @@ const ReportsPage: React.FC = () => {
               <StatLabel>{t('reports.sections.medium_priority')}</StatLabel>
               <StatValue>{tasksData.byPriority.medium}</StatValue>
               <ProgressBar>
-                <ProgressFill
-                  percentage={(tasksData.byPriority.medium / tasksData.total) * 100}
+                <ProgressFill 
+                  percentage={(tasksData.byPriority.medium / tasksData.total) * 100} 
                   color="#ed8936"
                 />
               </ProgressBar>
@@ -666,28 +440,30 @@ const ReportsPage: React.FC = () => {
               <StatLabel>{t('reports.sections.low_priority')}</StatLabel>
               <StatValue>{tasksData.byPriority.low}</StatValue>
               <ProgressBar>
-                <ProgressFill
-                  percentage={(tasksData.byPriority.low / tasksData.total) * 100}
+                <ProgressFill 
+                  percentage={(tasksData.byPriority.low / tasksData.total) * 100} 
                   color="#38b2ac"
                 />
               </ProgressBar>
             </StatItem>
-          </ResponsiveStatsGrid>
+          </StatsGrid>
         </ChartContainer>
       </DetailedSection>
 
+      
+
       {/* Relatório de IA */}
       <DetailedSection>
-        <ResponsiveSectionHeader>
+        <SectionHeader>
           <SectionTitle>
             <FiCpu /> {t('reports.sections.ai_usage')}
           </SectionTitle>
           <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
           </DownloadButton>
-        </ResponsiveSectionHeader>
+        </SectionHeader>
 
-        <ResponsiveStatsGrid>
+        <StatsGrid>
           <StatItem>
             <StatLabel>{t('reports.sections.total_requests')}</StatLabel>
             <StatValue>{aiData.totalRequests}</StatValue>
@@ -704,38 +480,36 @@ const ReportsPage: React.FC = () => {
             <StatLabel>{t('reports.sections.estimated_cost')}</StatLabel>
             <StatValue style={{ color: '#48bb78' }}>{aiData.estimatedCost}</StatValue>
           </StatItem>
-        </ResponsiveStatsGrid>
+        </StatsGrid>
 
         <SectionHeading>
           {t('reports.sections.top_users')}
         </SectionHeading>
-        <TableWrap>
-          <Table>
-            <thead>
-              <tr>
-                <Th>{t('reports.sections.user')}</Th>
-                <Th>{t('reports.sections.requests')}</Th>
-                <Th>{t('reports.sections.usage')}</Th>
+        <Table>
+          <thead>
+            <tr>
+              <Th>{t('reports.sections.user')}</Th>
+              <Th>{t('reports.sections.requests')}</Th>
+              <Th>{t('reports.sections.usage')}</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {aiData.topUsers.map((user, index) => (
+              <tr key={index}>
+                <Td>{user.name}</Td>
+                <Td><strong>{user.requests}</strong></Td>
+                <Td>
+                  <ProgressBar>
+                    <ProgressFill
+                      percentage={(user.requests / aiData.topUsers[0].requests) * 100} 
+                      color="#667eea"
+                    />
+                  </ProgressBar>
+                </Td>
               </tr>
-            </thead>
-            <tbody>
-              {aiData.topUsers.map((user, index) => (
-                <tr key={index}>
-                  <Td>{user.name}</Td>
-                  <Td><strong>{user.requests}</strong></Td>
-                  <Td>
-                    <ProgressBar>
-                      <ProgressFill
-                        percentage={(user.requests / aiData.topUsers[0].requests) * 100}
-                        color="#667eea"
-                      />
-                    </ProgressBar>
-                  </Td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </TableWrap>
+            ))}
+          </tbody>
+        </Table>
       </DetailedSection>
     </PageContainer>
   );
