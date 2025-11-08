@@ -25,9 +25,6 @@ const GroupPage: React.FC = () => {
   const modal = useModal();
   const { t } = useTranslation();
   const { userProfile } = useAuthContext();
-
-
-  // ==== Paginação (adição) ====
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
 
@@ -60,7 +57,7 @@ const GroupPage: React.FC = () => {
     const canPrev = currentPage > 1;
     const canNext = currentPage < totalPages;
 
-    // helper para fallback de i18n quando a key não existir
+    
     const tt = (key: string, fallback: string) => {
       const v = t(key) as unknown as string;
       return v && v !== key ? v : fallback;
@@ -93,13 +90,13 @@ const GroupPage: React.FC = () => {
 
     return (
       <div style={containerStyle}>
-        {/* Texto "Exibindo X–Y de Z" */}
+        {}
         <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
           {tt('pagination.showing', 'Mostrando')} {(currentPage - 1) * pageSize + 1}
           –{Math.min(currentPage * pageSize, total)} {tt('pagination.of', 'de')} {total}
         </div>
 
-        {/* Seletor de Linhas por página */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
           <select
@@ -116,7 +113,7 @@ const GroupPage: React.FC = () => {
           </select>
         </div>
 
-        {/* Navegação */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
           <Button
             variant="ghost"
@@ -141,7 +138,7 @@ const GroupPage: React.FC = () => {
       </div>
     );
   };
-  // ==== fim paginação ====
+  
 
   const Columns = (onEdit: (c: Group) => void, onToggleStatus: (id: number) => void): ColumnDef<Group>[] => {
     const baseCols: ColumnDef<Group>[] = [

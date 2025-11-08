@@ -63,7 +63,7 @@ const FolderPage: React.FC = () => {
     const canPrev = currentPage > 1;
     const canNext = currentPage < totalPages;
 
-    // helper para fallback de i18n quando a key não existir
+    
     const tt = (key: string, fallback: string) => {
       const v = t(key) as unknown as string;
       return v && v !== key ? v : fallback;
@@ -74,9 +74,6 @@ const FolderPage: React.FC = () => {
         setCurrentPage(totalPages);
       }
     }, [totalPages]);
-
-    // Removida a condição que retornava null quando total é 0
-    // if (total === 0) return null;
 
     const containerStyle: React.CSSProperties = isNarrow
       ? {
@@ -118,7 +115,7 @@ const FolderPage: React.FC = () => {
           </select>
         </div>
 
-        {/* Navegação */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
           <Button
             variant="ghost"
@@ -248,10 +245,10 @@ const FolderPage: React.FC = () => {
         userProfile &&
         <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
       }
-      {/* Aqui foi adicionado o pageSize como prop ao DataTable */}
+      {}
       <DataTable columns={columns} data={paginate(filteredFolder)} pageSize={pageSize} />
 
-      {/* A barra de paginação agora sempre será exibida */}
+      {}
       <PaginationBar total={filteredFolder.length} />
       <Modal isOpen={modal.isOpen} onClose={modal.close} title={editing ? t("folders.edit_folder") : t("folders.add_folder")}>
         <FolderForm initial={editing ?? undefined} onCancel={modal.close} onSave={handleSave} />

@@ -10,7 +10,7 @@ const Backdrop = styled.div`
   justify-content: center;
   z-index: 1000;
 
-  /* permite rolar o próprio backdrop se o conteúdo ficar muito alto */
+  
   padding: 16px;
   overflow: auto;
 `;
@@ -22,14 +22,14 @@ const Container = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius};
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 
-  /* ESSENCIAL para scroll interno funcionar */
+  
   display: flex;
   flex-direction: column;
-  max-height: 92vh;  /* evita passar da viewport */
-  min-height: 0;     /* libera overflow dos filhos */
-  overflow: hidden;  /* esconde só o excesso do container, não do conteúdo rolável */
+  max-height: 92vh;  
+  min-height: 0;     
+  overflow: hidden;  
 
-  /* espaço interno fica no header/body para não “comer” a altura útil */
+  
 `;
 
 const Header = styled.div`
@@ -41,10 +41,10 @@ const Body = styled.div`
   padding: ${({ theme }) => theme.spacing.lg};
   padding-top: ${({ theme }) => theme.spacing.md};
 
-  /* área que pode rolar */
+  
   flex: 1 1 auto;
-  min-height: 0;       /* libera scroll em layouts flex */
-  overflow-y: auto;    /* rolagem aqui */
+  min-height: 0;       
+  overflow-y: auto;    
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 `;

@@ -82,4 +82,4 @@ export interface UserActivity {
   comments: number,
   approvals: number
 }
-// ... demais interfaces do useReports.ts
+

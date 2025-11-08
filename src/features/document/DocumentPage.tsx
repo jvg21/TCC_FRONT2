@@ -55,7 +55,6 @@ const DocumentPage: React.FC = () => {
   const [contentSaveCallback, setContentSaveCallback] = useState<((content: string) => void) | null>(null);
   const [query, setQuery] = useState("");
   const [activeTabId, setActiveTabId] = useState("geral");
-
   const [dateFilter, setDateFilter] = useState<{ startDate: string; endDate: string }>({ startDate: "", endDate: "" });
   const [authorFilter, setAuthorFilter] = useState<number | null>(null);
   const [tagFilter, setTagFilter] = useState<number | null>(null);
@@ -66,20 +65,15 @@ const DocumentPage: React.FC = () => {
   const { getDocumentsByTag, activeTag } = useTag();
   const { activeUser } = useUser();
   const { activeFolder } = useFolder();
-
   const { theme } = useThemeContext();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-
   const [ragSearchQuery, setRagSearchQuery] = useState("");
   const [isRagSearching, setIsRagSearching] = useState(false);
   const [ragResults, setRagResults] = useState<DocumentWithSimilarity[]>([]);
   const [showRagResults, setShowRagResults] = useState(false);
-
-  // === Paginação (adição) ===
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-
   const resetToFirstPage = () => setCurrentPage(1);
   const importFileRef = useRef<HTMLInputElement>(null);
   const importModal = useModal();
@@ -117,7 +111,7 @@ const DocumentPage: React.FC = () => {
       return v && v !== key ? v : fallback;
     };
 
-    // Garante que a página atual nunca ultrapasse o total de páginas ao mudar filtros/tamanho
+    
     useEffect(() => {
       if (currentPage > totalPages) {
         setCurrentPage(totalPages);
@@ -145,12 +139,12 @@ const DocumentPage: React.FC = () => {
 
     return (
       <div style={containerStyle}>
-        {/* Texto “Mostrando X–Y de Z” */}
+        {}
         <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
           {tt('pagination.showing', 'Mostrando')} {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, total)} {tt('pagination.of', 'de')} {total}
         </div>
 
-        {/* Seletor de itens por página */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
           <select
@@ -164,7 +158,7 @@ const DocumentPage: React.FC = () => {
           </select>
         </div>
 
-        {/* Navegação */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
           <Button
             variant="ghost"
@@ -187,7 +181,7 @@ const DocumentPage: React.FC = () => {
       </div>
     );
   };
-  // === fim paginação ===
+  
 
   useEffect(() => {
     const loadDocumentsByTag = async () => {
@@ -223,7 +217,7 @@ const DocumentPage: React.FC = () => {
     editorModal.open();
   };
 
-  // Funções para importação de documento
+  
   const handleImportButtonClick = () => {
     if (importFileRef.current) {
       importFileRef.current.click();
@@ -233,7 +227,7 @@ const DocumentPage: React.FC = () => {
   const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Abrir o modal para selecionar a pasta
+      
       importModal.open();
     }
   };
@@ -251,7 +245,7 @@ const DocumentPage: React.FC = () => {
       const response = await importDocument(file, selectedFolderId);
       console.log(response)
       importModal.close();
-      // Limpar o input para permitir selecionar o mesmo arquivo novamente
+      
       if (importFileRef.current) {
         importFileRef.current.value = '';
       }
@@ -456,8 +450,7 @@ const DocumentPage: React.FC = () => {
     setShowRagResults(true);
 
     try {
-      // console.log("Starting RAG search for:", ragSearchQuery);
-      // Gerar embedding para o texto da busca
+      
       const queryEmbedding = await generateEmbedding(ragSearchQuery);
 
       if (!queryEmbedding) {
@@ -468,39 +461,39 @@ const DocumentPage: React.FC = () => {
 
       console.log(`Embedding generated successfully with length: ${queryEmbedding.length}`);
 
-      // Combinando documentos ativos e inativos para a busca
+      
       const allDocuments = [...activeDocument, ...deactiveDocument];
       console.log(`Searching among ${allDocuments.length} total documents`);
 
-      // Contando quantos têm embeddings
+      
       const withEmbeddings = allDocuments.filter(d => d.Embedding && d.Embedding.length > 0);
       console.log(`${withEmbeddings.length} documents have embeddings`);
 
-      // Buscar documentos similares com configurações otimizadas
+      
       const similarDocuments = findSimilarDocuments(
         activeDocument,
         queryEmbedding,
         {
-          maxResults: 5,      // Retornar até 5 resultados
-          threshold: 0.3,     // Limiar de similaridade reduzido para 0.2 (era 0.5)
-          forceResults: false, // Sempre retornar alguns resultados
-          minResults: 2       // Tentar retornar pelo menos 3 resultados
+          maxResults: 5,      
+          threshold: 0.3,     
+          forceResults: false, 
+          minResults: 2       
         }
       );
 
       console.log(`Found ${similarDocuments.length} similar documents`);
 
       if (similarDocuments.length > 0) {
-        // Log dos scores para debug
+        
         similarDocuments.forEach((doc, i) => {
           console.log(`Result ${i + 1}: Score ${doc.similarityScore.toFixed(4)} - ${doc.Title}`);
         });
       }
 
-      // Atualizar o estado com os resultados
+      
       setRagResults(similarDocuments);
 
-      // Feedback ao usuário
+      
       if (similarDocuments.length === 0) {
         notificationActions.showError(t("documents.no_similar_documents"));
       }
@@ -541,7 +534,7 @@ const DocumentPage: React.FC = () => {
   const AdvancedFilters = () => (
     <div style={{ background: `${theme.colors.primary}15`, border: '1px solid #dee2e6', borderRadius: '8px', padding: '16px', marginBottom: '16px', display: showAdvancedFilters ? 'block' : 'none' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-        {/* Período */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.date_range") || "Período"}</label>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -550,7 +543,7 @@ const DocumentPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Autor */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.author") || "Autor"}</label>
           <select value={authorFilter || ""} onChange={(e) => setAuthorFilter(e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '14px' }}>
@@ -559,7 +552,7 @@ const DocumentPage: React.FC = () => {
           </select>
         </div>
 
-        {/* Tag */}
+        {}
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.tag")}</label>
           <select value={tagFilter || ""} onChange={(e) => setTagFilter(e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '14px' }}>
@@ -630,7 +623,7 @@ const DocumentPage: React.FC = () => {
           { }
           <AdvancedFilters />
 
-          {/* Seção RAG */}
+          {}
           {showRagSearch && (
             <div style={{ marginBottom: '16px' }}>
               <RagSearchContainer>
@@ -661,7 +654,7 @@ const DocumentPage: React.FC = () => {
                   </RagSearchButton>
                 </RagSearchControls>
 
-                {/* Seção de resultados RAG */}
+                {}
                 {showRagResults && (
                   <RagResultsContainer>
                     <RagResultsHeader>
@@ -929,7 +922,7 @@ const DocumentPage: React.FC = () => {
       title={t("documents.title")}
       actions={
         <>
-          {/* Botão de Importar */}
+          {}
           <Button
             onClick={handleImportButtonClick}
             variant="primary"
@@ -939,7 +932,7 @@ const DocumentPage: React.FC = () => {
             <FiUpload /> {t('documents.import') || 'Importar'}
           </Button>
 
-          {/* Input de arquivo oculto */}
+          {}
           <input
             type="file"
             ref={importFileRef}
@@ -948,7 +941,7 @@ const DocumentPage: React.FC = () => {
             onChange={handleFileSelection}
           />
 
-          {/* Botão de Adicionar existente */}
+          {}
           <Button
             onClick={() => {
               setEditing(null);
@@ -989,7 +982,7 @@ const DocumentPage: React.FC = () => {
         <MarkdownEditorPage initialContent={editingContent} onSave={handleSaveContent} onCancel={editorModal.close} />
       </Modal>
 
-      {/* Modal de importação */}
+      {}
       <Modal
         isOpen={importModal.isOpen}
         onClose={importModal.close}

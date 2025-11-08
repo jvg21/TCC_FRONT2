@@ -7,7 +7,7 @@ import math from '@bytemd/plugin-math';
 import mediumZoom from '@bytemd/plugin-medium-zoom';
 import styled from 'styled-components';
 
-// Importar estilos do ByteMD e dependências
+
 import 'bytemd/dist/index.css';
 import 'highlight.js/styles/default.css';
 import 'katex/dist/katex.css';
@@ -96,7 +96,6 @@ interface MarkdownEditorProps {
   placeholder?: string;
 }
 
-// Função para upload de imagem
 const uploadImages = async (files: File[]): Promise<string[]> => {
   const uploadPromises = files.map(async (file) => {
     const formData = new FormData();
@@ -134,7 +133,7 @@ const plugins = [
   mermaid(),
   math(),
   mediumZoom(),
-  // Plugin customizado para upload
+  
   {
     name: 'upload-images',
     actions: [
@@ -153,10 +152,10 @@ const plugins = [
               const files = Array.from(e.target.files || []);
               if (files.length === 0) return;
 
-              // Guardar posição inicial
+              
               const startPos = ctx.editor.getCursor();
 
-              // Mostrar loading
+              
               const loadingText = files.length === 1
                 ? '![Carregando imagem...]()'
                 : files.map((_, i) => `![Carregando imagem ${i + 1}...]()`).join('\n');
@@ -170,7 +169,7 @@ const plugins = [
                   .map((url, i) => `![Imagem ${i + 1}](${url})`)
                   .join('\n');
 
-                // Calcular posição final baseada no texto de loading inserido
+                
                 const endPos = {
                   line: startPos.line + (loadingText.split('\n').length - 1),
                   ch: startPos.line + loadingText.split('\n').length - 1 === startPos.line
@@ -178,11 +177,11 @@ const plugins = [
                     : loadingText.split('\n').pop()?.length || 0
                 };
 
-                // Substituir o texto de loading pelas imagens
+                
                 ctx.editor.replaceRange(imageMarkdown, startPos, endPos);
               } catch (error) {
                 console.error('Erro no upload:', error);
-                // Calcular posição para remover o loading em caso de erro
+                
                 const endPos = {
                   line: startPos.line + (loadingText.split('\n').length - 1),
                   ch: startPos.line + loadingText.split('\n').length - 1 === startPos.line

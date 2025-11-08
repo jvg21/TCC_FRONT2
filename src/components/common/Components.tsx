@@ -553,7 +553,7 @@ export const EmptyDescription = styled.p`
     font-size: 14px;
   }
 `;
-// Adicionar após os componentes de Comments
+
 
 export const TagsSection = styled.div`
   background: white;
@@ -646,7 +646,6 @@ export const EmptyTags = styled.div`
   border-radius: 8px;
 `;
 
-// Substituir TagSelect por:
 
 export const TagInputWrapper = styled.div`
   position: relative;
@@ -709,7 +708,7 @@ export const TagSuggestionEmpty = styled.div`
 `;
 
 
-// Componentes RAG atualizados para usar o tema corretamente
+
 
 export const RagSearchContainer = styled.div`
   margin: 20px 0 30px;

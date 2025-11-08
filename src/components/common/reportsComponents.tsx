@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-// Componentes estilizados com suporte a tema claro/escuro
 export const PageContainer = styled.div`
   padding: 24px;
   min-height: 100vh;

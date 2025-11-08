@@ -21,12 +21,12 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   notifications: [],
   
   showNotification: (message, type) => {
-    // Verificar se já existe uma notificação com a mesma mensagem e tipo
+    
     const existingNotification = get().notifications.find(
       notification => notification.message === message && notification.type === type
     );
     
-    // Se existir uma notificação idêntica, não adicionar outra
+    
     if (existingNotification) {
       return;
     }

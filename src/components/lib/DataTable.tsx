@@ -35,7 +35,7 @@ const Tr = styled.tr`
   }
 `;
 
-// Nova linha estilizada para as linhas vazias
+
 const EmptyTr = styled.tr`
   background-color: rgba(0, 0, 0, 0.01);
 `;
@@ -43,17 +43,17 @@ const EmptyTr = styled.tr`
 type Props<T> = {
   columns: ColumnDef<T>[];
   data: T[];
-  pageSize?: number; // Adicionado pageSize como prop opcional
+  pageSize?: number; 
 };
 
 export function DataTable<T extends Record<string, any>>({ columns, data, pageSize }: Props<T>) {
-  // Calcula o número de linhas vazias a serem exibidas
+  
   const getEmptyRows = () => {
     if (!pageSize || data.length >= pageSize) return 0;
     return pageSize - data.length;
   };
 
-  // Número de linhas vazias necessárias
+  
   const emptyRowsCount = getEmptyRows();
   
   return (
@@ -75,7 +75,7 @@ export function DataTable<T extends Record<string, any>>({ columns, data, pageSi
             </Tr>
           ))}
 
-          {/* Linhas vazias com traços */}
+          {}
           {Array.from({ length: emptyRowsCount }).map((_, index) => (
             <EmptyTr key={`empty-${index}`}>
               {columns.map((c) => (

@@ -438,8 +438,6 @@ export const useDocument = () => {
     }
   };
 
-  // Adicionar estas funções dentro do hook useDocument, antes do return
-
   const getDocumentVersionsByDocumentId = async (documentId: number) => {
     try {
       const response = await fetch(
@@ -512,18 +510,17 @@ export const useDocument = () => {
         throw new Error(data.mensagem);
       }
 
-      // Retorna o array de floats (embedding)
+      
       return data.objeto;
     } catch (error) {
       console.error("Erro ao gerar embedding:", error);
       throw error;
     }
   };
-  // Função a ser adicionada ao hook useDocument.ts
 
   const importDocument = async (file: File, folderId: number): Promise<any> => {
     try {
-      // Criar um FormData para enviar o arquivo
+      
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folderId', folderId.toString());
@@ -543,7 +540,7 @@ export const useDocument = () => {
         throw new Error(data.mensagem);
       }
 
-      // Se a importação for bem sucedida, atualizamos a lista de documentos
+      
       if (data.objeto) {
         const newDocument = transformSingleApiData(data.objeto);
         setDocument((prevDocuments) => [...prevDocuments, newDocument]);
@@ -563,7 +560,7 @@ export const useDocument = () => {
 
   useEffect(() => {
     if (token) {
-      // console.log("🚀 Iniciando carregamento de dados...");
+      
       const loadData = async () => {
         try {
           await get();

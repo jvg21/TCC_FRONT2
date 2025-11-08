@@ -13,7 +13,7 @@ import {
   FiClock,
 } from 'react-icons/fi';
 
-// Componentes responsivos
+
 const ResponsivePageContainer = styled.div`
   padding: 20px;
   max-width: 100%;
@@ -428,7 +428,7 @@ const ResponsiveChartContainer = styled.div`
   }
 `;
 
-// Importando os tipos
+
 import { useReports } from './useReports';
 import type { ReportsData } from './types';
 
@@ -512,7 +512,7 @@ const ReportsPage: React.FC = () => {
     try {
       let dateFilters = {};
 
-      // Função auxiliar para gerar uma data ISO corrigida para UTC-3 (somente parte "YYYY-MM-DD")
+      
       const formatDateUTCMinus3 = (date:Date) => {
         const utcMinus3 = new Date(date.getTime() - 3 * 60 * 60 * 1000);
         return utcMinus3.toISOString().split('T')[0];
@@ -628,7 +628,7 @@ const ReportsPage: React.FC = () => {
         getTaskPriorityStats(),
       ]);
 
-      // Criar manualmente o objeto de dados
+      
       const newData = {
         documents,
         documentMonths,

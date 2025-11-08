@@ -10,7 +10,6 @@ export interface Folder {
   Documents?: Document[];
 }
 
-// Types baseados nos DTOs da API
 export interface FolderGroupRequest {
   FolderId: number;
   GroupId: number;
@@ -23,7 +22,6 @@ export interface FolderGroup {
   CreatedAt: string;
   UpdatedAt: string;
   IsActive: boolean;
-  // Dados relacionados
   FolderName?: string;
   GroupName?: string;
 }
@@ -59,5 +57,5 @@ export interface AccessibleFolder {
   ValidatorName: string;
   DocumentCount: number;
   PendingValidations: number;
-  PermissionLevel: string; // "Read", "Write", "Admin"
+  PermissionLevel: string; 
 }

@@ -32,7 +32,6 @@ const UserPage: React.FC = () => {
   const { userProfile, user } = useAuthContext();
   const isDev = user?.Profile === 1;
 
-  // ==== Paginação (adição) ====
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
 
@@ -129,7 +128,6 @@ const UserPage: React.FC = () => {
       </div>
     );
   };
-  // ==== fim paginação ====
 
   const Columns = (onEdit: (c: User) => void, onToggleStatus: (id: number) => void): ColumnDef<User>[] => {
     const baseCols: ColumnDef<User>[] = [
