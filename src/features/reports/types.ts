@@ -25,7 +25,7 @@ export interface ValidationStats {
 export interface ValidatorsStats {
   name: string,
   totalValidations: number,
-  percentage:number
+  percentage: number
 }
 
 
@@ -67,13 +67,19 @@ export interface ReportsData {
   documents: DocumentStats;
   documentMonths: DocumentMonthStatus[];
   aiUsers: AIUsersStats[];
-  userActivity?: [];
-
   validations: ValidationStats;
   validators: ValidatorsStats[];
   tasks: TaskStats;
   taskPrioritys: TaskPriorityStats[];
-
   ai: AIStats;
+  userActivity?: UserActivity[];
+
+}
+
+export interface UserActivity {
+  username: string,
+  modifications: number,
+  comments: number,
+  approvals: number
 }
 

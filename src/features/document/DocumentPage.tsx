@@ -758,12 +758,33 @@ const DocumentPage: React.FC = () => {
           </div>
 
           <AdvancedFilters />
+          {/* Adicionando o filtro de ativo/inativo/todos na aba to-edit */}
+          {userProfile && (
+            <div style={{ marginBottom: '16px' }}>
+              <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+            </div>
+          )}
 
           {getMyDocuments().length === 0 ? (
             <EmptyState icon="📄" title={t("documents.tabs.no_documents_created_title")} description={t("documents.tabs.no_documents_created_description")} />
           ) : (
             (() => {
-              const mine = getFilteredDocuments(getMyDocuments());
+
+              const getMyDocumentsFiltered = () => {
+                if (!user) return [];
+
+                // Filtrar os documentos do criador com base no searchStatus
+                const allMyDocs = creatorDocuments;
+                if (searchStatus === 1) {
+                  return allMyDocs.filter(doc => doc.IsActive);
+                } else if (searchStatus === 2) {
+                  return allMyDocs.filter(doc => !doc.IsActive);
+                } else {
+                  return allMyDocs;
+                }
+              };
+
+              const mine = getFilteredDocuments(getMyDocumentsFiltered());
               return (
                 <>
                   <DataTable columns={columns} data={paginate(mine)} pageSize={pageSize} />
@@ -808,11 +829,23 @@ const DocumentPage: React.FC = () => {
 
           <AdvancedFilters />
 
+          {/* Adicionando o filtro de ativo/inativo/todos na aba to-edit */}
+          {userProfile && (
+            <div style={{ marginBottom: '16px' }}>
+              <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+            </div>
+          )}
+
           {userDocuments.length === 0 ? (
             <EmptyState icon="✅" title={t("documents.tabs.no_documents_to_edit_title")} description={t("documents.tabs.no_documents_to_edit_description")} />
           ) : (
             (() => {
-              const toEdit = getFilteredDocuments(userDocuments);
+              const filteredUserDocs = userDocuments.filter(doc =>
+                searchStatus === 1 ? doc.IsActive :
+                  searchStatus === 2 ? !doc.IsActive :
+                    true
+              );
+              const toEdit = getFilteredDocuments(filteredUserDocs);
               return (
                 <>
                   <DataTable columns={columns} data={paginate(toEdit)} pageSize={pageSize} />
@@ -856,12 +889,21 @@ const DocumentPage: React.FC = () => {
           </div>
 
           <AdvancedFilters />
-
+          {userProfile && (
+            <div style={{ marginBottom: '16px' }}>
+              <SelectSelector changeFunction={setSearchStatus} searchStatus={searchStatus} />
+            </div>
+          )}
           {userValidatorDocuments.length === 0 ? (
             <EmptyState icon="🎉" title={t("documents.tabs.no_validations_pending_title")} description={t("documents.tabs.no_validations_pending_description")} />
           ) : (
             (() => {
-              const vals = getFilteredDocuments(userValidatorDocuments);
+              const filteredValidatorDocs = userValidatorDocuments.filter(doc =>
+                searchStatus === 1 ? doc.IsActive :
+                  searchStatus === 2 ? !doc.IsActive :
+                    true
+              );
+              const vals = getFilteredDocuments(filteredValidatorDocs);
               return (
                 <>
                   <DataTable columns={columns} data={paginate(vals)} pageSize={pageSize} />

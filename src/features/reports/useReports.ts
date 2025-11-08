@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getCookie } from "../../utils/Cookies";
 import type { ApiResponse } from "../../types";
 import { notificationActions } from "../notifications/useNotification";
-import type { AIStats, AIUsersStats, DocumentMonthStatus, DocumentStats, ReportsData, TaskPriorityStats, TaskStats, ValidationStats, ValidatorsStats } from "./types";
+import type { AIStats, AIUsersStats, DocumentMonthStatus, DocumentStats, ReportsData, TaskPriorityStats, TaskStats, UserActivity, ValidationStats, ValidatorsStats } from "./types";
 import { t } from "i18next";
 
 export const useReports = () => {
@@ -226,7 +226,33 @@ export const useReports = () => {
     }
   };
 
-  
+
+  const getUserActivityStatus = async (params?: Record<string, any>): Promise<UserActivity[]> => {
+    try {
+      const url = buildUrlWithParams(`${apiUrl}/dashboard/useractivity`, params);
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        }
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (data.erro) {
+        throw new Error(t(data.mensagem));
+      }
+
+      return data.objeto;
+    } catch (err) {
+      console.error("Erro ao buscar estatísticas de usuarios:", err);
+      throw err;
+    }
+  };
+
+
+  // Atualiza os filtros globais
   const updateFilters = (newFilters: Record<string, any>) => {
     setFilters(prevFilters => ({
       ...prevFilters,
@@ -244,9 +270,9 @@ export const useReports = () => {
     setLoading(true);
     
     const currentFilters = customFilters || filters;
-    
+
     try {
-      const [documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys] = await Promise.all([
+      const [documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys, userActivity] = await Promise.all([
         getDocumentStats(currentFilters),
         getDocumentMonthsStats(currentFilters),
         getAIStats(currentFilters),
@@ -255,6 +281,7 @@ export const useReports = () => {
         getValidatorsStats(currentFilters),
         getTaskStats(currentFilters),
         getTaskPriorityStats(currentFilters),
+        getUserActivityStatus(currentFilters)
       ]);
 
       const reports: ReportsData = {
@@ -266,6 +293,7 @@ export const useReports = () => {
         validators,
         tasks,
         taskPrioritys,
+        userActivity
       };
 
       setReportsData(reports);
@@ -305,7 +333,7 @@ export const useReports = () => {
     if (token) {
       getAllReports();
     }
-  }, [token, filters]); 
+  }, [token, filters]);
 
   return {
     reportsData,
@@ -324,6 +352,6 @@ export const useReports = () => {
     getAIUserStats,
     exportToCSV,
     exportToPDF,
-    
+
   } as const;
 };
