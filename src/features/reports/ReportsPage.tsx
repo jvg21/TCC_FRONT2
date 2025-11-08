@@ -1,507 +1,228 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import {
-  FiFileText,
-  FiCheckCircle,
+import { 
+  FiFileText, 
+  FiCheckCircle, 
+  FiClock, 
   FiList,
   FiCpu,
   FiDownload,
   FiCalendar,
   FiFilter,
-  FiUsers,
-  FiClock,
 } from 'react-icons/fi';
+import styled from 'styled-components';
 
-// Componentes responsivos
-const ResponsivePageContainer = styled.div`
-  padding: 20px;
-  max-width: 100%;
-  overflow-x: hidden;
-  
-  @media (max-width: 768px) {
-    padding: 10px;
-  }
-`;
+import {
+  PageContainer, ApplyFilterButton, Bar, BarLabel, BarValue, CardDescription, CardHeader,
+  CardIcon, CardTitle, CardValue, ChartContainer, DetailedSection, DownloadButton,
+  FilterInput, FilterLabel, FilterSection, FilterSelect, PageHeader, PageSubtitle, PageTitle,
+  ProgressBar, ProgressFill, ReportCard, ReportsGrid, SectionHeader, SectionTitle, StatItem,
+  StatLabel, StatValue, StatsGrid, Table, BarChartContainer, SectionHeading, Th, Td
+} from '../../components/common/reportsComponents';
 
-const ResponsivePageHeader = styled.header`
-  margin-bottom: 25px;
-  
-  @media (max-width: 768px) {
-    margin-bottom: 15px;
-  }
-`;
+/* =======================
+   WRAPPERS RESPONSIVOS
+   ======================= */
 
-const ResponsivePageTitle = styled.h1`
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  
-  @media (max-width: 768px) {
-    font-size: 22px;
-  }
-`;
-
-const ResponsivePageSubtitle = styled.p`
-  color: #666;
-  font-size: 16px;
-  
-  @media (max-width: 768px) {
-    font-size: 14px;
-  }
-`;
-
-const ResponsiveFilterSection = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  background: #f9fafb;
-  padding: 15px;
-  border-radius: 8px;
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px;
-  }
-`;
-
-const ResponsiveFilterLabel = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 500;
-  
-  @media (max-width: 768px) {
-    margin-bottom: 5px;
-  }
-`;
-
-const ResponsiveFilterSelect = styled.select`
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  background: white;
-  min-width: 150px;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const ResponsiveFilterInput = styled.input`
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  background: white;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const ResponsiveButtonGroup = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-  
-  @media (max-width: 768px) {
-    margin-left: 0;
-    margin-top: 10px;
-    width: 100%;
-    justify-content: space-between;
-  }
-`;
-
-const ResponsiveButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 15px;
-  border-radius: 4px;
-  background: #4299e1;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s;
-  
-  &:hover {
-    background: #3182ce;
-  }
-  
-  @media (max-width: 768px) {
-    flex: 1;
-    justify-content: center;
-  }
-`;
-
-const ResponsiveReportsGrid = styled.div`
+// Filtros: grid fluido e empilhamento no mobile
+const ResponsiveFilters = styled(FilterSection)`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 30px;
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: auto 160px auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr 180px auto;
+    grid-auto-rows: minmax(40px, auto);
   }
-  
-  @media (max-width: 600px) {
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    > * {
+      width: 100%;
+    }
+  }
+`;
+
+// Grid de cards: 1→2→3 colunas
+const ResponsiveReportsGrid = styled(ReportsGrid)`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
     grid-template-columns: 1fr;
   }
 `;
 
-const ResponsiveReportCard = styled.div`
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  @media (max-width: 768px) {
-    padding: 15px;
-  }
-`;
-
-const ResponsiveCardHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-`;
-
-const ResponsiveCardIcon = styled.div`
-  font-size: 20px;
-  color: #4299e1;
-`;
-
-const ResponsiveCardTitle = styled.h2`
-  font-size: 16px;
-  font-weight: 500;
-`;
-
-const ResponsiveCardValue = styled.div`
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  
-  @media (max-width: 768px) {
-    font-size: 28px;
-  }
-`;
-
-const ResponsiveCardDescription = styled.div`
-  color: #666;
-  font-size: 14px;
-`;
-
-const ResponsiveDetailedSection = styled.section`
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  
-  @media (max-width: 768px) {
-    padding: 15px;
-  }
-`;
-
-const ResponsiveSectionHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-`;
-
-const ResponsiveSectionTitle = styled.h2`
-  font-size: 18px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  
-  @media (max-width: 768px) {
-    font-size: 16px;
-  }
-`;
-
-const ResponsiveDownloadButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 4px;
-  background: #f7fafc;
-  color: #4a5568;
-  border: 1px solid #e2e8f0;
-  cursor: pointer;
-  font-weight: 500;
-  
-  &:hover {
-    background: #edf2f7;
-  }
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    justify-content: center;
-  }
-`;
-
-const ResponsiveStatsGrid = styled.div`
+// Grids de stats internos: 4→2→1
+const ResponsiveStatsGrid = styled(StatsGrid)`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 30px;
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
-  @media (max-width: 600px) {
+
+  @media (max-width: 640px) {
     grid-template-columns: 1fr;
-    gap: 15px;
   }
 `;
 
-const ResponsiveStatItem = styled.div`
-  background: #f7fafc;
-  border-radius: 8px;
-  padding: 15px;
-  
-  @media (max-width: 768px) {
-    padding: 12px;
-  }
-`;
-
-const ResponsiveStatLabel = styled.div`
-  color: #4a5568;
-  font-size: 14px;
-  margin-bottom: 5px;
-  
-  @media (max-width: 768px) {
-    font-size: 13px;
-  }
-`;
-
-const ResponsiveStatValue = styled.div`
-  font-size: 24px;
-  font-weight: 600;
-  color: #2d3748;
-  
-  @media (max-width: 768px) {
-    font-size: 20px;
-  }
-`;
-
-const ResponsiveSectionHeading = styled.h3`
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 15px;
-  color: #4a5568;
-  
-  @media (max-width: 768px) {
-    font-size: 15px;
-  }
-`;
-
-const ResponsiveBarChartContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  height: 200px;
-  margin-top: 20px;
+// Wrap para tabelas com scroll horizontal
+const TableWrap = styled.div`
+  width: 100%;
   overflow-x: auto;
-  padding-bottom: 10px;
-  
-  @media (max-width: 768px) {
-    padding-left: 5px;
-    padding-right: 5px;
-    min-width: calc(100% + 10px);
-    margin-left: -5px;
-    margin-right: -5px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+
+  table {
+    min-width: 560px;
   }
 `;
 
-const ResponsiveBar = styled.div<{ height: number }>`
-  width: 40px;
-  height: ${props => props.height}%;
-  min-height: 20px;
-  background: #4299e1;
-  border-radius: 4px 4px 0 0;
-  position: relative;
+// Barras do "gráfico" com melhor espaçamento em telas menores
+const ResponsiveBarChart = styled(BarChartContainer)`
   display: flex;
-  flex-direction: column;
+  gap: 10px;
+
+  @media (max-width: 640px) {
+    gap: 6px;
+    > div ${BarValue} {
+      font-size: 0.85rem;
+    }
+    > div ${BarLabel} {
+      font-size: 0.8rem;
+    }
+  }
+`;
+
+// Cabeçalho da página
+const ResponsivePageHeader = styled(PageHeader)`
+  gap: 6px;
+
+  ${PageTitle} {
+    line-height: 1.2;
+  }
+
+  ${PageSubtitle} {
+    max-width: 100%;
+  }
+`;
+
+// Botão de aplicar filtro 100% no mobile
+const ResponsiveApplyButton = styled(ApplyFilterButton)`
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+  }
+`;
+
+// *** Cabeçalho de seção com wrap e botão alinhado ***
+const ResponsiveSectionHeader = styled(SectionHeader)`
+  display: flex;
   align-items: center;
-  
-  @media (max-width: 768px) {
-    width: 30px;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  ${SectionTitle} {
+    flex: 1 1 auto;
+    min-width: 220px; /* evita colisão com o botão */
   }
-`;
 
-const ResponsiveBarValue = styled.span`
-  position: absolute;
-  top: -25px;
-  font-size: 12px;
-  font-weight: 500;
-`;
-
-const ResponsiveBarLabel = styled.span`
-  margin-top: 8px;
-  font-size: 12px;
-  position: absolute;
-  bottom: -25px;
-`;
-
-const ResponsiveTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  
-  @media (max-width: 768px) {
-    display: block;
-    overflow-x: auto;
-  }
-`;
-
-const ResponsiveTh = styled.th`
-  text-align: left;
-  padding: 12px 10px;
-  border-bottom: 1px solid #edf2f7;
-  font-weight: 500;
-  color: #4a5568;
-  font-size: 14px;
-  
-  @media (max-width: 768px) {
-    padding: 10px 8px;
+  ${DownloadButton} {
+    margin-left: auto;         /* mantém à direita no desktop */
     white-space: nowrap;
+
+    @media (max-width: 640px) {
+      order: 2;                /* desce para linha de baixo */
+      width: 100%;             /* ocupa a largura toda */
+      margin-left: 0;          /* centralizado pelo container */
+      justify-content: center; /* centraliza conteúdo interno se for flex */
+    }
   }
 `;
 
-const ResponsiveTd = styled.td`
-  padding: 12px 10px;
-  border-bottom: 1px solid #edf2f7;
-  color: #2d3748;
-  
-  @media (max-width: 768px) {
-    padding: 10px 8px;
-    white-space: nowrap;
-  }
-`;
-
-const ResponsiveProgressBar = styled.div`
-  height: 8px;
-  background: #edf2f7;
-  border-radius: 4px;
-  overflow: hidden;
-  width: 100%;
-`;
-
-const ResponsiveProgressFill = styled.div<{ percentage: number; color: string }>`
-  height: 100%;
-  width: ${props => props.percentage}%;
-  background: ${props => props.color};
-  border-radius: 4px;
-`;
-
-const ResponsiveChartContainer = styled.div`
-  margin-top: 20px;
-  
-  @media (max-width: 768px) {
-    overflow-x: auto;
-  }
-`;
-
-// Importando os tipos
-import { useReports } from './useReports';
-import type { ReportsData } from './types';
+/* =======================
+   COMPONENTE PRINCIPAL
+   ======================= */
 
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
-  const [_, setSelectedReport] = useState<string | null>(null);
-  const [reportsData, setReportsData] = useState<ReportsData | null>(null);
+  const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [timeFilter, setTimeFilter] = useState<string>('all');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const { getAllReports, clearFilters, updateFilters, getAIUserStats, getAIStats, getDocumentMonthsStats, getTaskPriorityStats, getValidationStats, getValidatorsStats, getDocumentStats, getTaskStats } = useReports();
-
-  const documentReportData = reportsData ? reportsData.documents : null;
-  const documentMonthReportData = reportsData ? reportsData.documentMonths : null;
-  const aiUsersReportData = reportsData ? reportsData.aiUsers : null;
-  const validationsReportData = reportsData ? reportsData.validations : null;
-  const validatorsReportData = reportsData ? reportsData.validators : null;
-  const tasksReportData = reportsData ? reportsData.tasks : null;
-  const taskPrioritysReportData = reportsData ? reportsData.taskPrioritys : null;
-  const aiReportData = reportsData ? reportsData.ai : null;
-  const userActivityData = reportsData ? reportsData.userActivity || [] : [];
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const allReports = await getAllReports();
-      setReportsData(allReports);
-    }
-    fetchData();
-  }, []);
-
-
-
+  // Dados simulados
   const documentsData = {
-    total: documentReportData ? documentReportData.totalDocuments : 0,
-    active: documentReportData ? documentReportData.activeDocuments : 0,
-    inactive: documentReportData ? documentReportData.inactiveDocuments : 0,
-    validated: documentReportData ? documentReportData.approvedDocuments : 0,
-    pending: documentReportData ? documentReportData.pendingDocuments : 0,
-    byPeriod: documentMonthReportData ? documentMonthReportData : []
+    total: 1247,
+    active: 1198,
+    inactive: 49,
+    validated: 892,
+    pending: 306,
+    byPeriod: [
+      { month: 'Jan', count: 98 },
+      { month: 'Fev', count: 112 },
+      { month: 'Mar', count: 135 },
+      { month: 'Abr', count: 156 },
+      { month: 'Mai', count: 178 },
+      { month: 'Jun', count: 142 }
+    ]
   };
 
   const validationsData = {
-    total: validationsReportData ? validationsReportData.totalValidations : 0,
-    approved: validationsReportData ? validationsReportData.totalApproved : 0,
-    rejected: validationsReportData ? validationsReportData.totalRejected : 0,
-    returned: validationsReportData ? validationsReportData.totalInRevision : 0,
-    approvalRate: validationsReportData ? (validationsReportData.totalApproved / validationsReportData.totalValidations * 100).toFixed(2) : 0,
-    topValidators: validatorsReportData ? validatorsReportData : []
+    total: 892,
+    approved: 745,
+    rejected: 89,
+    returned: 58,
+    approvalRate: 83.5,
+    avgTime: '2.3 dias',
+    topValidators: [
+      { name: 'João Silva', count: 234 },
+      { name: 'Maria Santos', count: 198 },
+      { name: 'Pedro Costa', count: 167 }
+    ]
+  };
+
+  const versionsData = {
+    total: 3456,
+    mostEdited: [
+      { title: 'Manual de Onboarding', versions: 23 },
+      { title: 'Política de Segurança', versions: 19 },
+      { title: 'Processo de Vendas', versions: 17 }
+    ]
   };
 
   const tasksData = {
-    total: tasksReportData ? tasksReportData.totalTasks : 0,
-    completed: tasksReportData ? tasksReportData.totalCompleted : 0,
-    overdue: tasksReportData ? tasksReportData.totalLate : 0,
-    completionRate: tasksReportData ? tasksReportData.completionRate : 0,
+    total: 456,
+    completed: 345,
+    overdue: 23,
+    completionRate: 75,
     byPriority: {
-      high: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Alta')).reduce((sum, t) => sum + t.total, 0) : 0,
-      medium: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Média')).reduce((sum, t) => sum + t.total, 0) : 0,
-      low: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Baixa')).reduce((sum, t) => sum + t.total, 0) : 0
+      high: 78,
+      medium: 189,
+      low: 189
     }
   };
 
   const aiData = {
-    totalRequests: aiReportData ? aiReportData.totalRequests : 0,
-    totalTokens: aiReportData ? aiReportData.totalTokens : 0,
-    avgTokensPerRequest: aiReportData ? aiReportData.requestAverageTokens : 0,
-    estimatedCost: aiReportData ? aiReportData.estimatedCost : 0,
-    topUsers: aiUsersReportData ? aiUsersReportData : []
+    totalRequests: 1234,
+    totalTokens: 5678912,
+    avgTokensPerRequest: 4602,
+    estimatedCost: '$56.79',
+    topUsers: [
+      { name: 'João Silva', requests: 234 },
+      { name: 'Maria Santos', requests: 198 },
+      { name: 'Pedro Costa', requests: 167 }
+    ]
   };
-
 
   const handleDownloadReport = () => {
     alert('Download de relatório em PDF iniciado');
@@ -607,59 +328,23 @@ const ReportsPage: React.FC = () => {
   };
 
 
-  const handleClearFilters = async () => {
-    setLoading(true);
-
-    try {
-      setTimeFilter('all');
-      setStartDate('');
-      setEndDate('');
-
-      await clearFilters();
-
-      const [documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys] = await Promise.all([
-        getDocumentStats(),
-        getDocumentMonthsStats(),
-        getAIStats(),
-        getAIUserStats(),
-        getValidationStats(),
-        getValidatorsStats(),
-        getTaskStats(),
-        getTaskPriorityStats(),
-      ]);
-
-      // Criar manualmente o objeto de dados
-      const newData = {
-        documents,
-        documentMonths,
-        ai,
-        aiUsers,
-        validations,
-        validators,
-        tasks,
-        taskPrioritys,
-      };
-
-      setReportsData(newData);
-    } catch (err) {
-      console.error("Erro ao limpar filtros:", err);
-    } finally {
-      setLoading(false);
-    }
-  }
+  // Helper futuro
+  const renderSelectedReport = () => {};
 
   return (
-    <ResponsivePageContainer>
+    <PageContainer>
       <ResponsivePageHeader>
-        <ResponsivePageTitle>{t('reports.title')}</ResponsivePageTitle>
-        <ResponsivePageSubtitle>{t('reports.subtitle')}</ResponsivePageSubtitle>
+        <PageTitle>{t('reports.title') || 'Relatórios e Análises'}</PageTitle>
+        <PageSubtitle>{t('reports.subtitle') || 'Visualize insights e métricas do sistema Documentin'}</PageSubtitle>
       </ResponsivePageHeader>
 
-      <ResponsiveFilterSection>
-        <ResponsiveFilterLabel>
-          <FiCalendar /> {t('reports.filters.period')}:
-        </ResponsiveFilterLabel>
-        <ResponsiveFilterSelect
+      {/* Filtros */}
+      <ResponsiveFilters role="region" aria-label="Filtros de período">
+        <FilterLabel>
+          <FiCalendar /> {t('reports.filters.period')}
+        </FilterLabel>
+
+        <FilterSelect
           value={timeFilter}
           onChange={(e) => {
             setTimeFilter(e.target.value);
@@ -676,19 +361,22 @@ const ReportsPage: React.FC = () => {
           <option value="quarter">{t('reports.filters.last_quarter')}</option>
           <option value="year">{t('reports.filters.last_year')}</option>
           <option value="custom">{t('reports.filters.custom')}</option>
-        </ResponsiveFilterSelect>
+        </FilterSelect>
 
         {timeFilter === 'custom' && (
           <>
-            <ResponsiveFilterLabel>{t('reports.filters.start_date')}:</ResponsiveFilterLabel>
-            <ResponsiveFilterInput
+            <FilterLabel>
+              <FiCalendar /> {t('reports.filters.from')}
+            </FilterLabel>
+            <FilterInput
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
-
-            <ResponsiveFilterLabel>{t('reports.filters.end_date')}:</ResponsiveFilterLabel>
-            <ResponsiveFilterInput
+            <FilterLabel>
+              <FiCalendar /> {t('reports.filters.to')}
+            </FilterLabel>
+            <FilterInput
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
@@ -696,338 +384,360 @@ const ReportsPage: React.FC = () => {
           </>
         )}
 
-        <ResponsiveButtonGroup>
-          <ResponsiveButton onClick={handleApplyFilter} disabled={loading}>
-            <FiFilter /> {t('reports.filters.apply_filter')}
-          </ResponsiveButton>
+        <ResponsiveApplyButton onClick={handleApplyFilter}>
+          <FiFilter /> {t('reports.filters.apply_filter')}
+        </ResponsiveApplyButton>
+      </ResponsiveFilters>
 
-          <ResponsiveButton onClick={handleClearFilters} disabled={loading}>
-            <FiFilter /> {t('reports.filters.clear_filters')}
-          </ResponsiveButton>
-        </ResponsiveButtonGroup>
-      </ResponsiveFilterSection>
-
+      {/* Cards de Resumo */}
       <ResponsiveReportsGrid>
-        <ResponsiveReportCard onClick={() => setSelectedReport('documents')}>
-          <ResponsiveCardHeader>
-            <ResponsiveCardIcon><FiFileText /></ResponsiveCardIcon>
-            <ResponsiveCardTitle>{t('reports.cards.documents')}</ResponsiveCardTitle>
-          </ResponsiveCardHeader>
-          <ResponsiveCardValue>{documentsData.total}</ResponsiveCardValue>
-          <ResponsiveCardDescription>
-            {documentsData.active} {t('reports.cards.active')}
-          </ResponsiveCardDescription>
-        </ResponsiveReportCard>
+        <ReportCard onClick={() => setSelectedReport('documents')}>
+          <CardHeader>
+            <CardIcon><FiFileText /></CardIcon>
+          </CardHeader>
+          <CardTitle>{t('reports.cards.documents')}</CardTitle>
+          <CardValue>{documentsData.total}</CardValue>
+          <CardDescription>
+            {documentsData.active} {t('reports.cards.active')} • {documentsData.validated} {t('reports.cards.validated')}
+          </CardDescription>
+        </ReportCard>
 
-        <ResponsiveReportCard onClick={() => setSelectedReport('validations')}>
-          <ResponsiveCardHeader>
-            <ResponsiveCardIcon><FiCheckCircle /></ResponsiveCardIcon>
-            <ResponsiveCardTitle>{t('reports.cards.validations')}</ResponsiveCardTitle>
-          </ResponsiveCardHeader>
-          <ResponsiveCardValue>{validationsData.total}</ResponsiveCardValue>
-          <ResponsiveCardDescription>
-            {validationsData.approvalRate}% {t('reports.cards.approved')}
-          </ResponsiveCardDescription>
-        </ResponsiveReportCard>
+        <ReportCard onClick={() => setSelectedReport('validations')}>
+          <CardHeader>
+            <CardIcon><FiCheckCircle /></CardIcon>
+          </CardHeader>
+          <CardTitle>{t('reports.cards.validations')}</CardTitle>
+          <CardValue>{validationsData.total}</CardValue>
+          <CardDescription>
+            {t('reports.cards.approval_rate')}: {validationsData.approvalRate}%
+          </CardDescription>
+        </ReportCard>
 
-        <ResponsiveReportCard onClick={() => setSelectedReport('tasks')}>
-          <ResponsiveCardHeader>
-            <ResponsiveCardIcon><FiClock /></ResponsiveCardIcon>
-            <ResponsiveCardTitle>{t('reports.cards.tasks')}</ResponsiveCardTitle>
-          </ResponsiveCardHeader>
-          <ResponsiveCardValue>{tasksData.total}</ResponsiveCardValue>
-          <ResponsiveCardDescription>
-            {tasksData.completionRate}% {t('reports.cards.completed')}
-          </ResponsiveCardDescription>
-        </ResponsiveReportCard>
+        <ReportCard onClick={() => setSelectedReport('versions')}>
+          <CardHeader>
+            <CardIcon><FiClock /></CardIcon>
+          </CardHeader>
+          <CardTitle>{t('reports.cards.versions')}</CardTitle>
+          <CardValue>{versionsData.total}</CardValue>
+          <CardDescription>
+            {t('reports.cards.complete_history')}
+          </CardDescription>
+        </ReportCard>
 
-        <ResponsiveReportCard onClick={() => setSelectedReport('ai')}>
-          <ResponsiveCardHeader>
-            <ResponsiveCardIcon><FiCpu /></ResponsiveCardIcon>
-            <ResponsiveCardTitle>{t('reports.cards.ai_usage')}</ResponsiveCardTitle>
-          </ResponsiveCardHeader>
-          <ResponsiveCardValue>{aiData.totalRequests}</ResponsiveCardValue>
-          <ResponsiveCardDescription>
-            {aiData.totalTokens.toLocaleString()} {t('reports.cards.tokens')}
-          </ResponsiveCardDescription>
-        </ResponsiveReportCard>
+        <ReportCard onClick={() => setSelectedReport('tasks')}>
+          <CardHeader>
+            <CardIcon><FiList /></CardIcon>
+          </CardHeader>
+          <CardTitle>{t('reports.cards.tasks')}</CardTitle>
+          <CardValue>{tasksData.total}</CardValue>
+          <CardDescription>
+            {tasksData.completed} {t('reports.cards.completed')} • {tasksData.overdue} {t('reports.cards.overdue')}
+          </CardDescription>
+        </ReportCard>
+
+        <ReportCard onClick={() => setSelectedReport('ai')}>
+          <CardHeader>
+            <CardIcon><FiCpu /></CardIcon>
+          </CardHeader>
+          <CardTitle>{t('reports.cards.ai')}</CardTitle>
+          <CardValue>{aiData.totalRequests}</CardValue>
+          <CardDescription>
+            {t('reports.cards.processed_requests')}
+          </CardDescription>
+        </ReportCard>
       </ResponsiveReportsGrid>
 
-      <ResponsiveDetailedSection>
+      {/* Relatório de Documentos */}
+      <DetailedSection>
         <ResponsiveSectionHeader>
-          <ResponsiveSectionTitle>
-            <FiFileText /> {t('reports.sections.documents')}
-          </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
+          <SectionTitle>
+            <FiFileText /> {t('reports.sections.document_stats')}
+          </SectionTitle>
+          <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
+          </DownloadButton>
         </ResponsiveSectionHeader>
 
         <ResponsiveStatsGrid>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.total_documents')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{documentsData.total}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.active_documents')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{documentsData.active}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.inactive_documents')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{documentsData.inactive}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.awaiting_validation')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{documentsData.pending}</ResponsiveStatValue>
-          </ResponsiveStatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.total_documents')}</StatLabel>
+            <StatValue>{documentsData.total}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.active_documents')}</StatLabel>
+            <StatValue>{documentsData.active}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.validated_documents')}</StatLabel>
+            <StatValue>{documentsData.validated}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.pending_documents')}</StatLabel>
+            <StatValue>{documentsData.pending}</StatValue>
+          </StatItem>
         </ResponsiveStatsGrid>
 
-        <ResponsiveSectionHeading>
-          {t('reports.sections.documents_created_period')}
-        </ResponsiveSectionHeading>
-        <ResponsiveBarChartContainer>
-          {documentsData.byPeriod.map((month, index) => (
-            <ResponsiveBar
-              key={index}
-              height={(month.totalDocumentos / Math.max(...documentsData.byPeriod.map(m => m.totalDocumentos))) * 100}
-            >
-              <ResponsiveBarValue>{month.totalDocumentos}</ResponsiveBarValue>
-              <ResponsiveBarLabel>{month.nomeMes.substring(0, 3)}</ResponsiveBarLabel>
-            </ResponsiveBar>
-          ))}
-        </ResponsiveBarChartContainer>
-      </ResponsiveDetailedSection>
-
-      <ResponsiveDetailedSection>
-        <ResponsiveSectionHeader>
-          <ResponsiveSectionTitle>
-            <FiCheckCircle /> {t('reports.sections.validations')}
-          </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
-        </ResponsiveSectionHeader>
-
-        <ResponsiveStatsGrid>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.total_validations')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{validationsData.total}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.approval_rate')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{validationsData.approvalRate}%</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.cards.approved')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{validationsData.approved}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.cards.rejected')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{validationsData.rejected}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-        </ResponsiveStatsGrid>
-
-        <ResponsiveSectionHeading>
-          {t('reports.sections.top_validators')}
-        </ResponsiveSectionHeading>
-        <ResponsiveTable>
-          <thead>
-            <tr>
-              <ResponsiveTh>{t('reports.sections.validator')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.validations')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.participation')}</ResponsiveTh>
-            </tr>
-          </thead>
-          <tbody>
-            {validationsData.topValidators.map((validator, index) => (
-              <tr key={index}>
-                <ResponsiveTd>{validator.name}</ResponsiveTd>
-                <ResponsiveTd><strong>{validator.totalValidations}</strong></ResponsiveTd>
-                <ResponsiveTd>
-                  <ResponsiveProgressBar>
-                    <ResponsiveProgressFill
-                      percentage={(validator.totalValidations / validationsData.total) * 100}
-                      color="#48bb78"
-                    />
-                  </ResponsiveProgressBar>
-                </ResponsiveTd>
-              </tr>
+        <ChartContainer>
+          <SectionHeading>
+            {t('reports.sections.documents_by_period')}
+          </SectionHeading>
+          <ResponsiveBarChart>
+            {documentsData.byPeriod.map((item, index) => (
+              <div key={index} style={{ flex: '1' }}>
+                <Bar
+                  height={(item.count / Math.max(...documentsData.byPeriod.map(i => i.count))) * 100}
+                  aria-label={`${item.month}: ${item.count}`}
+                >
+                  <BarValue>{item.count}</BarValue>
+                </Bar>
+                <BarLabel>{item.month}</BarLabel>
+              </div>
             ))}
-          </tbody>
-        </ResponsiveTable>
-      </ResponsiveDetailedSection>
+          </ResponsiveBarChart>
+        </ChartContainer>
+      </DetailedSection>
 
-      <ResponsiveDetailedSection>
+      {/* Relatório de Validações */}
+      <DetailedSection>
         <ResponsiveSectionHeader>
-          <ResponsiveSectionTitle>
-            <FiList /> {t('reports.sections.tasks')}
-          </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
+          <SectionTitle>
+            <FiCheckCircle /> {t('reports.sections.validation_stats')}
+          </SectionTitle>
+          <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
+          </DownloadButton>
         </ResponsiveSectionHeader>
 
         <ResponsiveStatsGrid>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.total_tasks')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{tasksData.total}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.completion_rate')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{tasksData.completionRate}%</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.overdue_tasks')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{tasksData.overdue}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.cards.completed')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{tasksData.completed}</ResponsiveStatValue>
-          </ResponsiveStatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.total_validations')}</StatLabel>
+            <StatValue>{validationsData.total}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.approved_documents')}</StatLabel>
+            <StatValue>{validationsData.approved}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.rejected_documents')}</StatLabel>
+            <StatValue style={{ color: '#f56565' }}>{validationsData.rejected}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.returned_for_revision')}</StatLabel>
+            <StatValue style={{ color: '#ed8936' }}>{validationsData.returned}</StatValue>
+          </StatItem>
         </ResponsiveStatsGrid>
 
-        <ResponsiveSectionHeading>
-          {t('reports.sections.priority_distribution')}
-        </ResponsiveSectionHeading>
-        <ResponsiveChartContainer>
+        <ChartContainer>
+          <SectionHeading>
+            {t('reports.sections.top_validators')}
+          </SectionHeading>
+          <TableWrap>
+            <Table>
+              <thead>
+                <tr>
+                  <Th>{t('reports.sections.validator')}</Th>
+                  <Th>{t('reports.sections.documents_validated')}</Th>
+                  <Th>{t('reports.sections.contribution')}</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {validationsData.topValidators.map((validator, index) => (
+                  <tr key={index}>
+                    <Td>{validator.name}</Td>
+                    <Td><strong>{validator.count}</strong></Td>
+                    <Td>
+                      <ProgressBar>
+                        <ProgressFill
+                          percentage={(validator.count / validationsData.topValidators[0].count) * 100}
+                          color="#667eea"
+                        />
+                      </ProgressBar>
+                    </Td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </TableWrap>
+        </ChartContainer>
+      </DetailedSection>
+
+      {/* Relatório de Versões */}
+      <DetailedSection>
+        <ResponsiveSectionHeader>
+          <SectionTitle>
+            <FiClock /> {t('reports.sections.version_history')}
+          </SectionTitle>
+          <DownloadButton onClick={handleDownloadReport}>
+            <FiDownload /> {t('reports.sections.export_report')}
+          </DownloadButton>
+        </ResponsiveSectionHeader>
+
+        <ResponsiveStatsGrid>
+          <StatItem>
+            <StatLabel>{t('reports.sections.total_versions')}</StatLabel>
+            <StatValue>{versionsData.total}</StatValue>
+          </StatItem>
+        </ResponsiveStatsGrid>
+
+        <SectionHeading>
+          {t('reports.sections.most_edited_documents')}
+        </SectionHeading>
+        <TableWrap>
+          <Table>
+            <thead>
+              <tr>
+                <Th>{t('reports.sections.document')}</Th>
+                <Th>{t('reports.sections.version_count')}</Th>
+                <Th>{t('reports.sections.relative')}</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {versionsData.mostEdited.map((doc, index) => (
+                <tr key={index}>
+                  <Td>{doc.title}</Td>
+                  <Td><strong>{doc.versions}</strong></Td>
+                  <Td>
+                    <ProgressBar>
+                      <ProgressFill
+                        percentage={(doc.versions / versionsData.mostEdited[0].versions) * 100}
+                        color="#667eea"
+                      />
+                    </ProgressBar>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableWrap>
+      </DetailedSection>
+
+      {/* Relatório de Tarefas */}
+      <DetailedSection>
+        <ResponsiveSectionHeader>
+          <SectionTitle>
+            <FiList /> {t('reports.sections.tasks_analysis')}
+          </SectionTitle>
+          <DownloadButton onClick={handleDownloadReport}>
+            <FiDownload /> {t('reports.sections.export_report')}
+          </DownloadButton>
+        </ResponsiveSectionHeader>
+
+        <ResponsiveStatsGrid>
+          <StatItem>
+            <StatLabel>{t('reports.sections.total_tasks')}</StatLabel>
+            <StatValue>{tasksData.total}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.completion_rate')}</StatLabel>
+            <StatValue>{tasksData.completionRate}%</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.overdue_tasks')}</StatLabel>
+            <StatValue style={{ color: '#f56565' }}>{tasksData.overdue}</StatValue>
+          </StatItem>
+        </ResponsiveStatsGrid>
+
+        <ChartContainer>
+          <SectionHeading>
+            {t('reports.sections.priority_distribution')}
+          </SectionHeading>
           <ResponsiveStatsGrid>
-            <ResponsiveStatItem>
-              <ResponsiveStatLabel>{t('reports.sections.high_priority')}</ResponsiveStatLabel>
-              <ResponsiveStatValue>{tasksData.byPriority.high}</ResponsiveStatValue>
-              <ResponsiveProgressBar>
-                <ResponsiveProgressFill
+            <StatItem>
+              <StatLabel>{t('reports.sections.high_priority')}</StatLabel>
+              <StatValue>{tasksData.byPriority.high}</StatValue>
+              <ProgressBar>
+                <ProgressFill
                   percentage={(tasksData.byPriority.high / tasksData.total) * 100}
-                  color="#e53e3e"
+                  color="#f56565"
                 />
-              </ResponsiveProgressBar>
-            </ResponsiveStatItem>
-            <ResponsiveStatItem>
-              <ResponsiveStatLabel>{t('reports.sections.medium_priority')}</ResponsiveStatLabel>
-              <ResponsiveStatValue>{tasksData.byPriority.medium}</ResponsiveStatValue>
-              <ResponsiveProgressBar>
-                <ResponsiveProgressFill
+              </ProgressBar>
+            </StatItem>
+            <StatItem>
+              <StatLabel>{t('reports.sections.medium_priority')}</StatLabel>
+              <StatValue>{tasksData.byPriority.medium}</StatValue>
+              <ProgressBar>
+                <ProgressFill
                   percentage={(tasksData.byPriority.medium / tasksData.total) * 100}
                   color="#ed8936"
                 />
-              </ResponsiveProgressBar>
-            </ResponsiveStatItem>
-            <ResponsiveStatItem>
-              <ResponsiveStatLabel>{t('reports.sections.low_priority')}</ResponsiveStatLabel>
-              <ResponsiveStatValue>{tasksData.byPriority.low}</ResponsiveStatValue>
-              <ResponsiveProgressBar>
-                <ResponsiveProgressFill
+              </ProgressBar>
+            </StatItem>
+            <StatItem>
+              <StatLabel>{t('reports.sections.low_priority')}</StatLabel>
+              <StatValue>{tasksData.byPriority.low}</StatValue>
+              <ProgressBar>
+                <ProgressFill
                   percentage={(tasksData.byPriority.low / tasksData.total) * 100}
                   color="#38b2ac"
                 />
-              </ResponsiveProgressBar>
-            </ResponsiveStatItem>
+              </ProgressBar>
+            </StatItem>
           </ResponsiveStatsGrid>
-        </ResponsiveChartContainer>
-      </ResponsiveDetailedSection>
+        </ChartContainer>
+      </DetailedSection>
 
-      <ResponsiveDetailedSection>
+      {/* Relatório de IA */}
+      <DetailedSection>
         <ResponsiveSectionHeader>
-          <ResponsiveSectionTitle>
+          <SectionTitle>
             <FiCpu /> {t('reports.sections.ai_usage')}
-          </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
+          </SectionTitle>
+          <DownloadButton onClick={handleDownloadReport}>
             <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
+          </DownloadButton>
         </ResponsiveSectionHeader>
 
         <ResponsiveStatsGrid>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.total_requests')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{aiData.totalRequests}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.tokens_used')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{aiData.totalTokens.toLocaleString()}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.average_per_request')}</ResponsiveStatLabel>
-            <ResponsiveStatValue>{aiData.avgTokensPerRequest}</ResponsiveStatValue>
-          </ResponsiveStatItem>
-          <ResponsiveStatItem>
-            <ResponsiveStatLabel>{t('reports.sections.estimated_cost')}</ResponsiveStatLabel>
-            <ResponsiveStatValue style={{ color: '#48bb78' }}>{aiData.estimatedCost}</ResponsiveStatValue>
-          </ResponsiveStatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.total_requests')}</StatLabel>
+            <StatValue>{aiData.totalRequests}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.tokens_used')}</StatLabel>
+            <StatValue>{aiData.totalTokens.toLocaleString()}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.average_per_request')}</StatLabel>
+            <StatValue>{aiData.avgTokensPerRequest}</StatValue>
+          </StatItem>
+          <StatItem>
+            <StatLabel>{t('reports.sections.estimated_cost')}</StatLabel>
+            <StatValue style={{ color: '#48bb78' }}>{aiData.estimatedCost}</StatValue>
+          </StatItem>
         </ResponsiveStatsGrid>
 
-        <ResponsiveSectionHeading>
+        <SectionHeading>
           {t('reports.sections.top_users')}
-        </ResponsiveSectionHeading>
-        <ResponsiveTable>
-          <thead>
-            <tr>
-              <ResponsiveTh>{t('reports.sections.user')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.requests')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.usage')}</ResponsiveTh>
-            </tr>
-          </thead>
-          <tbody>
-            {aiData.topUsers.map((user, index) => (
-              <tr key={index}>
-                <ResponsiveTd>{user.name}</ResponsiveTd>
-                <ResponsiveTd><strong>{user.totalRequests}</strong></ResponsiveTd>
-                <ResponsiveTd>
-                  <ResponsiveProgressBar>
-                    <ResponsiveProgressFill
-                      percentage={(user.totalRequests / aiData.topUsers[0].totalRequests) * 100}
-                      color="#667eea"
-                    />
-                  </ResponsiveProgressBar>
-                </ResponsiveTd>
+        </SectionHeading>
+        <TableWrap>
+          <Table>
+            <thead>
+              <tr>
+                <Th>{t('reports.sections.user')}</Th>
+                <Th>{t('reports.sections.requests')}</Th>
+                <Th>{t('reports.sections.usage')}</Th>
               </tr>
-            ))}
-          </tbody>
-        </ResponsiveTable>
-      </ResponsiveDetailedSection>
-
-      <ResponsiveDetailedSection>
-        <ResponsiveSectionHeader>
-          <ResponsiveSectionTitle>
-            <FiUsers /> {t('reports.sections.user_activity')}
-          </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
-        </ResponsiveSectionHeader>
-
-        <ResponsiveSectionHeading>
-          {t('reports.sections.top_active_users')}
-        </ResponsiveSectionHeading>
-        <ResponsiveTable>
-          <thead>
-            <tr>
-              <ResponsiveTh>{t('reports.sections.user')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.modifications')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.comments')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.approvals')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.total_activity')}</ResponsiveTh>
-            </tr>
-          </thead>
-          <tbody>
-            {userActivityData.map((_, index) => (
-              <tr key={index}>
-                <ResponsiveTd>{'mengo'}</ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd>
-                  <ResponsiveProgressBar>
-                    <ResponsiveProgressFill
-                      percentage={(1 / (1 || 1)) * 100}
-                      color="#4299e1"
-                    />
-                  </ResponsiveProgressBar>
-                </ResponsiveTd>
-              </tr>
-            ))}
-          </tbody>
-        </ResponsiveTable>
-      </ResponsiveDetailedSection>
-    </ResponsivePageContainer>
+            </thead>
+            <tbody>
+              {aiData.topUsers.map((user, index) => (
+                <tr key={index}>
+                  <Td>{user.name}</Td>
+                  <Td><strong>{user.requests}</strong></Td>
+                  <Td>
+                    <ProgressBar>
+                      <ProgressFill
+                        percentage={(user.requests / aiData.topUsers[0].requests) * 100}
+                        color="#667eea"
+                      />
+                    </ProgressBar>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableWrap>
+      </DetailedSection>
+    </PageContainer>
   );
 };
 
