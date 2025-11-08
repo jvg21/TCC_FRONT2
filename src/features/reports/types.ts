@@ -77,4 +77,3 @@ export interface ReportsData {
   ai: AIStats;
 }
 
-// ... demais interfaces do useReports.ts

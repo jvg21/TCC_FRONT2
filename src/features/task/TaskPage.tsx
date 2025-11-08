@@ -30,8 +30,6 @@ const TaskPage: React.FC = () => {
   const { t } = useTranslation();
   const { activeUser } = useUser();
   const { userProfile } = useAuthContext();
-
-  // ==== Paginação (adição) ====
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
 
@@ -46,7 +44,7 @@ const TaskPage: React.FC = () => {
     return rows.slice(start, start + pageSize);
   };
 
-  // hook de responsividade compartilhado
+  
   const useIsNarrow = (breakpoint = 480) => {
     const [isNarrow, setIsNarrow] = useState(false);
     useEffect(() => {
@@ -97,12 +95,12 @@ const TaskPage: React.FC = () => {
 
     return (
       <div style={containerStyle}>
-        {/* Texto de faixa */}
+        {}
         <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
           {tt('pagination.showing', 'Mostrando')} {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, total)} {tt('pagination.of', 'de')} {total}
         </div>
 
-        {/* Seletor de itens por página */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
           <select
@@ -114,7 +112,7 @@ const TaskPage: React.FC = () => {
           </select>
         </div>
 
-        {/* Navegação */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
           <Button variant="ghost" aria-label={tt('pagination.prev', 'Anterior')} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={!canPrev}>
             <FiChevronLeft /> {!isNarrow && tt('pagination.prev', 'Anterior')}
@@ -127,8 +125,7 @@ const TaskPage: React.FC = () => {
       </div>
     );
   };
-  // ==== fim paginação ====
-
+  
   const Columns = (onEdit: (c: Task) => void, onToggleStatus: (id: number) => void): ColumnDef<Task>[] => {
     const baseCols: ColumnDef<Task>[] = [
       { key: "Title", header: t("tasks.title_field"), render: (row) => row.Title || "-" },

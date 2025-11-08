@@ -95,7 +95,6 @@ export const useReports = () => {
       });
 
       const data: ApiResponse = await response.json();
-      // console.log("Document Stats Data:", data);
       if (data.erro) {
         throw new Error(t(data.mensagem));
       }
@@ -227,7 +226,7 @@ export const useReports = () => {
     }
   };
 
-  // Atualiza os filtros globais
+  
   const updateFilters = (newFilters: Record<string, any>) => {
     setFilters(prevFilters => ({
       ...prevFilters,
@@ -235,7 +234,7 @@ export const useReports = () => {
     }));
   };
 
-  // Limpa os filtros
+  
   const clearFilters = () => {
     updateFilters({});
     setFilters({});
@@ -243,7 +242,7 @@ export const useReports = () => {
 
   const getAllReports = async (customFilters?: Record<string, any>) => {
     setLoading(true);
-    // Usa os filtros fornecidos ou os filtros globais
+    
     const currentFilters = customFilters || filters;
     
     try {
@@ -271,8 +270,6 @@ export const useReports = () => {
 
       setReportsData(reports);
 
-      // console.log("Relatórios carregados com sucesso:", reports);
-
       return reports;
     } catch (err) {
       console.error("Erro ao buscar relatórios:", err);
@@ -283,10 +280,10 @@ export const useReports = () => {
     }
   };
 
-  // Exportar relatório em CSV
+  
   const exportToCSV = (reportType: string) => {
     try {
-      // Implementar lógica de exportação
+      
       notificationActions.showNotification(`Relatório de ${reportType} exportado com sucesso!`, 'success');
     } catch (err) {
       console.error("Erro ao exportar relatório:", err);
@@ -294,7 +291,7 @@ export const useReports = () => {
     }
   };
 
-  // Exportar relatório em PDF
+  
   const exportToPDF = (reportType: string) => {
     try {
       notificationActions.showNotification(`Relatório de ${reportType} exportado em PDF!`, 'success');

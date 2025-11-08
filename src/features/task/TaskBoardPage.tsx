@@ -192,19 +192,19 @@ const PriorityBadge = styled.div<{ priority: number }>`
   text-transform: uppercase;
   background: ${({ priority }) => {
     switch (priority) {
-      case 1: return '#dbeafe'; // Baixa - azul claro
-      case 2: return '#fef3c7'; // Média - amarelo claro
-      case 3: return '#fed7aa'; // Alta - laranja claro
-      case 4: return '#fecaca'; // Urgente - vermelho claro
+      case 1: return '#dbeafe'; 
+      case 2: return '#fef3c7'; 
+      case 3: return '#fed7aa'; 
+      case 4: return '#fecaca'; 
       default: return '#f3f4f6';
     }
   }};
   color: ${({ priority }) => {
     switch (priority) {
-      case 1: return '#1e40af'; // Baixa - azul escuro
-      case 2: return '#92400e'; // Média - amarelo escuro
-      case 3: return '#c2410c'; // Alta - laranja escuro
-      case 4: return '#dc2626'; // Urgente - vermelho escuro
+      case 1: return '#1e40af'; 
+      case 2: return '#92400e'; 
+      case 3: return '#c2410c'; 
+      case 4: return '#dc2626'; 
       default: return '#374151';
     }
   }};
