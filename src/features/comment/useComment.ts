@@ -16,7 +16,7 @@ export const useComment = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = getCookie('authToken') || "";
 
-  // Filtros em memória
+  
   const activeComments = useMemo(() => {
     return comments.filter((c) => c.IsActive);
   }, [comments]);
@@ -25,7 +25,7 @@ export const useComment = () => {
     return comments.filter((c) => !c.IsActive);
   }, [comments]);
 
-  // Transformar dados da API
+  
   const transformApiDataToPascalCase = (apiData: any[]): Comment[] => {
     return apiData.map(item => ({
       CommentId: item.commentId || item.CommentId,

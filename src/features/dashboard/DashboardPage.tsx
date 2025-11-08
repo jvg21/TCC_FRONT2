@@ -26,14 +26,14 @@ import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
 import CascadeView from "../folder/CascadeView";
 
-// Container Principal - Layout vertical
+
 const WorkspaceContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
 `;
 
-// Área inferior para tarefas e validações
+
 const BottomSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -44,7 +44,7 @@ const BottomSection = styled.div`
   }
 `;
 
-// Card Base para Seções
+
 const SectionCard = styled.div`
   background: ${({ theme }) => theme.colors.surface || theme.colors.background};
   border-radius: 16px;
@@ -53,7 +53,7 @@ const SectionCard = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 `;
 
-// Cabeçalho do Card
+
 const SectionHeader = styled.div`
   padding: 16px 20px;
   display: flex;
@@ -62,7 +62,7 @@ const SectionHeader = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
-// Título da Seção
+
 const SectionTitle = styled.h2`
   margin: 0;
   font-size: 18px;
@@ -73,7 +73,7 @@ const SectionTitle = styled.h2`
   gap: 8px;
 `;
 
-// Corpo do Card
+
 const SectionContent = styled.div<{ $isEmpty?: boolean }>`
   padding: ${props => props.$isEmpty ? "40px 20px" : "0"};
   max-height: 400px;
@@ -93,14 +93,14 @@ const SectionContent = styled.div<{ $isEmpty?: boolean }>`
   }
 `;
 
-// Estado Vazio
+
 const EmptyState = styled.div`
   text-align: center;
   color: ${({ theme }) => theme.colors.muted};
   font-style: italic;
 `;
 
-// Badge de Status
+
 const StatusBadge = styled.span<{ $status: 'pending' | 'approved' | 'rejected' | 'active' | 'inactive' }>`
   padding: 4px 8px;
   border-radius: 12px;
@@ -143,7 +143,7 @@ const StatusBadge = styled.span<{ $status: 'pending' | 'approved' | 'rejected' |
   }}
 `;
 
-// Item Base para Listas
+
 const ListItem = styled.div`
   padding: 16px 20px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
@@ -159,7 +159,7 @@ const ListItem = styled.div`
   }
 `;
 
-// Item de Tarefa
+
 const TaskItem = styled(ListItem)`
   display: flex;
   justify-content: space-between;
@@ -193,7 +193,7 @@ const TaskDate = styled.div`
   gap: 4px;
 `;
 
-// Item de Documento
+
 const DocumentItem = styled(ListItem)`
   display: flex;
   justify-content: space-between;
@@ -221,7 +221,7 @@ const DocumentMeta = styled.div`
   color: ${({ theme }) => theme.colors.muted};
 `;
 
-// Componente de Contagem (Badge)
+
 const CountBadge = styled.span`
   background-color: ${({ theme }) => theme.colors.primary}15;
   color: ${({ theme }) => theme.colors.primary};
@@ -231,7 +231,7 @@ const CountBadge = styled.span`
   font-weight: 600;
 `;
 
-// Componentes para Visão em Cascata
+
 const TreeContainer = styled.div`
   padding: 0;
 `;
@@ -318,23 +318,19 @@ const ActionButton = styled.button`
   }
 `;
 
-// Componente Principal
+
 const WorkspacePage: React.FC = () => {
   const { t } = useTypedTranslation();
   const { user } = useAuthContext();
   const navigate = useNavigate();
-  
-  // Hooks de dados
   const { activeTask, get: getTasks } = useTask();
   const { activeDocument, get: getDocuments } = useDocument();
   const { activeFolder, get: getFolders } = useFolder();
   const { activeUser } = useUser();
   
-  // Estados
   const [expandedFolders, setExpandedFolders] = useState<Record<number, boolean>>({});
   const [selectedNode, setSelectedNode] = useState<{ type: 'folder' | 'document', id: number } | null>(null);
   
-  // Carregar dados
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -351,26 +347,26 @@ const WorkspacePage: React.FC = () => {
     loadData();
   }, []);
   
-  // Tarefas pendentes do usuário atual
+  
   const myPendingTasks = activeTask.filter(task => 
     task.AssignedId === user?.UserId && 
-    (task.Status === 1 || task.Status === 2) // Pendente ou Em Progresso
+    (task.Status === 1 || task.Status === 2) 
   );
   
-  // Documentos com validações pendentes (onde o usuário atual é o validador)
+ 
   const pendingValidations = activeDocument.filter(doc => 
     doc.ValidatorId === user?.UserId && 
-    doc.ValidationStatus === 0 // Pendente de validação
+    doc.ValidationStatus === 0 
   );
   
-  // Preparando dados para a visualização em cascata
+  
   const buildTree = activeFolder.filter(folder => !folder.ParentFolderId).map(folder => ({
     ...folder,
     children: activeFolder.filter(child => child.ParentFolderId === folder.FolderId),
     documents: activeDocument.filter(doc => doc.FolderId === folder.FolderId)
   }));
   
-  // Funções auxiliares
+  
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -385,19 +381,18 @@ const WorkspacePage: React.FC = () => {
   };
   
   const handleTaskClick = (taskId: number) => {
-    // Navegar para detalhes da tarefa ou abrir modal
+    
     console.log("Clicou na tarefa:", taskId);
-    navigate(`/task`); // Alterar conforme a rota de detalhes da tarefa
+    navigate(`/task`); 
   };
   
   const handleDocumentClick = (documentId: number) => {
     navigate(`/document/details/${documentId}`);
   };
   
-  // Renderização de componentes da árvore
   const renderTreeNode = (node: any, level = 0) => {
     if (node.FolderId) {
-      // É uma pasta
+    
       const isExpanded = expandedFolders[node.FolderId] || false;
       const isSelected = selectedNode?.type === 'folder' && selectedNode?.id === node.FolderId;
       
@@ -437,7 +432,7 @@ const WorkspacePage: React.FC = () => {
         </React.Fragment>
       );
     } else {
-      // É um documento
+      
       const isSelected = selectedNode?.type === 'document' && selectedNode?.id === node.DocumentId;
       
       return (
@@ -479,7 +474,7 @@ const WorkspacePage: React.FC = () => {
     }
   };
   
-  // Renderização do componente
+  
   return (
     <PageLayout 
       title={t("workspace.title") || "Workspace"}
@@ -535,7 +530,7 @@ const WorkspacePage: React.FC = () => {
             </SectionContent>
           </SectionCard>
 
-          {/* Validações Pendentes */}
+          {}
           <SectionCard>
             <SectionHeader>
               <SectionTitle>
