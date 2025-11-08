@@ -4,15 +4,9 @@ import { useNavigate } from "react-router-dom";
 import {
   FiCheckSquare,
   FiFile,
-  FiClock,
-  FiFolderPlus,
   FiChevronRight,
   FiChevronDown,
   FiExternalLink,
-  FiCheckCircle,
-  FiXCircle,
-  FiAlertCircle,
-  FiPlus,
   FiCalendar
 } from "react-icons/fi";
 import { HiFolder, HiDocumentText } from "react-icons/hi";
@@ -20,7 +14,6 @@ import { useAuthContext } from "../../context/AuthContext";
 import { useTask } from "../task/useTask";
 import { useDocument } from "../document/useDocument";
 import { useFolder } from "../folder/useFolder";
-import { useUser } from "../user/useUser";
 import { useTypedTranslation } from "../../context/LanguageContext";
 import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
@@ -231,28 +224,6 @@ const CountBadge = styled.span`
   font-weight: 600;
 `;
 
-
-const TreeContainer = styled.div`
-  padding: 0;
-`;
-
-const StatsBar = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  padding: 12px 20px;
-  background: ${({ theme }) => theme.colors.background};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  gap: 16px;
-  
-  span {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    color: ${({ theme }) => theme.colors.muted};
-  }
-`;
-
 const TreeNode = styled.div<{ $level: number }>`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   
@@ -301,32 +272,15 @@ const NodeMeta = styled.div`
   color: ${({ theme }) => theme.colors.muted};
 `;
 
-const ActionButton = styled.button`
-  background: none;
-  border: none;
-  color: ${({ theme }) => theme.colors.primary};
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  font-size: 14px;
-  border-radius: 4px;
-  
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary}10;
-  }
-`;
-
 
 const WorkspacePage: React.FC = () => {
   const { t } = useTypedTranslation();
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const { activeTask, get: getTasks } = useTask();
-  const { activeDocument, get: getDocuments } = useDocument();
-  const { activeFolder, get: getFolders } = useFolder();
-  const { activeUser } = useUser();
+  const { get: getDocuments } = useDocument();
+  const { get: getFolders } = useFolder();
+
   const { userValidatorDocuments } = useDocument()
 
   const [expandedFolders, setExpandedFolders] = useState<Record<number, boolean>>({});
@@ -358,11 +312,11 @@ const WorkspacePage: React.FC = () => {
   const pendingValidations = userValidatorDocuments.filter(document => document.IsActive === true)
 
 
-  const buildTree = activeFolder.filter(folder => !folder.ParentFolderId).map(folder => ({
-    ...folder,
-    children: activeFolder.filter(child => child.ParentFolderId === folder.FolderId),
-    documents: activeDocument.filter(doc => doc.FolderId === folder.FolderId)
-  }));
+  // const buildTree = activeFolder.filter(folder => !folder.ParentFolderId).map(folder => ({
+  //   ...folder,
+  //   children: activeFolder.filter(child => child.ParentFolderId === folder.FolderId),
+  //   documents: activeDocument.filter(doc => doc.FolderId === folder.FolderId)
+  // }));
 
 
   const formatDate = (dateString?: string) => {
