@@ -42,9 +42,23 @@ export const TaskForm: React.FC<{
   onCancel: () => void;
   onSave: (data: Partial<Task>) => void;
 }> = ({ initial = {}, onCancel, onSave }) => {
+
+
+  const formatDateForInput = (dateString?: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "";
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "";
+    }
+  };
+
   const [Title, setTitle] = useState(initial.Title ?? "");
   const [Description, setDescription] = useState(initial.Description ?? "");
-  const [DueDate, setDueDate] = useState(initial.DueDate ?? "");
+  const [DueDate, setDueDate] = useState(formatDateForInput(initial.DueDate));
   const [Priority, setPriority] = useState(initial.Priority ?? 0);
   const [Status, setStatus] = useState(initial.Status ?? 0);
   const [AssigneeId, setAssigneeId] = useState(initial.AssigneeId ?? 0);
@@ -56,11 +70,12 @@ export const TaskForm: React.FC<{
   useEffect(() => {
     setTitle(initial.Title ?? "");
     setDescription(initial.Description ?? "");
-    setDueDate(initial.DueDate ?? "");
+    setDueDate(formatDateForInput(initial.DueDate));
     setPriority(initial.Priority ?? 0);
     setStatus(initial.Status ?? 0);
     setAssigneeId(initial.AssigneeId ?? 0);
   }, [initial.Title, initial.Description, initial.DueDate, initial.Priority, initial.Status, initial.AssigneeId]);
+
 
   const validateFields = () => {
     const isTitleValid = Title.trim().length > 0;
