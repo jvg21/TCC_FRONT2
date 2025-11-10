@@ -17,6 +17,22 @@ import {
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
+<<<<<<< Updated upstream
+=======
+import { useReports } from './useReports';
+import type { ReportsData } from './types';
+
+const Page = {
+  surface: (t: any) => t?.colors?.surface ?? (t?.isDark ? '#0b1220' : '#ffffff'),
+  surfaceAlt: (t: any) => t?.colors?.surfaceAlt ?? (t?.isDark ? '#0f172a' : '#f7fafc'),
+  border: (t: any) => t?.colors?.border ?? (t?.isDark ? '#2d3748' : '#e2e8f0'),
+  text: (t: any) => t?.colors?.text ?? (t?.isDark ? '#e5e7eb' : '#1f2937'),
+  textMuted: (t: any) => t?.colors?.textMuted ?? (t?.isDark ? '#9ca3af' : '#4a5568'),
+  primary: (t: any) => t?.colors?.primary ?? '#6366f1',
+  textStrong: (t: any) => t?.colors?.textStrong ?? (t?.isDark ? '#ffffff' : '#111827'),
+};
+
+>>>>>>> Stashed changes
 const ResponsivePageContainer = styled.div`
   padding: 20px;
   max-width: 100%;
@@ -77,9 +93,22 @@ const ResponsiveFilterSection = styled.div`
 const ResponsiveFilterLabel = styled.label`
   display: flex;
   align-items: center;
+<<<<<<< Updated upstream
   gap: 5px;
   font-weight: 500;
   
+=======
+  gap: 8px;
+  font-weight: 700;
+  color: ${({ theme }) => Page.text(theme)};
+  background: ${({ theme }) => Page.surface(theme)};
+  border: 1px solid ${({ theme }) => Page.border(theme)};
+  border-radius: 10px;
+  padding: 6px 10px;
+
+  svg { color: ${({ theme }) => Page.primary(theme)}; }
+
+>>>>>>> Stashed changes
   @media (max-width: 768px) {
     margin-bottom: 5px;
   }
@@ -198,7 +227,12 @@ const ResponsiveCardValue = styled.div`
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 10px;
+<<<<<<< Updated upstream
   
+=======
+  color: ${({ theme }) => Page.textStrong(theme)};
+
+>>>>>>> Stashed changes
   @media (max-width: 768px) {
     font-size: 28px;
   }
@@ -284,9 +318,15 @@ const ResponsiveStatLabel = styled.div`
 
 const ResponsiveStatValue = styled.div`
   font-size: 24px;
+<<<<<<< Updated upstream
   font-weight: 600;
   color: #2d3748;
   
+=======
+  font-weight: 700;
+  color: ${({ theme }) => Page.textStrong(theme)};
+
+>>>>>>> Stashed changes
   @media (max-width: 768px) {
     font-size: 20px;
   }
@@ -324,8 +364,14 @@ const ResponsiveBarChartContainer = styled.div`
 const ResponsiveBar = styled.div<{ height: number }>`
   width: 40px;
   height: ${props => props.height}%;
+<<<<<<< Updated upstream
   min-height: 20px;
   background: #4299e1;
+=======
+  /* min-height menor para valores pequenos sem distorcer o gráfico */
+  min-height: 6%;
+  background: ${({ theme }) => Page.primary(theme)};
+>>>>>>> Stashed changes
   border-radius: 4px 4px 0 0;
   position: relative;
   display: flex;
@@ -339,7 +385,7 @@ const ResponsiveBar = styled.div<{ height: number }>`
 
 const ResponsiveBarValue = styled.span`
   position: absolute;
-  top: -25px;
+  top: -22px;
   font-size: 12px;
   font-weight: 500;
 `;
@@ -409,8 +455,20 @@ const ResponsiveChartContainer = styled.div`
   }
 `;
 
+<<<<<<< Updated upstream
 import { useReports } from './useReports';
 import type { ReportsData } from './types';
+=======
+/** --------- UTIL: arredonda o máximo para 1–2–5×10ⁿ --------- */
+const getNiceMax = (v: number) => {
+  const value = Math.max(1, v);
+  const exp = Math.floor(Math.log10(value));
+  const base = Math.pow(10, exp);
+  const candidates = [1, 2, 5, 10].map(m => m * base);
+  const nice = candidates.find(c => c >= value) ?? 10 * base;
+  return nice;
+};
+>>>>>>> Stashed changes
 
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -486,7 +544,10 @@ const ReportsPage: React.FC = () => {
     topUsers: aiUsersReportData ? aiUsersReportData : []
   };
 
+<<<<<<< Updated upstream
   // Label do período para cabeçalho do PDF
+=======
+>>>>>>> Stashed changes
   const periodLabel = () => {
     if (timeFilter === 'custom' && startDate && endDate) {
       return `${t('reports.filters.start_date')}: ${startDate} • ${t('reports.filters.end_date')}: ${endDate}`;
@@ -581,8 +642,12 @@ const ReportsPage: React.FC = () => {
     const imgWidth = contentWidth;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
+<<<<<<< Updated upstream
     // Define a altura visível por página (em coordenadas do canvas)
     const contentHeightMM = pageHeight - 22 - 12; // header≈20 -> começa em 22 | footer≈10 -> termina -12
+=======
+    const contentHeightMM = pageHeight - 22 - 12;
+>>>>>>> Stashed changes
     const canvasPageHeight = (contentHeightMM * canvas.width) / contentWidth;
 
     let sY = 0;
@@ -792,6 +857,16 @@ const ReportsPage: React.FC = () => {
     }
   }
 
+<<<<<<< Updated upstream
+=======
+  /* --------- Escala “nice” para o gráfico de barras --------- */
+  const rawMaxDocuments = Math.max(
+    1,
+    ...(documentsData.byPeriod?.map((m: any) => m.totalDocumentos) ?? [1])
+  );
+  const yMaxDocuments = getNiceMax(rawMaxDocuments);
+
+>>>>>>> Stashed changes
   return (
     <ResponsivePageContainer>
       <ResponsivePageHeader>
@@ -933,6 +1008,7 @@ const ReportsPage: React.FC = () => {
           {t('reports.sections.documents_created_period')}
         </ResponsiveSectionHeading>
         <ResponsiveBarChartContainer>
+<<<<<<< Updated upstream
           {documentsData.byPeriod.map((month, index) => {
             const maxTotal = Math.max(1, ...documentsData.byPeriod.map(m => m.totalDocumentos));
             return (
@@ -940,6 +1016,14 @@ const ReportsPage: React.FC = () => {
                 key={index}
                 height={(month.totalDocumentos / maxTotal) * 100}
               >
+=======
+          {documentsData.byPeriod.map((month: any, index: number) => {
+            // altura normalizada usando yMaxDocuments e com folga superior (<=96%)
+            const normalized = (month.totalDocumentos / yMaxDocuments) * 100;
+            const height = Math.min(96, Math.max(6, normalized));
+            return (
+              <ResponsiveBar key={index} height={height}>
+>>>>>>> Stashed changes
                 <ResponsiveBarValue>{month.totalDocumentos}</ResponsiveBarValue>
                 <ResponsiveBarLabel>{month.nomeMes.substring(0, 3)}</ResponsiveBarLabel>
               </ResponsiveBar>
@@ -1005,7 +1089,11 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
+<<<<<<< Updated upstream
       {/* 🧾 TAREFAS */}
+=======
+      {/* Tarefas */}
+>>>>>>> Stashed changes
       <ResponsiveDetailedSection ref={tasksRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1071,7 +1159,11 @@ const ReportsPage: React.FC = () => {
         </ResponsiveChartContainer>
       </ResponsiveDetailedSection>
 
+<<<<<<< Updated upstream
       {/* 🤖 USO DE IA */}
+=======
+      {/* IA */}
+>>>>>>> Stashed changes
       <ResponsiveDetailedSection ref={aiRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1128,7 +1220,11 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
+<<<<<<< Updated upstream
       {/* 👥 ATIVIDADE DOS USUÁRIOS */}
+=======
+      {/* Usuários */}
+>>>>>>> Stashed changes
       <ResponsiveDetailedSection ref={usersRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1166,3 +1262,4 @@ const ReportsPage: React.FC = () => {
 };
 
 export default ReportsPage;
+
