@@ -361,7 +361,7 @@ const ResponsiveBarChartContainer = styled.div`
   align-items: flex-end;
   height: 200px;
   margin-top: 20px;
-  overflow-x: auto;
+  padding:50px;
   padding-bottom: 10px;
 
   @media (max-width: 768px) {
