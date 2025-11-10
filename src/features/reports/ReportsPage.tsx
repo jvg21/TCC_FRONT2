@@ -27,7 +27,7 @@ const Page = {
   text: (t: any) => t?.colors?.text ?? (t?.isDark ? '#e5e7eb' : '#1f2937'),
   textMuted: (t: any) => t?.colors?.textMuted ?? (t?.isDark ? '#9ca3af' : '#4a5568'),
   primary: (t: any) => t?.colors?.primary ?? '#6366f1',
-  
+
   textStrong: (t: any) => t?.colors?.textStrong ?? (t?.isDark ? '#ffffff' : '#111827'),
 };
 
@@ -515,7 +515,7 @@ const ReportsPage: React.FC = () => {
   const tasksReportData = reportsData ? reportsData.tasks : null;
   const taskPrioritysReportData = reportsData ? reportsData.taskPrioritys : null;
   const aiReportData = reportsData ? reportsData.ai : null;
-  const userActivityData = reportsData ? reportsData.userActivity || [] : [];
+  const userActivityData = reportsData ? reportsData.userActivity  : null;
 
   const documentsData = {
     total: documentReportData?.totalDocuments ?? 0,
@@ -557,7 +557,7 @@ const ReportsPage: React.FC = () => {
     topUsers: aiUsersReportData ?? []
   };
 
-  
+
   const periodLabel = () => {
     if (timeFilter === 'custom' && startDate && endDate) {
       return `${t('reports.filters.start_date')}: ${startDate} • ${t('reports.filters.end_date')}: ${endDate}`;
@@ -581,7 +581,7 @@ const ReportsPage: React.FC = () => {
 
     node.style.overflow = 'visible';
     node.style.width = 'auto';
-    node.style.background = '#ffffff'; 
+    node.style.background = '#ffffff';
 
     const overflowNodes: Array<{ el: HTMLElement; prev: { overflowX: string; width: string } }> = [];
     node.querySelectorAll<HTMLElement>('*').forEach(el => {
@@ -645,7 +645,7 @@ const ReportsPage: React.FC = () => {
     const contentWidth = pageWidth - margin * 2;
     const imgWidth = contentWidth;
 
-    const contentHeightMM = pageHeight - 22 - 12; 
+    const contentHeightMM = pageHeight - 22 - 12;
     const canvasPageHeight = (contentHeightMM * canvas.width) / contentWidth;
 
     let sY = 0;
@@ -704,7 +704,7 @@ const ReportsPage: React.FC = () => {
     pdf.save('Relatorios_Documentin.pdf');
   };
 
-  
+
   const handleApplyFilter = async () => {
     setLoading(true);
 
@@ -795,7 +795,7 @@ const ReportsPage: React.FC = () => {
   );
   const yMaxDocuments = getNiceMax(rawMaxDocuments);
 
-  
+
   return (
     <ResponsivePageContainer>
       <ResponsivePageHeader>
@@ -1000,7 +1000,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
-      {}
+      { }
       <ResponsiveDetailedSection ref={tasksRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1066,7 +1066,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveChartContainer>
       </ResponsiveDetailedSection>
 
-      {}
+      { }
       <ResponsiveDetailedSection ref={aiRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1140,22 +1140,17 @@ const ReportsPage: React.FC = () => {
               <ResponsiveTh>{t('reports.sections.user')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.modifications')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.comments')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.approvals')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.total_activity')}</ResponsiveTh>
+              <ResponsiveTh>{t('reports.sections.validations')}</ResponsiveTh>
             </tr>
           </thead>
           <tbody>
-            {userActivityData.map((_: any, index: number) => (
+            {userActivityData!.map((item: any, index: number) => (
               <tr key={index}>
-                <ResponsiveTd>{'mengo'}</ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd>
-                  <ResponsiveProgressBar>
-                    <ResponsiveProgressFill percentage={(1 / (1 || 1)) * 100} color="#4299e1" />
-                  </ResponsiveProgressBar>
-                </ResponsiveTd>
+                <ResponsiveTd>{item.username}</ResponsiveTd>
+                <ResponsiveTd>{item.modifications}</ResponsiveTd>
+                <ResponsiveTd>{item.comments}</ResponsiveTd>
+                <ResponsiveTd>{item.approvals}</ResponsiveTd>
+              
               </tr>
             ))}
           </tbody>
