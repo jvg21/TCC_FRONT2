@@ -525,6 +525,7 @@ const ReportsPage: React.FC = () => {
     pending: documentReportData?.pendingDocuments ?? 0,
     byPeriod: documentMonthReportData ?? []
   };
+  
 
   const validationsData = {
     total: validationsReportData?.totalValidations ?? 0,
