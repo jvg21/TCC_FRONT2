@@ -235,7 +235,7 @@ const DocumentDetailsPage: React.FC = () => {
       setDocumentLoading(true);
       await update(document.DocumentId, { ...document, Content: documentContent, Title: documentTitle });
       notificationActions.showNotification(t("documents.updateSuccess") || 'Documento atualizado com sucesso!', 'success');
-      await updateValidationStatus(document.DocumentId, null, validatorNote);
+      // await updateValidationStatus(document.DocumentId, null, validatorNote);
       setValidationStatus(0);
     } catch {
       notificationActions.showError(t("messages.error.generic") || 'Erro ao salvar documento');
