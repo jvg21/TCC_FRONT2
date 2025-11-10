@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +24,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -39,4 +42,30 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Estilos globais para garantir a visibilidade do menu de sugestões */
+.bytemd-suggestions {
+  position: absolute !important;
+  z-index: 9999 !important;
+  background-color: white !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  min-width: 150px !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  display: block !important;
+}
+
+.bytemd-suggestion-item {
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  color: #333 !important;
+  font-size: 14px !important;
+}
+
+.bytemd-suggestion-item:hover,
+.bytemd-suggestion-item.active {
+  background-color: #e6f7ff !important;
 }
