@@ -441,7 +441,8 @@ export const enTranslations = {
     is_active: "Status",
     logout: "Logout",
     success: "Login out successfully!",
-    error: "Login failed. Check your credentials."
+    error: "Login failed. Check your credentials.",
+    logout_success: "Logout successful!"
   },
 
   // Password recovery

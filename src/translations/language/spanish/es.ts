@@ -521,7 +521,8 @@ export const esTranslations = {
     is_active: "Estado",
     logout: "Cerrar Sesión",
     success: "¡Cierre de sesión exitoso!",
-    error: "Error de inicio de sesión. Verifica tus credenciales."
+    error: "Error de inicio de sesión. Verifica tus credenciales.",
+    logout_success: "¡Cierre de sesión exitoso!"
   },
 
   // Recuperación de contraseña

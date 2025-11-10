@@ -437,6 +437,8 @@ export const ptTranslations = {
     }
   },
 
+  
+
   // Login
   login: {
     title: "Documentin",
@@ -452,7 +454,8 @@ export const ptTranslations = {
     is_active: "Status",
     logout: "Sair",
     success: "Login realizado com sucesso!",
-    error: "Login falhou. Verifique suas credenciais."
+    error: "Login falhou. Verifique suas credenciais.",
+    logout_success: "Logout realizado com sucesso!"
   },
 
   // Recuperação de senha
