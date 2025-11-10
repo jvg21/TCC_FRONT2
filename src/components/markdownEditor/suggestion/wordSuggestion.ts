@@ -315,7 +315,7 @@ class WordSuggestionSystem {
    * Remove entradas antigas do cache quando atinge o tamanho máximo
    */
   private pruneCache(): void {
-    const now = Date.now();
+    // const now = Date.now();
     const cacheEntries = Object.entries(this.cache);
 
     cacheEntries.sort((a, b) => a[1].timestamp - b[1].timestamp);

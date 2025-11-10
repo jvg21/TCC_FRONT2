@@ -260,7 +260,7 @@ export function suggestionPlugin(options: SuggestionsPluginOptions): BytemdPlugi
         // Abordagem alternativa: monitorar div do editor
         const editorDiv = document.querySelector('.CodeMirror');
         if (editorDiv) {
-          const observer = new MutationObserver((mutations) => {
+          const observer = new MutationObserver((_) => {
             if (inputTimer) {
               clearTimeout(inputTimer);
             }
