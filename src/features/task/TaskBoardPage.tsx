@@ -448,7 +448,7 @@ const TaskBoardPage: React.FC = () => {
 
     const task = activeTask.find((t) => t.TaskId === id);
     if (task && task.Status?.toString() !== statusValue) {
-      update(task.TaskId, { Status: parseInt(statusValue, 10) });
+      update(task.TaskId, { Title: task.Title, Description: task.Description, DueDate: task.DueDate, AssigneeId: task.AssigneeId, Status: parseInt(statusValue, 10) });
     }
 
     setIsDragging(false);
@@ -594,4 +594,3 @@ const TaskBoardPage: React.FC = () => {
 };
 
 export default TaskBoardPage;
-
