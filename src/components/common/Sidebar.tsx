@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import {
   FiHome, FiBriefcase, FiUsers, FiGrid, FiFolderPlus, FiCheckSquare, FiFile,
   FiSettings, FiMenu, FiX, FiChevronRight, FiLink2, FiClipboard, FiBarChart2,
 } from 'react-icons/fi';
 import { useAuthContext } from '../../context/AuthContext';
 import { useTypedTranslation } from '../../context/LanguageContext';
+import { useThemeContext } from '../../context/ThemeContext';
+import type { Theme } from '../../styles/theme';
 
 
 const parseHex = (hex: string) => {
@@ -31,13 +33,13 @@ const alpha = (color: string, a: number) => {
 const COLLAPSED_W = 78;
 const EXPANDED_W = 264;
 
-const Wrap = styled.aside<{ $isCollapsed: boolean }>`
+const Wrap = styled.aside<{ $isCollapsed: boolean,theme:Theme }>`
   position: fixed;
   inset: 0 auto 0 0;
   height: 100vh;
   width: ${({ $isCollapsed }) => ($isCollapsed ? `${COLLAPSED_W}px` : `${EXPANDED_W}px`)};
   ${({ theme }) => {
-    const glass = theme.isDark ? 'rgba(9, 13, 23, 0.72)' : 'rgba(255, 255, 255, 0.72)';
+    const glass = theme.colors.background;
     const border = alpha(theme.colors.border, theme.isDark ? 0.35 : 0.45);
     const shadow = theme.isDark ? '0 12px 30px rgba(0,0,0,.35)' : '0 12px 30px rgba(0,0,0,.08)';
     return `
@@ -258,6 +260,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const foldersFlyRef = useRef<HTMLDivElement | null>(null);
   const tasksFlyRef = useRef<HTMLDivElement | null>(null);
   const integrationsFlyRef = useRef<HTMLDivElement | null>(null);
+
+  const {theme} = useThemeContext();
 
   const { user } = useAuthContext();
   const { t } = useTypedTranslation();
