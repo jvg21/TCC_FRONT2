@@ -17,14 +17,12 @@ import { getTaskPriority } from "../../enum/taskPriority";
 import { FormatDate } from "../../utils/FormatDate";
 
 /** ======== LAYOUT ESTILO TRELLO ======== **/
-/* Viewport com rolagem horizontal (tela cheia) */
 const BoardViewport = styled.div`
-  height: calc(100vh - 160px); /* ajuste se o cabeçalho/toolbar tiver altura diferente */
+  height: calc(100vh - 160px);
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 
-  /* Scrollbar discreta */
   &::-webkit-scrollbar {
     height: 10px;
   }
@@ -43,17 +41,15 @@ const BoardViewport = styled.div`
   }
 `;
 
-/* Faixa de colunas lado a lado */
 const BoardContainer = styled.div`
   display: flex;
   align-items: stretch;
   gap: 16px;
   padding: 8px 8px 16px;
   min-height: 100%;
-  width: max-content; /* garante largura conforme qtde de colunas */
+  width: max-content;
 `;
 
-/* Coluna fixa (largura parecida com Trello) */
 const Column = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border-radius: 12px;
@@ -62,7 +58,6 @@ const Column = styled.div`
   flex-direction: column;
   overflow: hidden;
 
-  /* largura fixa e não encolhe, para manter as fases lado a lado */
   flex: 0 0 360px;
   max-height: 100%;
 
@@ -72,7 +67,6 @@ const Column = styled.div`
   }
 `;
 
-/* Cabeçalho “grudado” no topo da coluna */
 const ColumnHeader = styled.div`
   position: sticky;
   top: 0;
@@ -85,7 +79,6 @@ const ColumnHeader = styled.div`
   background: ${({ theme }) => theme.colors.surface};
 `;
 
-/* Título e contador */
 const ColumnTitle = styled.div`
   display: flex;
   align-items: center;
@@ -99,17 +92,17 @@ const StatusIndicator = styled.div<{ status: number }>`
   background: ${({ status }) => {
     switch (status) {
       case 1:
-        return '#ef4444'; /* A fazer / bloqueado */
+        return "#ef4444";
       case 2:
-        return '#f59e0b'; /* Em planejamento */
+        return "#f59e0b";
       case 3:
-        return '#3b82f6'; /* Em andamento */
+        return "#3b82f6";
       case 4:
-        return '#10b981'; /* Concluído */
+        return "#10b981";
       case 5:
-        return '#6b7280'; /* Outros */
+        return "#6b7280";
       default:
-        return '#6b7280';
+        return "#6b7280";
     }
   }};
 `;
@@ -130,8 +123,7 @@ const TaskCount = styled.span`
   font-weight: 600;
 `;
 
-/* Conteúdo com rolagem vertical própria */
-const ColumnContent = styled.div`
+const ColumnContent = styled.div<{ $isOver?: boolean }>`
   flex: 1;
   padding: 12px;
   overflow-y: auto;
@@ -139,7 +131,6 @@ const ColumnContent = styled.div`
   flex-direction: column;
   gap: 12px;
 
-  /* Scrollbar vertical da coluna */
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -148,18 +139,24 @@ const ColumnContent = styled.div`
     border-radius: 8px;
   }
 
+  /* Destaque visual quando é um alvo de drop */
+  outline: ${({ $isOver, theme }) =>
+    $isOver ? `2px dashed ${theme.colors.primary}` : "none"};
+  outline-offset: ${({ $isOver }) => ($isOver ? "0" : "0")};
+  background: ${({ $isOver, theme }) =>
+    $isOver ? (theme.isDark ? "#0b122015" : "#3b82f610") : "transparent"};
+
   @media (max-width: 768px) {
     max-height: none;
   }
 `;
 
-/* Cartões de tarefa */
-const TaskCard = styled.div`
+const TaskCard = styled.div<{ $dragging?: boolean }>`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   padding: 16px;
-  cursor: pointer;
+  cursor: grab;
   transition: all 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
@@ -168,6 +165,14 @@ const TaskCard = styled.div`
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-color: ${({ theme }) => theme.colors.primary}20;
   }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  /* feedback ao arrastar */
+  opacity: ${({ $dragging }) => ($dragging ? 0.6 : 1)};
+  transform: ${({ $dragging }) => ($dragging ? "rotate(1deg)" : "none")};
 `;
 
 const TaskHeader = styled.div`
@@ -247,29 +252,29 @@ const PriorityBadge = styled.div<{ priority: number }>`
   background: ${({ priority }) => {
     switch (priority) {
       case 1:
-        return '#dbeafe';
+        return "#dbeafe";
       case 2:
-        return '#fef3c7';
+        return "#fef3c7";
       case 3:
-        return '#fed7aa';
+        return "#fed7aa";
       case 4:
-        return '#fecaca';
+        return "#fecaca";
       default:
-        return '#f3f4f6';
+        return "#f3f4f6";
     }
   }};
   color: ${({ priority }) => {
     switch (priority) {
       case 1:
-        return '#1e40af';
+        return "#1e40af";
       case 2:
-        return '#92400e';
+        return "#92400e";
       case 3:
-        return '#c2410c';
+        return "#c2410c";
       case 4:
-        return '#dc2626';
+        return "#dc2626";
       default:
-        return '#374151';
+        return "#374151";
     }
   }};
 `;
@@ -287,7 +292,6 @@ const AssigneeAvatar = styled.div`
   font-weight: 600;
 `;
 
-/* Botão de adicionar no fim da coluna */
 const AddTaskButton = styled.button`
   width: 100%;
   padding: 12px;
@@ -347,6 +351,11 @@ const TaskBoardPage: React.FC = () => {
   const [editing, setEditing] = useState<Task | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number>(1);
 
+  // estado para DnD
+  const [draggedTaskId, setDraggedTaskId] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [overStatus, setOverStatus] = useState<string | null>(null);
+
   const modal = useModal();
   const { t } = useTranslation();
   const { activeUser } = useUser();
@@ -404,6 +413,49 @@ const TaskBoardPage: React.FC = () => {
     modal.close();
   };
 
+  // Handlers de Drag & Drop (HTML5)
+  const onTaskDragStart = (e: React.DragEvent, task: Task) => {
+    setDraggedTaskId(task.TaskId);
+    setIsDragging(true);
+    // carrega o id no dataTransfer
+    e.dataTransfer.setData("text/plain", String(task.TaskId));
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const onTaskDragEnd = () => {
+    setIsDragging(false);
+    setDraggedTaskId(null);
+    setOverStatus(null);
+  };
+
+  const onColumnDragOver = (e: React.DragEvent, statusValue: string) => {
+    // necessário para permitir drop
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setOverStatus(statusValue);
+  };
+
+  const onColumnDragLeave = (_e: React.DragEvent, statusValue: string) => {
+    // remove highlight só se ainda está marcado esse status
+    setOverStatus((prev) => (prev === statusValue ? null : prev));
+  };
+
+  const onColumnDrop = (e: React.DragEvent, statusValue: string) => {
+    e.preventDefault();
+    const idText = e.dataTransfer.getData("text/plain");
+    const id = Number(idText || draggedTaskId);
+    if (!id) return;
+
+    const task = activeTask.find((t) => t.TaskId === id);
+    if (task && task.Status?.toString() !== statusValue) {
+      update(task.TaskId, { Status: parseInt(statusValue, 10) });
+    }
+
+    setIsDragging(false);
+    setDraggedTaskId(null);
+    setOverStatus(null);
+  };
+
   return (
     <PageLayout
       title={(t("tasks.task_board") as string) || "Task Board"}
@@ -413,7 +465,6 @@ const TaskBoardPage: React.FC = () => {
         </Button>
       }
     >
-      {/* Viewport com rolagem horizontal */}
       <BoardViewport>
         <BoardContainer>
           {getTaskStatus(t).map((status) => {
@@ -429,13 +480,25 @@ const TaskBoardPage: React.FC = () => {
                   <TaskCount>{columnTasks.length}</TaskCount>
                 </ColumnHeader>
 
-                <ColumnContent>
+                <ColumnContent
+                  $isOver={overStatus === status.value}
+                  onDragOver={(e) => onColumnDragOver(e, status.value)}
+                  onDragLeave={(e) => onColumnDragLeave(e, status.value)}
+                  onDrop={(e) => onColumnDrop(e, status.value)}
+                >
                   {columnTasks.length > 0 ? (
                     <>
                       {columnTasks.map((task) => (
                         <TaskCard
                           key={task.TaskId}
-                          onClick={() => handleEdit(task)}
+                          draggable
+                          $dragging={draggedTaskId === task.TaskId}
+                          onDragStart={(e) => onTaskDragStart(e, task)}
+                          onDragEnd={onTaskDragEnd}
+                          onClick={() => {
+                            if (isDragging) return; // evita abrir modal ao soltar
+                            handleEdit(task);
+                          }}
                         >
                           <TaskHeader>
                             <TaskTitle>{task.Title}</TaskTitle>
@@ -460,7 +523,10 @@ const TaskBoardPage: React.FC = () => {
                               {task.DueDate && (
                                 <MetaItem>
                                   <FiCalendar size={12} />
-                                  {FormatDate(task.DueDate, t("date_format") as string)}
+                                  {FormatDate(
+                                    task.DueDate,
+                                    t("date_format") as string
+                                  )}
                                 </MetaItem>
                               )}
 
@@ -492,7 +558,9 @@ const TaskBoardPage: React.FC = () => {
                         <EmptyIcon>
                           <FiPlus size={20} />
                         </EmptyIcon>
-                        <div>{(t("tasks.no_tasks") as string) || "Nenhuma tarefa"}</div>
+                        <div>
+                          {(t("tasks.no_tasks") as string) || "Nenhuma tarefa"}
+                        </div>
                       </EmptyColumn>
                       <AddTaskButton
                         onClick={() => handleAdd(parseInt(status.value))}
@@ -526,3 +594,4 @@ const TaskBoardPage: React.FC = () => {
 };
 
 export default TaskBoardPage;
+
