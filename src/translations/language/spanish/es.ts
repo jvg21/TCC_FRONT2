@@ -23,7 +23,9 @@ export const esTranslations = {
     cascadeview: "Vista en Cascada",
     taskboard: "Tablero de Tareas",
     reports: "Reportes",
-    cancel: "Cancelar"
+    cancel: "Cancelar",
+    main: "Principal",
+    more: "Más"
   },
 
   // Acciones generales
