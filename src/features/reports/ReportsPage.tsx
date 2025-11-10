@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import {
@@ -13,6 +13,9 @@ import {
   FiClock,
 } from 'react-icons/fi';
 
+// ⬇️ PDF
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const ResponsivePageContainer = styled.div`
   padding: 20px;
@@ -243,28 +246,6 @@ const ResponsiveSectionTitle = styled.h2`
   }
 `;
 
-const ResponsiveDownloadButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 4px;
-  background: #f7fafc;
-  color: #4a5568;
-  border: 1px solid #e2e8f0;
-  cursor: pointer;
-  font-weight: 500;
-  
-  &:hover {
-    background: #edf2f7;
-  }
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    justify-content: center;
-  }
-`;
-
 const ResponsiveStatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -428,7 +409,6 @@ const ResponsiveChartContainer = styled.div`
   }
 `;
 
-
 import { useReports } from './useReports';
 import type { ReportsData } from './types';
 
@@ -440,6 +420,13 @@ const ReportsPage: React.FC = () => {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+
+  // Refs das seções (para PDF)
+  const documentsRef = useRef<HTMLDivElement | null>(null);
+  const validationsRef = useRef<HTMLDivElement | null>(null);
+  const tasksRef = useRef<HTMLDivElement | null>(null);
+  const aiRef = useRef<HTMLDivElement | null>(null);
+  const usersRef = useRef<HTMLDivElement | null>(null);
 
   const { getAllReports, clearFilters, updateFilters, getAIUserStats, getAIStats, getDocumentMonthsStats, getTaskPriorityStats, getValidationStats, getValidatorsStats, getDocumentStats, getTaskStats } = useReports();
 
@@ -453,7 +440,6 @@ const ReportsPage: React.FC = () => {
   const aiReportData = reportsData ? reportsData.ai : null;
   const userActivityData = reportsData ? reportsData.userActivity || [] : [];
 
-
   useEffect(() => {
     const fetchData = async () => {
       const allReports = await getAllReports();
@@ -461,8 +447,6 @@ const ReportsPage: React.FC = () => {
     }
     fetchData();
   }, []);
-
-
 
   const documentsData = {
     total: documentReportData ? documentReportData.totalDocuments : 0,
@@ -478,7 +462,7 @@ const ReportsPage: React.FC = () => {
     approved: validationsReportData ? validationsReportData.totalApproved : 0,
     rejected: validationsReportData ? validationsReportData.totalRejected : 0,
     returned: validationsReportData ? validationsReportData.totalInRevision : 0,
-    approvalRate: validationsReportData ? (validationsReportData.totalApproved / validationsReportData.totalValidations * 100).toFixed(2) : 0,
+    approvalRate: validationsReportData ? (validationsReportData.totalApproved / Math.max(validationsReportData.totalValidations, 1) * 100).toFixed(2) : 0,
     topValidators: validatorsReportData ? validatorsReportData : []
   };
 
@@ -502,17 +486,179 @@ const ReportsPage: React.FC = () => {
     topUsers: aiUsersReportData ? aiUsersReportData : []
   };
 
-
-  const handleDownloadReport = () => {
-    alert('Download de relatório em PDF iniciado');
+  // Label do período para cabeçalho do PDF
+  const periodLabel = () => {
+    if (timeFilter === 'custom' && startDate && endDate) {
+      return `${t('reports.filters.start_date')}: ${startDate} • ${t('reports.filters.end_date')}: ${endDate}`;
+    }
+    const labels: Record<string, string> = {
+      all: t('reports.filters.all_periods'),
+      today: t('reports.filters.today'),
+      week: t('reports.filters.last_week'),
+      month: t('reports.filters.last_month'),
+      quarter: t('reports.filters.last_quarter'),
+      year: t('reports.filters.last_year'),
+      custom: t('reports.filters.custom')
+    };
+    return labels[timeFilter] || labels.all;
   };
+
+  // Utilitário: prepara canvas mesmo com overflow/scroll
+  const renderNodeToCanvas = async (node: HTMLElement) => {
+    // Força capturar conteúdos com overflow
+    const prevOverflow = node.style.overflow;
+    const prevWidth = node.style.width;
+    const prevBg = node.style.background;
+
+    node.style.overflow = 'visible';
+    node.style.width = 'auto';
+    node.style.background = '#ffffff';
+
+    // Expande containers horizontais para capturar tudo
+    const overflowNodes: Array<{ el: HTMLElement; prev: { overflowX: string; width: string } }> = [];
+    node.querySelectorAll<HTMLElement>('*').forEach(el => {
+      const style = getComputedStyle(el);
+      if (style.overflowX === 'auto' || style.overflowX === 'scroll') {
+        overflowNodes.push({ el, prev: { overflowX: el.style.overflowX, width: el.style.width } });
+        el.style.overflowX = 'visible';
+        if (el.scrollWidth > el.clientWidth) el.style.width = `${el.scrollWidth}px`;
+      }
+    });
+
+    const canvas = await html2canvas(node, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: Math.max(document.documentElement.clientWidth, node.scrollWidth),
+    });
+
+    // Restaura estilos
+    node.style.overflow = prevOverflow;
+    node.style.width = prevWidth;
+    node.style.background = prevBg;
+    overflowNodes.forEach(({ el, prev }) => {
+      el.style.overflowX = prev.overflowX;
+      el.style.width = prev.width;
+    });
+
+    return canvas;
+  };
+
+  // Desenho de header/footer por página
+  const drawHeader = (pdf: jsPDF, title: string, margin: number) => {
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(12);
+    pdf.text(title, margin, 12);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    pdf.text(periodLabel(), margin, 18);
+    pdf.setDrawColor(230, 230, 230);
+    pdf.line(margin, 20, pageWidth - margin, 20);
+  };
+
+  const drawFooter = (pdf: jsPDF, margin: number, pageNum: number) => {
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    pdf.setDrawColor(230, 230, 230);
+    pdf.line(margin, pageHeight - 12, pageWidth - margin, pageHeight - 12);
+    pdf.setFontSize(9);
+    pdf.text(`${t('reports.sections.export_report')} • ${new Date().toLocaleString()}`, margin, pageHeight - 6);
+    pdf.text(`${pageNum}`, pageWidth - margin, pageHeight - 6, { align: 'right' });
+  };
+
+  // Adiciona uma seção (em várias páginas se necessário) ao PDF existente
+  const addSectionToPdf = async (pdf: jsPDF, sectionRef: React.RefObject<HTMLElement>, title: string, pageNumStart: number) => {
+    const node = sectionRef.current;
+    if (!node) return pageNumStart;
+
+    const margin = 12;
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const canvas = await renderNodeToCanvas(node);
+    const contentWidth = pageWidth - margin * 2;
+    const imgWidth = contentWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    // Define a altura visível por página (em coordenadas do canvas)
+    const contentHeightMM = pageHeight - 22 - 12; // header≈20 -> começa em 22 | footer≈10 -> termina -12
+    const canvasPageHeight = (contentHeightMM * canvas.width) / contentWidth;
+
+    let sY = 0;
+    const sWidth = canvas.width;
+
+    const pageCanvas = document.createElement('canvas');
+    const pageCtx = pageCanvas.getContext('2d')!;
+    pageCanvas.width = sWidth;
+    pageCanvas.height = canvasPageHeight;
+
+    let currentPage = pageNumStart;
+    let firstSlice = true;
+
+    while (sY < canvas.height) {
+      if (!firstSlice) {
+        pdf.addPage();
+        currentPage += 1;
+      }
+      drawHeader(pdf, title, margin);
+
+      // recorte
+      const sliceHeight = Math.min(canvasPageHeight, canvas.height - sY);
+      pageCanvas.height = sliceHeight;
+
+      pageCtx.clearRect(0, 0, pageCanvas.width, pageCanvas.height);
+      pageCtx.drawImage(canvas, 0, sY, sWidth, sliceHeight, 0, 0, sWidth, sliceHeight);
+
+      const imgDataPage = pageCanvas.toDataURL('image/png');
+      const pageImgHeightMM = (sliceHeight * imgWidth) / sWidth;
+
+      pdf.addImage(imgDataPage, 'PNG', margin, 22, imgWidth, pageImgHeightMM, undefined, 'FAST');
+
+      drawFooter(pdf, margin, currentPage);
+
+      sY += sliceHeight;
+      firstSlice = false;
+    }
+
+    return currentPage;
+  };
+
+  // 🔘 Exportar TODOS os relatórios em um único PDF
+  const handleExportAll = async () => {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    let pageNum = 1;
+
+    // Para começar com a primeira página já pronta
+    // (drawHeader/drawFooter são chamados dentro de addSectionToPdf)
+
+    const sections = [
+      { ref: documentsRef as React.RefObject<HTMLElement>, title: t('reports.sections.documents') },
+      { ref: validationsRef as React.RefObject<HTMLElement>, title: t('reports.sections.validations') },
+      { ref: tasksRef as React.RefObject<HTMLElement>, title: t('reports.sections.tasks') },
+      { ref: aiRef as React.RefObject<HTMLElement>, title: t('reports.sections.ai_usage') },
+      { ref: usersRef as React.RefObject<HTMLElement>, title: t('reports.sections.user_activity') },
+    ];
+
+    // A primeira seção usa a página já aberta; as subsequentes criam páginas novas dentro da função
+    // Para garantir separação entre seções, adicionamos uma página em branco antes de seções subsequentes
+    for (let i = 0; i < sections.length; i++) {
+      if (i > 0) {
+        pdf.addPage();
+        pageNum += 1;
+      }
+      pageNum = await addSectionToPdf(pdf, sections[i].ref, sections[i].title, pageNum);
+    }
+
+    pdf.save('Relatorios_Documentin.pdf');
+  };
+
   const handleApplyFilter = async () => {
     setLoading(true);
 
     try {
-      let dateFilters = {};
+      let dateFilters: any = {};
 
-      
       const formatDateUTCMinus3 = (date:Date) => {
         const utcMinus3 = new Date(date.getTime() - 3 * 60 * 60 * 1000);
         return utcMinus3.toISOString().split('T')[0];
@@ -606,7 +752,6 @@ const ReportsPage: React.FC = () => {
     }
   };
 
-
   const handleClearFilters = async () => {
     setLoading(true);
 
@@ -628,7 +773,6 @@ const ReportsPage: React.FC = () => {
         getTaskPriorityStats(),
       ]);
 
-      
       const newData = {
         documents,
         documentMonths,
@@ -704,6 +848,11 @@ const ReportsPage: React.FC = () => {
           <ResponsiveButton onClick={handleClearFilters} disabled={loading}>
             <FiFilter /> {t('reports.filters.clear_filters')}
           </ResponsiveButton>
+
+          {/* 🔘 ÚNICO BOTÃO: Exporta todos os relatórios */}
+          <ResponsiveButton onClick={handleExportAll} disabled={loading}>
+            <FiDownload /> {t('reports.sections.export_report')}
+          </ResponsiveButton>
         </ResponsiveButtonGroup>
       </ResponsiveFilterSection>
 
@@ -753,14 +902,12 @@ const ReportsPage: React.FC = () => {
         </ResponsiveReportCard>
       </ResponsiveReportsGrid>
 
-      <ResponsiveDetailedSection>
+      {/* 📄 DOCUMENTOS */}
+      <ResponsiveDetailedSection ref={documentsRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
             <FiFileText /> {t('reports.sections.documents')}
           </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
         </ResponsiveSectionHeader>
 
         <ResponsiveStatsGrid>
@@ -786,26 +933,27 @@ const ReportsPage: React.FC = () => {
           {t('reports.sections.documents_created_period')}
         </ResponsiveSectionHeading>
         <ResponsiveBarChartContainer>
-          {documentsData.byPeriod.map((month, index) => (
-            <ResponsiveBar
-              key={index}
-              height={(month.totalDocumentos / Math.max(...documentsData.byPeriod.map(m => m.totalDocumentos))) * 100}
-            >
-              <ResponsiveBarValue>{month.totalDocumentos}</ResponsiveBarValue>
-              <ResponsiveBarLabel>{month.nomeMes.substring(0, 3)}</ResponsiveBarLabel>
-            </ResponsiveBar>
-          ))}
+          {documentsData.byPeriod.map((month, index) => {
+            const maxTotal = Math.max(1, ...documentsData.byPeriod.map(m => m.totalDocumentos));
+            return (
+              <ResponsiveBar
+                key={index}
+                height={(month.totalDocumentos / maxTotal) * 100}
+              >
+                <ResponsiveBarValue>{month.totalDocumentos}</ResponsiveBarValue>
+                <ResponsiveBarLabel>{month.nomeMes.substring(0, 3)}</ResponsiveBarLabel>
+              </ResponsiveBar>
+            );
+          })}
         </ResponsiveBarChartContainer>
       </ResponsiveDetailedSection>
 
-      <ResponsiveDetailedSection>
+      {/* ✅ VALIDAÇÕES */}
+      <ResponsiveDetailedSection ref={validationsRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
             <FiCheckCircle /> {t('reports.sections.validations')}
           </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
         </ResponsiveSectionHeader>
 
         <ResponsiveStatsGrid>
@@ -846,7 +994,7 @@ const ReportsPage: React.FC = () => {
                 <ResponsiveTd>
                   <ResponsiveProgressBar>
                     <ResponsiveProgressFill
-                      percentage={(validator.totalValidations / validationsData.total) * 100}
+                      percentage={(validator.totalValidations / Math.max(validationsData.total, 1)) * 100}
                       color="#48bb78"
                     />
                   </ResponsiveProgressBar>
@@ -857,14 +1005,12 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
-      <ResponsiveDetailedSection>
+      {/* 🧾 TAREFAS */}
+      <ResponsiveDetailedSection ref={tasksRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
             <FiList /> {t('reports.sections.tasks')}
           </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
         </ResponsiveSectionHeader>
 
         <ResponsiveStatsGrid>
@@ -896,7 +1042,7 @@ const ReportsPage: React.FC = () => {
               <ResponsiveStatValue>{tasksData.byPriority.high}</ResponsiveStatValue>
               <ResponsiveProgressBar>
                 <ResponsiveProgressFill
-                  percentage={(tasksData.byPriority.high / tasksData.total) * 100}
+                  percentage={(tasksData.byPriority.high / Math.max(tasksData.total, 1)) * 100}
                   color="#e53e3e"
                 />
               </ResponsiveProgressBar>
@@ -906,7 +1052,7 @@ const ReportsPage: React.FC = () => {
               <ResponsiveStatValue>{tasksData.byPriority.medium}</ResponsiveStatValue>
               <ResponsiveProgressBar>
                 <ResponsiveProgressFill
-                  percentage={(tasksData.byPriority.medium / tasksData.total) * 100}
+                  percentage={(tasksData.byPriority.medium / Math.max(tasksData.total, 1)) * 100}
                   color="#ed8936"
                 />
               </ResponsiveProgressBar>
@@ -916,7 +1062,7 @@ const ReportsPage: React.FC = () => {
               <ResponsiveStatValue>{tasksData.byPriority.low}</ResponsiveStatValue>
               <ResponsiveProgressBar>
                 <ResponsiveProgressFill
-                  percentage={(tasksData.byPriority.low / tasksData.total) * 100}
+                  percentage={(tasksData.byPriority.low / Math.max(tasksData.total, 1)) * 100}
                   color="#38b2ac"
                 />
               </ResponsiveProgressBar>
@@ -925,14 +1071,12 @@ const ReportsPage: React.FC = () => {
         </ResponsiveChartContainer>
       </ResponsiveDetailedSection>
 
-      <ResponsiveDetailedSection>
+      {/* 🤖 USO DE IA */}
+      <ResponsiveDetailedSection ref={aiRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
             <FiCpu /> {t('reports.sections.ai_usage')}
           </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
         </ResponsiveSectionHeader>
 
         <ResponsiveStatsGrid>
@@ -973,7 +1117,7 @@ const ReportsPage: React.FC = () => {
                 <ResponsiveTd>
                   <ResponsiveProgressBar>
                     <ResponsiveProgressFill
-                      percentage={(user.totalRequests / aiData.topUsers[0].totalRequests) * 100}
+                      percentage={(user.totalRequests / Math.max(aiData.topUsers[0]?.totalRequests || 1, 1)) * 100}
                       color="#667eea"
                     />
                   </ResponsiveProgressBar>
@@ -984,14 +1128,12 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
-      <ResponsiveDetailedSection>
+      {/* 👥 ATIVIDADE DOS USUÁRIOS */}
+      <ResponsiveDetailedSection ref={usersRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
             <FiUsers /> {t('reports.sections.user_activity')}
           </ResponsiveSectionTitle>
-          <ResponsiveDownloadButton onClick={handleDownloadReport}>
-            <FiDownload /> {t('reports.sections.export_report')}
-          </ResponsiveDownloadButton>
         </ResponsiveSectionHeader>
 
         <ResponsiveSectionHeading>
