@@ -438,7 +438,7 @@ const ReportsPage: React.FC = () => {
   const tasksReportData = reportsData ? reportsData.tasks : null;
   const taskPrioritysReportData = reportsData ? reportsData.taskPrioritys : null;
   const aiReportData = reportsData ? reportsData.ai : null;
-  const userActivityData = reportsData ? reportsData.userActivity || [] : [];
+  const userActivityData = reportsData ? reportsData.userActivity : [];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1145,25 +1145,17 @@ const ReportsPage: React.FC = () => {
               <ResponsiveTh>{t('reports.sections.user')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.modifications')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.comments')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.approvals')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.total_activity')}</ResponsiveTh>
+              <ResponsiveTh>{t('reports.sections.validations')}</ResponsiveTh>
             </tr>
           </thead>
           <tbody>
-            {userActivityData.map((_, index) => (
+            {userActivityData!.map((item, index) => (
               <tr key={index}>
-                <ResponsiveTd>{'mengo'}</ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
-                <ResponsiveTd>
-                  <ResponsiveProgressBar>
-                    <ResponsiveProgressFill
-                      percentage={(1 / (1 || 1)) * 100}
-                      color="#4299e1"
-                    />
-                  </ResponsiveProgressBar>
-                </ResponsiveTd>
+                <ResponsiveTd>{item.username}</ResponsiveTd>
+                <ResponsiveTd>{item.modifications}</ResponsiveTd>
+                <ResponsiveTd>{item.comments}</ResponsiveTd>
+                <ResponsiveTd>{item.approvals}</ResponsiveTd>
+                
               </tr>
             ))}
           </tbody>

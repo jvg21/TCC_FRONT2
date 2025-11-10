@@ -248,6 +248,10 @@ export const useDocument = () => {
 
       const updatedDocument: Document = transformSingleApiData(data.objeto);
       setDocument((s) => s.map((c) => c.DocumentId === id ? updatedDocument : c));
+      setCreatorDocuments((s) => s.map((c) => c.DocumentId === id ? updatedDocument : c));
+      setUserValidatorDocuments((s) => s.map((c) => c.DocumentId === id ? updatedDocument : c));
+      setUserDocuments((s) => s.map((c) => c.DocumentId === id ? updatedDocument : c));
+
 
       notificationActions.showNotification(t('documents.updateStatusSuccess'), 'success');
 
