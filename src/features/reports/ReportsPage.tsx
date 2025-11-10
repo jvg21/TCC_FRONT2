@@ -13,12 +13,9 @@ import {
   FiClock,
 } from 'react-icons/fi';
 
-// ⬇️ PDF
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-<<<<<<< Updated upstream
-=======
 import { useReports } from './useReports';
 import type { ReportsData } from './types';
 
@@ -32,12 +29,11 @@ const Page = {
   textStrong: (t: any) => t?.colors?.textStrong ?? (t?.isDark ? '#ffffff' : '#111827'),
 };
 
->>>>>>> Stashed changes
 const ResponsivePageContainer = styled.div`
   padding: 20px;
   max-width: 100%;
   overflow-x: hidden;
-  
+
   @media (max-width: 768px) {
     padding: 10px;
   }
@@ -45,7 +41,7 @@ const ResponsivePageContainer = styled.div`
 
 const ResponsivePageHeader = styled.header`
   margin-bottom: 25px;
-  
+
   @media (max-width: 768px) {
     margin-bottom: 15px;
   }
@@ -58,16 +54,17 @@ const ResponsivePageTitle = styled.h1`
   display: flex;
   align-items: center;
   gap: 10px;
-  
+  color: ${({ theme }) => Page.text(theme)};
+
   @media (max-width: 768px) {
     font-size: 22px;
   }
 `;
 
 const ResponsivePageSubtitle = styled.p`
-  color: #666;
+  color: ${({ theme }) => Page.textMuted(theme)};
   font-size: 16px;
-  
+
   @media (max-width: 768px) {
     font-size: 14px;
   }
@@ -79,10 +76,11 @@ const ResponsiveFilterSection = styled.div`
   align-items: center;
   gap: 10px;
   margin-bottom: 20px;
-  background: #f9fafb;
+  background: ${({ theme }) => Page.surfaceAlt(theme)};
   padding: 15px;
   border-radius: 8px;
-  
+  border: 1px solid ${({ theme }) => Page.border(theme)};
+
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
@@ -93,11 +91,6 @@ const ResponsiveFilterSection = styled.div`
 const ResponsiveFilterLabel = styled.label`
   display: flex;
   align-items: center;
-<<<<<<< Updated upstream
-  gap: 5px;
-  font-weight: 500;
-  
-=======
   gap: 8px;
   font-weight: 700;
   color: ${({ theme }) => Page.text(theme)};
@@ -108,7 +101,6 @@ const ResponsiveFilterLabel = styled.label`
 
   svg { color: ${({ theme }) => Page.primary(theme)}; }
 
->>>>>>> Stashed changes
   @media (max-width: 768px) {
     margin-bottom: 5px;
   }
@@ -116,11 +108,23 @@ const ResponsiveFilterLabel = styled.label`
 
 const ResponsiveFilterSelect = styled.select`
   padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  background: white;
-  min-width: 150px;
-  
+  border-radius: 6px;
+  border: 1px solid ${({ theme }) => Page.border(theme)};
+  background: ${({ theme }) => Page.surface(theme)};
+  color: ${({ theme }) => Page.text(theme)};
+  min-width: 170px;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px ${({ theme }) => (theme?.isDark ? 'rgba(99,102,241,.35)' : 'rgba(99,102,241,.25)')};
+    border-color: ${({ theme }) => Page.primary(theme)};
+  }
+
+  option {
+    background: ${({ theme }) => Page.surface(theme)};
+    color: ${({ theme }) => Page.text(theme)};
+  }
+
   @media (max-width: 768px) {
     width: 100%;
   }
@@ -128,10 +132,15 @@ const ResponsiveFilterSelect = styled.select`
 
 const ResponsiveFilterInput = styled.input`
   padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  background: white;
-  
+  border-radius: 6px;
+  border: 1px solid ${({ theme }) => Page.border(theme)};
+  background: ${({ theme }) => Page.surface(theme)};
+  color: ${({ theme }) => Page.text(theme)};
+
+  &::placeholder {
+    color: ${({ theme }) => Page.textMuted(theme)};
+  }
+
   @media (max-width: 768px) {
     width: 100%;
   }
@@ -141,7 +150,7 @@ const ResponsiveButtonGroup = styled.div`
   display: flex;
   gap: 10px;
   margin-left: auto;
-  
+
   @media (max-width: 768px) {
     margin-left: 0;
     margin-top: 10px;
@@ -153,20 +162,24 @@ const ResponsiveButtonGroup = styled.div`
 const ResponsiveButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 8px 15px;
-  border-radius: 4px;
-  background: #4299e1;
-  color: white;
-  border: none;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: ${({ theme }) => Page.primary(theme)};
+  color: #ffffff;
+  border: 1px solid transparent;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s;
-  
-  &:hover {
-    background: #3182ce;
+  font-weight: 600;
+  transition: filter 0.2s, transform 0.02s;
+
+  &:hover { filter: brightness(0.95); }
+  &:active { transform: translateY(1px); }
+
+  &:disabled {
+    opacity: ${({ theme }) => (theme?.isDark ? 0.55 : 0.6)};
+    cursor: not-allowed;
   }
-  
+
   @media (max-width: 768px) {
     flex: 1;
     justify-content: center;
@@ -178,31 +191,31 @@ const ResponsiveReportsGrid = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-bottom: 30px;
-  
+
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
-  
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
   }
 `;
 
 const ResponsiveReportCard = styled.div`
-  background: white;
-  border-radius: 8px;
+  background: ${({ theme }) => Page.surface(theme)};
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid ${({ theme }) => Page.border(theme)};
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.16s, box-shadow 0.16s;
   cursor: pointer;
-  
+
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
   }
-  
+
   @media (max-width: 768px) {
-    padding: 15px;
+    padding: 16px;
   }
 `;
 
@@ -215,43 +228,43 @@ const ResponsiveCardHeader = styled.div`
 
 const ResponsiveCardIcon = styled.div`
   font-size: 20px;
-  color: #4299e1;
+  color: ${({ theme }) => Page.primary(theme)};
 `;
 
 const ResponsiveCardTitle = styled.h2`
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  color: ${({ theme }) => Page.text(theme)};
 `;
 
 const ResponsiveCardValue = styled.div`
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 10px;
-<<<<<<< Updated upstream
-  
-=======
   color: ${({ theme }) => Page.textStrong(theme)};
 
->>>>>>> Stashed changes
   @media (max-width: 768px) {
     font-size: 28px;
   }
 `;
 
 const ResponsiveCardDescription = styled.div`
-  color: #666;
+  color: ${({ theme }) =>
+    theme?.isDark ? Page.text(theme) : Page.textMuted(theme)};
+  opacity: ${({ theme }) => (theme?.isDark ? 0.9 : 1)};
   font-size: 14px;
 `;
 
 const ResponsiveDetailedSection = styled.section`
-  background: white;
-  border-radius: 8px;
+  background: ${({ theme }) => Page.surface(theme)};
+  border-radius: 12px;
   padding: 20px;
   margin-bottom: 30px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  
+  border: 1px solid ${({ theme }) => Page.border(theme)};
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+
   @media (max-width: 768px) {
-    padding: 15px;
+    padding: 16px;
   }
 `;
 
@@ -260,7 +273,7 @@ const ResponsiveSectionHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
@@ -270,11 +283,12 @@ const ResponsiveSectionHeader = styled.div`
 
 const ResponsiveSectionTitle = styled.h2`
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
-  
+  color: ${({ theme }) => Page.text(theme)};
+
   @media (max-width: 768px) {
     font-size: 16px;
   }
@@ -285,11 +299,10 @@ const ResponsiveStatsGrid = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-bottom: 30px;
-  
+
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
-  
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
     gap: 15px;
@@ -297,20 +310,23 @@ const ResponsiveStatsGrid = styled.div`
 `;
 
 const ResponsiveStatItem = styled.div`
-  background: #f7fafc;
-  border-radius: 8px;
+  background: ${({ theme }) => Page.surfaceAlt(theme)};
+  border: 1px solid ${({ theme }) => Page.border(theme)};
+  border-radius: 12px;
   padding: 15px;
-  
+
   @media (max-width: 768px) {
     padding: 12px;
   }
 `;
 
 const ResponsiveStatLabel = styled.div`
-  color: #4a5568;
+  color: ${({ theme }) =>
+    theme?.isDark ? Page.text(theme) : Page.textMuted(theme)};
+  opacity: 0.95;
   font-size: 14px;
   margin-bottom: 5px;
-  
+
   @media (max-width: 768px) {
     font-size: 13px;
   }
@@ -318,15 +334,9 @@ const ResponsiveStatLabel = styled.div`
 
 const ResponsiveStatValue = styled.div`
   font-size: 24px;
-<<<<<<< Updated upstream
-  font-weight: 600;
-  color: #2d3748;
-  
-=======
   font-weight: 700;
   color: ${({ theme }) => Page.textStrong(theme)};
 
->>>>>>> Stashed changes
   @media (max-width: 768px) {
     font-size: 20px;
   }
@@ -334,10 +344,10 @@ const ResponsiveStatValue = styled.div`
 
 const ResponsiveSectionHeading = styled.h3`
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 15px;
-  color: #4a5568;
-  
+  color: ${({ theme }) => Page.text(theme)};
+
   @media (max-width: 768px) {
     font-size: 15px;
   }
@@ -351,7 +361,7 @@ const ResponsiveBarChartContainer = styled.div`
   margin-top: 20px;
   overflow-x: auto;
   padding-bottom: 10px;
-  
+
   @media (max-width: 768px) {
     padding-left: 5px;
     padding-right: 5px;
@@ -364,20 +374,15 @@ const ResponsiveBarChartContainer = styled.div`
 const ResponsiveBar = styled.div<{ height: number }>`
   width: 40px;
   height: ${props => props.height}%;
-<<<<<<< Updated upstream
-  min-height: 20px;
-  background: #4299e1;
-=======
   /* min-height menor para valores pequenos sem distorcer o gráfico */
   min-height: 6%;
   background: ${({ theme }) => Page.primary(theme)};
->>>>>>> Stashed changes
   border-radius: 4px 4px 0 0;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  
+
   @media (max-width: 768px) {
     width: 30px;
   }
@@ -387,7 +392,8 @@ const ResponsiveBarValue = styled.span`
   position: absolute;
   top: -22px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  color: ${({ theme }) => Page.text(theme)};
 `;
 
 const ResponsiveBarLabel = styled.span`
@@ -395,12 +401,14 @@ const ResponsiveBarLabel = styled.span`
   font-size: 12px;
   position: absolute;
   bottom: -25px;
+  color: ${({ theme }) => Page.textMuted(theme)};
 `;
 
 const ResponsiveTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  
+  color: ${({ theme }) => Page.text(theme)};
+
   @media (max-width: 768px) {
     display: block;
     overflow-x: auto;
@@ -410,11 +418,12 @@ const ResponsiveTable = styled.table`
 const ResponsiveTh = styled.th`
   text-align: left;
   padding: 12px 10px;
-  border-bottom: 1px solid #edf2f7;
-  font-weight: 500;
-  color: #4a5568;
+  border-bottom: 1px solid ${({ theme }) => Page.border(theme)};
+  font-weight: 700;
+  color: ${({ theme }) => Page.text(theme)};
   font-size: 14px;
-  
+  background: ${({ theme }) => Page.surface(theme)};
+
   @media (max-width: 768px) {
     padding: 10px 8px;
     white-space: nowrap;
@@ -423,9 +432,9 @@ const ResponsiveTh = styled.th`
 
 const ResponsiveTd = styled.td`
   padding: 12px 10px;
-  border-bottom: 1px solid #edf2f7;
-  color: #2d3748;
-  
+  border-bottom: 1px solid ${({ theme }) => Page.border(theme)};
+  color: ${({ theme }) => Page.text(theme)};
+
   @media (max-width: 768px) {
     padding: 10px 8px;
     white-space: nowrap;
@@ -434,10 +443,11 @@ const ResponsiveTd = styled.td`
 
 const ResponsiveProgressBar = styled.div`
   height: 8px;
-  background: #edf2f7;
+  background: ${({ theme }) => (theme?.isDark ? '#1f2937' : '#edf2f7')};
   border-radius: 4px;
   overflow: hidden;
   width: 100%;
+  border: 1px solid ${({ theme }) => Page.border(theme)};
 `;
 
 const ResponsiveProgressFill = styled.div<{ percentage: number; color: string }>`
@@ -449,16 +459,12 @@ const ResponsiveProgressFill = styled.div<{ percentage: number; color: string }>
 
 const ResponsiveChartContainer = styled.div`
   margin-top: 20px;
-  
+
   @media (max-width: 768px) {
     overflow-x: auto;
   }
 `;
 
-<<<<<<< Updated upstream
-import { useReports } from './useReports';
-import type { ReportsData } from './types';
-=======
 /** --------- UTIL: arredonda o máximo para 1–2–5×10ⁿ --------- */
 const getNiceMax = (v: number) => {
   const value = Math.max(1, v);
@@ -468,7 +474,6 @@ const getNiceMax = (v: number) => {
   const nice = candidates.find(c => c >= value) ?? 10 * base;
   return nice;
 };
->>>>>>> Stashed changes
 
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -479,14 +484,26 @@ const ReportsPage: React.FC = () => {
   const [endDate, setEndDate] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Refs das seções (para PDF)
   const documentsRef = useRef<HTMLDivElement | null>(null);
   const validationsRef = useRef<HTMLDivElement | null>(null);
   const tasksRef = useRef<HTMLDivElement | null>(null);
   const aiRef = useRef<HTMLDivElement | null>(null);
   const usersRef = useRef<HTMLDivElement | null>(null);
 
-  const { getAllReports, clearFilters, updateFilters, getAIUserStats, getAIStats, getDocumentMonthsStats, getTaskPriorityStats, getValidationStats, getValidatorsStats, getDocumentStats, getTaskStats } = useReports();
+  const {
+    getAllReports, clearFilters, updateFilters,
+    getAIUserStats, getAIStats, getDocumentMonthsStats,
+    getTaskPriorityStats, getValidationStats, getValidatorsStats,
+    getDocumentStats, getTaskStats
+  } = useReports();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const allReports = await getAllReports();
+      setReportsData(allReports);
+    };
+    fetchData();
+  }, []);
 
   const documentReportData = reportsData ? reportsData.documents : null;
   const documentMonthReportData = reportsData ? reportsData.documentMonths : null;
@@ -496,58 +513,48 @@ const ReportsPage: React.FC = () => {
   const tasksReportData = reportsData ? reportsData.tasks : null;
   const taskPrioritysReportData = reportsData ? reportsData.taskPrioritys : null;
   const aiReportData = reportsData ? reportsData.ai : null;
-  const userActivityData = reportsData ? reportsData.userActivity : [];
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const allReports = await getAllReports();
-      setReportsData(allReports);
-    }
-    fetchData();
-  }, []);
+  const userActivityData = reportsData ? reportsData.userActivity || [] : [];
 
   const documentsData = {
-    total: documentReportData ? documentReportData.totalDocuments : 0,
-    active: documentReportData ? documentReportData.activeDocuments : 0,
-    inactive: documentReportData ? documentReportData.inactiveDocuments : 0,
-    validated: documentReportData ? documentReportData.approvedDocuments : 0,
-    pending: documentReportData ? documentReportData.pendingDocuments : 0,
-    byPeriod: documentMonthReportData ? documentMonthReportData : []
+    total: documentReportData?.totalDocuments ?? 0,
+    active: documentReportData?.activeDocuments ?? 0,
+    inactive: documentReportData?.inactiveDocuments ?? 0,
+    validated: documentReportData?.approvedDocuments ?? 0,
+    pending: documentReportData?.pendingDocuments ?? 0,
+    byPeriod: documentMonthReportData ?? []
   };
 
   const validationsData = {
-    total: validationsReportData ? validationsReportData.totalValidations : 0,
-    approved: validationsReportData ? validationsReportData.totalApproved : 0,
-    rejected: validationsReportData ? validationsReportData.totalRejected : 0,
-    returned: validationsReportData ? validationsReportData.totalInRevision : 0,
-    approvalRate: validationsReportData ? (validationsReportData.totalApproved / Math.max(validationsReportData.totalValidations, 1) * 100).toFixed(2) : 0,
-    topValidators: validatorsReportData ? validatorsReportData : []
+    total: validationsReportData?.totalValidations ?? 0,
+    approved: validationsReportData?.totalApproved ?? 0,
+    rejected: validationsReportData?.totalRejected ?? 0,
+    returned: validationsReportData?.totalInRevision ?? 0,
+    approvalRate: validationsReportData
+      ? (validationsReportData.totalApproved / Math.max(validationsReportData.totalValidations, 1) * 100).toFixed(2)
+      : 0,
+    topValidators: validatorsReportData ?? []
   };
 
   const tasksData = {
-    total: tasksReportData ? tasksReportData.totalTasks : 0,
-    completed: tasksReportData ? tasksReportData.totalCompleted : 0,
-    overdue: tasksReportData ? tasksReportData.totalLate : 0,
-    completionRate: tasksReportData ? tasksReportData.completionRate : 0,
+    total: tasksReportData?.totalTasks ?? 0,
+    completed: tasksReportData?.totalCompleted ?? 0,
+    overdue: tasksReportData?.totalLate ?? 0,
+    completionRate: tasksReportData?.completionRate ?? 0,
     byPriority: {
-      high: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Alta')).reduce((sum, t) => sum + t.total, 0) : 0,
-      medium: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Média')).reduce((sum, t) => sum + t.total, 0) : 0,
-      low: taskPrioritysReportData ? taskPrioritysReportData.filter((t => t.priority === 'Baixa')).reduce((sum, t) => sum + t.total, 0) : 0
+      high: taskPrioritysReportData ? taskPrioritysReportData.filter(t => t.priority === 'Alta').reduce((s, t) => s + t.total, 0) : 0,
+      medium: taskPrioritysReportData ? taskPrioritysReportData.filter(t => t.priority === 'Média').reduce((s, t) => s + t.total, 0) : 0,
+      low: taskPrioritysReportData ? taskPrioritysReportData.filter(t => t.priority === 'Baixa').reduce((s, t) => s + t.total, 0) : 0,
     }
   };
 
   const aiData = {
-    totalRequests: aiReportData ? aiReportData.totalRequests : 0,
-    totalTokens: aiReportData ? aiReportData.totalTokens : 0,
-    avgTokensPerRequest: aiReportData ? aiReportData.requestAverageTokens : 0,
-    estimatedCost: aiReportData ? aiReportData.estimatedCost : 0,
-    topUsers: aiUsersReportData ? aiUsersReportData : []
+    totalRequests: aiReportData?.totalRequests ?? 0,
+    totalTokens: aiReportData?.totalTokens ?? 0,
+    avgTokensPerRequest: aiReportData?.requestAverageTokens ?? 0,
+    estimatedCost: aiReportData?.estimatedCost ?? 0,
+    topUsers: aiUsersReportData ?? []
   };
 
-<<<<<<< Updated upstream
-  // Label do período para cabeçalho do PDF
-=======
->>>>>>> Stashed changes
   const periodLabel = () => {
     if (timeFilter === 'custom' && startDate && endDate) {
       return `${t('reports.filters.start_date')}: ${startDate} • ${t('reports.filters.end_date')}: ${endDate}`;
@@ -559,14 +566,12 @@ const ReportsPage: React.FC = () => {
       month: t('reports.filters.last_month'),
       quarter: t('reports.filters.last_quarter'),
       year: t('reports.filters.last_year'),
-      custom: t('reports.filters.custom')
+      custom: t('reports.filters.custom'),
     };
     return labels[timeFilter] || labels.all;
   };
 
-  // Utilitário: prepara canvas mesmo com overflow/scroll
   const renderNodeToCanvas = async (node: HTMLElement) => {
-    // Força capturar conteúdos com overflow
     const prevOverflow = node.style.overflow;
     const prevWidth = node.style.width;
     const prevBg = node.style.background;
@@ -575,7 +580,6 @@ const ReportsPage: React.FC = () => {
     node.style.width = 'auto';
     node.style.background = '#ffffff';
 
-    // Expande containers horizontais para capturar tudo
     const overflowNodes: Array<{ el: HTMLElement; prev: { overflowX: string; width: string } }> = [];
     node.querySelectorAll<HTMLElement>('*').forEach(el => {
       const style = getComputedStyle(el);
@@ -593,7 +597,6 @@ const ReportsPage: React.FC = () => {
       windowWidth: Math.max(document.documentElement.clientWidth, node.scrollWidth),
     });
 
-    // Restaura estilos
     node.style.overflow = prevOverflow;
     node.style.width = prevWidth;
     node.style.background = prevBg;
@@ -605,7 +608,6 @@ const ReportsPage: React.FC = () => {
     return canvas;
   };
 
-  // Desenho de header/footer por página
   const drawHeader = (pdf: jsPDF, title: string, margin: number) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     pdf.setFont('helvetica', 'bold');
@@ -628,7 +630,6 @@ const ReportsPage: React.FC = () => {
     pdf.text(`${pageNum}`, pageWidth - margin, pageHeight - 6, { align: 'right' });
   };
 
-  // Adiciona uma seção (em várias páginas se necessário) ao PDF existente
   const addSectionToPdf = async (pdf: jsPDF, sectionRef: React.RefObject<HTMLElement>, title: string, pageNumStart: number) => {
     const node = sectionRef.current;
     if (!node) return pageNumStart;
@@ -640,14 +641,8 @@ const ReportsPage: React.FC = () => {
     const canvas = await renderNodeToCanvas(node);
     const contentWidth = pageWidth - margin * 2;
     const imgWidth = contentWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-<<<<<<< Updated upstream
-    // Define a altura visível por página (em coordenadas do canvas)
-    const contentHeightMM = pageHeight - 22 - 12; // header≈20 -> começa em 22 | footer≈10 -> termina -12
-=======
     const contentHeightMM = pageHeight - 22 - 12;
->>>>>>> Stashed changes
     const canvasPageHeight = (contentHeightMM * canvas.width) / contentWidth;
 
     let sY = 0;
@@ -656,7 +651,6 @@ const ReportsPage: React.FC = () => {
     const pageCanvas = document.createElement('canvas');
     const pageCtx = pageCanvas.getContext('2d')!;
     pageCanvas.width = sWidth;
-    pageCanvas.height = canvasPageHeight;
 
     let currentPage = pageNumStart;
     let firstSlice = true;
@@ -668,7 +662,6 @@ const ReportsPage: React.FC = () => {
       }
       drawHeader(pdf, title, margin);
 
-      // recorte
       const sliceHeight = Math.min(canvasPageHeight, canvas.height - sY);
       pageCanvas.height = sliceHeight;
 
@@ -679,7 +672,6 @@ const ReportsPage: React.FC = () => {
       const pageImgHeightMM = (sliceHeight * imgWidth) / sWidth;
 
       pdf.addImage(imgDataPage, 'PNG', margin, 22, imgWidth, pageImgHeightMM, undefined, 'FAST');
-
       drawFooter(pdf, margin, currentPage);
 
       sY += sliceHeight;
@@ -689,13 +681,9 @@ const ReportsPage: React.FC = () => {
     return currentPage;
   };
 
-  // 🔘 Exportar TODOS os relatórios em um único PDF
   const handleExportAll = async () => {
     const pdf = new jsPDF('p', 'mm', 'a4');
     let pageNum = 1;
-
-    // Para começar com a primeira página já pronta
-    // (drawHeader/drawFooter são chamados dentro de addSectionToPdf)
 
     const sections = [
       { ref: documentsRef as React.RefObject<HTMLElement>, title: t('reports.sections.documents') },
@@ -705,13 +693,8 @@ const ReportsPage: React.FC = () => {
       { ref: usersRef as React.RefObject<HTMLElement>, title: t('reports.sections.user_activity') },
     ];
 
-    // A primeira seção usa a página já aberta; as subsequentes criam páginas novas dentro da função
-    // Para garantir separação entre seções, adicionamos uma página em branco antes de seções subsequentes
     for (let i = 0; i < sections.length; i++) {
-      if (i > 0) {
-        pdf.addPage();
-        pageNum += 1;
-      }
+      if (i > 0) { pdf.addPage(); pageNum += 1; }
       pageNum = await addSectionToPdf(pdf, sections[i].ref, sections[i].title, pageNum);
     }
 
@@ -723,8 +706,7 @@ const ReportsPage: React.FC = () => {
 
     try {
       let dateFilters: any = {};
-
-      const formatDateUTCMinus3 = (date:Date) => {
+      const formatDateUTCMinus3 = (date: Date) => {
         const utcMinus3 = new Date(date.getTime() - 3 * 60 * 60 * 1000);
         return utcMinus3.toISOString().split('T')[0];
       };
@@ -740,53 +722,21 @@ const ReportsPage: React.FC = () => {
         let startDateStr;
 
         switch (timeFilter) {
-          case 'today': {
-            startDateStr = endDateStr;
-            break;
-          }
-          case 'week': {
-            const lastWeek = new Date(today);
-            lastWeek.setDate(today.getDate() - 7);
-            startDateStr = formatDateUTCMinus3(lastWeek);
-            break;
-          }
-          case 'month': {
-            const lastMonth = new Date(today);
-            lastMonth.setMonth(today.getMonth() - 1);
-            startDateStr = formatDateUTCMinus3(lastMonth);
-            break;
-          }
-          case 'quarter': {
-            const lastQuarter = new Date(today);
-            lastQuarter.setMonth(today.getMonth() - 3);
-            startDateStr = formatDateUTCMinus3(lastQuarter);
-            break;
-          }
-          case 'year': {
-            const lastYear = new Date(today);
-            lastYear.setFullYear(today.getFullYear() - 1);
-            startDateStr = formatDateUTCMinus3(lastYear);
-            break;
-          }
+          case 'today': startDateStr = endDateStr; break;
+          case 'week': { const d = new Date(today); d.setDate(today.getDate() - 7); startDateStr = formatDateUTCMinus3(d); break; }
+          case 'month': { const d = new Date(today); d.setMonth(today.getMonth() - 1); startDateStr = formatDateUTCMinus3(d); break; }
+          case 'quarter': { const d = new Date(today); d.setMonth(today.getMonth() - 3); startDateStr = formatDateUTCMinus3(d); break; }
+          case 'year': { const d = new Date(today); d.setFullYear(today.getFullYear() - 1); startDateStr = formatDateUTCMinus3(d); break; }
         }
 
         if (startDateStr) {
-          dateFilters = {
-            CreatedAtFrom: startDateStr,
-            CreatedAtTo: endDateStr,
-          };
+          dateFilters = { CreatedAtFrom: startDateStr, CreatedAtTo: endDateStr };
         }
       }
 
       const [
-        documents,
-        documentMonths,
-        ai,
-        aiUsers,
-        validations,
-        validators,
-        tasks,
-        taskPrioritys,
+        documents, documentMonths, ai, aiUsers,
+        validations, validators, tasks, taskPrioritys,
       ] = await Promise.all([
         getDocumentStats(dateFilters),
         getDocumentMonthsStats(dateFilters),
@@ -798,20 +748,10 @@ const ReportsPage: React.FC = () => {
         getTaskPriorityStats(dateFilters),
       ]);
 
-      setReportsData({
-        documents,
-        documentMonths,
-        ai,
-        aiUsers,
-        validations,
-        validators,
-        tasks,
-        taskPrioritys,
-      });
-
+      setReportsData({ documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys });
       updateFilters(dateFilters);
     } catch (err) {
-      console.error("Erro ao aplicar filtros:", err);
+      console.error('Erro ao aplicar filtros:', err);
     } finally {
       setLoading(false);
     }
@@ -819,12 +759,10 @@ const ReportsPage: React.FC = () => {
 
   const handleClearFilters = async () => {
     setLoading(true);
-
     try {
       setTimeFilter('all');
       setStartDate('');
       setEndDate('');
-
       await clearFilters();
 
       const [documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys] = await Promise.all([
@@ -838,27 +776,14 @@ const ReportsPage: React.FC = () => {
         getTaskPriorityStats(),
       ]);
 
-      const newData = {
-        documents,
-        documentMonths,
-        ai,
-        aiUsers,
-        validations,
-        validators,
-        tasks,
-        taskPrioritys,
-      };
-
-      setReportsData(newData);
+      setReportsData({ documents, documentMonths, ai, aiUsers, validations, validators, tasks, taskPrioritys });
     } catch (err) {
-      console.error("Erro ao limpar filtros:", err);
+      console.error('Erro ao limpar filtros:', err);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-<<<<<<< Updated upstream
-=======
   /* --------- Escala “nice” para o gráfico de barras --------- */
   const rawMaxDocuments = Math.max(
     1,
@@ -866,7 +791,6 @@ const ReportsPage: React.FC = () => {
   );
   const yMaxDocuments = getNiceMax(rawMaxDocuments);
 
->>>>>>> Stashed changes
   return (
     <ResponsivePageContainer>
       <ResponsivePageHeader>
@@ -878,6 +802,7 @@ const ReportsPage: React.FC = () => {
         <ResponsiveFilterLabel>
           <FiCalendar /> {t('reports.filters.period')}:
         </ResponsiveFilterLabel>
+
         <ResponsiveFilterSelect
           value={timeFilter}
           onChange={(e) => {
@@ -900,18 +825,10 @@ const ReportsPage: React.FC = () => {
         {timeFilter === 'custom' && (
           <>
             <ResponsiveFilterLabel>{t('reports.filters.start_date')}:</ResponsiveFilterLabel>
-            <ResponsiveFilterInput
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
+            <ResponsiveFilterInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
 
             <ResponsiveFilterLabel>{t('reports.filters.end_date')}:</ResponsiveFilterLabel>
-            <ResponsiveFilterInput
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
+            <ResponsiveFilterInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           </>
         )}
 
@@ -924,7 +841,6 @@ const ReportsPage: React.FC = () => {
             <FiFilter /> {t('reports.filters.clear_filters')}
           </ResponsiveButton>
 
-          {/* 🔘 ÚNICO BOTÃO: Exporta todos os relatórios */}
           <ResponsiveButton onClick={handleExportAll} disabled={loading}>
             <FiDownload /> {t('reports.sections.export_report')}
           </ResponsiveButton>
@@ -950,7 +866,7 @@ const ReportsPage: React.FC = () => {
           </ResponsiveCardHeader>
           <ResponsiveCardValue>{validationsData.total}</ResponsiveCardValue>
           <ResponsiveCardDescription>
-            {validationsData.approvalRate}% {t('reports.cards.approved')}
+            {`${validationsData.approvalRate}% ${t('reports.cards.approved')}`}
           </ResponsiveCardDescription>
         </ResponsiveReportCard>
 
@@ -961,7 +877,7 @@ const ReportsPage: React.FC = () => {
           </ResponsiveCardHeader>
           <ResponsiveCardValue>{tasksData.total}</ResponsiveCardValue>
           <ResponsiveCardDescription>
-            {tasksData.completionRate}% {t('reports.cards.completed')}
+            {`${tasksData.completionRate}% ${t('reports.cards.completed')}`}
           </ResponsiveCardDescription>
         </ResponsiveReportCard>
 
@@ -977,7 +893,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveReportCard>
       </ResponsiveReportsGrid>
 
-      {/* 📄 DOCUMENTOS */}
+      {/* Documentos */}
       <ResponsiveDetailedSection ref={documentsRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1008,31 +924,21 @@ const ReportsPage: React.FC = () => {
           {t('reports.sections.documents_created_period')}
         </ResponsiveSectionHeading>
         <ResponsiveBarChartContainer>
-<<<<<<< Updated upstream
-          {documentsData.byPeriod.map((month, index) => {
-            const maxTotal = Math.max(1, ...documentsData.byPeriod.map(m => m.totalDocumentos));
-            return (
-              <ResponsiveBar
-                key={index}
-                height={(month.totalDocumentos / maxTotal) * 100}
-              >
-=======
           {documentsData.byPeriod.map((month: any, index: number) => {
             // altura normalizada usando yMaxDocuments e com folga superior (<=96%)
             const normalized = (month.totalDocumentos / yMaxDocuments) * 100;
             const height = Math.min(96, Math.max(6, normalized));
             return (
               <ResponsiveBar key={index} height={height}>
->>>>>>> Stashed changes
                 <ResponsiveBarValue>{month.totalDocumentos}</ResponsiveBarValue>
-                <ResponsiveBarLabel>{month.nomeMes.substring(0, 3)}</ResponsiveBarLabel>
+                <ResponsiveBarLabel>{month.nomeMes?.substring(0, 3)}</ResponsiveBarLabel>
               </ResponsiveBar>
             );
           })}
         </ResponsiveBarChartContainer>
       </ResponsiveDetailedSection>
 
-      {/* ✅ VALIDAÇÕES */}
+      {/* Validações */}
       <ResponsiveDetailedSection ref={validationsRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1071,7 +977,7 @@ const ReportsPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {validationsData.topValidators.map((validator, index) => (
+            {validationsData.topValidators.map((validator: any, index: number) => (
               <tr key={index}>
                 <ResponsiveTd>{validator.name}</ResponsiveTd>
                 <ResponsiveTd><strong>{validator.totalValidations}</strong></ResponsiveTd>
@@ -1089,11 +995,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
-<<<<<<< Updated upstream
-      {/* 🧾 TAREFAS */}
-=======
       {/* Tarefas */}
->>>>>>> Stashed changes
       <ResponsiveDetailedSection ref={tasksRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1159,11 +1061,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveChartContainer>
       </ResponsiveDetailedSection>
 
-<<<<<<< Updated upstream
-      {/* 🤖 USO DE IA */}
-=======
       {/* IA */}
->>>>>>> Stashed changes
       <ResponsiveDetailedSection ref={aiRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1202,7 +1100,7 @@ const ReportsPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {aiData.topUsers.map((user, index) => (
+            {aiData.topUsers.map((user: any, index: number) => (
               <tr key={index}>
                 <ResponsiveTd>{user.name}</ResponsiveTd>
                 <ResponsiveTd><strong>{user.totalRequests}</strong></ResponsiveTd>
@@ -1220,11 +1118,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
-<<<<<<< Updated upstream
-      {/* 👥 ATIVIDADE DOS USUÁRIOS */}
-=======
       {/* Usuários */}
->>>>>>> Stashed changes
       <ResponsiveDetailedSection ref={usersRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1241,17 +1135,22 @@ const ReportsPage: React.FC = () => {
               <ResponsiveTh>{t('reports.sections.user')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.modifications')}</ResponsiveTh>
               <ResponsiveTh>{t('reports.sections.comments')}</ResponsiveTh>
-              <ResponsiveTh>{t('reports.sections.validations')}</ResponsiveTh>
+              <ResponsiveTh>{t('reports.sections.approvals')}</ResponsiveTh>
+              <ResponsiveTh>{t('reports.sections.total_activity')}</ResponsiveTh>
             </tr>
           </thead>
           <tbody>
-            {userActivityData!.map((item, index) => (
+            {userActivityData.map((_: any, index: number) => (
               <tr key={index}>
-                <ResponsiveTd>{item.username}</ResponsiveTd>
-                <ResponsiveTd>{item.modifications}</ResponsiveTd>
-                <ResponsiveTd>{item.comments}</ResponsiveTd>
-                <ResponsiveTd>{item.approvals}</ResponsiveTd>
-                
+                <ResponsiveTd>{'mengo'}</ResponsiveTd>
+                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
+                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
+                <ResponsiveTd><strong>{'mengo'}</strong></ResponsiveTd>
+                <ResponsiveTd>
+                  <ResponsiveProgressBar>
+                    <ResponsiveProgressFill percentage={(1 / (1 || 1)) * 100} color="#4299e1" />
+                  </ResponsiveProgressBar>
+                </ResponsiveTd>
               </tr>
             ))}
           </tbody>
