@@ -96,7 +96,6 @@ const ResponsiveFilterLabel = styled.label`
   gap: 8px;
   font-weight: 700;
   color: ${({ theme }) => Page.text(theme)};
-  /* Badge */
   background: ${({ theme }) => Page.surface(theme)};
   border: 1px solid ${({ theme }) => Page.border(theme)};
   border-radius: 10px;
@@ -338,7 +337,7 @@ const ResponsiveStatLabel = styled.div`
 const ResponsiveStatValue = styled.div`
   font-size: 24px;
   font-weight: 700;
-  color: ${({ theme }) => Page.textStrong(theme)}; /* forte no dark */
+  color: ${({ theme }) => Page.textStrong(theme)};
 
   @media (max-width: 768px) {
     font-size: 20px;
@@ -377,7 +376,8 @@ const ResponsiveBarChartContainer = styled.div`
 const ResponsiveBar = styled.div<{ height: number }>`
   width: 40px;
   height: ${props => props.height}%;
-  min-height: 20px;
+  /* min-height menor para valores pequenos sem distorcer o gráfico */
+  min-height: 6%;
   background: ${({ theme }) => Page.primary(theme)};
   border-radius: 4px 4px 0 0;
   position: relative;
@@ -392,7 +392,7 @@ const ResponsiveBar = styled.div<{ height: number }>`
 
 const ResponsiveBarValue = styled.span`
   position: absolute;
-  top: -25px;
+  top: -22px;
   font-size: 12px;
   font-weight: 600;
   color: ${({ theme }) => Page.text(theme)};
@@ -467,6 +467,15 @@ const ResponsiveChartContainer = styled.div`
   }
 `;
 
+/** --------- UTIL: arredonda o máximo para 1–2–5×10ⁿ --------- */
+const getNiceMax = (v: number) => {
+  const value = Math.max(1, v);
+  const exp = Math.floor(Math.log10(value));
+  const base = Math.pow(10, exp);
+  const candidates = [1, 2, 5, 10].map(m => m * base);
+  const nice = candidates.find(c => c >= value) ?? 10 * base;
+  return nice;
+};
 
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -779,6 +788,13 @@ const ReportsPage: React.FC = () => {
     }
   };
 
+  /* --------- Escala “nice” para o gráfico de barras --------- */
+  const rawMaxDocuments = Math.max(
+    1,
+    ...(documentsData.byPeriod?.map((m: any) => m.totalDocumentos) ?? [1])
+  );
+  const yMaxDocuments = getNiceMax(rawMaxDocuments);
+
   
   return (
     <ResponsivePageContainer>
@@ -914,9 +930,11 @@ const ReportsPage: React.FC = () => {
         </ResponsiveSectionHeading>
         <ResponsiveBarChartContainer>
           {documentsData.byPeriod.map((month: any, index: number) => {
-            const maxTotal = Math.max(1, ...documentsData.byPeriod.map((m: any) => m.totalDocumentos));
+            // altura normalizada usando yMaxDocuments e com folga superior (<=96%)
+            const normalized = (month.totalDocumentos / yMaxDocuments) * 100;
+            const height = Math.min(96, Math.max(6, normalized));
             return (
-              <ResponsiveBar key={index} height={(month.totalDocumentos / maxTotal) * 100}>
+              <ResponsiveBar key={index} height={height}>
                 <ResponsiveBarValue>{month.totalDocumentos}</ResponsiveBarValue>
                 <ResponsiveBarLabel>{month.nomeMes?.substring(0, 3)}</ResponsiveBarLabel>
               </ResponsiveBar>
@@ -1105,7 +1123,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
-      {}
+      {/* Usuários */}
       <ResponsiveDetailedSection ref={usersRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1148,3 +1166,4 @@ const ReportsPage: React.FC = () => {
 };
 
 export default ReportsPage;
+
