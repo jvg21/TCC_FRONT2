@@ -19,33 +19,30 @@ import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
 import CascadeView from "../folder/CascadeView";
 
-
 const WorkspaceContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
 `;
 
-
 const BottomSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  
+
   @media (max-width: 1100px) {
     grid-template-columns: 1fr;
   }
 `;
 
-
+/* 🔹 alterado: overflow agora visível para permitir scroll interno */
 const SectionCard = styled.div`
   background: ${({ theme }) => theme.colors.surface || theme.colors.background};
   border-radius: 16px;
   border: 1px solid ${({ theme }) => theme.colors.border};
-  overflow: hidden;
+  overflow: visible; /* 👈 antes era hidden */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 `;
-
 
 const SectionHeader = styled.div`
   padding: 16px 20px;
@@ -54,7 +51,6 @@ const SectionHeader = styled.div`
   align-items: center;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
-
 
 const SectionTitle = styled.h2`
   margin: 0;
@@ -66,33 +62,34 @@ const SectionTitle = styled.h2`
   gap: 8px;
 `;
 
+/* 🔹 scroll agora sempre visível, com padding ajustado */
+const SectionContent = styled.div<{ $isEmpty?: boolean; $maxRows?: number }>`
+  padding: ${props => (props.$isEmpty ? "40px 20px" : "0")};
+  max-height: ${({ $maxRows }) => ($maxRows ? `${$maxRows * 78}px` : "400px")};
+  overflow-y: scroll; /* 👈 forçado para aparecer */
+  scrollbar-gutter: stable both-edges; /* evita salto visual ao aparecer */
+  scroll-behavior: smooth;
 
-const SectionContent = styled.div<{ $isEmpty?: boolean }>`
-  padding: ${props => props.$isEmpty ? "40px 20px" : "0"};
-  max-height: 400px;
-  overflow-y: auto;
-  
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 8px; /* mais visível */
   }
-  
+
   &::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.colors.background};
+    background: ${({ theme }) => theme.colors.surfaceAlt || theme.colors.background};
+    border-radius: 8px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: ${({ theme }) => theme.colors.border};
-    border-radius: 10px;
+    border-radius: 8px;
   }
 `;
-
 
 const EmptyState = styled.div`
   text-align: center;
   color: ${({ theme }) => theme.colors.muted};
   font-style: italic;
 `;
-
 
 const StatusBadge = styled.span<{ $status: 'pending' | 'approved' | 'rejected' | 'active' | 'inactive' }>`
   padding: 4px 8px;
@@ -136,22 +133,21 @@ const StatusBadge = styled.span<{ $status: 'pending' | 'approved' | 'rejected' |
   }}
 `;
 
-
 const ListItem = styled.div`
   padding: 16px 20px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   transition: background-color 0.2s ease;
   cursor: pointer;
-  
+  min-height: 62px;
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.background};
   }
 `;
-
 
 const TaskItem = styled(ListItem)`
   display: flex;
@@ -186,7 +182,6 @@ const TaskDate = styled.div`
   gap: 4px;
 `;
 
-
 const DocumentItem = styled(ListItem)`
   display: flex;
   justify-content: space-between;
@@ -214,7 +209,6 @@ const DocumentMeta = styled.div`
   color: ${({ theme }) => theme.colors.muted};
 `;
 
-
 const CountBadge = styled.span`
   background-color: ${({ theme }) => theme.colors.primary}15;
   color: ${({ theme }) => theme.colors.primary};
@@ -224,100 +218,30 @@ const CountBadge = styled.span`
   font-weight: 600;
 `;
 
-const TreeNode = styled.div<{ $level: number }>`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const NodeHeader = styled.div<{ $isFolder: boolean; $isSelected?: boolean }>`
-  display: flex;
-  align-items: center;
-  padding: 12px 20px;
-  padding-left: ${({ $isFolder }) => ($isFolder ? '20px' : '40px')};
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  background-color: ${({ $isSelected, theme }) =>
-    $isSelected ? `${theme.colors.primary}10` : 'transparent'};
-  
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.background};
-  }
-`;
-
-const NodeIcon = styled.div`
-  width: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-`;
-
-const NodeTitle = styled.div<{ $isFolder: boolean }>`
-  font-size: ${({ $isFolder }) => ($isFolder ? '15px' : '14px')};
-  font-weight: ${({ $isFolder }) => ($isFolder ? '600' : '400')};
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const NodeMeta = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.muted};
-`;
-
-
 const WorkspacePage: React.FC = () => {
   const { t } = useTypedTranslation();
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const { activeTask, get: getTasks } = useTask();
-  const { get: getDocuments } = useDocument();
+  const { get: getDocuments, userValidatorDocuments } = useDocument();
   const { get: getFolders } = useFolder();
-
-  const { userValidatorDocuments } = useDocument()
-
-  const [expandedFolders, setExpandedFolders] = useState<Record<number, boolean>>({});
-  const [selectedNode, setSelectedNode] = useState<{ type: 'folder' | 'document', id: number } | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([
-          getTasks(),
-          getDocuments(),
-          getFolders()
-        ]);
+        await Promise.all([getTasks(), getDocuments(), getFolders()]);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
       }
     };
-
     loadData();
   }, []);
 
-
   const myPendingTasks = activeTask.filter(task =>
-    task.AssigneeId === user?.UserId &&
-    (task.Status === 1 || task.Status === 2)
+    task.AssigneeId === user?.UserId && (task.Status === 1 || task.Status === 2)
   );
 
-
-  const pendingValidations = userValidatorDocuments.filter(document => document.IsActive === true)
-
-
-  // const buildTree = activeFolder.filter(folder => !folder.ParentFolderId).map(folder => ({
-  //   ...folder,
-  //   children: activeFolder.filter(child => child.ParentFolderId === folder.FolderId),
-  //   documents: activeDocument.filter(doc => doc.FolderId === folder.FolderId)
-  // }));
-
+  const pendingValidations = userValidatorDocuments.filter(document => document.IsActive === true);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
@@ -325,117 +249,17 @@ const WorkspacePage: React.FC = () => {
     return date.toLocaleDateString();
   };
 
-  const toggleFolderExpanded = (folderId: number) => {
-    setExpandedFolders(prev => ({
-      ...prev,
-      [folderId]: !prev[folderId]
-    }));
-  };
-
-  const handleTaskClick = (taskId: number) => {
-
-    console.log("Clicou na tarefa:", taskId);
-    navigate(`/task`);
-  };
-
-  const handleDocumentClick = (documentId: number) => {
-    navigate(`/document/details/${documentId}`);
-  };
-
-  const renderTreeNode = (node: any, level = 0) => {
-    if (node.FolderId) {
-
-      const isExpanded = expandedFolders[node.FolderId] || false;
-      const isSelected = selectedNode?.type === 'folder' && selectedNode?.id === node.FolderId;
-
-      return (
-        <React.Fragment key={`folder-${node.FolderId}`}>
-          <TreeNode $level={level}>
-            <NodeHeader
-              $isFolder={true}
-              $isSelected={isSelected}
-              onClick={() => {
-                toggleFolderExpanded(node.FolderId);
-                setSelectedNode({ type: 'folder', id: node.FolderId });
-              }}
-            >
-              <NodeIcon>
-                {isExpanded ? <FiChevronDown size={16} /> : <FiChevronRight size={16} />}
-              </NodeIcon>
-              <NodeIcon>
-                <HiFolder size={16} color="#ff9800" style={{ filter: 'drop-shadow(0 0 2px rgba(255,152,0,0.5))' }} />
-              </NodeIcon>
-              <NodeTitle $isFolder={true}>{node.Name}</NodeTitle>
-              <NodeMeta>
-                <StatusBadge $status={node.IsActive ? 'active' : 'inactive'}>
-                  {node.IsActive ? t("cascadeview.active") : t("cascadeview.inactive")}
-                </StatusBadge>
-                <span>{(node.children?.length || 0) + (node.documents?.length || 0)} {t("cascadeview.items")}</span>
-              </NodeMeta>
-            </NodeHeader>
-          </TreeNode>
-
-          {isExpanded && (
-            <>
-              {node.children?.map((child: any) => renderTreeNode(child, level + 1))}
-              {node.documents?.map((doc: any) => renderTreeNode(doc, level + 1))}
-            </>
-          )}
-        </React.Fragment>
-      );
-    } else {
-
-      const isSelected = selectedNode?.type === 'document' && selectedNode?.id === node.DocumentId;
-
-      return (
-        <TreeNode key={`doc-${node.DocumentId}`} $level={level}>
-          <NodeHeader
-            $isFolder={false}
-            $isSelected={isSelected}
-            onClick={() => {
-              setSelectedNode({ type: 'document', id: node.DocumentId });
-              navigate(`/document/details/${node.DocumentId}`);
-            }}
-          >
-            <NodeIcon style={{ width: '16px' }} />
-            <NodeIcon>
-              <HiDocumentText size={16} color="#2196f3" style={{ filter: 'drop-shadow(0 0 2px rgba(33,150,243,0.5))' }} />
-            </NodeIcon>
-            <NodeTitle $isFolder={false}>{node.Title}</NodeTitle>
-            <NodeMeta>
-              {node.ValidationStatus === 0 && (
-                <StatusBadge $status="pending">
-                  {t("documents.document_details.validation.pending")}
-                </StatusBadge>
-              )}
-              {node.ValidationStatus === 1 && (
-                <StatusBadge $status="approved">
-                  {t("documents.document_details.validation.approved")}
-                </StatusBadge>
-              )}
-              {node.ValidationStatus === 2 && (
-                <StatusBadge $status="rejected">
-                  {t("documents.document_details.validation.rejected")}
-                </StatusBadge>
-              )}
-              <span>{formatDate(node.CreatedAt)}</span>
-            </NodeMeta>
-          </NodeHeader>
-        </TreeNode>
-      );
-    }
-  };
-
+  const handleTaskClick = (taskId: number) => navigate(`/task`);
+  const handleDocumentClick = (documentId: number) => navigate(`/document/details/${documentId}`);
 
   return (
     <PageLayout
-      title={t("workspace.title") || "Workspace"}
+      title={t("workspace.title") || "Área de Trabalho"}
       actions={
         <div style={{ display: 'flex', gap: '8px' }}>
           <Button variant="ghost" onClick={() => navigate("/TaskBoardPage")}>
             <FiCheckSquare size={16} /> {t("tasks.task_board") || "Quadro de Tarefas"}
           </Button>
-
         </div>
       }
     >
@@ -449,7 +273,7 @@ const WorkspacePage: React.FC = () => {
               </SectionTitle>
               <CountBadge>{myPendingTasks.length}</CountBadge>
             </SectionHeader>
-            <SectionContent $isEmpty={myPendingTasks.length === 0}>
+            <SectionContent $isEmpty={myPendingTasks.length === 0} $maxRows={3}>
               {myPendingTasks.length > 0 ? (
                 myPendingTasks.map(task => (
                   <TaskItem key={task.TaskId} onClick={() => handleTaskClick(task.TaskId)}>
@@ -457,9 +281,9 @@ const WorkspacePage: React.FC = () => {
                       <TaskTitle>{task.Title}</TaskTitle>
                       <TaskMeta>
                         <StatusBadge $status={task.Status === 1 ? 'pending' : 'active'}>
-                          {task.Status === 1 ?
-                            (t("tasks.statusTask.todo") || "A Fazer") :
-                            (t("tasks.statusTask.inprogress") || "Em Progresso")}
+                          {task.Status === 1
+                            ? (t("tasks.statusTask.todo") || "A Fazer")
+                            : (t("tasks.statusTask.inprogress") || "Em Progresso")}
                         </StatusBadge>
                         <TaskDate>
                           <FiCalendar size={14} />
@@ -471,14 +295,11 @@ const WorkspacePage: React.FC = () => {
                   </TaskItem>
                 ))
               ) : (
-                <EmptyState>
-                  {t("tasks.no_tasks") || "Nenhuma tarefa pendente"}
-                </EmptyState>
+                <EmptyState>{t("tasks.no_tasks") || "Nenhuma tarefa pendente"}</EmptyState>
               )}
             </SectionContent>
           </SectionCard>
 
-          { }
           <SectionCard>
             <SectionHeader>
               <SectionTitle>
@@ -487,7 +308,7 @@ const WorkspacePage: React.FC = () => {
               </SectionTitle>
               <CountBadge>{pendingValidations.length}</CountBadge>
             </SectionHeader>
-            <SectionContent $isEmpty={pendingValidations.length === 0}>
+            <SectionContent $isEmpty={pendingValidations.length === 0} $maxRows={3}>
               {pendingValidations.length > 0 ? (
                 pendingValidations.map(doc => (
                   <DocumentItem key={doc.DocumentId} onClick={() => handleDocumentClick(doc.DocumentId)}>
@@ -511,14 +332,14 @@ const WorkspacePage: React.FC = () => {
             </SectionContent>
           </SectionCard>
         </BottomSection>
+
         <SectionCard>
           <CascadeView {...({ config: { filter: false } } as any)} />
         </SectionCard>
-
-
       </WorkspaceContainer>
     </PageLayout>
   );
 };
 
 export default WorkspacePage;
+
