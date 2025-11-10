@@ -21,12 +21,12 @@ export const useLogin = () => {
             const data: ApiResponse = await response.json();
 
             if (data.erro || !data.objeto?.token || !data.objeto) {
-                notificationActions.showError(t('login_error') || 'Erro no login');
-                throw new Error(t('login_error') || 'Erro no login');
+                notificationActions.showError(t('login.error') || 'Erro no login');
+                throw new Error(t('login.error') || 'Erro no login');
             }
 
             setCookie('authToken', data.objeto.token);
-            notificationActions.showNotification(t('login_success'), 'success');
+            notificationActions.showNotification(t('login.success'), 'success');
             setIsAuthenticated(true);
             setUser(data.objeto.user);
             return data.objeto;
@@ -42,7 +42,7 @@ export const useLogin = () => {
 
     function logout() {
         eraseCookie('authToken');
-        notificationActions.showNotification(t('logout_success'), "info");
+        notificationActions.showNotification(t('login.logout_success'), "info");
         setIsAuthenticated(false);
         setUser(null);
     }
