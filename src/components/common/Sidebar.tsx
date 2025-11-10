@@ -7,7 +7,6 @@ import {
 } from 'react-icons/fi';
 import { useAuthContext } from '../../context/AuthContext';
 import { useTypedTranslation } from '../../context/LanguageContext';
-import { useThemeContext } from '../../context/ThemeContext';
 
 
 const parseHex = (hex: string) => {
@@ -32,14 +31,13 @@ const alpha = (color: string, a: number) => {
 const COLLAPSED_W = 78;
 const EXPANDED_W = 264;
 
-const { themeName } = useThemeContext();
 const Wrap = styled.aside<{ $isCollapsed: boolean }>`
   position: fixed;
   inset: 0 auto 0 0;
   height: 100vh;
   width: ${({ $isCollapsed }) => ($isCollapsed ? `${COLLAPSED_W}px` : `${EXPANDED_W}px`)};
   ${({ theme }) => {
-    const glass = theme.themeName === 'dark' ? 'rgba(9, 13, 23, 0.72)' : 'rgba(255, 255, 255, 0.72)';
+    const glass = theme.isDark ? 'rgba(9, 13, 23, 0.72)' : 'rgba(255, 255, 255, 0.72)';
     const border = alpha(theme.colors.border, theme.isDark ? 0.35 : 0.45);
     const shadow = theme.isDark ? '0 12px 30px rgba(0,0,0,.35)' : '0 12px 30px rgba(0,0,0,.08)';
     return `
