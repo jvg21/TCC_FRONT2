@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import {
   FiCheckSquare,
   FiFile,
-  FiChevronRight,
-  FiChevronDown,
   FiExternalLink,
   FiCalendar
 } from "react-icons/fi";
-import { HiFolder, HiDocumentText } from "react-icons/hi";
 import { useAuthContext } from "../../context/AuthContext";
 import { useTask } from "../task/useTask";
 import { useDocument } from "../document/useDocument";
@@ -249,7 +246,7 @@ const WorkspacePage: React.FC = () => {
     return date.toLocaleDateString();
   };
 
-  const handleTaskClick = (taskId: number) => navigate(`/task`);
+  const handleTaskClick = (_: number) => navigate(`/task`);
   const handleDocumentClick = (documentId: number) => navigate(`/document/details/${documentId}`);
 
   return (

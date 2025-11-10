@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import {
   FiHome, FiBriefcase, FiUsers, FiGrid, FiFolderPlus, FiCheckSquare, FiFile,
   FiSettings, FiMenu, FiX, FiChevronRight, FiLink2, FiClipboard, FiBarChart2,
 } from 'react-icons/fi';
 import { useAuthContext } from '../../context/AuthContext';
 import { useTypedTranslation } from '../../context/LanguageContext';
-import { useThemeContext } from '../../context/ThemeContext';
 import type { Theme } from '../../styles/theme';
 
 
@@ -78,14 +77,14 @@ const Logo = styled.div<{ $isCollapsed: boolean }>`
   h2 { font-size: 17px; font-weight: 800; letter-spacing: .2px; color: ${({ theme }) => theme.colors.text}; margin: 0; }
 `;
 
-const LogoIcon = styled.div`
-  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
-  color: white; font-weight: 900; font-size: 18px; flex-shrink: 0;
-  ${({ theme }) => `
-    background: linear-gradient(135deg, ${theme.colors.primary} 0%, ${alpha(theme.colors.primary, .85)} 100%);
-    box-shadow: 0 8px 18px ${alpha(theme.colors.primary, .28)};
-  `}
-`;
+// const LogoIcon = styled.div`
+//   width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+//   color: white; font-weight: 900; font-size: 18px; flex-shrink: 0;
+//   ${({ theme }) => `
+//     background: linear-gradient(135deg, ${theme.colors.primary} 0%, ${alpha(theme.colors.primary, .85)} 100%);
+//     box-shadow: 0 8px 18px ${alpha(theme.colors.primary, .28)};
+//   `}
+// `;
 
 const ToggleButton = styled.button`
   ${({ theme }) => `
@@ -261,7 +260,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const tasksFlyRef = useRef<HTMLDivElement | null>(null);
   const integrationsFlyRef = useRef<HTMLDivElement | null>(null);
 
-  const {theme} = useThemeContext();
 
   const { user } = useAuthContext();
   const { t } = useTypedTranslation();
