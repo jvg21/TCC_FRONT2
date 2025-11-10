@@ -16,20 +16,44 @@ import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
 import { FormatDate } from "../../utils/FormatDate";
 
+/** ======== LAYOUT ESTILO TRELLO ======== **/
+/* Viewport com rolagem horizontal (tela cheia) */
+const BoardViewport = styled.div`
+  height: calc(100vh - 160px); /* ajuste se o cabeçalho/toolbar tiver altura diferente */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 
-const BoardContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
-  height: calc(100vh - 160px);
-  overflow: hidden;
-  
+  /* Scrollbar discreta */
+  &::-webkit-scrollbar {
+    height: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: ${({ theme }) => theme.colors.surfaceAlt ?? "#0f172a10"};
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.border ?? "#00000033"};
+    border-radius: 10px;
+  }
+
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
     height: auto;
+    overflow-x: visible;
+    overflow-y: visible;
   }
 `;
 
+/* Faixa de colunas lado a lado */
+const BoardContainer = styled.div`
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  padding: 8px 8px 16px;
+  min-height: 100%;
+  width: max-content; /* garante largura conforme qtde de colunas */
+`;
+
+/* Coluna fixa (largura parecida com Trello) */
 const Column = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border-radius: 12px;
@@ -37,10 +61,23 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  /* largura fixa e não encolhe, para manter as fases lado a lado */
+  flex: 0 0 360px;
+  max-height: 100%;
+
+  @media (max-width: 768px) {
+    flex: 1 0 100%;
+    max-height: none;
+  }
 `;
 
+/* Cabeçalho “grudado” no topo da coluna */
 const ColumnHeader = styled.div`
-  padding: 20px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 16px 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   justify-content: space-between;
@@ -48,6 +85,7 @@ const ColumnHeader = styled.div`
   background: ${({ theme }) => theme.colors.surface};
 `;
 
+/* Título e contador */
 const ColumnTitle = styled.div`
   display: flex;
   align-items: center;
@@ -60,12 +98,18 @@ const StatusIndicator = styled.div<{ status: number }>`
   border-radius: 50%;
   background: ${({ status }) => {
     switch (status) {
-      case 1: return '#ef4444'; 
-      case 2: return '#f59e0b'; 
-      case 3: return '#3b82f6'; 
-      case 4: return '#10b981'; 
-      case 5: return '#6b7280'; 
-      default: return '#6b7280';
+      case 1:
+        return '#ef4444'; /* A fazer / bloqueado */
+      case 2:
+        return '#f59e0b'; /* Em planejamento */
+      case 3:
+        return '#3b82f6'; /* Em andamento */
+      case 4:
+        return '#10b981'; /* Concluído */
+      case 5:
+        return '#6b7280'; /* Outros */
+      default:
+        return '#6b7280';
     }
   }};
 `;
@@ -86,19 +130,30 @@ const TaskCount = styled.span`
   font-weight: 600;
 `;
 
+/* Conteúdo com rolagem vertical própria */
 const ColumnContent = styled.div`
   flex: 1;
-  padding: 16px;
+  padding: 12px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  
+
+  /* Scrollbar vertical da coluna */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.border ?? "#00000033"};
+    border-radius: 8px;
+  }
+
   @media (max-width: 768px) {
-    max-height: 400px;
+    max-height: none;
   }
 `;
 
+/* Cartões de tarefa */
 const TaskCard = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -107,7 +162,7 @@ const TaskCard = styled.div`
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -140,11 +195,11 @@ const TaskActions = styled.button`
   border-radius: 4px;
   opacity: 0;
   transition: all 0.2s ease;
-  
+
   ${TaskCard}:hover & {
     opacity: 1;
   }
-  
+
   &:hover {
     background: rgba(0, 0, 0, 0.05);
   }
@@ -191,20 +246,30 @@ const PriorityBadge = styled.div<{ priority: number }>`
   text-transform: uppercase;
   background: ${({ priority }) => {
     switch (priority) {
-      case 1: return '#dbeafe'; 
-      case 2: return '#fef3c7'; 
-      case 3: return '#fed7aa'; 
-      case 4: return '#fecaca'; 
-      default: return '#f3f4f6';
+      case 1:
+        return '#dbeafe';
+      case 2:
+        return '#fef3c7';
+      case 3:
+        return '#fed7aa';
+      case 4:
+        return '#fecaca';
+      default:
+        return '#f3f4f6';
     }
   }};
   color: ${({ priority }) => {
     switch (priority) {
-      case 1: return '#1e40af'; 
-      case 2: return '#92400e'; 
-      case 3: return '#c2410c'; 
-      case 4: return '#dc2626'; 
-      default: return '#374151';
+      case 1:
+        return '#1e40af';
+      case 2:
+        return '#92400e';
+      case 3:
+        return '#c2410c';
+      case 4:
+        return '#dc2626';
+      default:
+        return '#374151';
     }
   }};
 `;
@@ -222,6 +287,7 @@ const AssigneeAvatar = styled.div`
   font-weight: 600;
 `;
 
+/* Botão de adicionar no fim da coluna */
 const AddTaskButton = styled.button`
   width: 100%;
   padding: 12px;
@@ -236,17 +302,17 @@ const AddTaskButton = styled.button`
   gap: 8px;
   font-size: 14px;
   transition: all 0.2s ease;
-  
+
   &:hover {
     border-color: ${({ theme }) => theme.colors.primary};
     color: ${({ theme }) => theme.colors.primary};
     background: ${({ theme }) => theme.colors.primary}05;
   }
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    
+
     &:hover {
       border-color: rgba(0, 0, 0, 0.2);
       color: ${({ theme }) => theme.colors.muted};
@@ -277,7 +343,6 @@ const EmptyIcon = styled.div`
 `;
 
 const TaskBoardPage: React.FC = () => {
-  
   const { activeTask, create, update } = useTask();
   const [editing, setEditing] = useState<Task | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number>(1);
@@ -287,37 +352,37 @@ const TaskBoardPage: React.FC = () => {
   const { activeUser } = useUser();
   const { userProfile } = useAuthContext();
 
-  
   const tasksByStatus = useMemo(() => {
     const statuses = getTaskStatus(t);
     return statuses.reduce((acc, status) => {
-      acc[status.value] = activeTask.filter(task => 
-        task.Status?.toString() === status.value
+      acc[status.value] = activeTask.filter(
+        (task) => task.Status?.toString() === status.value
       );
       return acc;
     }, {} as Record<string, Task[]>);
   }, [activeTask, t]);
 
-  
   const getUserName = (userId?: number) => {
-    const user = activeUser.find(u => u.UserId === userId);
-    return user ? user.Name : t("tasks.no_assignee") || "Não atribuído";
+    const user = activeUser.find((u) => u.UserId === userId);
+    return user ? user.Name : (t("tasks.no_assignee") as string) || "Não atribuído";
   };
 
-  
   const getUserInitials = (userId?: number) => {
-    const user = activeUser.find(u => u.UserId === userId);
+    const user = activeUser.find((u) => u.UserId === userId);
     if (!user) return "?";
-    return user.Name.split(' ').map(n => n[0]).join('').toUpperCase();
+    return user.Name.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
-  
   const getPriorityLabel = (priority?: number) => {
-    const priorityObj = getTaskPriority(t).find(p => p.value === priority?.toString());
-    return priorityObj ? priorityObj.label : t("tasks.priorityTask.low");
+    const priorityObj = getTaskPriority(t).find(
+      (p) => p.value === priority?.toString()
+    );
+    return priorityObj ? priorityObj.label : (t("tasks.priorityTask.low") as string);
   };
 
-  
   const handleAdd = (status?: number) => {
     setEditing(null);
     setSelectedStatus(status || 1);
@@ -333,127 +398,127 @@ const TaskBoardPage: React.FC = () => {
     if (editing) {
       update(editing.TaskId, payload);
     } else {
-      
       const taskData = { ...payload, Status: selectedStatus };
       create(taskData);
     }
     modal.close();
   };
 
-  // const handleDelete = (id: number) => {
-  //   softDelete(id);
-  // };
-
   return (
-    <PageLayout 
-      title={t("tasks.task_board") || "Task Board"} 
+    <PageLayout
+      title={(t("tasks.task_board") as string) || "Task Board"}
       actions={
-        <Button 
-          disabled={!userProfile} 
-          onClick={() => handleAdd()}
-        >
+        <Button disabled={!userProfile} onClick={() => handleAdd()}>
           <FiPlus />&nbsp;{t("tasks.add_task")}
         </Button>
       }
     >
-      <BoardContainer>
-        {getTaskStatus(t).map((status) => {
-          const columnTasks = tasksByStatus[status.value] || [];
-          
-          return (
-            <Column key={status.value}>
-              <ColumnHeader>
-                <ColumnTitle>
-                  <StatusIndicator status={parseInt(status.value)} />
-                  <ColumnTitleText>{status.label}</ColumnTitleText>
-                </ColumnTitle>
-                <TaskCount>{columnTasks.length}</TaskCount>
-              </ColumnHeader>
-              
-              <ColumnContent>
-                {columnTasks.length > 0 ? (
-                  <>
-                    {columnTasks.map((task) => (
-                      <TaskCard key={task.TaskId} onClick={() => handleEdit(task)}>
-                        <TaskHeader>
-                          <TaskTitle>{task.Title}</TaskTitle>
-                          <TaskActions
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEdit(task);
-                            }}
-                          >
-                            <FiMoreVertical size={14} />
-                          </TaskActions>
-                        </TaskHeader>
-                        
-                        {task.Description && (
-                          <TaskDescription>{task.Description}</TaskDescription>
-                        )}
-                        
-                        <TaskFooter>
-                          <TaskMeta>
-                            {task.DueDate && (
-                              <MetaItem>
-                                <FiCalendar size={12} />
-                                {FormatDate(task.DueDate, t('date_format'))}
-                              </MetaItem>
-                            )}
-                            
-                            {task.Priority && (
-                              <PriorityBadge priority={task.Priority}>
-                                {getPriorityLabel(task.Priority)}
-                              </PriorityBadge>
-                            )}
-                          </TaskMeta>
-                          
-                          <AssigneeAvatar title={getUserName(task.AssigneeId)}>
-                            {getUserInitials(task.AssigneeId)}
-                          </AssigneeAvatar>
-                        </TaskFooter>
-                      </TaskCard>
-                    ))}
-                    <AddTaskButton 
-                      onClick={() => handleAdd(parseInt(status.value))}
-                      disabled={!userProfile}
-                    >
-                      <FiPlus size={16} />
-                      {t("tasks.add_task")}
-                    </AddTaskButton>
-                  </>
-                ) : (
-                  <>
-                    <EmptyColumn>
-                      <EmptyIcon>
-                        <FiPlus size={20} />
-                      </EmptyIcon>
-                      <div>{t("tasks.no_tasks") || "Nenhuma tarefa"}</div>
-                    </EmptyColumn>
-                    <AddTaskButton 
-                      onClick={() => handleAdd(parseInt(status.value))}
-                      disabled={!userProfile}
-                    >
-                      <FiPlus size={16} />
-                      {t("tasks.add_task")}
-                    </AddTaskButton>
-                  </>
-                )}
-              </ColumnContent>
-            </Column>
-          );
-        })}
-      </BoardContainer>
+      {/* Viewport com rolagem horizontal */}
+      <BoardViewport>
+        <BoardContainer>
+          {getTaskStatus(t).map((status) => {
+            const columnTasks = tasksByStatus[status.value] || [];
 
-      {}
-      <Modal 
-        isOpen={modal.isOpen} 
-        onClose={modal.close} 
+            return (
+              <Column key={status.value}>
+                <ColumnHeader>
+                  <ColumnTitle>
+                    <StatusIndicator status={parseInt(status.value)} />
+                    <ColumnTitleText>{status.label}</ColumnTitleText>
+                  </ColumnTitle>
+                  <TaskCount>{columnTasks.length}</TaskCount>
+                </ColumnHeader>
+
+                <ColumnContent>
+                  {columnTasks.length > 0 ? (
+                    <>
+                      {columnTasks.map((task) => (
+                        <TaskCard
+                          key={task.TaskId}
+                          onClick={() => handleEdit(task)}
+                        >
+                          <TaskHeader>
+                            <TaskTitle>{task.Title}</TaskTitle>
+                            <TaskActions
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(task);
+                              }}
+                              aria-label="Ações da tarefa"
+                              title="Editar"
+                            >
+                              <FiMoreVertical size={14} />
+                            </TaskActions>
+                          </TaskHeader>
+
+                          {task.Description && (
+                            <TaskDescription>{task.Description}</TaskDescription>
+                          )}
+
+                          <TaskFooter>
+                            <TaskMeta>
+                              {task.DueDate && (
+                                <MetaItem>
+                                  <FiCalendar size={12} />
+                                  {FormatDate(task.DueDate, t("date_format") as string)}
+                                </MetaItem>
+                              )}
+
+                              {task.Priority && (
+                                <PriorityBadge priority={task.Priority}>
+                                  {getPriorityLabel(task.Priority)}
+                                </PriorityBadge>
+                              )}
+                            </TaskMeta>
+
+                            <AssigneeAvatar title={getUserName(task.AssigneeId)}>
+                              {getUserInitials(task.AssigneeId)}
+                            </AssigneeAvatar>
+                          </TaskFooter>
+                        </TaskCard>
+                      ))}
+
+                      <AddTaskButton
+                        onClick={() => handleAdd(parseInt(status.value))}
+                        disabled={!userProfile}
+                      >
+                        <FiPlus size={16} />
+                        {t("tasks.add_task")}
+                      </AddTaskButton>
+                    </>
+                  ) : (
+                    <>
+                      <EmptyColumn>
+                        <EmptyIcon>
+                          <FiPlus size={20} />
+                        </EmptyIcon>
+                        <div>{(t("tasks.no_tasks") as string) || "Nenhuma tarefa"}</div>
+                      </EmptyColumn>
+                      <AddTaskButton
+                        onClick={() => handleAdd(parseInt(status.value))}
+                        disabled={!userProfile}
+                      >
+                        <FiPlus size={16} />
+                        {t("tasks.add_task")}
+                      </AddTaskButton>
+                    </>
+                  )}
+                </ColumnContent>
+              </Column>
+            );
+          })}
+        </BoardContainer>
+      </BoardViewport>
+
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={modal.close}
         title={editing ? t("tasks.edit_task") : t("tasks.add_task")}
       >
-        <TaskForm 
-          initial={editing ?? undefined} 
-          onCancel={modal.close} 
-          onSave={handleSave} 
+        <TaskForm
+          initial={editing ?? undefined}
+          onCancel={modal.close}
+          onSave={handleSave}
         />
       </Modal>
     </PageLayout>
