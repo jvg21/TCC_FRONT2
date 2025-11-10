@@ -8,7 +8,7 @@ import {
 import { useAuthContext } from '../../context/AuthContext';
 import { useTypedTranslation } from '../../context/LanguageContext';
 
-/* helpers */
+
 const parseHex = (hex: string) => {
   const h = hex.replace('#', '');
   const bigint = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
@@ -27,7 +27,6 @@ const alpha = (color: string, a: number) => {
   return color;
 };
 
-/* ============ ESTILOS ============ */
 
 const COLLAPSED_W = 78;
 const EXPANDED_W = 264;
@@ -214,7 +213,7 @@ const ContentShifter = styled.div<{ $isCollapsed: boolean }>`
   @media (max-width: 768px) { margin-left: 0; }
 `;
 
-/* ---- FLYOUT para modo colapsado ---- */
+
 const Flyout = styled.div<{ top: number }>`
   position: fixed;
   left: ${COLLAPSED_W + 8}px;
@@ -237,7 +236,6 @@ const FlyoutItem = styled(Link)`
   &:hover { ${({ theme }) => `background: ${alpha(theme.colors.primary, .1)}; color: ${theme.colors.primary};`}}
 `;
 
-/* ============ COMPONENTE ============ */
 
 interface SidebarProps { children?: React.ReactNode; }
 
@@ -249,7 +247,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [foldersOpen, setFoldersOpen] = useState(false);
   const [tasksOpen, setTasksOpen] = useState(false);
 
-  // flyouts colapsados (estado + refs)
   const [foldersFly, setFoldersFly] = useState<{ open: boolean; top: number }>({ open: false, top: 0 });
   const [tasksFly, setTasksFly] = useState<{ open: boolean; top: number }>({ open: false, top: 0 });
   const [integrationsFly, setIntegrationsFly] = useState<{ open: boolean; top: number }>({ open: false, top: 0 });
@@ -282,14 +279,14 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // fecha flyouts ao mudar rota
+  
   useEffect(() => {
     setFoldersFly({ open: false, top: 0 });
     setTasksFly({ open: false, top: 0 });
     setIntegrationsFly({ open: false, top: 0 });
   }, [location.pathname]);
 
-  // fecha no scroll/escape e clique fora — mas mantém clique dentro do flyout
+  
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeAllFlyouts(); };
 
@@ -336,7 +333,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const handleOverlayClick = () => { if (isMobile) setIsCollapsed(true); };
   const handleNavItemClick = () => { if (isMobile) setIsCollapsed(true); };
 
-  // expandidos (dropdown dentro do sidebar)
+  
   const toggleIntegrationsDropdown = () => { if (!isCollapsed) setIntegrationsOpen(!integrationsOpen); };
   const handleIntegrationsClick = () => (isCollapsed ? openFlyout('integrations') : toggleIntegrationsDropdown());
 
@@ -346,7 +343,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const toggleTasksDropdown = () => { if (!isCollapsed) setTasksOpen(!tasksOpen); };
   const handleTasksClick = () => (isCollapsed ? openFlyout('tasks') : toggleTasksDropdown());
 
-  // colapsados (abre flyout)
   const openFlyout = (type: 'folders' | 'tasks' | 'integrations') => {
     const btnRef =
       type === 'folders' ? foldersBtnRef.current :
@@ -357,7 +353,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     const rect = btnRef.getBoundingClientRect();
     let top = Math.round(rect.top);
 
-    // evita cortar no fim da tela (ajuste depois que renderizar)
+    
     const setOpen = () => {
       if (type === 'folders') setFoldersFly({ open: true, top });
       if (type === 'tasks') setTasksFly({ open: true, top });
@@ -404,7 +400,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         </Header>
 
         <Navigation>
-          {/* PRINCIPAL */}
+          {}
           <SectionLabel $isCollapsed={isCollapsed}>{t('navigation.main') || 'Principal'}</SectionLabel>
           <NavGroup $isCollapsed={isCollapsed}>
             {navigationItems.filter(i => i.show).map(({ path, label, icon: Icon }) => {
@@ -425,7 +421,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
             })}
           </NavGroup>
 
-          {/* PASTAS */}
+          {}
           {profile >= 2 && profile > 0 && (
             <>
               {!isCollapsed && <SectionLabel>{t('navigation.folders') || 'Pastas'}</SectionLabel>}
@@ -473,7 +469,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
             </>
           )}
 
-          {/* TAREFAS */}
+          {}
           {profile >= 2 && profile > 0 && (
             <>
               {!isCollapsed && <SectionLabel>{t('navigation.tasks') || 'Tarefas'}</SectionLabel>}
@@ -524,7 +520,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
             </>
           )}
 
-          {/* INTEGRAÇÕES */}
+          {}
           {profile === 2 && (
             <>
               {!isCollapsed && <SectionLabel>{t('navigation.integrations') || 'Integrações'}</SectionLabel>}
@@ -569,7 +565,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
             </>
           )}
 
-          {/* MAIS */}
+          {}
           <SectionLabel $isCollapsed={isCollapsed}>{t('navigation.more') || 'Mais'}</SectionLabel>
           <NavGroup $isCollapsed={isCollapsed}>
             {profile === 2 && (
@@ -599,7 +595,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         </Navigation>
       </Wrap>
 
-      {/* FLYOUTS COLAPSADOS (com refs e fechamento pós-clique) */}
+      {}
       {isCollapsed && foldersFly.open && (
         <Flyout ref={foldersFlyRef} top={foldersFly.top} role="menu" aria-label={t('navigation.folders')}>
           <FlyoutItem to="/folder" onClick={() => setTimeout(() => setFoldersFly({ open: false, top: 0 }), 0)}>
