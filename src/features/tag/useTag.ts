@@ -141,8 +141,8 @@ export const useTag = () => {
   const update = async (id: number, updates: Partial<Tag>) => {
     try {
       const camelCasePayload = {
-        tagId: id,
-        ...transformPayloadToCamelCase(updates)
+        ...transformPayloadToCamelCase(updates),
+        tagId: id
       };
 
       const response = await fetch(`${apiUrl}/Tag/UpdateTag`, {

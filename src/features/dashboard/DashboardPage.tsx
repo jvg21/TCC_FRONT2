@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { 
-  FiCheckSquare, 
-  FiFile, 
-  FiClock, 
-  FiFolderPlus, 
+import {
+  FiCheckSquare,
+  FiFile,
   FiChevronRight,
   FiChevronDown,
   FiExternalLink,
-  FiCheckCircle,
-  FiXCircle,
-  FiAlertCircle,
-  FiPlus,
   FiCalendar
 } from "react-icons/fi";
 import { HiFolder, HiDocumentText } from "react-icons/hi";
@@ -20,7 +14,6 @@ import { useAuthContext } from "../../context/AuthContext";
 import { useTask } from "../task/useTask";
 import { useDocument } from "../document/useDocument";
 import { useFolder } from "../folder/useFolder";
-import { useUser } from "../user/useUser";
 import { useTypedTranslation } from "../../context/LanguageContext";
 import PageLayout from "../../components/common/PageLayout";
 import { Button } from "../../components/common/Button";
@@ -231,28 +224,6 @@ const CountBadge = styled.span`
   font-weight: 600;
 `;
 
-
-const TreeContainer = styled.div`
-  padding: 0;
-`;
-
-const StatsBar = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  padding: 12px 20px;
-  background: ${({ theme }) => theme.colors.background};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  gap: 16px;
-  
-  span {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    color: ${({ theme }) => theme.colors.muted};
-  }
-`;
-
 const TreeNode = styled.div<{ $level: number }>`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   
@@ -265,10 +236,10 @@ const NodeHeader = styled.div<{ $isFolder: boolean; $isSelected?: boolean }>`
   display: flex;
   align-items: center;
   padding: 12px 20px;
-  padding-left: ${({ $isFolder, $level = 0 }) => ($isFolder ? '20px' : '40px')};
+  padding-left: ${({ $isFolder }) => ($isFolder ? '20px' : '40px')};
   cursor: pointer;
   transition: background-color 0.2s ease;
-  background-color: ${({ $isSelected, theme }) => 
+  background-color: ${({ $isSelected, theme }) =>
     $isSelected ? `${theme.colors.primary}10` : 'transparent'};
   
   &:hover {
@@ -301,36 +272,20 @@ const NodeMeta = styled.div`
   color: ${({ theme }) => theme.colors.muted};
 `;
 
-const ActionButton = styled.button`
-  background: none;
-  border: none;
-  color: ${({ theme }) => theme.colors.primary};
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  font-size: 14px;
-  border-radius: 4px;
-  
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary}10;
-  }
-`;
-
 
 const WorkspacePage: React.FC = () => {
   const { t } = useTypedTranslation();
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const { activeTask, get: getTasks } = useTask();
-  const { activeDocument, get: getDocuments } = useDocument();
-  const { activeFolder, get: getFolders } = useFolder();
-  const { activeUser } = useUser();
-  
+  const { get: getDocuments } = useDocument();
+  const { get: getFolders } = useFolder();
+
+  const { userValidatorDocuments } = useDocument()
+
   const [expandedFolders, setExpandedFolders] = useState<Record<number, boolean>>({});
   const [selectedNode, setSelectedNode] = useState<{ type: 'folder' | 'document', id: number } | null>(null);
-  
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -346,62 +301,59 @@ const WorkspacePage: React.FC = () => {
 
     loadData();
   }, []);
-  
-  
-  const myPendingTasks = activeTask.filter(task => 
-    task.AssignedId === user?.UserId && 
-    (task.Status === 1 || task.Status === 2) 
+
+
+  const myPendingTasks = activeTask.filter(task =>
+    task.AssigneeId === user?.UserId &&
+    (task.Status === 1 || task.Status === 2)
   );
-  
- 
-  const pendingValidations = activeDocument.filter(doc => 
-    doc.ValidatorId === user?.UserId && 
-    doc.ValidationStatus === 0 
-  );
-  
-  
-  const buildTree = activeFolder.filter(folder => !folder.ParentFolderId).map(folder => ({
-    ...folder,
-    children: activeFolder.filter(child => child.ParentFolderId === folder.FolderId),
-    documents: activeDocument.filter(doc => doc.FolderId === folder.FolderId)
-  }));
-  
-  
+
+
+  const pendingValidations = userValidatorDocuments.filter(document => document.IsActive === true)
+
+
+  // const buildTree = activeFolder.filter(folder => !folder.ParentFolderId).map(folder => ({
+  //   ...folder,
+  //   children: activeFolder.filter(child => child.ParentFolderId === folder.FolderId),
+  //   documents: activeDocument.filter(doc => doc.FolderId === folder.FolderId)
+  // }));
+
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
-  
+
   const toggleFolderExpanded = (folderId: number) => {
     setExpandedFolders(prev => ({
       ...prev,
       [folderId]: !prev[folderId]
     }));
   };
-  
+
   const handleTaskClick = (taskId: number) => {
-    
+
     console.log("Clicou na tarefa:", taskId);
-    navigate(`/task`); 
+    navigate(`/task`);
   };
-  
+
   const handleDocumentClick = (documentId: number) => {
     navigate(`/document/details/${documentId}`);
   };
-  
+
   const renderTreeNode = (node: any, level = 0) => {
     if (node.FolderId) {
-    
+
       const isExpanded = expandedFolders[node.FolderId] || false;
       const isSelected = selectedNode?.type === 'folder' && selectedNode?.id === node.FolderId;
-      
+
       return (
         <React.Fragment key={`folder-${node.FolderId}`}>
           <TreeNode $level={level}>
-            <NodeHeader 
-              $isFolder={true} 
-              $isSelected={isSelected} 
+            <NodeHeader
+              $isFolder={true}
+              $isSelected={isSelected}
               onClick={() => {
                 toggleFolderExpanded(node.FolderId);
                 setSelectedNode({ type: 'folder', id: node.FolderId });
@@ -432,9 +384,9 @@ const WorkspacePage: React.FC = () => {
         </React.Fragment>
       );
     } else {
-      
+
       const isSelected = selectedNode?.type === 'document' && selectedNode?.id === node.DocumentId;
-      
+
       return (
         <TreeNode key={`doc-${node.DocumentId}`} $level={level}>
           <NodeHeader
@@ -473,25 +425,21 @@ const WorkspacePage: React.FC = () => {
       );
     }
   };
-  
-  
+
+
   return (
-    <PageLayout 
+    <PageLayout
       title={t("workspace.title") || "Workspace"}
       actions={
         <div style={{ display: 'flex', gap: '8px' }}>
           <Button variant="ghost" onClick={() => navigate("/TaskBoardPage")}>
             <FiCheckSquare size={16} /> {t("tasks.task_board") || "Quadro de Tarefas"}
           </Button>
-          
+
         </div>
       }
     >
       <WorkspaceContainer>
-        <SectionCard>
-          <CascadeView {...({ config: { filter: false } } as any)} />
-        </SectionCard>
-
         <BottomSection>
           <SectionCard>
             <SectionHeader>
@@ -509,8 +457,8 @@ const WorkspacePage: React.FC = () => {
                       <TaskTitle>{task.Title}</TaskTitle>
                       <TaskMeta>
                         <StatusBadge $status={task.Status === 1 ? 'pending' : 'active'}>
-                          {task.Status === 1 ? 
-                            (t("tasks.statusTask.todo") || "A Fazer") : 
+                          {task.Status === 1 ?
+                            (t("tasks.statusTask.todo") || "A Fazer") :
                             (t("tasks.statusTask.inprogress") || "Em Progresso")}
                         </StatusBadge>
                         <TaskDate>
@@ -530,7 +478,7 @@ const WorkspacePage: React.FC = () => {
             </SectionContent>
           </SectionCard>
 
-          {}
+          { }
           <SectionCard>
             <SectionHeader>
               <SectionTitle>
@@ -563,6 +511,11 @@ const WorkspacePage: React.FC = () => {
             </SectionContent>
           </SectionCard>
         </BottomSection>
+        <SectionCard>
+          <CascadeView {...({ config: { filter: false } } as any)} />
+        </SectionCard>
+
+
       </WorkspaceContainer>
     </PageLayout>
   );

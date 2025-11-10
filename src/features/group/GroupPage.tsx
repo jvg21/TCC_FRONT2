@@ -208,7 +208,6 @@ const GroupPage: React.FC = () => {
 
       {(() => {
         const total = filteredGroup.length;
-        const page = paginate(filteredGroup);
         return (
           <>
             <DataTable columns={columns} data={paginate(filteredGroup)} pageSize={pageSize} />

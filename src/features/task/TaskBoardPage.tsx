@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 
 import { useUser } from "../user/useUser";
 import { useAuthContext } from "../../context/AuthContext";
-import { useLanguage } from "../../context/LanguageContext";
 import { getTaskStatus } from "../../enum/taskStatus";
 import { getTaskPriority } from "../../enum/taskPriority";
 import { FormatDate } from "../../utils/FormatDate";

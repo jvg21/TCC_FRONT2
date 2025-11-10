@@ -19,6 +19,7 @@ import jsPDF from 'jspdf';
 import { useReports } from './useReports';
 import type { ReportsData } from './types';
 
+
 const Page = {
   surface: (t: any) => t?.colors?.surface ?? (t?.isDark ? '#0b1220' : '#ffffff'),
   surfaceAlt: (t: any) => t?.colors?.surfaceAlt ?? (t?.isDark ? '#0f172a' : '#f7fafc'),
@@ -26,6 +27,7 @@ const Page = {
   text: (t: any) => t?.colors?.text ?? (t?.isDark ? '#e5e7eb' : '#1f2937'),
   textMuted: (t: any) => t?.colors?.textMuted ?? (t?.isDark ? '#9ca3af' : '#4a5568'),
   primary: (t: any) => t?.colors?.primary ?? '#6366f1',
+  
   textStrong: (t: any) => t?.colors?.textStrong ?? (t?.isDark ? '#ffffff' : '#111827'),
 };
 
@@ -241,7 +243,7 @@ const ResponsiveCardValue = styled.div`
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 10px;
-  color: ${({ theme }) => Page.textStrong(theme)};
+  color: ${({ theme }) => Page.textStrong(theme)}; /* forte no dark */
 
   @media (max-width: 768px) {
     font-size: 28px;
@@ -555,6 +557,7 @@ const ReportsPage: React.FC = () => {
     topUsers: aiUsersReportData ?? []
   };
 
+  
   const periodLabel = () => {
     if (timeFilter === 'custom' && startDate && endDate) {
       return `${t('reports.filters.start_date')}: ${startDate} • ${t('reports.filters.end_date')}: ${endDate}`;
@@ -578,7 +581,7 @@ const ReportsPage: React.FC = () => {
 
     node.style.overflow = 'visible';
     node.style.width = 'auto';
-    node.style.background = '#ffffff';
+    node.style.background = '#ffffff'; 
 
     const overflowNodes: Array<{ el: HTMLElement; prev: { overflowX: string; width: string } }> = [];
     node.querySelectorAll<HTMLElement>('*').forEach(el => {
@@ -642,7 +645,7 @@ const ReportsPage: React.FC = () => {
     const contentWidth = pageWidth - margin * 2;
     const imgWidth = contentWidth;
 
-    const contentHeightMM = pageHeight - 22 - 12;
+    const contentHeightMM = pageHeight - 22 - 12; 
     const canvasPageHeight = (contentHeightMM * canvas.width) / contentWidth;
 
     let sY = 0;
@@ -701,6 +704,7 @@ const ReportsPage: React.FC = () => {
     pdf.save('Relatorios_Documentin.pdf');
   };
 
+  
   const handleApplyFilter = async () => {
     setLoading(true);
 
@@ -791,6 +795,7 @@ const ReportsPage: React.FC = () => {
   );
   const yMaxDocuments = getNiceMax(rawMaxDocuments);
 
+  
   return (
     <ResponsivePageContainer>
       <ResponsivePageHeader>
@@ -995,7 +1000,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveTable>
       </ResponsiveDetailedSection>
 
-      {/* Tarefas */}
+      {}
       <ResponsiveDetailedSection ref={tasksRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>
@@ -1061,7 +1066,7 @@ const ReportsPage: React.FC = () => {
         </ResponsiveChartContainer>
       </ResponsiveDetailedSection>
 
-      {/* IA */}
+      {}
       <ResponsiveDetailedSection ref={aiRef as any}>
         <ResponsiveSectionHeader>
           <ResponsiveSectionTitle>

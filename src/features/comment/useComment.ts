@@ -130,6 +130,7 @@ export const useComment = () => {
       }
 
       const transformedComments = transformApiDataToPascalCase(data.objeto || []);
+      setComments(transformedComments)
       return transformedComments;
     } catch (err) {
       console.error("Erro ao buscar comentários do documento:", err);
