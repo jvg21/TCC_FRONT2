@@ -78,7 +78,7 @@ const ResponsiveFilterSection = styled.div`
   align-items: center;
   gap: 10px;
   margin-bottom: 20px;
-  background: ${({ theme }) => Page.surfaceAlt(theme)};
+   background: ${({ theme }) => Page.surface(theme)};
   padding: 15px;
   border-radius: 8px;
   border: 1px solid ${({ theme }) => Page.border(theme)};
@@ -203,7 +203,7 @@ const ResponsiveReportsGrid = styled.div`
 `;
 
 const ResponsiveReportCard = styled.div`
-  background: ${({ theme }) => Page.surface(theme)};
+  background: '${({ theme }) => Page.surface(theme)}';
   border-radius: 12px;
   padding: 20px;
   border: 1px solid ${({ theme }) => Page.border(theme)};
@@ -243,7 +243,7 @@ const ResponsiveCardValue = styled.div`
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 10px;
-  color: ${({ theme }) => Page.textStrong(theme)}; /* forte no dark */
+  color: '${({ theme }) => Page.text(theme)}'; /* forte no dark */
 
   @media (max-width: 768px) {
     font-size: 28px;
@@ -312,7 +312,7 @@ const ResponsiveStatsGrid = styled.div`
 `;
 
 const ResponsiveStatItem = styled.div`
-  background: ${({ theme }) => Page.surfaceAlt(theme)};
+  background: ${({ theme }) => Page.surface(theme)};
   border: 1px solid ${({ theme }) => Page.border(theme)};
   border-radius: 12px;
   padding: 15px;
@@ -337,7 +337,7 @@ const ResponsiveStatLabel = styled.div`
 const ResponsiveStatValue = styled.div`
   font-size: 24px;
   font-weight: 700;
-  color: ${({ theme }) => Page.textStrong(theme)};
+  color: ${({ theme }) => Page.text(theme)};
 
   @media (max-width: 768px) {
     font-size: 20px;
@@ -1145,7 +1145,7 @@ const ReportsPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {userActivityData!.map((item: any, index: number) => (
+            {(userActivityData ?? []).map((item: any, index: number) => (
               <tr key={index}>
                 <ResponsiveTd>{item.username}</ResponsiveTd>
                 <ResponsiveTd>{item.modifications}</ResponsiveTd>
