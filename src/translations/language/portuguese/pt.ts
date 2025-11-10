@@ -24,6 +24,8 @@ export const ptTranslations = {
     taskboard: "Quadro de Tarefas",
     reports: "Relatórios",
     cancel: "Cancelar",
+    main: "Principal",
+    more: "Mais"
   },
 
   // Ações gerais

@@ -24,6 +24,8 @@ export const enTranslations = {
     taskboard: "Task Board",
     reports: "Reports",
     cancel: "Cancel",
+    main: "Main",
+    more: "More"
 
   },
 
