@@ -52,7 +52,8 @@ export const esTranslations = {
     clear_results: "Limpiar Resultados",
     saving: "Guardando...",
     importing: "Importando...",
-    copy: "Copiar"
+    copy: "Copiar",
+    loading: "Cargando..."
   },
 
   // Estados

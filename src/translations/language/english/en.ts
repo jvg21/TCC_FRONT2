@@ -53,7 +53,8 @@ export const enTranslations = {
     clear_results: "Clear Results",
     saving: "Saving...",
     importing: "Importing...",
-    copy: "Copy"
+    copy: "Copy",
+    loading: "Loading..."
   },
 
   // Status

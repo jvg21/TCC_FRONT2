@@ -52,7 +52,8 @@ export const ptTranslations = {
     clear_results: "Limpar Resultados",
     saving: "Salvando...",
     importing: "Importando...",
-    copy: "Copiar"
+    copy: "Copiar",
+    loading: "Carregando..."
   },
 
   // Estados
