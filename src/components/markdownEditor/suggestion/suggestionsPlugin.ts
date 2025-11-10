@@ -19,6 +19,8 @@ export function suggestionPlugin(options: SuggestionsPluginOptions): BytemdPlugi
   let currentSuggestions: string[] = [];
   let currentEditor: any = null;
   let currentCursorPos: any = null;
+  let inputTimer: number | null = null;
+  let editorTextarea: HTMLTextAreaElement | null = null;
 
   // Criar o elemento de sugestões como um singleton
   const getSuggestionElement = () => {
@@ -157,50 +159,138 @@ export function suggestionPlugin(options: SuggestionsPluginOptions): BytemdPlugi
 
   // Processar a entrada do usuário para mostrar sugestões
   const processInput = (editor: any, forced = false) => {
-    const cursor = editor.getCursor();
-    const line = editor.getLine(cursor.line);
-    
-    // Encontrar palavra sendo digitada
-    let startCh = cursor.ch;
-    while (startCh > 0 && !/\s/.test(line.charAt(startCh - 1))) {
-      startCh--;
-    }
-    
-    const currentWord = line.substring(startCh, cursor.ch);
-    
-    // Se a palavra é muito curta e não foi forçado, esconder sugestões
-    if (currentWord.length < minChars && !forced) {
-      hideSuggestions();
+    if (!editor) {
+      console.warn('Editor não disponível para processamento');
       return;
     }
-
-    // Encontrar palavra anterior para contexto
-    let contextWord = '';
-    let contextEndCh = startCh - 1;
     
-    while (contextEndCh > 0 && /\s/.test(line.charAt(contextEndCh))) {
-      contextEndCh--;
-    }
-    
-    if (contextEndCh >= 0) {
-      let contextStartCh = contextEndCh;
-      while (contextStartCh > 0 && !/\s/.test(line.charAt(contextStartCh - 1))) {
-        contextStartCh--;
+    try {
+      const cursor = editor.getCursor();
+      const line = editor.getLine(cursor.line);
+      
+      // Encontrar palavra sendo digitada
+      let startCh = cursor.ch;
+      while (startCh > 0 && !/\s/.test(line.charAt(startCh - 1))) {
+        startCh--;
       }
       
-      contextWord = line.substring(contextStartCh, contextEndCh + 1);
-    }
+      const currentWord = line.substring(startCh, cursor.ch);
+      
+      console.log(`Processando palavra atual: "${currentWord}", tamanho: ${currentWord.length}, minChars: ${minChars}`);
+      
+      // Se a palavra é muito curta e não foi forçado, esconder sugestões
+      if (currentWord.length < minChars && !forced) {
+        hideSuggestions();
+        return;
+      }
 
-    console.log(`Buscando sugestões para: "${currentWord}" (contexto: "${contextWord}")`);
-    
-    // Obter sugestões
-    const suggestions = suggestionLoader.suggest(currentWord, contextWord, maxSuggestions);
-    
-    if (suggestions.length > 0) {
-      showSuggestions(suggestions, editor, cursor);
-    } else {
+      // Encontrar palavra anterior para contexto
+      let contextWord = '';
+      let contextEndCh = startCh - 1;
+      
+      while (contextEndCh > 0 && /\s/.test(line.charAt(contextEndCh))) {
+        contextEndCh--;
+      }
+      
+      if (contextEndCh >= 0) {
+        let contextStartCh = contextEndCh;
+        while (contextStartCh > 0 && !/\s/.test(line.charAt(contextStartCh - 1))) {
+          contextStartCh--;
+        }
+        
+        contextWord = line.substring(contextStartCh, contextEndCh + 1);
+      }
+
+      console.log(`Buscando sugestões para: "${currentWord}" (contexto: "${contextWord}")`);
+      
+      // Obter sugestões
+      const suggestions = suggestionLoader.suggest(currentWord, contextWord, maxSuggestions);
+      
+      if (suggestions.length > 0) {
+        showSuggestions(suggestions, editor, cursor);
+      } else {
+        hideSuggestions();
+      }
+    } catch (err) {
+      console.error('Erro ao processar entrada:', err);
       hideSuggestions();
     }
+  };
+
+  // Encontrar textarea do CodeMirror
+  const findEditorTextarea = () => {
+    const textareas = document.querySelectorAll('.bytemd-editor .CodeMirror textarea');
+    if (textareas.length > 0) {
+      return textareas[0] as HTMLTextAreaElement;
+    }
+    
+    // Alternativa: tentar encontrar por classe específica
+    const cmTextarea = document.querySelector('.CodeMirror-code textarea');
+    if (cmTextarea) {
+      return cmTextarea as HTMLTextAreaElement;
+    }
+    
+    return null;
+  };
+
+  // Adicionar listener direto ao textarea
+  const setupTextareaListeners = () => {
+    // Use um setTimeout para garantir que o editor foi carregado completamente
+    setTimeout(() => {
+      editorTextarea = findEditorTextarea();
+      
+      if (editorTextarea) {
+        console.log('Textarea do editor encontrado, adicionando listeners');
+        
+        // Monitorar eventos de input
+        editorTextarea.addEventListener('input', () => {
+          if (inputTimer) {
+            clearTimeout(inputTimer);
+          }
+          
+          inputTimer = window.setTimeout(() => {
+            if (currentEditor) {
+              processInput(currentEditor);
+            }
+          }, 100) as unknown as number;
+        });
+      } else {
+        console.warn('Textarea do editor não encontrado. Usando abordagem alternativa');
+        
+        // Abordagem alternativa: monitorar div do editor
+        const editorDiv = document.querySelector('.CodeMirror');
+        if (editorDiv) {
+          const observer = new MutationObserver((mutations) => {
+            if (inputTimer) {
+              clearTimeout(inputTimer);
+            }
+            
+            inputTimer = window.setTimeout(() => {
+              if (currentEditor) {
+                processInput(currentEditor);
+              }
+            }, 100) as unknown as number;
+          });
+          
+          observer.observe(editorDiv, {
+            childList: true,
+            subtree: true,
+            characterData: true
+          });
+          
+          return () => observer.disconnect();
+        }
+      }
+    }, 500);
+    
+    return () => {
+      if (editorTextarea) {
+        editorTextarea.removeEventListener('input', () => {});
+      }
+      if (inputTimer) {
+        clearTimeout(inputTimer);
+      }
+    };
   };
 
   // Adicionando handler global para eventos de teclado
@@ -244,15 +334,13 @@ export function suggestionPlugin(options: SuggestionsPluginOptions): BytemdPlugi
   };
 
   return {
-    // Usar recursivePostProcessors para processar o conteúdo durante a edição
     editorEffect: (ctx) => {
-      console.log('Plugin de sugestões registrado');
+      console.log('Plugin de sugestões inicializando');
       
-      // Acessar o editor de forma mais segura
-      const editor = ctx.editor;
-      currentEditor = editor;
+      // Acessar o editor
+      currentEditor = ctx.editor;
       
-      if (!editor) {
+      if (!currentEditor) {
         console.error('Editor não encontrado no contexto');
         return;
       }
@@ -266,72 +354,59 @@ export function suggestionPlugin(options: SuggestionsPluginOptions): BytemdPlugi
       
       document.addEventListener('mousedown', clickOutsideHandler);
       
-      // Usar a DOM API para capturar todos os eventos de teclado
+      // Configurar handlers de teclado e textarea
       const cleanupKeyboardHandler = setupGlobalKeyboardHandler();
+      const cleanupTextareaHandler = setupTextareaListeners();
       
-      // Monitorar mudanças de conteúdo
-      const contentChangeHandler = (change: any) => {
-        // Verificar se foi uma inserção de texto pelo usuário
-        if (change.origin === '+input') {
-          setTimeout(() => processInput(editor), 10);
+      // Adicionar estilos CSS personalizados para garantir visibilidade
+      const style = document.createElement('style');
+      style.textContent = `
+        .bytemd-suggestions {
+          position: fixed !important;
+          z-index: 9999 !important;
+          background-color: white !important;
+          border: 1px solid #ddd !important;
+          border-radius: 4px !important;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+          min-width: 200px !important;
+          max-height: 300px !important;
+          overflow-y: auto !important;
         }
-      };
-      
-      try {
-        // Tentar registrar o event listener usando a API do editor
-        if (editor.on) {
-          editor.on('change', contentChangeHandler);
-        } else {
-          console.warn('Editor não possui método "on", usando abordagem alternativa');
-          
-          // Abordagem alternativa: monitorar o elemento do editor
-          const editorElement = document.querySelector('.bytemd-editor');
-          if (editorElement) {
-            const observer = new MutationObserver(() => {
-              setTimeout(() => processInput(editor), 10);
-            });
-            
-            observer.observe(editorElement, {
-              childList: true,
-              subtree: true,
-              characterData: true
-            });
-            
-            // Limpeza para o observer
-            return () => {
-              observer.disconnect();
-              document.removeEventListener('mousedown', clickOutsideHandler);
-              cleanupKeyboardHandler();
-              
-              if (suggestionElement && suggestionElement.parentNode) {
-                suggestionElement.parentNode.removeChild(suggestionElement);
-                suggestionElement = null;
-              }
-            };
-          }
+        
+        .bytemd-suggestion-item {
+          padding: 8px 12px !important;
+          cursor: pointer !important;
+          transition: background-color 0.2s ease !important;
         }
-      } catch (err) {
-        console.error('Erro ao configurar listeners de eventos:', err);
-      }
+        
+        .bytemd-suggestion-item:hover,
+        .bytemd-suggestion-item.active {
+          background-color: #e6f7ff !important;
+        }
+      `;
+      document.head.appendChild(style);
       
       // Função de limpeza
       return () => {
         document.removeEventListener('mousedown', clickOutsideHandler);
         cleanupKeyboardHandler();
+        cleanupTextareaHandler();
         
-        if (editor.off) {
-          try {
-            editor.off('change', contentChangeHandler);
-          } catch (err) {
-            console.warn('Erro ao remover event listener do editor:', err);
-          }
+        if (style.parentNode) {
+          style.parentNode.removeChild(style);
         }
         
         if (suggestionElement && suggestionElement.parentNode) {
           suggestionElement.parentNode.removeChild(suggestionElement);
           suggestionElement = null;
         }
+        
+        if (inputTimer) {
+          clearTimeout(inputTimer);
+          inputTimer = null;
+        }
       };
-    }
+    },
+  
   };
 }
