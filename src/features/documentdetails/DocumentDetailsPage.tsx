@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../user/useUser';
 import { useFolder } from '../folder/useFolder';
@@ -51,11 +52,79 @@ import { DocumentTags } from '../../components/common/DocumentTags';
 import { useModal } from '../../hooks/useModal';
 import { Modal } from '../../components/common/Modal';
 import { MarkdownEditorPage } from '../markdown-editor/MarkdownEditorPage';
-import { ActionsBar, AuthorIndicator, CloseButton, CommentsScrollArea, DropdownContainer, DropdownItemButton, DropdownMenu, SectionLabel, SidebarContent, SidebarHeader, SidebarOverlay, SidebarTitle, VersionAuthor, VersionBadge, VersionDate, VersionItem, VersionSection, VersionSidebar } from '../../components/common/documentDetailsComponents';
+import {
+  ActionsBar,
+  AuthorIndicator,
+  CloseButton,
+  CommentsScrollArea,
+  DropdownContainer,
+  DropdownItemButton,
+  DropdownMenu,
+  SectionLabel,
+  SidebarContent,
+  SidebarHeader,
+  SidebarOverlay,
+  SidebarTitle,
+  VersionAuthor,
+  VersionBadge,
+  VersionDate,
+  VersionItem,
+  VersionSection,
+  VersionSidebar
+} from '../../components/common/documentDetailsComponents';
 import { LoadingIcon } from '../../components/common/LoadingIcon';
 import { FormatDate } from '../../utils/FormatDate';
 
+/* ---------- RESPONSIVE WRAPPERS ---------- */
+const ResponsivePageWidth = styled.div`
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding-inline: 16px;
 
+  @media (max-width: 1400px) { max-width: 1200px; }
+  @media (max-width: 1024px) { max-width: 100%; }
+`;
+
+const ResponsiveActionsBar = styled(ActionsBar)`
+  flex-wrap: wrap;
+  gap: 8px;
+
+  > * { flex: 0 0 auto; }
+
+  @media (max-width: 640px) {
+    width: 100%;
+    & > * { width: 100%; }
+    button { justify-content: center; }
+  }
+`;
+
+const ResponsiveDetails = styled(DetailsContainer)`
+  width: 100%;
+  max-width: unset;
+  gap: 24px;
+  grid-template-columns: minmax(0, 2fr) minmax(360px, 1fr);
+
+  @media (max-width: 1280px) {
+    grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ResponsiveLeft = styled(LeftColumn)`
+  width: 100%;
+  max-width: unset;
+`;
+
+const ResponsiveRight = styled(RightColumn)`
+  width: 100%;
+  max-width: unset;
+`;
+
+/* ---------- COMPONENT ---------- */
 const DocumentDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -71,13 +140,7 @@ const DocumentDetailsPage: React.FC = () => {
   const [documentVersions, setDocumentVersions] = useState<any[]>([]);
   const [loadingVersions, setLoadingVersions] = useState(false);
 
-  const {
-    comments,
-    getCommentsByDocumentId,
-    createComment,
-    loading: loadingComments
-  } = useComment();
-
+  const { comments, getCommentsByDocumentId, createComment, loading: loadingComments } = useComment();
   const { generateSummary } = useAI();
   const [validatorNote, setValidatorNote] = useState('');
   const [validationStatus, setValidationStatus] = useState<number | boolean | null>(null);
@@ -104,18 +167,12 @@ const DocumentDetailsPage: React.FC = () => {
     if (!doc) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowExportDropdown(false);
-      }
-      if (summaryDropdownRef.current && !summaryDropdownRef.current.contains(event.target as Node)) {
-        setShowSummaryDropdown(false);
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) setShowExportDropdown(false);
+      if (summaryDropdownRef.current && !summaryDropdownRef.current.contains(event.target as Node)) setShowSummaryDropdown(false);
     };
 
     doc.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      doc.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => { doc.removeEventListener('mousedown', handleClickOutside); };
   }, []);
 
   useEffect(() => {
@@ -131,10 +188,8 @@ const DocumentDetailsPage: React.FC = () => {
       try {
         const response = await GetDocumentValidationById(Number(id));
         const responsea = await getDocumentValidatorByValidator();
-
         setIsValidator(responsea && responsea.objeto.find((val: any) => val.documentId === Number(id)))
 
-        
         if (response && !response.erro) {
           const documentData = response.objeto.document;
           documentData.createdAt = new Date(response.objeto.createdAt).toUTCString();
@@ -142,11 +197,9 @@ const DocumentDetailsPage: React.FC = () => {
 
           setDocument(transformSingleApiData(documentData));
           setDocumentTitle(response.objeto.document.title || '');
-
           setDocumentContent(response.objeto.document.content || '');
           setValidationStatus(response.objeto.status);
           setValidatorNote(response.objeto.comment || '');
-          
         } else {
           setError(t("messages.error.generic"));
         }
@@ -174,31 +227,18 @@ const DocumentDetailsPage: React.FC = () => {
     }
   }, [showVersionHistory]);
 
-  const handleBack = () => {
-    navigate('/document');
-  };
+  const handleBack = () => navigate('/document');
 
   const handleSaveDocument = async () => {
     if (!document) return;
-
     try {
       setDocumentLoading(true);
-      console.log('Salvando documento com título:', documentTitle);
-      await update(document.DocumentId, {
-        ...document,
-        Content: documentContent,
-        Title: documentTitle
-      });
-      notificationActions.showNotification(
-        t("documents.updateSuccess") || 'Documento atualizado com sucesso!',
-        'success'
-      );
+      await update(document.DocumentId, { ...document, Content: documentContent, Title: documentTitle });
+      notificationActions.showNotification(t("documents.updateSuccess") || 'Documento atualizado com sucesso!', 'success');
       await updateValidationStatus(document.DocumentId, null, validatorNote);
       setValidationStatus(0);
-    } catch (error) {
-      notificationActions.showError(
-        t("messages.error.generic") || 'Erro ao salvar documento'
-      );
+    } catch {
+      notificationActions.showError(t("messages.error.generic") || 'Erro ao salvar documento');
     } finally {
       setDocumentLoading(false);
     }
@@ -206,33 +246,27 @@ const DocumentDetailsPage: React.FC = () => {
 
   const handleAddComment = async () => {
     if (!newComment.trim() || !document || !user) return;
-
     try {
-      setIsAddingComment(true); 
-      await createComment({
-        Content: newComment,
-        DocumentId: document.DocumentId,
-        UserId: user.UserId,
-      });
+      setIsAddingComment(true);
+      await createComment({ Content: newComment, DocumentId: document.DocumentId, UserId: user.UserId });
       setNewComment('');
-
-    } catch (error) {
-      console.error('Erro ao adicionar comentário:', error);
+    } catch (e) {
+      console.error('Erro ao adicionar comentário:', e);
       notificationActions.showError(t("messages.error.generic") || 'Erro ao adicionar comentário');
     } finally {
-      setIsAddingComment(false); 
+      setIsAddingComment(false);
     }
   };
+
   const handleValidation = async (isValid: boolean) => {
     if (!document) return;
-
     try {
       setValidationLoading(true);
       await updateValidationStatus(document.DocumentId, isValid, validatorNote);
       setValidatorNote(validatorNote);
       setValidationStatus(isValid ? 1 : 2);
-    } catch (error) {
-      console.error('Erro ao aprovar documento:', error);
+    } catch (e) {
+      console.error('Erro ao aprovar documento:', e);
       notificationActions.showError('Erro ao validar documento');
     } finally {
       setValidationLoading(false);
@@ -240,40 +274,23 @@ const DocumentDetailsPage: React.FC = () => {
   };
 
   const handleGenerateSummary = async (mode: 'default' | 'curto' | 'bullet' = 'default') => {
-    if (!documentContent) {
-      notificationActions.showError(t("messages.error.validation"));
-      return;
-    }
-
+    if (!documentContent) { notificationActions.showError(t("messages.error.validation")); return; }
     setLoadingSummary(true);
     setShowSummaryDropdown(false);
 
     let modelType = 1;
-    switch (mode) {
-      case 'default':
-        modelType = 1; 
-        break;
-      case 'curto':
-        modelType = 3; 
-        break;
-      case 'bullet':
-        modelType = 2; 
-        break;
-    }
+    if (mode === 'curto') modelType = 3;
+    if (mode === 'bullet') modelType = 2;
 
     try {
       const summaryText = await generateSummary(Number(id), modelType);
       const summaryContent = summaryText.content || '';
       setSummary(summaryContent);
-
-      setTimeout(() => {
-        showResume.open();
-      }, 100);
-    } catch (error) {
-      console.error('Erro ao gerar resumo:', error);
+      setTimeout(() => { showResume.open(); }, 100);
+    } catch (e) {
+      console.error('Erro ao gerar resumo:', e);
       notificationActions.showError(t("messages.error.generic") || 'Erro ao gerar resumo');
     } finally {
-
       setSummary((s) => s);
       setLoadingSummary(false);
     }
@@ -281,36 +298,27 @@ const DocumentDetailsPage: React.FC = () => {
 
   const handleExportPDF = async () => {
     if (!document) return;
-
     try {
       setLoadingExport(true);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const margin = 15;
-      let yPosition = margin;
+      let y = margin;
 
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(document.Title, margin, yPosition);
-      yPosition += 10;
-
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Criado por: ${creator?.Name || 'N/A'}`, margin, yPosition);
-      yPosition += 6;
-      pdf.text(`Pasta: ${folder?.Name || 'N/A'}`, margin, yPosition);
-      yPosition += 6;
-      pdf.text(`Data de criação: ${FormatDate(document.CreatedAt, t("date_format"))}`, margin, yPosition);
-      yPosition += 10;
+      pdf.setFontSize(18); pdf.setFont('helvetica', 'bold'); pdf.text(document.Title, margin, y); y += 10;
+      pdf.setFontSize(10); pdf.setFont('helvetica', 'normal');
+      pdf.text(`Criado por: ${creator?.Name || 'N/A'}`, margin, y); y += 6;
+      pdf.text(`Pasta: ${folder?.Name || 'N/A'}`, margin, y); y += 6;
+      pdf.text(`Data de criação: ${FormatDate(document.CreatedAt, t("date_format"))}`, margin, y); y += 10;
 
       pdf.setFontSize(12);
       const lines = pdf.splitTextToSize(documentContent, pageWidth - 2 * margin);
-      pdf.text(lines, margin, yPosition);
+      pdf.text(lines, margin, y);
 
       pdf.save(`${document.Title}.pdf`);
       notificationActions.showNotification('PDF exportado com sucesso!', 'success');
-    } catch (error) {
-      console.error('Erro ao exportar PDF:', error);
+    } catch (e) {
+      console.error('Erro ao exportar PDF:', e);
       notificationActions.showError('Erro ao exportar PDF');
     } finally {
       setLoadingExport(false);
@@ -322,13 +330,11 @@ const DocumentDetailsPage: React.FC = () => {
     try {
       const response = await getDocumentVersionsByDocumentId(docId);
       if (response && !response.erro && response.objeto) {
-        const sortedVersions = response.objeto.sort((a: any, b: any) =>
-          new Date(b.CreatedAt).getTime() - new Date(a.CreatedAt).getTime()
-        );
-        setDocumentVersions(sortedVersions);
+        const sorted = response.objeto.sort((a: any, b: any) => new Date(b.CreatedAt).getTime() - new Date(a.CreatedAt).getTime());
+        setDocumentVersions(sorted);
       }
-    } catch (error) {
-      console.error('Erro ao carregar versões:', error);
+    } catch (e) {
+      console.error('Erro ao carregar versões:', e);
     } finally {
       setLoadingVersions(false);
     }
@@ -345,45 +351,30 @@ const DocumentDetailsPage: React.FC = () => {
 
   const handleExportDOCX = async () => {
     if (!document) return;
-
     try {
       setLoadingExport(true);
-      const doc = new Document({
+      const docx = new Document({
         sections: [{
           properties: {},
           children: [
-            new Paragraph({
-              text: document.Title,
-              heading: HeadingLevel.HEADING_1,
-            }),
+            new Paragraph({ text: document.Title, heading: HeadingLevel.HEADING_1 }),
             new Paragraph({
               children: [
-                new TextRun({
-                  text: `Criado por: ${creator?.Name || 'N/A'}`,
-                  break: 1,
-                }),
-                new TextRun({
-                  text: `Pasta: ${folder?.Name || 'N/A'}`,
-                  break: 1,
-                }),
-                new TextRun({
-                  text: `Data de criação: ${FormatDate(document.CreatedAt, t("date_format"))}`,
-                  break: 2,
-                }),
+                new TextRun({ text: `Criado por: ${creator?.Name || 'N/A'}`, break: 1 }),
+                new TextRun({ text: `Pasta: ${folder?.Name || 'N/A'}`, break: 1 }),
+                new TextRun({ text: `Data de criação: ${FormatDate(document.CreatedAt, t("date_format"))}`, break: 2 }),
               ],
             }),
-            new Paragraph({
-              text: documentContent,
-            }),
+            new Paragraph({ text: documentContent }),
           ],
         }],
       });
 
-      const blob = await Packer.toBlob(doc);
+      const blob = await Packer.toBlob(docx);
       saveAs(blob, `${document.Title}.docx`);
       notificationActions.showNotification('DOCX exportado com sucesso!', 'success');
-    } catch (error) {
-      console.error('Erro ao exportar DOCX:', error);
+    } catch (e) {
+      console.error('Erro ao exportar DOCX:', e);
       notificationActions.showError('Erro ao exportar DOCX');
     } finally {
       setLoadingExport(false);
@@ -392,47 +383,37 @@ const DocumentDetailsPage: React.FC = () => {
 
   const handleExportMarkdown = () => {
     if (!document) return;
-
     try {
       setLoadingExport(true);
-      let markdown = `# ${document.Title}\n\n`;
-      markdown += `**Criado por:** ${creator?.Name || 'N/A'}\n`;
-      markdown += `**Pasta:** ${folder?.Name || 'N/A'}\n`;
-      markdown += `**Data de criação:** ${FormatDate(document.CreatedAt, t("date_format"))}\n\n`;
-      markdown += `---\n\n`;
-      markdown += documentContent;
+      let md = `# ${document.Title}\n\n`;
+      md += `**Criado por:** ${creator?.Name || 'N/A'}\n`;
+      md += `**Pasta:** ${folder?.Name || 'N/A'}\n`;
+      md += `**Data de criação:** ${FormatDate(document.CreatedAt, t("date_format"))}\n\n`;
+      md += `---\n\n${documentContent}`;
 
-      const blob = new Blob([markdown], { type: 'text/markdown' });
+      const blob = new Blob([md], { type: 'text/markdown' });
       saveAs(blob, `${document.Title}.md`);
       notificationActions.showNotification('Markdown exportado com sucesso!', 'success');
-    } catch (error) {
-      console.error('Erro ao exportar Markdown:', error);
+    } catch (e) {
+      console.error('Erro ao exportar Markdown:', e);
       notificationActions.showError('Erro ao exportar Markdown');
     } finally {
       setLoadingExport(false);
     }
   };
 
-
   const getValidationStatusText = (status: number) => {
-    if (status === 0) {
-      return `⏳ ${t("documents.document_details.validation.pending") || "Pendente"}`;
-    }
-    if (status === 1) {
-      return `✅ ${t("documents.document_details.validation.approved") || "Aprovado"}`;
-    }
+    if (status === 0) return `⏳ ${t("documents.document_details.validation.pending") || "Pendente"}`;
+    if (status === 1) return `✅ ${t("documents.document_details.validation.approved") || "Aprovado"}`;
     return `❌ ${t("documents.document_details.validation.rejected") || "Rejeitado"}`;
   };
 
-  
   const showGlobalLoading = loading || (loadingComments && !isAddingComment);
 
   if (showGlobalLoading) {
     return (
       <PageLayout title={t("documents.document_details.title") || "Detalhes do Documento"}>
-        <LoadingContainer>
-          <div>{t("loading.loading") || "Carregando documento..."}</div>
-        </LoadingContainer>
+        <LoadingContainer><div>{t("loading.loading") || "Carregando documento..."}</div></LoadingContainer>
       </PageLayout>
     );
   }
@@ -457,7 +438,7 @@ const DocumentDetailsPage: React.FC = () => {
     <PageLayout
       title={t("documents.document_details.title") || "Detalhes do Documento"}
       actions={
-        <ActionsBar>
+        <ResponsiveActionsBar>
           <Button variant="ghost" onClick={handleBack}>
             <FiArrowLeft /> {t("documents.document_details.back") || "Voltar"}
           </Button>
@@ -467,22 +448,19 @@ const DocumentDetailsPage: React.FC = () => {
           </Button>
 
           <DropdownContainer ref={dropdownRef}>
-            {
-              loadingExport ? (
-                <Button disabled>
-                  <LoadingIcon size={18} /> {t("loading.loading") || "Carregando..."}
-                </Button>
-              ) : (
-                <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
-                  <FiDownload style={{ marginRight: 6 }} />
-                  {t("documents.document_details.export.button") || "Exportar"}
-                  <FiChevronDown style={{ marginLeft: 6 }} />
-                </Button>)
-            }
-
+            {loadingExport ? (
+              <Button disabled>
+                <LoadingIcon size={18} /> {t("loading.loading") || "Carregando..."}
+              </Button>
+            ) : (
+              <Button onClick={() => setShowExportDropdown(!showExportDropdown)} variant="primary">
+                <FiDownload style={{ marginRight: 6 }} />
+                {t("documents.document_details.export.button") || "Exportar"}
+                <FiChevronDown style={{ marginLeft: 6 }} />
+              </Button>
+            )}
 
             {showExportDropdown && (
-
               <DropdownMenu>
                 <DropdownItemButton onClick={() => { handleExportPDF(); setShowExportDropdown(false); }}>
                   📄 {t("documents.document_details.export.export_pdf") || "Exportar PDF"}
@@ -498,15 +476,8 @@ const DocumentDetailsPage: React.FC = () => {
           </DropdownContainer>
 
           <DropdownContainer ref={summaryDropdownRef}>
-            <Button
-              onClick={() => setShowSummaryDropdown(!showSummaryDropdown)}
-              disabled={loadingSummary}
-            >
-              {loadingSummary ? (
-                <>⏳{t('documents.document_details.generating_summary')}</>
-              ) : (
-                <>{t("documents.document_details.generate_summary") || "Gerar Resumo"} <FiChevronDown /></>
-              )}
+            <Button onClick={() => setShowSummaryDropdown(!showSummaryDropdown)} disabled={loadingSummary}>
+              {loadingSummary ? <>⏳{t('documents.document_details.generating_summary')}</> : <>{t("documents.document_details.generate_summary") || "Gerar Resumo"} <FiChevronDown /></>}
             </Button>
             {showSummaryDropdown && !loadingSummary && (
               <DropdownMenu>
@@ -538,308 +509,239 @@ const DocumentDetailsPage: React.FC = () => {
           </DropdownContainer>
 
           <Button onClick={handleSaveDocument}>
-            {
-              documentLoading ? (
-                <>
-                  <LoadingIcon size={18} />
-                  {t("actions.loading") || "Carregando..."}
-                </>
-              ) : (
-                <>
-                  <FiEdit />
-                  {t("documents.document_details.save_changes") || "Salvar Alterações"}
-                </>
-              )}
+            {documentLoading ? (<><LoadingIcon size={18} /> {t("actions.loading") || "Carregando..."}</>) : (<><FiEdit /> {t("documents.document_details.save_changes") || "Salvar Alterações"}</>)}
           </Button>
-
-
-        </ActionsBar>
+        </ResponsiveActionsBar>
       }
     >
-      <DetailsContainer>
-        <LeftColumn>
-          <DocumentCard>
-            <DocumentHeader>
-              <DocumentTitle>
-                <input
-                  type="text"
-                  value={documentTitle}
-                  onChange={(e) => setDocumentTitle(e.target.value)}
-                  style={{
-                    width: '100%',
-                    fontSize: 'inherit',
-                    fontWeight: 'inherit',
-                    border: 'none',
-                    background: 'transparent',
-                    padding: '4px',
-                    borderRadius: '4px',
-                    outline: 'none'
-                  }}
-                  onFocus={(e) => e.target.style.border = '1px solid #ccc'}
-                  onBlur={(e) => e.target.style.border = 'none'}
-                />
-              </DocumentTitle>
-            </DocumentHeader>
-
-            <DocumentMeta>
-              <MetaItem>
-                <MetaIcon><FiUser /></MetaIcon>
-                <div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
-                    {t("documents.document_details.created_by") || "Criado por"}
-                  </div>
-                  <MetaValue>{creator?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}</MetaValue>
-                </div>
-              </MetaItem>
-
-              <MetaItem>
-                <MetaIcon><FiFolder /></MetaIcon>
-                <div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
-                    {t("documents.document_details.folder") || "Pasta"}
-                  </div>
-                  <MetaValue>{folder?.Name || t("messages.error.not_found") || 'Pasta não encontrada'}</MetaValue>
-                </div>
-              </MetaItem>
-
-              <MetaItem>
-                <MetaIcon><FiCalendar /></MetaIcon>
-                <div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
-                    {t("documents.document_details.created_at") || "Criado em"}
-                  </div>
-                  <MetaValue>{FormatDate(document.CreatedAt, t("date_format"))}</MetaValue>
-                </div>
-              </MetaItem>
-
-              <MetaItem>
-                <MetaIcon><FiCalendar /></MetaIcon>
-                <div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
-                    {t("documents.document_details.updated_at") || "Atualizado em"}
-                  </div>
-                  <MetaValue>{FormatDate(document.UpdatedAt, t("date_format"))}</MetaValue>
-                </div>
-              </MetaItem>
-            </DocumentMeta>
-
-            <DocumentContent>
-              <MarkdownEditor
-                value={documentContent}
-                onChange={setDocumentContent}
-              />
-            </DocumentContent>
-          </DocumentCard>
-        </LeftColumn>
-
-        <RightColumn>
-          {isValidator && (
-            <ValidationSection>
-              <ValidationTitle>
-                {t("documents.document_details.validation.title") || "Validação do Documento"}
-              </ValidationTitle>
-
-              {(validationStatus === 1 || validationStatus === 2) && (
-                <ValidatorActions>
-                  <ValidationStatus>
-                    <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
-                      {getValidationStatusText(validationStatus as number)}
-                    </StatusBadge>
-                    <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}></div>
-
-                    {validatorNote && (
-                      <ValidatorNote
-                        value={validatorNote}
-                        readOnly
-                      />
-                    )}
-                  </ValidationStatus>
-                </ValidatorActions>
-              )}
-              {validationStatus === 0 && (
-                <ValidatorActions>
-                  <ValidatorNote
-                    placeholder={t("documents.document_details.validation.add_note")}
-                    value={validatorNote}
-                    onChange={(e) => setValidatorNote(e.target.value)}
+      <ResponsivePageWidth>
+        <ResponsiveDetails>
+          <ResponsiveLeft>
+            <DocumentCard style={{ width: '100%' }}>
+              <DocumentHeader>
+                <DocumentTitle>
+                  <input
+                    type="text"
+                    value={documentTitle}
+                    onChange={(e) => setDocumentTitle(e.target.value)}
+                    style={{
+                      width: '100%',
+                      fontSize: 'inherit',
+                      fontWeight: 'inherit',
+                      border: 'none',
+                      background: 'transparent',
+                      padding: '4px',
+                      borderRadius: '4px',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => (e.target.style.border = '1px solid #ccc')}
+                    onBlur={(e) => (e.target.style.border = 'none')}
                   />
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <Button
-                      onClick={() => handleValidation(true)}
-                      disabled={validationLoading}
-                      style={{ flex: 1, background: '#28a745', opacity: validationLoading ? 0.8 : 1 }}
-                    >
-                      {validationLoading ? (
-                        <>
-                          <LoadingIcon size={18} />
-                          {t("loading.loading") || "Carregando..."}
-                        </>
-                      ) : (
-                        <>
-                          ✅ {t("documents.document_details.validation.approve") || "Aprovar"}
-                        </>
-                      )}
-                    </Button>
+                </DocumentTitle>
+              </DocumentHeader>
 
-                    <Button
-                      onClick={() => handleValidation(false)}
-                      disabled={validationLoading}
-                      style={{ flex: 1, background: '#dc3545', opacity: validationLoading ? 0.8 : 1 }}
-                    >
-                      {validationLoading ? (
-                        <>
-                          <LoadingIcon size={18} />
-                          {t("loading.loading") || "Carregando..."}
-                        </>
-                      ) : (
-                        <>
-                          ❌ {t("documents.document_details.validation.reject") || "Rejeitar"}
-                        </>
-                      )}
-                    </Button>
+              <DocumentMeta>
+                <MetaItem>
+                  <MetaIcon><FiUser /></MetaIcon>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>
+                      {t("documents.document_details.created_by") || "Criado por"}
+                    </div>
+                    <MetaValue>{creator?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}</MetaValue>
                   </div>
-                </ValidatorActions>
-              )}
+                </MetaItem>
 
-            </ValidationSection>
+                <MetaItem>
+                  <MetaIcon><FiFolder /></MetaIcon>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>
+                      {t("documents.document_details.folder") || "Pasta"}
+                    </div>
+                    <MetaValue>{folder?.Name || t("messages.error.not_found") || 'Pasta não encontrada'}</MetaValue>
+                  </div>
+                </MetaItem>
 
-          )}
+                <MetaItem>
+                  <MetaIcon><FiCalendar /></MetaIcon>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>
+                      {t("documents.document_details.created_at") || "Criado em"}
+                    </div>
+                    <MetaValue>{FormatDate(document.CreatedAt, t("date_format"))}</MetaValue>
+                  </div>
+                </MetaItem>
 
-          {document?.DocumentId && (
-            <DocumentTags documentId={document.DocumentId} />
-          )}
+                <MetaItem>
+                  <MetaIcon><FiCalendar /></MetaIcon>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>
+                      {t("documents.document_details.updated_at") || "Atualizado em"}
+                    </div>
+                    <MetaValue>{FormatDate(document.UpdatedAt, t("date_format"))}</MetaValue>
+                  </div>
+                </MetaItem>
+              </DocumentMeta>
 
-          <CommentsSection>
-            <CommentsTitle>
-              <FiMessageSquare />
-              {t("documents.document_details.comments.title") || "Comentários"}
-            </CommentsTitle>
+              <DocumentContent>
+                <MarkdownEditor value={documentContent} onChange={setDocumentContent} />
+              </DocumentContent>
+            </DocumentCard>
+          </ResponsiveLeft>
 
-            <CommentsScrollArea>
-              <CommentsList>
-                {!comments || comments.length === 0 ? (
-                  <EmptyComments>
-                    {t("documents.document_details.comments.count") || "Nenhum comentário ainda. Seja o primeiro a comentar!"}
-                  </EmptyComments>
-                ) : (
-                  comments.map((comment) => {
-                    const commentAuthor = activeUser.find(u => u.UserId === comment.UserId);
-                    return (
-                      <CommentItem key={comment.CommentId}>
-                        <CommentHeader>
-                          <CommentAuthor>
-                            {commentAuthor?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}
-                          </CommentAuthor>
-                          <CommentDate>
-                            {FormatDate(comment.CreatedAt!, t("date_format"))}
-                          </CommentDate>
-                        </CommentHeader>
-                        <CommentText>{comment.Content}</CommentText>
-                      </CommentItem>
-                    );
-                  })
+          <ResponsiveRight>
+            {isValidator && (
+              <ValidationSection>
+                <ValidationTitle>
+                  {t("documents.document_details.validation.title") || "Validação do Documento"}
+                </ValidationTitle>
+
+                {(validationStatus === 1 || validationStatus === 2) && (
+                  <ValidatorActions>
+                    <ValidationStatus>
+                      <StatusBadge status={validationStatus === 1 ? 'approved' : 'rejected'}>
+                        {getValidationStatusText(validationStatus as number)}
+                      </StatusBadge>
+                      <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}></div>
+
+                      {validatorNote && <ValidatorNote value={validatorNote} readOnly />}
+                    </ValidationStatus>
+                  </ValidatorActions>
                 )}
-              </CommentsList>
-            </CommentsScrollArea>
 
-            <CommentForm>
-              <CommentTextarea
-                placeholder={
-                  t("documents.document_details.comments.placeholder") ||
-                  "Digite seu comentário..."
-                }
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-              />
-              <Button
-                onClick={handleAddComment}
-                disabled={isAddingComment}
-                style={{ alignSelf: 'flex-start', marginTop: '8px', opacity: isAddingComment ? 0.8 : 1 }}
-              >
-                {isAddingComment
-                  ? (t("loading.loading") ? `⏳ ${t("loading.loading")}` : '⏳ Enviando...')
-                  : (t("documents.document_details.comments.add_comment") || "Adicionar Comentário")}
-              </Button>
-            </CommentForm>
-          </CommentsSection>
-        </RightColumn>
-      </DetailsContainer>
+                {validationStatus === 0 && (
+                  <ValidatorActions>
+                    <ValidatorNote
+                      placeholder={t("documents.document_details.validation.add_note")}
+                      value={validatorNote}
+                      onChange={(e) => setValidatorNote(e.target.value)}
+                    />
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Button
+                        onClick={() => handleValidation(true)}
+                        disabled={validationLoading}
+                        style={{ flex: 1, background: '#28a745', opacity: validationLoading ? 0.8 : 1 }}
+                      >
+                        {validationLoading ? (
+                          <>
+                            <LoadingIcon size={18} /> {t("loading.loading") || "Carregando..."}
+                          </>
+                        ) : (
+                          <>✅ {t("documents.document_details.validation.approve") || "Aprovar"}</>
+                        )}
+                      </Button>
+
+                      <Button
+                        onClick={() => handleValidation(false)}
+                        disabled={validationLoading}
+                        style={{ flex: 1, background: '#dc3545', opacity: validationLoading ? 0.8 : 1 }}
+                      >
+                        {validationLoading ? (
+                          <>
+                            <LoadingIcon size={18} /> {t("loading.loading") || "Carregando..."}
+                          </>
+                        ) : (
+                          <>❌ {t("documents.document_details.validation.reject") || "Rejeitar"}</>
+                        )}
+                      </Button>
+                    </div>
+                  </ValidatorActions>
+                )}
+              </ValidationSection>
+            )}
+
+            {document?.DocumentId && (
+              <div style={{ width: '100%' }}>
+                <DocumentTags documentId={document.DocumentId} />
+              </div>
+            )}
+
+            <CommentsSection style={{ width: '100%' }}>
+              <CommentsTitle>
+                <FiMessageSquare />
+                {t("documents.document_details.comments.title") || "Comentários"}
+              </CommentsTitle>
+
+              <CommentsScrollArea>
+                <CommentsList>
+                  {!comments || comments.length === 0 ? (
+                    <EmptyComments>
+                      {t("documents.document_details.comments.count") || "Nenhum comentário ainda. Seja o primeiro a comentar!"}
+                    </EmptyComments>
+                  ) : (
+                    comments.map((comment) => {
+                      const commentAuthor = activeUser.find(u => u.UserId === comment.UserId);
+                      return (
+                        <CommentItem key={comment.CommentId}>
+                          <CommentHeader>
+                            <CommentAuthor>{commentAuthor?.Name || t("messages.error.not_found") || 'Usuário não encontrado'}</CommentAuthor>
+                            <CommentDate>{FormatDate(comment.CreatedAt!, t("date_format"))}</CommentDate>
+                          </CommentHeader>
+                          <CommentText>{comment.Content}</CommentText>
+                        </CommentItem>
+                      );
+                    })
+                  )}
+                </CommentsList>
+              </CommentsScrollArea>
+
+              <CommentForm>
+                <CommentTextarea
+                  placeholder={t("documents.document_details.comments.placeholder") || "Digite seu comentário..."}
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                />
+                <Button
+                  onClick={handleAddComment}
+                  disabled={isAddingComment}
+                  style={{ alignSelf: 'flex-start', marginTop: '8px', opacity: isAddingComment ? 0.8 : 1 }}
+                >
+                  {isAddingComment
+                    ? (t("loading.loading") ? `⏳ ${t("loading.loading")}` : '⏳ Enviando...')
+                    : (t("documents.document_details.comments.add_comment") || "Adicionar Comentário")}
+                </Button>
+              </CommentForm>
+            </CommentsSection>
+          </ResponsiveRight>
+        </ResponsiveDetails>
+      </ResponsivePageWidth>
 
       <Modal
         isOpen={showResume.isOpen}
         onClose={showResume.close}
         title={t("documents.document_details.generate_summary") || "Resumo do Documento"}
       >
-        <MarkdownEditorPage
-          initialContent={summary}
-          onSave={() => { }}
-          onCancel={showResume.close}
-        />
+        <MarkdownEditorPage initialContent={summary} onSave={() => {}} onCancel={showResume.close} />
       </Modal>
 
-      <SidebarOverlay
-        isOpen={showVersionHistory}
-        onClick={() => setShowVersionHistory(false)}
-      />
+      <SidebarOverlay isOpen={showVersionHistory} onClick={() => setShowVersionHistory(false)} />
 
       <VersionSidebar isOpen={showVersionHistory}>
         <SidebarHeader>
-          <SidebarTitle>
-            {t("documents.document_details.version_history.title") || "Histórico de versões"}
-          </SidebarTitle>
-          <CloseButton onClick={() => setShowVersionHistory(false)}>
-            ✕
-          </CloseButton>
+          <SidebarTitle>{t("documents.document_details.version_history.title") || "Histórico de versões"}</SidebarTitle>
+          <CloseButton onClick={() => setShowVersionHistory(false)}>✕</CloseButton>
         </SidebarHeader>
 
         <SidebarContent>
           {loadingVersions ? (
-            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-              {t('loading.loading')}
-            </div>
+            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>{t('loading.loading')}</div>
           ) : documentVersions.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-              {t('documents.document_details.version_history.no_versions')}
-            </div>
+            <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>{t('documents.document_details.version_history.no_versions')}</div>
           ) : (
             <>
-              <SectionLabel>
-                {t("documents.document_details.version_history.today") || "Histórico"}
-              </SectionLabel>
-
+              <SectionLabel>{t("documents.document_details.version_history.today") || "Histórico"}</SectionLabel>
               <VersionSection>
                 {documentVersions.map((version, index) => {
                   const versionAuthor = activeUser.find(u => u.UserId === version.userId);
                   const isCurrentVersion = index === documentVersions.length - 1;
 
-
                   return (
-                    <VersionItem
-                      key={version.documentVersionId || index}
-                      onClick={() => handleLoadVersion(version)}
-                    >
+                    <VersionItem key={version.documentVersionId || index} onClick={() => handleLoadVersion(version)}>
                       <VersionDate>
-                        {new Date(version.createdAt).toLocaleDateString(t('locale_date_string'), {
-                          day: '2-digit',
-                          month: 'long',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                        {isCurrentVersion && (
-                          <VersionBadge>
-                            {t("documents.document_details.version_history.current_version") || "Versão atual"}
-                          </VersionBadge>
-                        )}
+                        {new Date(version.createdAt).toLocaleDateString(t('locale_date_string'), { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })}
+                        {isCurrentVersion && <VersionBadge>{t("documents.document_details.version_history.current_version") || "Versão atual"}</VersionBadge>}
                       </VersionDate>
-                      <VersionAuthor>
-                        <AuthorIndicator />
-                        {versionAuthor?.Name || t("messages.error.not_found") || 'Usuário'}
-                      </VersionAuthor>
-                      {version.comment && (
-                        <div style={{ marginTop: '8px', fontSize: '13px', color: '#666' }}>
-                          {version.comment}
-                        </div>
-                      )}
+                      <VersionAuthor><AuthorIndicator />{versionAuthor?.Name || t("messages.error.not_found") || 'Usuário'}</VersionAuthor>
+                      {version.comment && <div style={{ marginTop: '8px', fontSize: '13px', color: '#666' }}>{version.comment}</div>}
                     </VersionItem>
                   );
                 })}
@@ -853,4 +755,3 @@ const DocumentDetailsPage: React.FC = () => {
 };
 
 export default DocumentDetailsPage;
-
