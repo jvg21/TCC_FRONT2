@@ -312,17 +312,6 @@ const AddTaskButton = styled.button`
     color: ${({ theme }) => theme.colors.primary};
     background: ${({ theme }) => theme.colors.primary}05;
   }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-
-    &:hover {
-      border-color: rgba(0, 0, 0, 0.2);
-      color: ${({ theme }) => theme.colors.muted};
-      background: transparent;
-    }
-  }
 `;
 
 const EmptyColumn = styled.div`
@@ -346,6 +335,20 @@ const EmptyIcon = styled.div`
   margin-bottom: 12px;
 `;
 
+/** ========= HELPERS PARA “HISTÓRICO” ========= **/
+const getDoneStatusValue = (t: any) => {
+  const list = getTaskStatus(t);
+  const fromLabel = list.find((s) => /conclu|done/i.test(String(s.label)));
+  if (fromLabel) return String(fromLabel.value);
+  // fallback comum: 4 costuma ser “Concluídas”
+  const has4 = list.some((s) => s.value === "4");
+  return has4 ? "4" : String(list[list.length - 1]?.value ?? "4");
+};
+
+// converte "history" -> doneValue, demais mantêm o próprio value
+const toPersistedStatus = (value: string, doneValue: string) =>
+  parseInt(value === "history" ? doneValue : value, 10);
+
 const TaskBoardPage: React.FC = () => {
   const { activeTask, create, update } = useTask();
   const [editing, setEditing] = useState<Task | null>(null);
@@ -361,15 +364,21 @@ const TaskBoardPage: React.FC = () => {
   const { activeUser } = useUser();
   const { userProfile } = useAuthContext();
 
+  const doneValue = getDoneStatusValue(t);
+
   const tasksByStatus = useMemo(() => {
     const statuses = getTaskStatus(t);
-    return statuses.reduce((acc, status) => {
+    const map = statuses.reduce((acc, status) => {
       acc[status.value] = activeTask.filter(
         (task) => task.Status?.toString() === status.value
       );
       return acc;
     }, {} as Record<string, Task[]>);
-  }, [activeTask, t]);
+
+    // “Histórico” espelha as tarefas concluídas
+    map["history"] = [...(map[doneValue] ?? [])];
+    return map;
+  }, [activeTask, t, doneValue]);
 
   const getUserName = (userId?: number) => {
     const user = activeUser.find((u) => u.UserId === userId);
@@ -392,9 +401,11 @@ const TaskBoardPage: React.FC = () => {
     return priorityObj ? priorityObj.label : (t("tasks.priorityTask.low") as string);
   };
 
-  const handleAdd = (status?: number) => {
+  // Aceita string statusValue (inclui "history")
+  const handleAdd = (statusValue?: string) => {
     setEditing(null);
-    setSelectedStatus(status || 1);
+    const persisted = toPersistedStatus(statusValue ?? "1", doneValue);
+    setSelectedStatus(persisted);
     modal.open();
   };
 
@@ -417,7 +428,6 @@ const TaskBoardPage: React.FC = () => {
   const onTaskDragStart = (e: React.DragEvent, task: Task) => {
     setDraggedTaskId(task.TaskId);
     setIsDragging(true);
-    // carrega o id no dataTransfer
     e.dataTransfer.setData("text/plain", String(task.TaskId));
     e.dataTransfer.effectAllowed = "move";
   };
@@ -429,14 +439,13 @@ const TaskBoardPage: React.FC = () => {
   };
 
   const onColumnDragOver = (e: React.DragEvent, statusValue: string) => {
-    // necessário para permitir drop
+    // agora permite inclusive no "Histórico"
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     setOverStatus(statusValue);
   };
 
   const onColumnDragLeave = (_e: React.DragEvent, statusValue: string) => {
-    // remove highlight só se ainda está marcado esse status
     setOverStatus((prev) => (prev === statusValue ? null : prev));
   };
 
@@ -447,8 +456,16 @@ const TaskBoardPage: React.FC = () => {
     if (!id) return;
 
     const task = activeTask.find((t) => t.TaskId === id);
-    if (task && task.Status?.toString() !== statusValue) {
-      update(task.TaskId, { Title: task.Title, Description: task.Description, DueDate: task.DueDate, AssigneeId: task.AssigneeId, Status: parseInt(statusValue, 10) });
+    const persisted = toPersistedStatus(statusValue, doneValue);
+
+    if (task && task.Status !== persisted) {
+      update(task.TaskId, {
+        Title: task.Title,
+        Description: task.Description,
+        DueDate: task.DueDate,
+        AssigneeId: task.AssigneeId,
+        Status: persisted,
+      });
     }
 
     setIsDragging(false);
@@ -456,25 +473,38 @@ const TaskBoardPage: React.FC = () => {
     setOverStatus(null);
   };
 
+  // Lista de colunas + coluna extra "Histórico"
+  const statusList = useMemo(
+    () => [
+      ...getTaskStatus(t),
+      { value: "history", label: (t("tasks.history") as string) || "Histórico" },
+    ],
+    [t]
+  );
+
   return (
     <PageLayout
       title={(t("tasks.task_board") as string) || "Task Board"}
       actions={
-        <Button disabled={!userProfile} onClick={() => handleAdd()}>
+        <Button onClick={() => handleAdd()}>
           <FiPlus />&nbsp;{t("tasks.add_task")}
         </Button>
       }
     >
       <BoardViewport>
         <BoardContainer>
-          {getTaskStatus(t).map((status) => {
-            const columnTasks = tasksByStatus[status.value] || [];
+          {statusList.map((status) => {
+            const isHistory = status.value === "history";
+            const baseValue = isHistory ? doneValue : status.value;
+            const columnTasks =
+              tasksByStatus[isHistory ? "history" : status.value] || [];
 
             return (
               <Column key={status.value}>
                 <ColumnHeader>
                   <ColumnTitle>
-                    <StatusIndicator status={parseInt(status.value)} />
+                    {/* No Histórico, usa a cor de “Concluídas” */}
+                    <StatusIndicator status={parseInt(baseValue, 10)} />
                     <ColumnTitleText>{status.label}</ColumnTitleText>
                   </ColumnTitle>
                   <TaskCount>{columnTasks.length}</TaskCount>
@@ -496,7 +526,7 @@ const TaskBoardPage: React.FC = () => {
                           onDragStart={(e) => onTaskDragStart(e, task)}
                           onDragEnd={onTaskDragEnd}
                           onClick={() => {
-                            if (isDragging) return; // evita abrir modal ao soltar
+                            if (isDragging) return;
                             handleEdit(task);
                           }}
                         >
@@ -544,10 +574,8 @@ const TaskBoardPage: React.FC = () => {
                         </TaskCard>
                       ))}
 
-                      <AddTaskButton
-                        onClick={() => handleAdd(parseInt(status.value))}
-                        disabled={!userProfile}
-                      >
+                      {/* Agora permite adicionar também no Histórico */}
+                      <AddTaskButton onClick={() => handleAdd(status.value)}>
                         <FiPlus size={16} />
                         {t("tasks.add_task")}
                       </AddTaskButton>
@@ -562,10 +590,7 @@ const TaskBoardPage: React.FC = () => {
                           {(t("tasks.no_tasks") as string) || "Nenhuma tarefa"}
                         </div>
                       </EmptyColumn>
-                      <AddTaskButton
-                        onClick={() => handleAdd(parseInt(status.value))}
-                        disabled={!userProfile}
-                      >
+                      <AddTaskButton onClick={() => handleAdd(status.value)}>
                         <FiPlus size={16} />
                         {t("tasks.add_task")}
                       </AddTaskButton>
