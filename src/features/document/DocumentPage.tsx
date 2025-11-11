@@ -4,7 +4,7 @@ import { DataTable } from "../../components/lib/DataTable";
 import { Button } from "../../components/common/Button";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../../components/common/Modal";
-import { FiPlus, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiSearch, FiX, FiChevronLeft, FiChevronRight, FiUpload } from "react-icons/fi";
+import { FiPlus, FiFileText, FiEdit3, FiCheckCircle, FiClock, FiFilter, FiSearch, FiX, FiChevronLeft, FiChevronRight, FiUpload, FiEye } from "react-icons/fi";
 import type { ColumnDef } from "../../types";
 import PageLayout from "../../components/common/PageLayout";
 import { DocumentForm } from "./DocumentForm";
@@ -111,7 +111,7 @@ const DocumentPage: React.FC = () => {
       return v && v !== key ? v : fallback;
     };
 
-    
+
     useEffect(() => {
       if (currentPage > totalPages) {
         setCurrentPage(totalPages);
@@ -139,12 +139,12 @@ const DocumentPage: React.FC = () => {
 
     return (
       <div style={containerStyle}>
-        {}
+        { }
         <div style={{ fontSize: 14, color: '#666', textAlign: isNarrow ? 'center' : 'left', gridColumn: isNarrow ? '1 / -1' : undefined }}>
           {tt('pagination.showing', 'Mostrando')} {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, total)} {tt('pagination.of', 'de')} {total}
         </div>
 
-        {}
+        { }
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label style={{ fontSize: 14, color: '#666' }}>{tt('pagination.rows_per_page', 'Itens/pág.')}</label>
           <select
@@ -158,7 +158,7 @@ const DocumentPage: React.FC = () => {
           </select>
         </div>
 
-        {}
+        { }
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifySelf: isNarrow ? 'end' : 'flex-end' }}>
           <Button
             variant="ghost"
@@ -181,7 +181,7 @@ const DocumentPage: React.FC = () => {
       </div>
     );
   };
-  
+
 
   useEffect(() => {
     const loadDocumentsByTag = async () => {
@@ -217,7 +217,7 @@ const DocumentPage: React.FC = () => {
     editorModal.open();
   };
 
-  
+
   const handleImportButtonClick = () => {
     if (importFileRef.current) {
       importFileRef.current.click();
@@ -227,7 +227,7 @@ const DocumentPage: React.FC = () => {
   const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      
+
       importModal.open();
     }
   };
@@ -245,7 +245,7 @@ const DocumentPage: React.FC = () => {
       const response = await importDocument(file, selectedFolderId);
       console.log(response)
       importModal.close();
-      
+
       if (importFileRef.current) {
         importFileRef.current.value = '';
       }
@@ -335,7 +335,7 @@ const DocumentPage: React.FC = () => {
           return (
             <div style={{ display: 'flex', gap: '4px' }}>
 
-              {/* <>
+              {user && user.Profile === 3 && (<>
                 <Button
                   variant="ghost"
                   onClick={() => onView(row)}
@@ -343,8 +343,8 @@ const DocumentPage: React.FC = () => {
                 >
                   <FiEye />
                 </Button>
-              </> */}
-              {canEdit() && (
+              </>)}
+              {canEdit() && user!?.Profile < 3 && (
                 <>
                   <ActionButtons onEdit={() => onView(row)} onToggleStatus={onToggleStatus} row={row} id={row.DocumentId} />
                 </>
@@ -355,7 +355,7 @@ const DocumentPage: React.FC = () => {
       });
     }
     return baseCols;
-  };
+  }; 3
 
   const getFilteredDocuments = (documents: Document[]) => {
     let filtered = [...documents];
@@ -450,7 +450,7 @@ const DocumentPage: React.FC = () => {
     setShowRagResults(true);
 
     try {
-      
+
       const queryEmbedding = await generateEmbedding(ragSearchQuery);
 
       if (!queryEmbedding) {
@@ -461,39 +461,39 @@ const DocumentPage: React.FC = () => {
 
       console.log(`Embedding generated successfully with length: ${queryEmbedding.length}`);
 
-      
+
       const allDocuments = [...activeDocument, ...deactiveDocument];
       console.log(`Searching among ${allDocuments.length} total documents`);
 
-      
+
       const withEmbeddings = allDocuments.filter(d => d.Embedding && d.Embedding.length > 0);
       console.log(`${withEmbeddings.length} documents have embeddings`);
 
-      
+
       const similarDocuments = findSimilarDocuments(
         activeDocument,
         queryEmbedding,
         {
-          maxResults: 5,      
-          threshold: 0.3,     
-          forceResults: false, 
-          minResults: 2       
+          maxResults: 5,
+          threshold: 0.3,
+          forceResults: false,
+          minResults: 2
         }
       );
 
       console.log(`Found ${similarDocuments.length} similar documents`);
 
       if (similarDocuments.length > 0) {
-        
+
         similarDocuments.forEach((doc, i) => {
           console.log(`Result ${i + 1}: Score ${doc.similarityScore.toFixed(4)} - ${doc.Title}`);
         });
       }
 
-      
+
       setRagResults(similarDocuments);
 
-      
+
       if (similarDocuments.length === 0) {
         notificationActions.showError(t("documents.no_similar_documents"));
       }
@@ -534,7 +534,7 @@ const DocumentPage: React.FC = () => {
   const AdvancedFilters = () => (
     <div style={{ background: `${theme.colors.primary}15`, border: '1px solid #dee2e6', borderRadius: '8px', padding: '16px', marginBottom: '16px', display: showAdvancedFilters ? 'block' : 'none' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-        {}
+        { }
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.date_range") || "Período"}</label>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -543,7 +543,7 @@ const DocumentPage: React.FC = () => {
           </div>
         </div>
 
-        {}
+        { }
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.author") || "Autor"}</label>
           <select value={authorFilter || ""} onChange={(e) => setAuthorFilter(e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '14px' }}>
@@ -552,7 +552,7 @@ const DocumentPage: React.FC = () => {
           </select>
         </div>
 
-        {}
+        { }
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', fontSize: '14px' }}>{t("documents.filters.tag")}</label>
           <select value={tagFilter || ""} onChange={(e) => setTagFilter(e.target.value ? Number(e.target.value) : null)} style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '14px' }}>
@@ -623,7 +623,7 @@ const DocumentPage: React.FC = () => {
           { }
           <AdvancedFilters />
 
-          {}
+          { }
           {showRagSearch && (
             <div style={{ marginBottom: '16px' }}>
               <RagSearchContainer>
@@ -654,7 +654,7 @@ const DocumentPage: React.FC = () => {
                   </RagSearchButton>
                 </RagSearchControls>
 
-                {}
+                { }
                 {showRagResults && (
                   <RagResultsContainer>
                     <RagResultsHeader>
@@ -922,7 +922,7 @@ const DocumentPage: React.FC = () => {
       title={t("documents.title")}
       actions={
         <>
-          {}
+          { }
           <Button
             onClick={handleImportButtonClick}
             variant="primary"
@@ -932,7 +932,7 @@ const DocumentPage: React.FC = () => {
             <FiUpload /> {t('documents.import') || 'Importar'}
           </Button>
 
-          {}
+          { }
           <input
             type="file"
             ref={importFileRef}
@@ -941,7 +941,7 @@ const DocumentPage: React.FC = () => {
             onChange={handleFileSelection}
           />
 
-          {}
+          { }
           <Button
             onClick={() => {
               setEditing(null);
@@ -982,7 +982,7 @@ const DocumentPage: React.FC = () => {
         <MarkdownEditorPage initialContent={editingContent} onSave={handleSaveContent} onCancel={editorModal.close} />
       </Modal>
 
-      {}
+      { }
       <Modal
         isOpen={importModal.isOpen}
         onClose={importModal.close}
