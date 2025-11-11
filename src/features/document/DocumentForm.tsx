@@ -69,6 +69,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
   const [Title, setTitle] = useState(initial.Title ?? "");
   const [Content, setContent] = useState(initial.Content ?? "");
   const [FolderId, setFolderId] = useState(initial.FolderId?.toString() ?? "");
+  //const[Embeddings, setEmbeddings] = useState(initial.Embeddings ?? "");
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   const [appliedTemplate, setAppliedTemplate] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -102,6 +103,7 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
       setIsLoading(true);
       await onSave({
         Title,
+        //Embeddings,
         Content,
         FolderId: parseInt(FolderId),
       });
@@ -154,6 +156,19 @@ export const DocumentForm: React.FC<DocumentFormProps> = ({
           />
         </Col>
       </Row>
+
+       {/* <Row>
+        <Col>
+          <Input
+            label={t("documents.Embeddings") || "Embeddings"}
+            maxLength={50}
+            minLength={3}
+            required
+            value={Embeddings}
+            onChange={(e) => setEmbeddings(e.target.value)}
+          />
+        </Col>
+      </Row> */}
 
       <Row>
         <Col>
