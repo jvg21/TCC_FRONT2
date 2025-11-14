@@ -283,6 +283,14 @@ const DocumentPage: React.FC = () => {
           </div>
         )
       },
+
+      // {
+      //   key: "Embeddings",  // Exemplo: Author
+      //   header: "Embeddings", // Exemplo: "Author"
+      //   render: (row) => (
+      //     <span>{row.Embeddings || "N/A"}</span> // Exemplo: {row.Author || "N/A"}
+      //   )
+      // },
       {
         key: "FolderId",
         header: t("documents.folder"),

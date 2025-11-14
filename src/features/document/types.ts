@@ -8,5 +8,6 @@ export interface Document {
   CreatedAt: string;
   UpdatedAt: string;
   isValid?:boolean|null;
-  Embedding?: number[]
+  Embedding?: number[];
+  //Embeddings?: string| null;
 }
